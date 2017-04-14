@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName="Tasking/Mcl_Cmd_CurrentUsers_Tasking.pyo" providerType="script">
+
+	<Command id="0" name="CurrentUsers">
+		<Help>Gets the list of currently logged on users</Help>
+		<Input/>
+		<Output/>
+	</Command>
+	
+</Plugin>

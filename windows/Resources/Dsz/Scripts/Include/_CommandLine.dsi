@@ -1,0 +1,553 @@
+#----------------------------------------------------
+# _CommandLine
+#	This file provides utility functions for handling
+#	command lines
+#----------------------------------------------------
+@include "_Arrays.dsi";
+@include "_Paths.dsi";
+
+
+#---------------------------------------------------------------------------------------------------#
+# _DisplayHelp
+#	Shows the script's commandline help using the default path to the file
+#---------------------------------------------------------------------------------------------------#
+sub _DisplayHelp(  ) {
+	return _DisplayHelp( "" );
+}
+
+#---------------------------------------------------------------------------------------------------#
+# _DisplayHelp
+#	Shows the script's commandline help using the specified path to the file
+#
+# Params
+#	IN STRING $Filename
+#		the path to the command definition
+#---------------------------------------------------------------------------------------------------#
+sub _DisplayHelp( IN STRING $filename ) {
+	string $fullpath;
+	if( __FindCommandFile( $filename, $fullpath ) ) {
+		string %description;
+		if( __ParseCommandDescription( $fullpath, %description ) ) {
+			return __DisplayHelp( %_sgEnv{"script_name"}, %description );
+		}
+	}
+	return false;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# _ParseCommandLine
+#	Parses the specified commandline
+#
+# Params
+#   IN INT $argc
+#		the number of the parameters
+#   IN STRING $argv
+#		the parameters themselves
+#   REF STRING %parameters
+#		the destination for the data
+#---------------------------------------------------------------------------------------------------#
+sub _ParseCommandLine( IN INT $argc, IN STRING $argv, REF STRING %parameters ) {
+	return _ParseCommandLine( $argc, $argv, "", %parameters, false );
+}
+
+sub _ParseCommandLine( IN INT $argc, IN STRING $argv, REF STRING %parameters, IN BOOL $stripQuotes) {
+	return _ParseCommandLine( $argc, $argv, "", %parameters, $stripQuotes );
+}
+
+#---------------------------------------------------------------------------------------------------#
+# _ParseCommandLine
+#	Parses the specified commandline
+#
+# Params
+#   IN INT $argc
+#		the number of the parameters
+#   IN STRING $argv
+#		the parameters themselves
+#   IN STRING $filename
+#		the path to the script command description
+#   REF STRING %parameters
+#		the destination for the data
+#---------------------------------------------------------------------------------------------------#
+sub _ParseCommandLine( IN INT $argc, IN STRING $argv, IN STRING $filename, REF STRING %parameters, IN BOOL $stripQuotes ) {
+
+	string %description;
+	string $fullpath;
+	if( !__FindCommandFile( $filename, $fullpath ) ) {
+		return false;
+	}
+
+	if( !__ParseCommandDescription( $fullpath, %description ) ) {
+		return false;
+	}
+
+	# always
+	%parameters{'script'} = $argv[0];
+	
+	if( $argc >= 2 && ($argv[1] == "?" || $argv[1] == "/?" || $argv[1] == "-?" || $argv[1] == "+?" || $argv[1] == "/help" || $argv[1] == "-help"  || $argv[1] == "+help" ) ) {
+		__DisplayHelp( $argv[0], %description );
+		return false;
+	}
+	
+	string $option;
+	for( int $i = 1; $i < $argc; $i++ ) {
+		string $match;
+		if( RegexMatch("^[+-](.+)", $argv[$i], $match ) ) {
+			if( sizeof( $match ) == 1 ) {
+				if( defined( $option ) ) {
+					if( !__FullOption( %description, %parameters, $option ) ) {
+						return __PrintError("Incomplete '$option'",$argv[0], %description );
+					}
+					if( !defined( %parameters{$option} ) ) {
+						%parameters{$option} = "true";
+					}
+				}
+				if( !__ValidOption( %description, $match ) ) {
+					return __PrintError( "Invalid option '$match'", $argv[0], %description );
+				}
+				if( defined( %parameters{$match} ) ) {
+					return __PrintError( "Only one use of '$argv[$i]' allowed", $argv[0], %description );
+				}
+				$option = $match;
+			} else {
+				return __PrintError( "Invalid option", $argv[0], %description );
+			}
+		} else if( !defined( $option ) ) {
+			return __PrintError( "Missing required option", $argv[0], %description );
+		} else {
+			string $arg = $argv[$i];
+			if ($stripQuotes) {
+				RegExSub('"(.*)"', '\$1', $arg);
+			}
+			if( !__ValidArgument( %description, $option, sizeof( %parameters{$option} ), $arg ) ) {
+				return __PrintError( "Invalid argument '$argv[$i]'", $argv[0], %description );
+			}
+			_AppendString( %parameters{$option}, $arg );
+		}
+	}
+
+	if( defined( $option ) && !__FullOption( %description, %parameters, $option ) ) {
+		return __PrintError( "Incomplete '$option'", $argv[0], %description );
+	}
+	if( defined( $option ) && !defined( %parameters{$option} ) ) {
+		%parameters{$option} = "true";
+	}
+
+	return __AllRequiredOptionsUsed( %description, %parameters );
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __FindCommandFile
+#	Finds the command file using the given filename / relative path
+#
+# Params
+#	IN STRING $filename
+#		path to the file
+#	OUT STRING $fullpath
+#		outputs the full path
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __FindCommandFile( IN STRING $filename, OUT STRING $fullpath ) {
+	if( $filename == "" ) {
+		# get all the characters of the filename before '.dss', but drop off any that are part of the path
+		if( !RegexMatch("([^\\\\/]*)\\.dss", %_sgEnv{'script_name'}, $filename ) && defined( $filename ) ) {
+			return false;
+		}
+		$filename = "$filename.txt";
+	}
+	if( _IsFullPath( $filename ) ) {
+		$fullpath = $filename;
+	} else {
+		$fullpath = "%_sgEnv{'script_path'}/$filename";
+	}
+	return true;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __ParseCommandDescription
+#	Parses the specified description file
+#
+# Params
+#	IN STRING $filename
+#		where to look
+#	REF STRING %parameters
+#		output of of the options
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __ParseCommandDescription( IN STRING $filename, REF STRING %parameters ) {
+	string $lines;
+	if (!ReadFile("$filename", $lines)) {
+		echo "Unable to open $filename";
+		%parameters{'undefined'} = "true";
+		return true;
+	}
+
+	string $optionKey, $argumentKey, $helpKey, $required, $name, $value;
+	__GetKeys( $optionKey, $argumentKey, $helpKey, $required, $name, $value );
+	
+	int $option = -1;
+	
+	for( int $i=0; $i < sizeof($lines); $i++ ) {
+		# skip comments
+		string $match;
+		if( RegexMatch( "^[\t ]*(#.*){0,1}\$", $lines[$i] ) ) {
+			# blank line or comment
+			continue;
+		} else if( RegExMatch( "^[\t ]+([^\t ].*)\$", $lines[$i], $match ) && defined( $match ) && sizeof( $match ) == 1 ) {
+			# help line
+			if( $option == -1 ) {
+				# we haven't found one yet
+				echo "Invalid file format";
+				return false;
+			}
+			string $key = "$optionKey$option$helpKey";
+			
+			_AppendString( %parameters{$key}, $match );
+		} else if( RegExMatch( "^([\\[<])-([^\t ]+) *(.*)([\\]>])[\t ]*\$", $lines[$i], $match ) && defined( $match ) && sizeof( $match ) == 4 ) {
+			$option++;
+			
+			if( $match[0] == "[" && $match[3] == "]" ) {
+				%parameters{"$optionKey$option$required"} = "false";
+			} else if( $match[0] == "<" && $match[3] == ">" ) {
+				%parameters{"$optionKey$option$required"} = "true";
+			} else {
+				echo "Invalid file format";
+				return false;
+			}
+			%parameters{"$optionKey$option$name"} = $match[1];
+			
+		
+			int $argument = 0;
+			string $args = $match[2];
+			bool $mustBeOptional = false;
+			while( $args != "" ) {
+				if( RegexMatch( "^[\t ]*([\\[<])([^\t ]+)([\\]>])[\t ]*(.*)\$", $args, $match ) && defined( $match ) && sizeof( $match ) == 4 ) {
+					if( $match[0] == "[" && $match[2] == "]" ) {
+						%parameters{"$optionKey$option$argumentKey$argument$required"} = "false";
+						$mustBeOptional = true;
+					} else if( $match[0] == "<" && $match[2] == ">" && !$mustBeOptional ) {
+						%parameters{"$optionKey$option$argumentKey$argument$required"} = "true";
+					} else {
+						echo "Invalid file format:  Mismatched argument tags";
+						return false;
+					}
+					%parameters{"$optionKey$option$argumentKey$argument$name"} = $match[1];
+					
+					$args = $match[3];
+					$argument++;
+				} else if( RegexMatch( "^[\t ]*\$", $args ) ) {
+					break;
+				} else {
+					echo "Invalid file format: Couldn't parse '$args'";
+					return false;
+				}
+			}
+		} else {
+			#invalid line
+			echo "Invalid line";
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __DisplayHelp
+#	Actually does the display help stuff
+#
+# Params
+#	IN STRING $script
+#		the name of the script
+#	IN STRING %description
+#		the commandline model
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __DisplayHelp( IN STRING $script, IN STRING %description ) {
+	if( defined( %description{'undefined'} ) && <bool>%description{'undefined'} ) {
+		echo 'script "$script" -args "[options]"';
+		return true;
+	}
+
+	echo 'script "$script" -args "..."';
+	string $optionKey, $argumentKey, $helpKey, $required, $name, $value;
+	__GetKeys( $optionKey, $argumentKey, $helpKey, $required, $name, $value );
+	
+	int $index = 0;
+	while( defined( %description{ "$optionKey$index$name" } ) ) {
+		string $arguments = "";
+		int $arg = 0;
+		while( defined( %description{ "$optionKey$index$argumentKey$arg$name" } ) ) {
+			if( <bool>%description{ "$optionKey$index$argumentKey$arg$required" } ) {
+				StrCat( $arguments, ' <%description{ "$optionKey$index$argumentKey$arg$name" }>');
+			} else {
+				StrCat( $arguments, ' [%description{ "$optionKey$index$argumentKey$arg$name" }]');
+			}
+			$arg++;
+		}
+		# build up arguments
+		if( <bool>%description{ "$optionKey$index$required" } ) {
+			echo '    <-%description{ "$optionKey$index$name" }$arguments>';
+		} else {
+			echo '    [-%description{ "$optionKey$index$name" }$arguments]';
+		}
+		if( defined( %description{ "$optionKey$index$helpKey" } ) ) {
+			for( int $i = 0; $i < sizeof( %description{ "$optionKey$index$helpKey" } ); $i++ ) {
+				echo '        %description{ "$optionKey$index$helpKey" }[$i]';
+			}
+		}
+		
+		$index++;
+	}
+		
+	return true;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __ValidOption
+#	Verifies that the provided option is an option available according to the description file
+#
+# Params
+#	REF STRING %description
+#		the command line model
+#	IN STRING $option
+#		the specified option
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __ValidOption( REF STRING %description, IN STRING $option ) {
+	# not defined, always true
+	if( defined( %description{'undefined'} ) && <bool>%description{'undefined'} ) {
+		return true;
+	}
+	string $optionKey, $argumentKey, $helpKey, $required, $name, $value;
+	__GetKeys( $optionKey, $argumentKey, $helpKey, $required, $name, $value );
+	
+	int $num = 0;
+	
+	while( defined( %description{ "$optionKey$num$name" } ) ) {		
+		if( %description{ "$optionKey$num$name" } == $option ) {
+			return true;
+		}
+	
+		$num++;
+	}
+	
+	return false;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __ValidArgument
+#   Returns whether the given argument (and its location) are valid
+#
+# Params
+#	REF STRING %description
+#		the commandline model
+#	IN STRING $option
+#		the specific option to which the argument belongs
+#	IN INT $index
+#		the index of the argument within the option
+#	IN STRING $argument
+#		the argument provided
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __ValidArgument( REF STRING %description, IN STRING $option, IN INT $index, IN STRING $argument ) {
+	# not defined, always true
+	if( defined( %description{'undefined'} ) && <bool>%description{'undefined'} ) {
+		return true;
+	}
+	string $optionKey, $argumentKey, $helpKey, $required, $name, $value;
+	__GetKeys( $optionKey, $argumentKey, $helpKey, $required, $name, $value );
+	
+	int $num = 0;
+	
+	while( defined( %description{ "$optionKey$num$name" } ) ) {		
+		if( %description{ "$optionKey$num$name" } == $option ) {
+			# now that I have the option, I can do the argument, too
+			if( !defined( %description{ "$optionKey$num$argumentKey$index$name" } ) ) {
+				return false;
+			}
+			string $str = %description{ "$optionKey$num$argumentKey$index$name" };
+			if( RegexMatch( "[^\\|]+\\|[^\\|].+", $str ) ) {
+				# we have a list of enumerated values
+				while( $str != "" ) {
+					string $match;
+					if( !(RegexMatch("[\t ]*([^\\|]+)[\t ]*\\|[\t ]*([^\\|].*)", $str, $match) && defined( $match ) && sizeof( $match ) == 2 ) ) {
+						return $str == $argument;
+					} 
+					$str = $match[1];
+					if( $argument == $match[0] ) {
+						return true;
+					}
+				}
+				return false;
+			}
+			return true;
+		}
+	
+		$num++;
+	}
+	
+	
+	return true;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __FullOption
+#	Determines if the specified option has all the parameters it needs
+#
+# Params
+#	REF STRING %description
+#		the commandline model
+#	REF STRING %parameters
+#		the parameter output struct
+#	IN STRING $option
+#		the specified option
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __FullOption( REF STRING %description, REF STRING %parameters, IN STRING $option ) {
+	# not defined, always has enough
+	if( defined( %description{'undefined'} ) && <bool>%description{'undefined'} ) {
+		return true;
+	}
+	string $optionKey, $argumentKey, $helpKey, $required, $name, $value;
+	__GetKeys( $optionKey, $argumentKey, $helpKey, $required, $name, $value );
+
+	int $num = 0;
+	
+	while( defined( %description{ "$optionKey$num$name" } ) ) {
+		if( %description{ "$optionKey$num$name" } != $option ) {
+			$num++;
+			continue;
+		}
+		int $num2 = 0;
+		int $min = 0;
+		int $max = 0;
+		while( defined( %description{ "$optionKey$num$argumentKey$num2$name" } ) ) {
+			$max++;
+			if( <bool>%description{ "$optionKey$num$argumentKey$num2$required" } ) {
+				$min++;
+			}
+			
+			$num2++;
+		}
+		return ( sizeof( %parameters{$option} ) >= $min && sizeof( %parameters{$option} ) <= $max );
+	}
+		
+
+	return true;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __AllRequiredOptionsUsed
+#	Returns true if the commandline model has been sufficiently used to qualify as a valid commandline
+#
+# Params
+#	REF STRING %description
+#		the commandline model
+#	REF STRING %parameters
+#		the output data model
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __AllRequiredOptionsUsed( REF STRING %description, REF STRING %parameters ) {
+	# not defined, always true
+	if( defined( %description{'undefined'} ) && <bool>%description{'undefined'} ) {
+		return true;
+	}
+	string $optionKey, $argumentKey, $helpKey, $required, $name, $value;
+	__GetKeys( $optionKey, $argumentKey, $helpKey, $required, $name, $value );
+	
+	int $num = 0;
+	
+	while( defined( %description{ "$optionKey$num$name" } ) ) {
+		if( <bool>%description{ "$optionKey$num$required" } ) {
+			# must be present in %parameters
+			if( !
+				defined( %parameters{ %description{ "$optionKey$num$name" } } ) || 
+				sizeof( %parameters{ %description{ "$optionKey$num$name" } } ) == 0
+			) {
+				echo "Missing option \"%description{ '$optionKey$num$name' }\"";
+				return false;
+			}
+		}
+	
+		$num++;
+	}	
+
+	return true;
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __PrintError
+#	Prints an error with some spacing around it
+#
+# Params
+#	IN STRING $error
+#		the error message
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __PrintError( IN STRING $error ) {
+	echo "";
+	echo "* ";
+	echo "* $error";
+	echo "* ";
+	echo "";
+}
+
+#---------------------------------------------------------------------------------------------------#
+# __PrintError
+#	Prints an error with some spacing around it and shows the command's help
+#
+# Params
+#	IN STRING $error
+#		the error message
+#	IN STRING $cmd
+#		the name of the script
+#	IN STRING %description
+#		the command's description
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __PrintError( IN STRING $error, IN STRING $cmd, IN STRING %description ) {
+	__PrintError( $error );
+	__DisplayHelp( $cmd, %description );
+	return false;
+}
+#---------------------------------------------------------------------------------------------------#
+# __GetKeys
+#	This function returns the keys used in several functions to manipulate the hash.
+#	Putting them all here allows for easy changes.
+#
+# Params
+#	OUT STRING $optionKey
+#		the prefix used to designate an option
+#	OUT STRING $argumentKey
+#		the prefix used to designate an argument
+#	OUT STRING $helpKey
+#		the prefix used to designate help information
+#	OUT STRING $required
+#		the prefix used to designate a required option
+#	OUT STRING $name
+#		the prefix used to designate an name
+#	OUT STRING $value
+#		the prefix used to designate an value
+#
+#	NOTE:  Not intended to be called outside this file
+#---------------------------------------------------------------------------------------------------#
+sub __GetKeys( OUT STRING $optionKey, OUT STRING $argumentKey, OUT STRING $helpKey, OUT STRING $required, OUT STRING $name, OUT STRING $value ) {
+	$optionKey = "opt_";
+	$argumentKey = "arg_";
+	$helpKey = "help_";
+	$required = "req_";
+	$name = "name_";
+	$value = "value_";
+	return true;
+}
+
+
+
+

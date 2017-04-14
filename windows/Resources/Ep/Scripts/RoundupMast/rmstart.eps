@@ -1,0 +1,53 @@
+# $Revision: 1.2 $ $Date: 2007-06-04 12:12:53-04 $
+
+string $RMD_TARGET = GetEnv("RM_RMDNAME");
+int $PID = GetEnv("RM_RMDPROCESSID");
+
+# Read port number for the RMD socket if it exists.
+int $PORT = GetEnv("RM_PORT");
+
+if ($RMD_TARGET == "")
+{
+	echo "** Environment variable RM_RMDNAME does not exist!";
+	echo "** Run rmput first!";
+	return FALSE;
+}
+
+if ($PID != 0)
+{
+	echo "** RMD is already running!  (Process ID == $PID)";
+	return FALSE;
+}
+
+
+if ($PORT == 0)
+{
+    $PORT = 4239;
+}
+echo "** ROUNDUPMAST daemon listening on port $PORT";
+
+@record on;
+ifnot (`run -command "$RMD_TARGET -port $PORT"`)
+{
+	echo "** Could not start daemon!";
+	return FALSE;
+}
+@record off;
+
+$PID = GetCmdData("proc_id");
+`lpsetenv -option RM_RMDPROCESSID -value $PID`;
+
+ifnot (`processhide -hide -id $PID`)
+{
+	echo "**";
+	echo "** Warning: Could not hide process!";
+	echo "**";
+}
+
+ifnot (`background monitor remotecommand -tcp 4200`) 
+{
+    echo "* Failed to start RemoteCommand module";
+    pause;
+}
+
+return TRUE;

@@ -1,0 +1,93 @@
+
+@include "_Arrays.dsi";
+@include "_Versions.dsi";
+
+@echo off;
+
+bool $rtn=true;
+
+echo "--------------------------------------------------\n";
+echo "Getting remote time";
+
+@record on;
+if (`time`)
+{
+	string $bias;
+	if (!GetCmdData("TimeItem::Bias", $bias) || !defined($bias))
+	{
+		echo("    FAILED (bias not found)", WARNING);
+		$rtn = false;
+	}
+	else if (!SetEnv("_TIME_BIAS", $bias))
+	{
+		echo("    FAILED (unable to set environment)", WARNING);
+		$rtn = false;
+	}	
+	else
+	{
+		echo("    RETRIEVED", GOOD);
+	}
+}
+else
+{
+	echo("    FAILED", error);
+	$rtn = false;
+}
+@record off;
+
+if (($rtn == false) && _IsUnix())
+{
+	echo "Getting remote time using alternate method";
+	
+	string $time;
+	
+	@record on;
+	if (!`run -command "date -R" -redirect`)
+	{
+		echo("    FAILED (date command failed)", error);
+		$rtn = false;
+	}
+	else if (!GetCmdData("ProcessOutput::Output", $time) || !defined($time))
+	{
+		echo("    FAILED (failed to get date output)", error);
+		$rtn = false;
+	}
+	else
+	{
+		string $tParts;
+		if (RegExMatch("[0-9]{2}:[0-9]{2}:[0-9]{2} ([-+]{1})([0-9]{2})([0-9]{2})", $time, $tParts) && (sizeof($tParts) == 3))
+		{
+			if ((<int>$tParts[1] == 0) && (<int>$tParts[2] == 0))
+			{
+				# +0000
+				$tParts[0] = "";
+			}
+			else if ($tParts[0] == "+")
+			{
+				$tParts[0] = "-";
+			}
+			else
+			{
+				$tParts[0] = "";
+			}
+			
+			string $bias = "$tParts[0]$tParts[1]:$tParts[2]";
+			if (!SetEnv("_TIME_BIAS", $bias))
+			{
+				echo("    FAILED (unable to set environment)", WARNING);
+				$rtn = false;
+			}	
+			else
+			{
+				echo("    PASSED", GOOD);
+			}
+		}
+		else
+		{
+			echo("    FAILED (date doesn't match expected format)", error);
+			$rtn = false;
+		}
+	}
+}
+
+return $rtn;

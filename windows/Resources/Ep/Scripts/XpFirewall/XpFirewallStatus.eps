@@ -1,0 +1,55 @@
+#---------------------------------------------------------------------------
+# File: Check.eps
+#
+# Check if firewall registry keys exist and if firewall appears on.
+# Used via Firewall aliases.
+#
+# Modifications:
+#   10/12/04	Created.
+#---------------------------------------------------------------------------
+
+@echo off;
+
+string $subkey = "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy";
+echo "Checking if firewall is enabled...";
+
+# Looks for existence of StandardProfile and DomainProfile keys
+# If both don't exist, firewall is considered off	
+ifnot (`regquery -hive l -subkey $subkey\\StandardProfile`) {
+    ifnot (`regquery -hive l -subkey $subkey\\DomainProfile`) {
+	echo "\tFIREWALL is assumed to be OFF (registry keys NOT PRESENT).";
+	SetCmdData(BOOL, "on", false);
+	return true;
+    }
+}
+
+@record on;
+
+# Firewall is considered off if both key's EnableFirewall value == 0
+if(`regquery -hive l -subkey $subkey\\StandardProfile -value EnableFirewall`){
+    string $fwValue = GetCmdData("value_data");
+    if (<int>$fwValue == 0) {
+	if(`regquery -hive l -subkey $subkey\\DomainProfile -value EnableFirewall`){
+	    $fwValue = GetCmdData("value_data");
+	    if (<int>$fwValue == 0) {
+		echo "\tFIREWALL is assumed to be OFF (Both profiles have EnableFirewall = 0).";
+		SetCmdData(BOOL, "on", false);
+		return true;
+	    } else {
+		echo "\tDomainProfile\\EnableFirewall = 1";
+	    }
+	} else {
+	    echo "\tDomainProfile\\EnableFirewall is NOT PRESENT";
+	}
+    } else {
+	echo "\tStandardProfile\\EnableFirewall = 1";
+    }
+} else {
+    echo "\tStandardProfile\\EnableFirewall is NOT PRESENT";
+}
+
+@record off;
+
+echo "\tFIREWALL is assumed to be ON (Registry keys exist or at least one EnableFirewall = 1).";
+SetCmdData(BOOL, "on", true);
+return true;

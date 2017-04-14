@@ -1,0 +1,24 @@
+#-------------------------------------------------------------------------------
+# File: pie.eps
+# Description: For use after you start an ESKIMOPIE exploit
+#
+# v0.1 2007-10-04 Initial creation
+#-------------------------------------------------------------------------------
+
+echo "ESPI helper script started\rThis script is assuming you've already started the exploit...";
+int $aValue = GetInput("What was the value for -a? (Default is 50)");
+int $oValue = GetInput("What was the value for -o? (Default is 450)");
+
+string $cmd = "local run -command \"perl -e \\\"\$a=($oValue / $aValue) * 1.62155; print \$a;\\\"\" -redirect";
+`$cmd`;
+echo "= Exploit is estimated to take this long in minutes\r";
+
+if (prompt"Would you like to ping the target to check for CPU/target health?"){
+	string $IP = GetInput("What is the target IP?");
+	echo "Sending a ping every 10 seconds. Background and stop channel to kill...";
+	int $i = 1;
+	while($i==1){
+		`ping -ip $IP`;
+			sleep(10000);
+	}
+}

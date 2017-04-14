@@ -1,0 +1,37 @@
+<?xml version='1.0' ?>
+
+<Module id='101' name='Dsz_VirtualCd'>
+	
+	<Interfaces>
+		<Interface id='0x01c16fbe' provider='0x01010001'/>
+	</Interfaces>
+
+	<Dependencies>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Implant>Yes</Implant>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'>
+		        <File loadtype='file'>i386-winnt-vc9s/release/Dsz_VirtualCd.dll</File>
+		        <File loadtype='memory'>i386-winnt-vc9s/release/Dsz_VirtualCd.dll</File>
+		    </Version>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type='x64'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'>
+		        <File loadtype='file'>x64-winnt-vc9s/release/Dsz_VirtualCd.dll</File>
+		        <File loadtype='memory'>x64-winnt-vc9s/release/Dsz_VirtualCd.dll</File>
+		    </Version>
+		</Platform>
+
+	</Architecture>
+
+</Module>

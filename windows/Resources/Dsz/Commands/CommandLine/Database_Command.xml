@@ -1,0 +1,38 @@
+<?xml version='1.0' ?>
+
+<Plugin provider="0x01012007" interface="0x01c10032">
+	<Command id="0" name="Database">
+		<Input>
+			<Option name="open" group='cmd' optional='false'>
+				<Help>Open a database file</Help>
+				<Set data='cmd' value='1'/>
+				<Argument name='pathAndName' data='data'/>
+			</Option>
+			<Option name='close' group='cmd'>
+				<Help>Close a database file</Help>
+				<Set data='cmd' value='2'/>
+				<Argument name='handle' data='handle'/>
+			</Option>
+			<!--
+			<Option name='set' group='cmd'>
+				<Help>Set a value of the database interface</Help>
+				<Set data='cmd' value='3'/>
+				<Argument name='handle' data='handle'/>
+			</Option>
+			-->
+			<Option name='exec' group='cmd'>
+				<Help>Execute a command.</Help>
+				<Help>Seperate lines with a '|'.</Help>
+				<Set data='cmd' value='4'/>
+				<Argument name='handle' data='handle'/>
+				<Argument name='sql_statement' data='data'/>
+			</Option>
+		</Input>
+		<Output>
+			<Data name='cmd' type='uint8_t'/>
+			<Data name='handle' type='uint32_t' />
+			<Data name='data' type='string' />
+		</Output>
+	</Command>
+
+</Plugin>

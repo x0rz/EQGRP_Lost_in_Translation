@@ -1,0 +1,15 @@
+<Software value="PSP">
+ <Vendor value="Microsoft" directory="%ProgramFiles%\Windows Defender">
+  <Product value="Windows Defender" directory="%ProgramFiles%\Windows Defender">
+   <Version value="%regdata%" regkey="HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" regvalue="ProductName" />
+   <Status value="Enabled" default="Disabled" regkey="HKLM\Software\Microsoft\Windows Defender" regvalue="DisableAntiSpyware" regdata="0" config="True" />
+   <SpyNet value="%regdata%" regkey="HKLM\Software\Microsoft\Windows Defender\SpyNet" regvalue="SpyNetReporting" config="True" />
+   <ServiceStart value="%regdata%" regkey="HKLM\system\currentcontrolset\services\windefend" regvalue="Start" />
+  </Product>
+ </Vendor>
+ <Vendor value="Microsoft" directory="%ProgramFiles%\Microsoft Security Client">
+  <Product value="Security Client" directory="%ProgramFiles%\Microsoft Security Client">
+   <Version value="%regdata%" regkey="HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Security Client" regvalue="DisplayVersion" />
+  </Product>
+ </Vendor>
+</Software>

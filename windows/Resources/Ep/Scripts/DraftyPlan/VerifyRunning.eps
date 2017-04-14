@@ -1,0 +1,77 @@
+#--------------------------------------------------------
+# File: VerifyRunning.eps
+#
+# Wrapper script to verify DraftyPlan tools are running
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use module calls
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = "memss.exe";
+
+@record on;
+
+bool $valid = true;
+
+ifnot (_DriverVerifyRunning($driver)) {
+    $valid = false;
+}
+
+# get process id of launched process
+int $pid = 0;
+if (`dp_getprocessid -name $driver`) {
+    $pid = GetCmdData("id");
+}
+
+echo "Checking for running process";
+if ($pid == 0) {
+    echo "    FAILED (pid is zero)";
+    $valid = false;
+} else {
+    # have a valid pid
+    if (`dp_isprocessrunning -id $pid`) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED";
+	$valid = false;
+    }
+}
+
+echo "Checking that $exeName is NOT on the process list";
+if (`processlist`) {
+    bool $found = false;
+    string $name = GetCmdData("name");
+    int $i=0;
+    while ($i < sizeof($name)) {
+	if ($name[$i] == $exeName) {
+	    # found process
+	    $found = true;
+	    $i = sizeof($name);
+	}
+	$i++;
+    }
+
+    if ($found) {
+	echo "    FAILED (found process on list)";
+	$valid = false;
+    } else {
+	echo "    PASSED";
+    }
+
+} else {
+    echo "    FAILED (processlist call failed)";
+    $valid = false;
+}
+
+# we're done...
+return $valid;

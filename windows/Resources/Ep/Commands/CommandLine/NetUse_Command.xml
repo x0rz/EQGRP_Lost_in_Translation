@@ -1,0 +1,51 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31384'>
+
+  <Command id='16' name='netuse'>
+
+    <Help>Establishes a connection between the local computer and a remote server.</Help>
+
+    <Input>
+	<Option name='remote' optional='false'>
+	    <Argument name='resource' data='remote'/>
+	    <Help>The share name of the remote resource being accessed</Help>
+	</Option>
+
+	<Option name='user' optional='true'>
+	    <Argument name='name' data='user'/>
+	    <Help>The user name used for authentication</Help>
+	    <Help>If you do not provide the user, netuse will use the current TOKEN.</Help>
+	    <Help>If you provide the user, you must provide the password and domain</Help>
+	    <Help>You can provide the domain name in the user entry (localhost\foo)</Help>
+	</Option>
+
+	<Option name='domain' optional='true'>
+	    <Argument name='name' data='domain'/>
+	    <Help>The domain to use for authentication</Help>
+	    <Help>If you provide the domain name in the user entry (Fully qualified name),</Help>
+	    <Help>do not use this option</Help>
+	</Option>
+
+	<Option name='password' optional='true'>
+	    <Argument name='pass' data='password'/>
+	    <Help>The user password</Help>
+	</Option>
+
+	<Option name='drive' optional='true'>
+	    <Argument name='letter' data='drive'/>
+	    <Help>The local drive letter to use</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='remote' type='string'/>
+	<Data name='user' type='string'/>
+	<Data name='domain' type='string'/>
+	<Data name='password' type='string'/>
+	<Data name='drive' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

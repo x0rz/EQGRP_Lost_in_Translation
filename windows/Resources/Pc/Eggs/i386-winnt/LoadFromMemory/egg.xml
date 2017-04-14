@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Egg name='Load from memory'>
+
+    <PC>
+		<Version major='2' minor='0'/>
+		<Version major='2' minor='1'/>
+		<Version major='2' minor='2'/>
+    </PC>
+
+    <DeliverPayload>true</DeliverPayload>
+    <RunType>PayloadLibrary</RunType>
+
+    <OsVersion major='*' minor='*' revision='*'>
+		<Implant>LoadFromMemory.egg</Implant>
+		<Lp></Lp>
+    </OsVersion>
+
+</Egg>

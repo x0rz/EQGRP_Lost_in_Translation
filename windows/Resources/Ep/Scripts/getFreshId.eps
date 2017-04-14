@@ -1,0 +1,42 @@
+int $freshID=0;
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+if (`local run -command "perl $ScriptsDir\\..\\..\\..\\Tools\\getFreshID.pl" -redirect ID`) {
+	@record on;
+	if (`local grep -mask shell.txt -path E: -pattern "ERROR"`) {
+		echo "There was an error in getting a fresh id.  Sorry.";
+		return false;
+	} else if (`local grep -mask shell.txt -path E: -pattern "ID:"`) {
+		string $line_data=GetCmdData("line_data");
+		echo "got $line_data";
+		int $i=0;
+		while ($i < sizeof($line_data)) {
+			string $ids=split(":",$line_data[$i]);
+			int $id=<int>$ids[1];
+			ifnot ($id == 0) {
+				$freshID=$id;
+				echo "I got a fresh ID $freshID...now what?";
+			}
+			$i++;
+		}
+	}
+	@record off;
+}
+
+`local del shell.txt -path E:`;
+if ($freshID == 0) {
+	return false;
+} else {
+	return true;
+}

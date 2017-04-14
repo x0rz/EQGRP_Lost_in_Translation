@@ -1,0 +1,31 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31356'>
+
+  <Command id='16' name='netbios'>
+
+    <Help>Displays the Netbios information for the local or the given remote</Help>
+    <Help>machine.  Shows some available services.  Basically like an 'nbtstat'.</Help>
+
+
+    <Input>
+      <Option name='local' optional='false' group='type'>
+        <Set data="local" value="true" />
+      </Option>
+
+      <Option name='remote' optional='false' group='type'>
+	<Set data='local' value='false' />
+	<Argument name='machinename' data='machinename' />
+      </Option>
+
+      <Option name='verbose' optional='true' />
+    </Input>
+
+    <Output>
+      <Data name='local' type='bool' default='true'/>
+      <Data name='machinename'       type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

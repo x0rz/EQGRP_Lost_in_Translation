@@ -1,0 +1,213 @@
+#--------------------------------------------------------
+# File: eventLogClean
+#
+# Deletes multiple records from one of the event logs
+#--------------------------------------------------------
+
+@case-sensitive off;
+@echo off;
+
+string $eventLog;
+string $startID;
+string $endID;
+string $IDString;
+int $IDList;
+string $commandLineOption;
+string $temp;
+int $counter = 0;
+
+if ($argc == 1) {
+	$argv[1] = "-help";
+}
+
+#--------------------------------------------------------
+# Parse the command line options
+#--------------------------------------------------------
+while (defined($argv[$counter])) {
+	RegExSplit("-", $argv[$counter], 0, $temp);
+	$counter += 1;
+
+	if (defined($temp[1])) {
+		$commandLineOption = $temp[1];
+
+		if (($commandLineOption == "h") || ($commandLineOption == "help") || ($commandLineOption == "?")) {
+			echo "\nUsage: script eventLogClean.eps _Options_";
+			echo "  Deletes multiple records from one of the event logs";
+			echo "\nOptions:";
+			echo "  [-log <system/application/security>]";
+			echo "     Erase log entries from this log";
+			echo "  [-start <ID>]";
+			echo "     Record ID to start with";
+			echo "  [-end <ID>]";
+			echo "     Record ID to end with";
+			echo "  [-list <IDs>]";
+			echo "     List of record IDs to delete (1,3 or 1,3-4,7 or 1-5,10,15)--no spaces!";
+			return true;
+		} else {
+			if (defined($argv[$counter])) {
+				if ($commandLineOption == "log") {
+					$eventLog = $argv[$counter];
+				} else if ($commandLineOption == "start") {
+					$startID = $argv[$counter];
+				} else if ($commandLineOption == "end") {
+					$endID = $argv[$counter];
+				} else if ($commandLineOption == "list") {
+					$IDString = $argv[$counter];
+				}
+
+				$counter++;
+			} else {
+				echo "OPTION $temp[1] requires data (-h for help)";
+				return true;
+			}
+		}
+	}
+}
+
+if (!defined($eventLog)) {
+	echo "You must specify which event log to delete from";
+	return false;
+}
+
+#--------------------------------------------------------
+# Create the list of eventIDs to be deleted
+#--------------------------------------------------------
+if (defined($IDString)) {
+	$counter = 0;
+	string $values;
+	RegExSplit(",", $IDString, 0, $values);
+	string $values2;
+	string $value;
+	int $begin;
+	int $actualValue;
+	for (int $i=0; $i<sizeof($values); $i++) {
+		$value = $values[$i];
+		RegExSplit("-", $value, 0, $values2);
+		$begin = <int>$values2[0];
+		$begin -= 1;
+		if (defined($values2[1])) {
+			int $counter2 = $begin;
+			int $end = <int>$values2[1];
+			$end -= 1;
+			while (($counter2 >= $begin) && ($counter2 <= $end)) {
+				$actualValue = $counter2;
+				$actualValue++;
+				$IDList[$counter] = $actualValue;
+				$counter++;
+				$counter2 += 1;
+			}
+		} else {
+			$IDList[$counter] = <int>$values2[0];
+			$counter++;
+		}
+	}	
+
+	if (!reverseSortList($IDList)) {
+		return false;
+	}
+} else {
+	$counter = 0;
+	int $counter2 = <int>$endID;
+	while ($counter2 >= <int>$startID) {
+		$IDList[$counter] = $counter2;
+		$counter++;
+		$counter2--;
+	}
+	$IDString = "$startID-$endID";
+}
+
+
+#--------------------------------------------------------
+# Delete all the records specified above
+#--------------------------------------------------------
+if (prompt("Are you sure you want to remove records $IDString?")) {
+	if (prompt("Are you REALLY sure you want to remove records $IDString?")) {
+		$counter = 0;
+		while ($counter < sizeOf($IDList)) {
+			if (`eventlogedit -log $eventLog -record $IDList[$counter]`) {
+				echo "$eventLog log record $IDList[$counter] -- DELETED!";
+			} else {
+				echo "Error deleting $IDList[$counter] from $eventLog log";
+			}
+			$counter++;
+		}
+	}
+}
+
+@echo on;
+echo "";
+`eventlogquery`;
+
+return true;
+
+#--------------------------------------------------------
+# Standard BubbleSort routine
+#--------------------------------------------------------
+Sub sortList(REF int $list) {
+	int $totalSize = sizeOf($list);
+	int $loopEnd = $totalSize;
+	int $loop2End;
+	int $counter = 0;
+	int $counter2;
+	int $nextCounter2;
+	int $temp;
+
+	$loopEnd--;
+	while ($counter < $loopEnd) {
+		$counter2 = 0;
+		$loop2End = $loopEnd;
+		$loop2End -= $counter;
+		while ($counter2 < $loop2End) {
+			$nextCounter2 = $counter2;
+			$nextCounter2++;
+			if ($list[$nextCounter2] == $list[$counter2]) {
+				echo "Duplicate entries in list...please re-enter values";
+				return false;
+			} else if ($list[$nextCounter2] < $list[$counter2]) {
+				$temp = $list[$counter2];
+				$list[$counter2] = $list[$nextCounter2];
+				$list[$nextCounter2] = $temp;
+			}
+			$counter2++;
+		}
+		$counter++;						
+	}
+	
+	return true;
+}
+
+#--------------------------------------------------------
+# Standard BubbleSort routine
+#--------------------------------------------------------
+Sub reverseSortList(REF int $list) {
+	int $totalSize = sizeOf($list);
+	int $loopEnd = $totalSize;
+	int $loop2End;
+	int $counter = 0;
+	int $counter2;
+	int $nextCounter2;
+	int $temp;
+
+	$loopEnd--;
+	while ($counter < $loopEnd) {
+		$counter2 = 0;
+		$loop2End = $loopEnd;
+		$loop2End -= $counter;
+		while ($counter2 < $loop2End) {
+			$nextCounter2 = $counter2;
+			$nextCounter2++;
+			if ($list[$nextCounter2] == $list[$counter2]) {
+				echo "Duplicate entries in list...please re-enter values";
+				return false;
+			} else if ($list[$nextCounter2] > $list[$counter2]) {
+				$temp = $list[$counter2];
+				$list[$counter2] = $list[$nextCounter2];
+				$list[$nextCounter2] = $temp;
+			}
+			$counter2++;
+		}
+		$counter++;						
+	}
+	
+	return true;
+}

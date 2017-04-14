@@ -1,0 +1,20 @@
+bool $showUsage=false;
+
+if ($argc <= 1) {
+    $showUsage = true;
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else {
+	int $i=1;
+	while ($i < $argc) {
+		echo "$argv[$i]";
+		$i++;
+	}
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <text to echo>";
+	echo "  echo text to the screen";
+}
+
+return true;

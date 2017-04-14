@@ -1,0 +1,9 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+[-payload <payload>]
+	Select desired payload
+[-technique <tech>]
+	Select desired technique
+[-force]
+	Force a free/load cycle

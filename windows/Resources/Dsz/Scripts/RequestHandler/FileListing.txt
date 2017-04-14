@@ -1,0 +1,18 @@
+# any line that begins with a '#' is discarded as a comment
+
+# ForceLogon commandline
+[-full <FULL_PATH>]
+	The full path to the file
+[-path <PATH>]
+	The path to search in
+[-mask <MASK>]
+	The file mask to use
+[-recursive]
+	Should 'get' recursively
+[-time <TYPE>]
+	The time filter to use.
+[-age <AGE>]
+[-before <BEFORE>]
+[-after <AFTER>]
+[-max <MAX>]
+[-extra <EXTRA>]

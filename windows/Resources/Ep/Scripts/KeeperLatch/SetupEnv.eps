@@ -1,0 +1,30 @@
+#########################################################################
+#
+# File: SetupEnv.eps
+#
+# Modifications:
+#  16 Jan 2004	Created
+#########################################################################
+
+@include "Include\\SetupLotus.epm";
+
+bool $LNPathFound;
+string $dataPath;
+if (SetupLotusEnv($LNPathFound, $dataPath)) {
+    SetCmdData(BOOL, "LotusPathFound", $LNPathFound);
+    SetCmdData(STRING, "LotusDataPath", $dataPath);
+    SetEnv("kl_lotusPathFound", "$LNPathFound");
+    SetEnv("kl_lotusDataPath", $dataPath);
+    return true;
+}
+
+return false;
+
+
+
+
+
+
+
+
+

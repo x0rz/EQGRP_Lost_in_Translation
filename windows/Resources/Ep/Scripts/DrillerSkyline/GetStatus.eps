@@ -1,0 +1,136 @@
+#--------------------------------------------------------
+# File: GetStatus.eps
+#
+# Displays the current status of the DrillerSkyline tool
+#
+# Modifications:
+#  04/09/2004	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "Include\\DsIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+bool $finalRet = true;
+bool $retVal;
+
+echo "Getting Current Configuration of DrillerSkyline";
+@record on;
+$retVal = `serialsniffer -driver $driver -status`;
+@record off;
+
+if($retVal) {
+	int $major = GetCmdData("major");
+	int $minor = GetCmdData("minor");
+	int $revision = GetCmdData("revision");
+	echo "Installed version:  $major.$minor.$revision";
+	
+	string $device = GetCmdData("deviceName");
+	int $id = GetCmdData("id");
+	bool $listening = GetCmdData("listening");
+	int $i = 0;
+	bool $found = false;
+	
+	ifnot(defined($device) || defined($id) || defined($listening)) {
+		$finalRet = false;
+		echo "\tNot listening";
+	} else {
+		ifnot(sizeof($device) == sizeof($id) && sizeof($listening) == sizeof($id)) {
+			$finalRet = false;
+			echo "\tUnable to get current listening state";
+		} else {
+		
+			echo "\tListening on:";
+			while($i < sizeof($device)) {
+				if($listening[$i]) {
+					echo "\t\t($id[$i]). $device[$i]";
+					$found = true;
+				}
+				$i++;
+			}
+			
+			ifnot($found) {
+				echo "\t\tNo devices";
+			}
+			
+			$i = 0;
+			$found = false;
+			
+			echo "\tNot Listening on:";
+			while($i < sizeof($device)) {
+				ifnot($listening[$i]) {
+					echo "\t\t($id[$i]). $device[$i]";
+					$found = true;
+				}
+				$i++;
+			}
+			
+			ifnot($found) {
+				echo "\t\tNo devices";
+			}
+		}
+	}
+} else {
+	echo "    FAILED (is driver running?)";
+	$finalRet = false;
+}
+echo "";
+
+echo "Getting Stored Configuration of DrillerSkyline";
+@record on;
+$retVal = `serialsniffer -driver $driver -getStoredSettings`;
+@record off;
+
+if($retVal) {
+	string $logFile = GetCmdData("logFile");
+	string $device  = GetCmdData("device");
+	int $maxSize    = GetCmdData("maxSize");
+	
+	echo "\tLogFile: $logFile";
+	string $max = "$maxSize bytes";
+	if($maxSize == 0) {
+		$max = "No maximum Size";
+	}
+	echo "\tMaximum Log File Size: $max";
+	# convert capture file path to user-mode
+	DsGetUserModePath($logFile);
+	@record on;
+	$retVal = `dir "$logFile"`;
+	@record off;
+	ifnot ($retVal) {
+		echo "\tUnable to determine current file size";
+		$finalRet = false;
+	} else {
+		int $size = GetCmdData("size");
+	    
+		echo "\tSize of logfile: ";
+		if (defined($size)) {
+			echo "\t\t'$logFile' ($size bytes)";
+		} else {
+			echo "\t\t'$logFile' (NOT FOUND)";
+		}
+	}
+
+	
+	int $i = 0;
+	echo "\tDevices:";
+	while($i < sizeof($device)) {
+		echo "\t\t$device[$i]";
+		$i++;
+	}
+	
+	
+} else {
+	echo "    FAILED (is driver installed?)";
+	$finalRet = false;
+}
+echo "";
+
+return $finalRet;

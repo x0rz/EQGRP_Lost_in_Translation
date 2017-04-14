@@ -1,0 +1,62 @@
+#-------------------------------------------------------------------------------
+# _GetLpDirectory
+#	Retrieves the given LP directory
+# Params:
+#	type - The LP directory type
+#	dir - The full path to the given directory
+#-------------------------------------------------------------------------------
+Sub _GetLpDirectory(IN string $type, OUT string $dir)
+{
+
+
+    $dir = GetEnv("_lpDir_$type");
+    ifnot (defined($dir) && (strlen($dir) > 0)) {
+
+	# have to get the directory
+	@echo off;
+	@record on;
+	ifnot (`getdirectory -$type`) {
+	    # Failed to get directory
+	    return false;
+	}
+
+	$dir = GetCmdData("dir");
+	ifnot (defined($dir)) {
+	    # directory not recorded
+	    return false;
+	}
+
+	# record the directory
+	SetEnv("_lpDir_$type", $dir);
+
+    }
+
+    return true;
+
+} /* END _GetLpDirectory */
+
+#-------------------------------------------------------------------------------
+# _GetLpLogsDirectory
+#	Retrieves the LP logging directory
+# Params:
+#	dir - The full path to the logs directory
+#-------------------------------------------------------------------------------
+Sub _GetLpLogsDirectory(OUT string $dir)
+{
+
+    return _GetLpDirectory("logs", $dir);
+
+} /* END _GetLpLogsDirectory */
+
+#-------------------------------------------------------------------------------
+# _GetLpResourcesDirectory
+#	Retrieves the LP resources directory
+# Params:
+#	dir - The full path to the resources directory
+#-------------------------------------------------------------------------------
+Sub _GetLpResourcesDirectory(OUT string $dir)
+{
+
+    return _GetLpDirectory("resources", $dir);
+
+} /* END _GetLpResourcesDirectory */

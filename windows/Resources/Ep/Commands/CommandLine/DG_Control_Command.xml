@@ -1,0 +1,34 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31410'>
+
+  <Command id='16' name='DG_Control'>
+
+    <Help>Queries the DoormanGauze driver.</Help>
+
+    <Input>
+		<Option name="status" optional="false" group="type">
+			<Help>Gets the driver's status</Help>
+			<Set data="type" value="1"/>
+		</Option>
+
+		<Option name="version" optional="false" group="type">
+			<Help>Gets the driver's version</Help>
+			<Set data="type" value="2"/>
+		</Option>
+		
+		<Option name="driver" optional="true">
+			<Help>Specify the driver device name</Help>
+			<Argument name="name" data="driver" optional="false" />
+		</Option>
+	</Input>
+
+    <Output>
+		<Data name="type"   type="uint8_t"/>
+		<Data name="driver" type="string" default="ethip6"/>
+	</Output>
+
+  </Command>
+
+
+</Plugin>

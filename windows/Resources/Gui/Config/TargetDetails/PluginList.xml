@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PluginList>
+	<Plugin className="ddb.dsz.plugin.monitor.MonitorHost" name="Monitor"/>
+	<Plugin className="ddb.dsz.plugin.commandviewer.CommandViewerHost" name="Commands"/>
+	<Plugin className="ddb.dsz.plugin.logviewer.gui.target.TargetLogspace" name="Logs"/>
+	<Plugin className="ddb.dsz.plugin.netmapviewer.NetmapViewerHost" name="Network"/>
+	<Plugin className="ddb.dsz.plugin.screenshot.ScreenShotHost" name="ScreenShot"/>
+	<Plugin className="ddb.dsz.plugin.taskmanager.TargetProcessSpace" name="Processes"/>
+	<Plugin className="ddb.dsz.plugin.transfermonitor.TransferMonitorHost" name="Transfers"/>
+</PluginList>

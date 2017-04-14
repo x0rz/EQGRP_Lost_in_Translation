@@ -1,0 +1,149 @@
+@include "_NormalizePath.epm";
+@include "PerlFunctions.epm";
+@include "ifthen\\searchFiles.epm";
+@include "ifthen\\searchProcesses.epm";
+@include "ifthen\\searchServices.epm";
+
+string $scripts_path = GetEnv("SCRIPTSDIR");
+_NormalizePath($scripts_path);
+
+string $lines;
+string $mode = "";
+string $ps;
+string $psAction;
+string $dir;
+string $raw;
+string $rawAction;
+string $services;
+string $servicesAction;
+string $temp;
+string $defs;
+int $i = 0;
+@echo off;
+
+if(($argc < 2) || $argv[1] == "-h" || $argv[1] == "/h" || $argv[1] == "--help")
+{
+	echo"Usage: $argv[0] <definition_file(s) ... >";
+	return false;
+}
+else if(($argc > 1) && $argv[1] == "--default")
+{
+	@record on;
+	`local dir gwdef* -path "$scripts_path\\ifthen"`;
+	@record off;
+	string $defFiles = GetCmdData("name");
+	string $defDirs = GetCmdData("path");
+	$i = 0;
+	foreach $temp ($defFiles)
+	{
+		string $dir = $defDirs[$i];
+		_NormalizePath($dir);
+		push($defs, "$dir\\$temp");
+		$i++;
+	}
+}
+else
+{
+	$i=1;
+	while($i < $argc)
+	{
+		push($defs, $argv[$i]);
+		$i++;
+	}
+}
+
+
+undef($dir);
+undef($temp);
+
+string $file;
+foreach $file ($defs)
+{
+	echo "";
+	echo "Def File: $file";
+	if (ReadFile("$file",$lines))
+	{
+		string $line;
+		string $prevLine = "";
+		foreach $line ($lines)
+		{
+			undef($temp);
+			$temp = split("|", $line);
+			if($line == "" || $line == "MODE" || $line == "Mode" || $line == "mode" || $temp[0] == "#")
+			{
+				#skip
+			}
+			else if($prevLine == "MODE" || $prevLine == "Mode" || $prevLine == "mode")
+			{
+				lc($line);
+				$mode = $line;
+				echo "\tMode: $mode";
+			}
+			else if($mode == "ps")
+			{
+				echo "\t\tps:$temp[0]";
+				push($ps, $temp[0]);
+				push($psAction, $temp[1]);
+			}
+			else if($mode == "dir")
+			{
+				echo "\t\tdir:$temp[0]";
+				push($dir, $line);
+			}
+			else if($mode == "raw")
+			{
+				echo "\t\traw:$temp[0]";
+				push($raw, $temp[0]);
+				push($rawAction, $temp[1]);
+			}
+			else if ($mode == "services")
+			{
+				echo "\t\tservices:$temp[0]";
+				push($services, $temp[0]);
+				push($servicesAction, $temp[1]);
+			}
+			$prevLine = $line;
+		}
+	}
+}
+
+#@echo on;
+echo "";
+int $size = sizeof($ps);
+if($size > 0) { searchProcesses($ps, $psAction); }
+echo "";
+$size = sizeof($dir);
+if($size > 0) { searchFiles($dir); }
+echo "";
+$size = sizeof($services);
+if($size > 0) { searchServices($services, $servicesAction); }
+
+$i=0;
+foreach $temp ($raw)
+{
+	echo "!!Attemping: $temp";
+	if(`$temp`)
+	{
+		echo "";
+		echo "RAW command: $rawAction[$i]";
+		execute($rawAction[$i]);
+	}
+	$i++;
+}
+
+sub push(REF string $stack, IN string $value)
+{
+	#removed uniqueness check... we want to be able to have multiples.
+	int $size = sizeof($stack);
+	$stack[$size] = $value;
+}
+
+
+#sub lc(REF string $a)
+#{
+	#	@record on;
+	#`local run -command "perl -e \\"print lc($a)\\"" -redirect`;
+	#@record off;
+	#$a = GetCmdData("output");
+	#return true;
+#}

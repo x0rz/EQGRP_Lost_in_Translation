@@ -1,0 +1,242 @@
+#####################################################################
+# RunSQL
+# for EP 3.0, Oracle 8 or 9
+#
+# $Date: 2007-06-04 12:12:54-04 $ $Revision: 1.2 $
+#####################################################################
+
+sub Usage()
+{
+	echo "-------------------------------------------------------";
+	echo "Usage: runsql <SQL_script>";
+	echo "";
+	echo "SQL_script should be in Resources\\EP\\Uploads\\";
+	echo "or be a qualified path\\filename";
+	echo "-------------------------------------------------------";
+	return (FALSE);
+}
+
+#####################################################################
+
+string $sql_script_local = "";
+string $sql_script_remote = "~s038523.tmp";
+string $output_file = "~o774194.tmp";
+string $working_dir = "c:\\recycler";
+
+string $ORACLE_SQLPLUS = GetEnv("ORACLE_SQLPLUS");
+string $ORACLE_HOME = GetEnv("ORACLE_HOME");
+string $ORACLE_SID = GetEnv("ORACLE_SID");
+
+int $i = 1;
+string $command = "";
+
+#####################################################################
+# Get command line arguments
+#####################################################################
+
+while (defined ($ARGV[$i]) )
+{
+	if ($sql_script_local != "") {return (Usage());}
+	$sql_script_local = $ARGV[$i];
+	$i++;
+}
+
+if ($sql_script_local == "")
+{
+	return (Usage());
+}
+
+#####################################################################
+# Find ORACLE_HOME
+#####################################################################
+
+if ($ORACLE_HOME == "")
+{
+	@record on;
+
+	if (`regquery -hive L -subkey "SOFTWARE\\ORACLE" -value "ORACLE_HOME"`)
+	{
+		$ORACLE_HOME = GetCmdData("value_data");
+		ifnot (`lpsetenv -option ORACLE_HOME -value $ORACLE_HOME`) {pause;}
+	}
+	else
+	{
+		echo "Could not find ORACLE_HOME!";
+		return (FALSE);
+	}
+
+	@record off;
+}
+
+#####################################################################
+# Find ORACLE_SID
+#####################################################################
+
+if ($ORACLE_SID == "")
+{
+	@record on;
+
+	if (`regquery -hive L -subkey "SOFTWARE\\ORACLE\\HOME0" -value "ORACLE_SID"`)
+	{
+		$ORACLE_SID = GetCmdData("value_data");
+		echo "The registry says ORACLE_SID = $ORACLE_SID";
+		ifnot (`lpsetenv -option ORACLE_SID -value $ORACLE_SID`) {pause;}
+	}
+	else if (`regquery -hive L -subkey "SOFTWARE\\ORACLE" -value ORACLE_SID`)
+	{
+		$ORACLE_SID = GetCmdData("value_data");
+		echo "The registry says ORACLE_SID = $ORACLE_SID";
+		ifnot (`lpsetenv -option ORACLE_SID -value $ORACLE_SID`) {pause;}
+	}
+	else
+	{
+		echo "ORACLE_SID is not in the registry...";
+	
+		if (`environment -var ORACLE_SID -get`)
+		{
+			$ORACLE_SID = GetCmdData("varValue");
+			echo "The environment variable ORACLE_SID = $ORACLE_SID";
+		}
+		else
+		{
+			echo "---------------------------------------------------";
+			echo "Bummer...  No ORACLE_SID was found.";
+			echo "";
+			echo "The ORACLE_SID can be found in the file";
+			echo "  $ORACLE_HOME\\network\\admin\\tnsnames.ora";
+			echo "";
+			echo "Did you forget to set the environment variable?";
+			echo "  environment -var ORACLE_SID -set <ORACLE_SID>";
+			echo "---------------------------------------------------";
+			return (FALSE);
+		}
+	}
+
+	@record off;
+}
+
+#####################################################################
+# Find SQLPLUS
+#####################################################################
+
+if ($ORACLE_SQLPLUS == "")
+{
+	if (`checkfile -name $ORACLE_HOME\\bin\\sqlplus.exe`)
+	{
+		$ORACLE_SQLPLUS = "SQLPLUS";
+		ifnot (`lpsetenv -option ORACLE_SQLPLUS -value "SQLPLUS"`) {pause;}
+	}
+	else if (`regquery -hive L -subkey Software\\Oracle -value PLUS80`)
+	{
+		$ORACLE_SQLPLUS = "PLUS80";
+		ifnot (`lpsetenv -option ORACLE_SQLPLUS -value "PLUS80"`) {pause;}
+	}
+	else
+	{
+		echo "---------------------------------------------------";
+		echo "Could not find SQLPlus!";
+		echo "---------------------------------------------------";
+		
+		return (FALSE);
+	}
+}
+
+if ($ORACLE_SQLPLUS == "SQLPLUS")
+{
+	$command = "sqlplus \@$working_dir\\$sql_script_remote /nolog";
+}
+else if ($ORACLE_SQLPLUS == "PLUS80")
+{
+	$command = "plus80 /nolog \@$working_dir\\$sql_script_remote";
+}
+else
+{
+		echo "---------------------------------------------------";
+		echo "Unknown SQLPLUS: '$ORACLE_SQLPLUS'!";
+		echo "---------------------------------------------------";
+		
+		return (FALSE);
+}
+
+#####################################################################
+# Make sure temporary files do not exist
+#####################################################################
+
+@echo off;
+
+if (`checkfile -name $working_dir\\$sql_script_remote`)
+{
+	echo "---------------------------------------------------";
+	echo "$sql_script_remote exists!";
+	echo "";
+	echo "You might want to delete it and try again.";
+	echo "  del $sql_script_remote -path $working_dir";
+	echo "---------------------------------------------------";
+	return (FALSE);
+}
+
+if (`checkfile -name $working_dir\\$output_file`)
+{
+	echo "---------------------------------------------------";
+	echo "$output_file exists!";
+	echo "";
+	echo "You might want to delete it and try again.";
+	echo "  del $output_file -path $working_dir";
+	echo "---------------------------------------------------";
+	return (FALSE);
+}
+
+@echo on;
+
+#####################################################################
+# Run SQL script and then delete it
+#####################################################################
+
+ifnot (`put $sql_script_local -name $working_dir\\$sql_script_remote`) {return(FALSE);}
+echo "------------------------------------------------------------------------";
+ifnot (`run -redirect -command "$command"`) {pause;}
+echo "------------------------------------------------------------------------";
+ifnot (`del $sql_script_remote -path $working_dir`) {pause;}
+
+#####################################################################
+# Check for output file, get it, and delete it
+#####################################################################
+
+if (`checkfile -name $working_dir\\$output_file`)
+{
+	if (`get $working_dir\\$output_file -name runsql_$sql_script_local`)
+	{
+		echo "---------------------------------------------------";
+		echo "Output file retrieved.";
+		echo "---------------------------------------------------";
+
+		if (`del $output_file -path $working_dir`)
+		{
+			return(TRUE);
+		}
+		else
+		{
+			echo "---------------------------------------------------";
+			echo "Failed to delete output file!";
+			echo "---------------------------------------------------";
+			return (FALSE);
+		}
+		
+	}
+	else
+	{
+		echo "---------------------------------------------------";
+		echo "Failed to retrieve output file!";
+		echo "---------------------------------------------------";
+		return(FALSE);
+	}
+	
+}
+else
+{
+	echo "---------------------------------------------------";
+	echo "No output file created.";
+	echo "---------------------------------------------------";
+	return (FALSE);
+}
+

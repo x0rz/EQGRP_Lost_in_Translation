@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_FlavControl_Tasking.pyo" providerType="script">
+
+    <Command name="Flav_Control" id="0">
+    
+		<Help>Queries the FlewAvenue driver.</Help>
+
+        <Input>
+			<Option name='status' optional='false' group='command'>
+				<Set data="cmd" value="1"/>
+				<Help>Gets the driver's status</Help>
+			</Option>
+			
+			<Option name='available' optional='false' group='command'>
+				<Set data='cmd' value='2'/>
+				<Help>Determines whether the driver is available</Help>
+			</Option>
+			
+			<Option name='netstat' optional='false' group='command'>
+				<Set data='cmd' value='3'/>
+				<Help>Queries the current network connections</Help>
+				<Argument name='bufferSize' data='bufferSize' optional='true'/>
+			</Option>
+			
+			<Option name='ipconfig' optional='false' group='command'>
+				<Set data='cmd' value='4'/>
+				<Help>Returns the machine's IP configuration</Help>
+				<Argument name='bufferSize' data='bufferSize' optional='true'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='cmd' type='uint8_t'/>
+			<Data name='bufferSize' type='uint32_t' default='5120'/>
+		</Output>
+    </Command>
+</Plugin>

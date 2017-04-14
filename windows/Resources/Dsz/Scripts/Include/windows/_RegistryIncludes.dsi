@@ -1,0 +1,99 @@
+@include "_StringIncludes.dsi";
+
+#----------------------------------------------------
+# _GetRegistryValue
+#	Returns the value of a particular registry key/value
+#----------------------------------------------------
+sub _GetRegistryValue( IN string $hive, IN string $key, IN string $name, OUT string $value ) {
+	return _GetRegistryValue( $hive, $key, $name, "", $value );
+}
+
+sub _GetRegistryValue( IN string $hive, IN string $key, IN string $name, IN string $extraOptions, OUT string $value ) {
+	return _GetRegistryValueRemote( $hive, $key, $name, $extraOptions, "", $value );
+}
+
+#----------------------------------------------------
+# _GetRegistryValueRemote
+#	Returns the value of a particular registry key/value on a given target
+#----------------------------------------------------
+sub _GetRegistryValueRemote( IN string $hive, IN string $key, IN string $name, IN string $target, OUT string $value ) {
+	return _GetRegistryValueRemote( $hive, $key, $name, "", $target, $value );
+}
+	
+sub _GetRegistryValueRemote( IN string $hive, IN string $key, IN string $name, IN string $extraOptions, 
+							 IN string $target, OUT string $value ) {
+			
+	@echo off;
+					 
+	string $cmd = "registryquery -hive $hive -key \"$key\" -value \"$name\" $extraOptions";
+	if( defined( $target ) && strlen( $target ) > 0 ) {
+		$cmd = "$cmd -target \"$target\"";
+	}
+
+	@record on;
+	if( !`$cmd` ) {
+		return false;
+	}
+
+	string $type;
+	if( !GetCmdData("key::value::value", $value) || !defined( $value ) ||
+		!GetCmdData("key::value::type", $type)   || !defined( $type ) ) {
+		return false;
+	}
+
+	if( $type == "REG_MULTI_SZ" ) {
+		string $temp = $value;
+		if( !_ParseStrings( $temp, $value ) ) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
+#----------------------------------------------------
+# _SetRegistryValue
+#	Returns the value of a particular registry key/value
+#----------------------------------------------------
+sub _SetRegistryValue( IN string $hive, IN string $key, IN string $name, IN string $data, IN string $type ) {
+	return _SetRegistryValueRemote( $hive, $key, $name, $data, $type, "" );	
+}
+
+#----------------------------------------------------
+# _SetRegistryValueRemote
+#	Returns the value of a particular registry key/value on a given target
+#----------------------------------------------------
+sub _SetRegistryValueRemote( IN string $hive, IN string $key, IN string $name, IN string $data, IN string $type, IN string $target ) {
+	
+	@echo off;
+	
+	string $cmd = "registryadd -hive $hive -key \"$key\" -value \"$name\" -data \"$data\" -type $type";
+	if( defined( $target ) && strlen( $target ) > 0 ) {
+		$cmd = "$cmd -target \"$target\"";
+	}
+	return `$cmd`;
+}
+
+sub _GetRegistryValues(IN string $hive, IN string $key, OUT string %values)
+{
+	@echo off;
+	string $cmd = "registryquery -hive $hive -key \"$key\"";
+ 
+	@record on;
+	if( !`$cmd` ) { return false; }
+	@record off;
+	
+	string $value;
+	string $name;
+	if(!GetCmdData("key::value::name", $name)) { return false; }
+	if(!GetCmdData("key::value::value", $value)) { return false; }
+ 
+	for(int $i=0; $i<sizeof($name); $i++)
+	{
+		%values{'$name[$i]'} = $value[$i];
+	}
+
+	return true;
+	 
+}

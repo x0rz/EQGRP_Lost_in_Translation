@@ -1,0 +1,63 @@
+#-------------------------------------------------------------------------------
+# _IsProcessInAdminGroup
+#	Determines whether the current process is running as a user
+#	in the 'Administrators' group
+#-------------------------------------------------------------------------------
+Sub _IsProcessInAdminGroup()
+{
+
+    # try to determine localized name for Administrators
+    @record on;
+    string $admins = "Administrators";
+    if (`wellknownid -name Administrators`) {
+	$admins = GetCmdData("sid");
+    }
+    @record off;
+    
+    return `processcheck -group "$admins"`;
+
+} /* END _IsProcessInAdminGroup */
+
+#-------------------------------------------------------------------------------
+# _IsProcessRunningAsSystem
+#	Determines whether the current process is running as SYSTEM
+#-------------------------------------------------------------------------------
+Sub _IsProcessRunningAsSystem()
+{
+
+    # try to determine localized name for system
+    @record on;
+    string $system = "System";
+    if (`wellknownid -name System -local`) {
+	$system = GetCmdData("sid");
+    }
+    @record off;
+
+    return `processcheck -user "$system"`;
+
+} /* END _IsProcessRunningAsSystem */
+
+#-------------------------------------------------------------------------------
+# _WhoAmI
+#	Retrieves the user of the current process
+# Params:
+#	user - On return contains the user for the current process
+#-------------------------------------------------------------------------------
+Sub _WhoAmI(OUT string $user)
+{
+
+    @record on;
+    ifnot (`whoami`) {
+	return false;
+    }
+    @record off;
+
+    string $newUser = GetCmdData("user");
+    ifnot (defined($newUser)) {
+	return false;
+    }
+
+    $user = $newUser;
+    return true;
+
+} /* END _WhoAmI */

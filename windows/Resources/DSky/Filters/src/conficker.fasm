@@ -1,0 +1,2 @@
+filter:udp dst port 1900 and (udp[29] == 0x48) and (udp[30] == 0x4f) and (udp[31] == 0x53) and (udp[32] == 0x54)
+netmask:255.255.255.0

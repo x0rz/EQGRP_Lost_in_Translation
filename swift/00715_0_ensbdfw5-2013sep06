@@ -1,0 +1,334 @@
+: Saved
+: Written by adesear at 21:56:15.192 UTC Thu Sep 5 2013
+!
+PIX Version 8.0(2) 
+!
+hostname ENSBUSPIX2
+enable password Ro5XpDeSuehPBEdi encrypted
+names
+name 192.168.208.10 mgmt-srv1
+name 192.168.208.11 mgmt-srv2
+name 192.168.221.237 ensbdswapp-clus
+name 192.168.221.238 ensbdswapp1
+name 192.168.221.239 ensbdswapp2
+name 192.168.221.240 ensbdswdb-clus
+name 192.168.221.241 ensbdswdb1
+name 192.168.221.242 ensbdswdb2
+name 10.100.200.0 ensb-mgmt-nw
+name 10.149.10.0 nw-sslvpn-nw
+name 202.40.237.146 telepin-app-srv1
+name 202.40.237.153 telepin-ftp-srv1
+name 10.159.9.146 singprod-user1
+name 10.159.9.155 singprod-user10
+name 10.159.9.147 singprod-user2
+name 10.159.9.148 singprod-user3
+name 10.159.9.149 singprod-user4
+name 10.159.9.150 singprod-user5
+name 10.159.9.151 singprod-user6
+name 10.159.9.152 singprod-user7
+name 10.159.9.153 singprod-user8
+name 10.159.9.154 singprod-user9
+!
+interface Ethernet0
+ nameif clients
+ security-level 10
+ ip address 192.168.211.5 255.255.255.0 
+!
+interface Ethernet1
+ nameif swaas
+ security-level 50
+ ip address 192.168.221.5 255.255.255.0 
+!
+interface Ethernet2
+ shutdown
+ nameif finmex
+ security-level 50
+ ip address 192.168.214.5 255.255.255.0 
+!
+interface Ethernet3
+ shutdown
+ no nameif
+ no security-level
+ no ip address
+!
+interface Ethernet4
+ description mgmt zone
+ nameif mgmt
+ security-level 90
+ ip address 192.168.208.5 255.255.255.0 
+!
+interface Ethernet5
+ no nameif
+ no security-level
+ no ip address
+!
+interface Ethernet5.1
+ shutdown
+ no vlan
+ no nameif
+ no security-level
+ no ip address
+!
+interface Ethernet5.2
+ shutdown
+ no vlan
+ no nameif
+ no security-level
+ no ip address
+!
+interface Ethernet5.3
+ shutdown
+ no vlan
+ no nameif
+ no security-level
+ no ip address
+!
+passwd Ro5XpDeSuehPBEdi encrypted
+ftp mode passive
+object-group network mgmt-srv-group
+ network-object host mgmt-srv1
+ network-object host mgmt-srv2
+object-group network safe-srv-group
+ network-object host ensbdswapp-clus
+ network-object host ensbdswapp1
+ network-object host ensbdswapp2
+ network-object host ensbdswdb-clus
+ network-object host ensbdswdb1
+ network-object host ensbdswdb2
+object-group network safeapp-srv-group
+ network-object host ensbdswapp-clus
+ network-object host ensbdswapp1
+ network-object host ensbdswapp2
+object-group network safeapp-srv-group-ref_clients
+ network-object host 192.168.211.237
+ network-object host 192.168.211.238
+ network-object host 192.168.211.239
+object-group network safedb-srv-group
+ network-object host ensbdswdb-clus
+ network-object host ensbdswdb1
+ network-object host ensbdswdb2
+object-group network safe-srv-group-ref_clients
+ network-object host 192.168.211.237
+ network-object host 192.168.211.238
+ network-object host 192.168.211.239
+ network-object host 192.168.211.240
+ network-object host 192.168.211.241
+ network-object host 192.168.211.242
+object-group network finmex-mgmt-grp
+ network-object host 10.100.215.11
+ network-object host 10.100.215.12
+ network-object host 10.100.215.13
+ network-object host 10.100.215.14
+ network-object host 10.100.215.15
+object-group service rdp
+ service-object tcp eq 3389 
+object-group network sw-support-grp
+ network-object host 10.100.225.11
+ network-object host 10.100.225.12
+ network-object host 10.100.225.13
+ network-object host 10.100.225.14
+ network-object host 10.100.225.15
+ network-object host 10.100.225.16
+ network-object host 10.100.225.18
+ network-object host 10.100.225.19
+ network-object host 10.100.225.20
+object-group service safewatch-tcp tcp
+ port-object eq 1443
+ port-object eq 8080
+ port-object eq 8401
+ port-object eq https
+ port-object eq 8330
+ port-object eq 8336
+object-group service safewatch-udp udp
+ port-object eq 8400
+object-group service DM_INLINE_TCP_1 tcp
+ port-object eq ftp
+ port-object eq ssh
+object-group network singprod-users-grp
+ network-object host 10.159.9.136
+ network-object host 10.159.9.137
+ network-object host 10.159.9.138
+ network-object host 10.159.9.139
+ network-object host 10.159.9.140
+ network-object host 10.159.9.141
+ network-object host 10.159.9.142
+ network-object host 10.159.9.143
+ network-object host 10.159.9.144
+ network-object host 10.159.9.145
+object-group network sw-users-grp
+ group-object singprod-users-grp
+object-group service DM_INLINE_TCP_2 tcp
+ port-object eq ftp
+ port-object eq ssh
+object-group network swaas-support-grp
+ network-object host 10.100.225.11
+ network-object host 10.100.225.12
+ network-object host 10.100.225.13
+ network-object host 10.100.225.14
+ network-object host 10.100.225.15
+ network-object host 10.100.225.16
+ network-object host 10.100.225.17
+ network-object host 10.100.225.18
+ network-object host 10.100.225.19
+ network-object host 10.100.225.20
+object-group network swaas-users-grp
+ group-object singprod-users-grp
+access-list clients_access_in extended permit tcp host telepin-app-srv1 object-group safeapp-srv-group-ref_clients object-group safewatch-tcp 
+access-list clients_access_in extended permit udp host telepin-app-srv1 object-group safeapp-srv-group-ref_clients object-group safewatch-udp 
+access-list clients_access_in extended permit tcp object-group swaas-users-grp object-group safeapp-srv-group-ref_clients object-group safewatch-tcp 
+access-list clients_access_in extended permit udp object-group swaas-users-grp object-group safeapp-srv-group-ref_clients object-group safewatch-udp 
+access-list clients_access_in extended permit tcp object-group sw-users-grp object-group safeapp-srv-group-ref_clients object-group safewatch-tcp 
+access-list clients_access_in extended permit udp object-group sw-users-grp object-group safeapp-srv-group-ref_clients object-group safewatch-udp 
+access-list clients_access_in extended permit icmp 192.168.211.0 255.255.255.0 object-group safe-srv-group-ref_clients inactive 
+access-list clients_access_in extended permit object-group rdp object-group swaas-support-grp object-group safe-srv-group-ref_clients 
+access-list clients_access_in extended permit tcp object-group swaas-support-grp object-group safe-srv-group-ref_clients object-group safewatch-tcp 
+access-list clients_access_in extended permit udp object-group swaas-support-grp object-group safe-srv-group-ref_clients object-group safewatch-udp 
+access-list clients_access_in extended permit icmp object-group swaas-support-grp object-group safe-srv-group-ref_clients 
+access-list clients_access_in extended permit ip 192.168.216.0 255.255.255.0 any 
+access-list clients_access_in extended permit ip ensb-mgmt-nw 255.255.255.0 any 
+access-list clients_access_in extended permit icmp any object-group safe-srv-group-ref_clients 
+access-list swaas_access_in extended permit icmp any any 
+access-list swaas_access_in extended permit tcp object-group safeapp-srv-group host telepin-ftp-srv1 object-group DM_INLINE_TCP_1 
+access-list swaas_access_in extended permit tcp object-group safeapp-srv-group host 202.40.237.145 object-group DM_INLINE_TCP_2 
+access-list swaas_access_in extended permit ip any any 
+access-list mgmt_access_in extended permit ip any any 
+access-list mgmt_access_in remark Implicit rule: Permit all traffic to less secure networks
+access-list mgmt_access_in extended permit icmp any any 
+pager lines 24
+logging enable
+mtu clients 1500
+mtu swaas 1500
+mtu finmex 1500
+mtu mgmt 1500
+no failover
+icmp unreachable rate-limit 1 burst-size 1
+asdm image flash:/asdm-602.bin
+no asdm history enable
+arp timeout 14400
+static (swaas,clients) 192.168.211.240 ensbdswdb-clus netmask 255.255.255.255 dns 
+static (swaas,clients) 192.168.211.241 ensbdswdb1 netmask 255.255.255.255 dns 
+static (swaas,clients) 192.168.211.242 ensbdswdb2 netmask 255.255.255.255 dns 
+static (swaas,clients) 192.168.211.237 ensbdswapp1 netmask 255.255.255.255 dns 
+access-group clients_access_in in interface clients
+access-group swaas_access_in in interface swaas
+access-group mgmt_access_in in interface mgmt
+route clients 0.0.0.0 0.0.0.0 192.168.211.17 1
+timeout xlate 3:00:00
+timeout conn 1:00:00 half-closed 0:10:00 udp 0:02:00 icmp 0:00:02
+timeout sunrpc 0:10:00 h323 0:05:00 h225 1:00:00 mgcp 0:05:00 mgcp-pat 0:05:00
+timeout sip 0:30:00 sip_media 0:02:00 sip-invite 0:03:00 sip-disconnect 0:02:00
+timeout uauth 0:05:00 absolute
+dynamic-access-policy-record DfltAccessPolicy
+aaa authentication enable console LOCAL 
+aaa authentication http console LOCAL 
+aaa authentication ssh console LOCAL 
+aaa authentication telnet console LOCAL 
+aaa authorization command LOCAL 
+aaa authorization exec authentication-server
+http server enable
+http 192.168.208.0 255.255.255.0 mgmt
+http 192.168.211.15 255.255.255.255 clients
+http 192.168.211.17 255.255.255.255 clients
+http ensb-mgmt-nw 255.255.255.0 clients
+snmp-server host mgmt mgmt-srv2 community ^enSBSXstr1ng^
+no snmp-server location
+no snmp-server contact
+snmp-server enable traps snmp authentication linkup linkdown coldstart
+no crypto isakmp nat-traversal
+telnet 192.168.208.0 255.255.255.0 mgmt
+telnet timeout 5
+ssh 192.168.208.0 255.255.255.0 mgmt
+ssh timeout 5
+console timeout 0
+threat-detection basic-threat
+threat-detection statistics access-list
+!
+class-map inspection_default
+ match default-inspection-traffic
+!
+!
+policy-map type inspect dns preset_dns_map
+ parameters
+  message-length maximum 512
+policy-map global_policy
+ class inspection_default
+  inspect dns preset_dns_map 
+  inspect ftp 
+  inspect h323 h225 
+  inspect h323 ras 
+  inspect netbios 
+  inspect rsh 
+  inspect rtsp 
+  inspect skinny  
+  inspect esmtp 
+  inspect sqlnet 
+  inspect sunrpc 
+  inspect tftp 
+  inspect sip  
+  inspect xdmcp 
+!
+service-policy global_policy global
+tftp-server mgmt mgmt-srv1 /
+username adesear password AyUoUtKt1Ge6y1xo encrypted privilege 15
+username kbaluyot password veUjjfuhoN5j6Rty encrypted privilege 15
+username msaeed password HrG.2XeAt0pheILG encrypted privilege 15
+username jeromuy password HW2JCVi8GLASfsTQ encrypted privilege 15
+privilege cmd level 3 mode exec command perfmon
+privilege cmd level 3 mode exec command ping
+privilege cmd level 3 mode exec command who
+privilege cmd level 3 mode exec command logging
+privilege cmd level 3 mode exec command failover
+privilege show level 5 mode exec command running-config
+privilege show level 3 mode exec command reload
+privilege show level 3 mode exec command mode
+privilege show level 3 mode exec command firewall
+privilege show level 3 mode exec command interface
+privilege show level 3 mode exec command clock
+privilege show level 3 mode exec command dns-hosts
+privilege show level 3 mode exec command access-list
+privilege show level 3 mode exec command logging
+privilege show level 3 mode exec command ip
+privilege show level 3 mode exec command failover
+privilege show level 3 mode exec command asdm
+privilege show level 3 mode exec command arp
+privilege show level 3 mode exec command route
+privilege show level 3 mode exec command ospf
+privilege show level 3 mode exec command aaa-server
+privilege show level 3 mode exec command aaa
+privilege show level 3 mode exec command eigrp
+privilege show level 3 mode exec command crypto
+privilege show level 3 mode exec command vpn-sessiondb
+privilege show level 3 mode exec command ssh
+privilege show level 3 mode exec command dhcpd
+privilege show level 3 mode exec command vpn
+privilege show level 3 mode exec command blocks
+privilege show level 3 mode exec command wccp
+privilege show level 3 mode exec command uauth
+privilege show level 3 mode configure command interface
+privilege show level 3 mode configure command clock
+privilege show level 3 mode configure command access-list
+privilege show level 3 mode configure command logging
+privilege show level 3 mode configure command ip
+privilege show level 3 mode configure command failover
+privilege show level 5 mode configure command asdm
+privilege show level 3 mode configure command arp
+privilege show level 3 mode configure command route
+privilege show level 3 mode configure command aaa-server
+privilege show level 3 mode configure command aaa
+privilege show level 3 mode configure command crypto
+privilege show level 3 mode configure command ssh
+privilege show level 3 mode configure command dhcpd
+privilege show level 5 mode configure command privilege
+privilege clear level 3 mode exec command dns-hosts
+privilege clear level 3 mode exec command logging
+privilege clear level 3 mode exec command arp
+privilege clear level 3 mode exec command aaa-server
+privilege clear level 3 mode exec command crypto
+privilege cmd level 3 mode configure command failover
+privilege clear level 3 mode configure command logging
+privilege clear level 3 mode configure command arp
+privilege clear level 3 mode configure command crypto
+privilege clear level 3 mode configure command aaa-server
+prompt hostname context 
+Cryptochecksum:360d731107f25722f1ef9d57dc61a1bb
+: end

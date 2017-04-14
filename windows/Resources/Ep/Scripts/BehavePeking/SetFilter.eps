@@ -1,0 +1,93 @@
+#--------------------------------------------------------
+# File: SetFilter.eps
+#
+# Wrapper script to change the packet filter
+#
+# Modifications:
+#  29 Aug 2005	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if (($argc < 2) || ($argc > 3)) {
+    echo "Usage: $argv[0] <driverName> [filterName]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $filter;
+if ($argc >= 3) {
+    $filter = $argv[2];
+}
+string $choice;
+
+# get the filters directory
+@record on;
+# get resource directory
+if (`getdirectory -resources`) {
+    string $resDir = GetCmdData("dir");
+    if (defined($resDir[0])) {
+	string $resPath = "$resDir\\BehavePeking";
+
+	string $filters;
+	if (`local dir *.filt -path "$resPath\\Filters" -max 0`) {
+	    string $filters = GetCmdData("name");
+	    int $size = sizeof($filters);
+
+	    bool $valid = false;
+	    if (defined($filter)) {
+		# user already gave filter name
+		string $name;
+		foreach $name ($filters) {
+		    if ($name == $filter) {
+			$choice = "$resPath\\Filters\\$name";
+			$valid = true;	
+			break;
+		    }
+		}
+	    }
+
+	    while ($valid == false) {
+	        int $i=0;
+		int $index = 1;
+	        echo "(0). Select File manually";
+		while ($i < $size) {
+		    echo "($index). $filters[$i]";
+		    $index++;
+		    $i++;
+		}
+
+		int $value = GetInput("Choose Filter");
+		if ($value == 0) {
+		    # user wants to pick file manually
+		    $valid = true;
+		} else if ($value <= $size) {
+		    $value--;
+		    $choice = "$resPath\\Filters\\$filters[$value]";
+		    $valid = true;
+		} else {
+		    echo "*** Invalid Choice ***";
+		}
+	    }
+	}
+    }
+}
+@record off;
+
+# get the local filter
+ifnot (defined($choice[0])) {
+    $choice = GetInput("Enter the filter file");
+    ifnot (defined($choice[0])) {
+	echo "* Invalid file";
+	return false;
+    }
+}
+
+echo "";
+echo "Filter : ";
+echo "    $choice";
+echo "";
+
+# change the filter
+echo "Changing filter data in registry";
+return `webtipper -name $driver -set "$choice"`;

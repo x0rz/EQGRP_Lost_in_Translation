@@ -1,0 +1,41 @@
+#-----------------------------------------------------------------------------
+# File: Arp.eps
+#
+#  Attempts to associate the IP/MAC addresses in the current arp list with a
+#  list of known MAC comments/manufacturers
+#
+#-----------------------------------------------------------------------------
+
+@include "_MatchMac.epm";
+
+@echo off;
+@record on;
+ifnot (`arp -print`) {
+	echo "Unable to run ARP";
+	return false;
+}
+@record off;
+
+string $ips = GetCmdData("ip_addr");
+string $macs = GetCmdData("phys_addr");
+
+string $allMacs = "";
+
+string %macTypes;
+ifnot (_MatchMac($macs, %macTypes)) {
+	echo "Failed to find MAC comments";
+	return false;
+}
+
+int $i=0;
+while ($i < sizeof($macs)) {
+    echo "$ips[$i]\t$macs[$i]";
+    if (defined(%macTypes{'$macs[$i]'})) {
+	echo "    %macTypes{'$macs[$i]'}";
+    } else {
+	echo "    NO_TYPE_FOUND\r\n";
+    }
+    $i++;
+}
+	
+return true;

@@ -1,0 +1,48 @@
+@record on;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion\\hotfix"`;
+string $values=GetCmdData("subkey");
+@record off;
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+string $hotfixFile="hotfixes.txt";
+#string $hotfixDir="$ScriptsDir/../../../tools";
+string $hotfixDir="$ScriptsDir/../../Ops/Data";
+
+string $lines;
+int $lineNum;
+
+int $i=0;
+while ($i < sizeof($values)) {
+	@record on;
+	@echo off;
+	ifnot (`local grep -mask "$hotfixFile" -pattern "$values[$i]:" -path "$hotfixDir"`) {
+	}
+	$lines = GetCmdData("line_data");
+	@echo on;
+	@record off;
+	
+	if (sizeof($lines) > 0) {
+		$lineNum=0;
+		while ($lineNum < sizeof($lines)) {
+			echo "$lines[$lineNum]";
+			$lineNum++;
+		}
+	} else {
+		echo "$values[$i]:Unknown hotfix (please update $hotfixDir/$hotfixFile)";
+	}
+
+	$i++;
+}
+
+return true;

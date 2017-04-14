@@ -1,0 +1,52 @@
+
+@include "Ops_GenericFunctions.dsi";
+
+@echo off;
+
+@record on;
+if (!`registryquery -hive L -key "software\\microsoft\\windows nt\\currentversion\\hotfix"`)
+{
+	echo("Failed to get hotfixes", ERROR);
+	return false;
+}
+@record off;
+
+string $keys;
+if (!GetCmdData("Key::Subkey::Name", $keys) || !defined($keys))
+{
+	echo("Failed to get hotfix data", ERROR);
+	return false;
+}
+
+string $dataPath;
+if (!Ops_GetDataPath($dataPath))
+{
+	echo("Failed to get data directory", ERROR);
+	return false;
+}
+
+string $hotfixData;
+ReadFile("$dataPath/hotfixes.txt", $hotfixData);
+
+for (int $i=0; $i < sizeof($keys); $i++)
+{
+	bool $found=false;
+	for (int $j=0; $j < sizeof($hotfixData); $j++)
+	{
+		# NOTE: This match is not entirely safe as we don't do any escaping of
+		#		possible regular expression reserved characters
+		if (RegExMatch($keys[$i], $hotfixData[$j]))
+		{
+			echo "$hotfixData[$j]";
+			$found = true;
+			# continue in case another line matches...
+		}
+	}
+	
+	if (!$found)
+	{
+		echo("$keys[$i]:Unknown hotfix (please update $dataPath/hotfixes.txt)", WARNING);
+	}
+}
+
+return true;

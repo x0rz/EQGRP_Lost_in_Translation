@@ -1,0 +1,7 @@
+@include "_RequestIncludes.dsi";
+@echo off;
+
+#_WaitForOpening();
+bool $bRet = _IndirectExection("processinfo", $ARGV);
+#_TaskFinished();
+return $bRet;

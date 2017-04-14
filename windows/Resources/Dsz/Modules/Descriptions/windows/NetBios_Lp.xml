@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="NetBios_Lp" id="464" script="Tasking/Mcl_Cmd_NetBios_Tasking.pyo">
+
+	<Interfaces/>
+
+	<Dependencies>
+		<Remote>NetBios_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Implant>No</Implant>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"/>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

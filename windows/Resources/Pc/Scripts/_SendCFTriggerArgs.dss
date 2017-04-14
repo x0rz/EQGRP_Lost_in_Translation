@@ -1,0 +1,67 @@
+@include "_CommandLine.dsi";
+@include "_SendCFTrigger.dsi";
+
+string %params;
+
+if (!_ParseCommandLine($argc, $argv, %params)) {
+	return false;
+}
+
+int $id;
+
+if (defined(%params{'bindAddr'}) || defined(%params{'bindPort'}) || defined(%params{'createRedirectDst'})) {
+	echo "Starting redirector";
+	string $prefix = "";
+	if (defined(%params{ 'createRedirectDst'})) {
+		$prefix = "dst=%params{ 'createRedirectDst'}";
+	}
+	# create the redirector ourselves
+	string $addr = "0.0.0.0", $port = "1500";
+	if( defined( %params{ 'bindAddr' } ) ) {
+		$addr = %params{ 'bindAddr' };
+	}
+	if( defined( %params{ 'bindPort' } ) ) {
+		$port = %params{ 'bindPort' };
+	}
+	
+	@record on;
+	if( !`$prefix packetredirect -listenport $port $addr` ) {
+		echo( "Unable to setup the packet redirector", ERROR );
+		return false;
+	} else {
+		echo( "PacketRedirect listening on $port", GOOD );
+	}
+	@record off;
+	
+	if( !GetCmdData("CommandMetaData::Id", $id) || !defined($id) ) {
+		echo( "Unable to determine PacketRedirect's command id.", WARNING );
+		echo( "You will have to stop it manually.", WARNING );
+	}
+	
+	if( $addr == "0.0.0.0" ) {
+		%params{'redirectAddr' } = "127.0.0.1";
+	} else {
+		%params{'redirectAddr' } = $addr;
+	}
+	%params{'redirectPort'} = $port;
+}
+
+# send the trigger
+bool $retVal = SendTrigger(%params);
+
+if( defined( $id ) ) {
+	echo "Attempting to stop redirector";
+	@echo off;
+	if( `stop $id` ) {
+		echo("    SUCCESS", GOOD );
+	} else {
+		echo("    FAILURE", GOOD );
+	}
+}
+
+
+return $retVal;
+
+
+
+

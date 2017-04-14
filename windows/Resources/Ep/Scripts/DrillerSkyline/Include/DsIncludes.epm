@@ -1,0 +1,56 @@
+#--------------------------------------------------------
+# File: DsIncludes.epm
+#
+# Contains common functions for the DrillerSkyline scripts
+#
+# Modifications:
+#  12/12/2006	Stole from DS
+#--------------------------------------------------------
+@include "_GetSystemPaths.epm";
+
+#----------------------------------------------------------------------------
+# DsGetUserModePath
+#	Converts a kernel-mode path to its user-mode equivalent
+#----------------------------------------------------------------------------
+sub DsGetUserModePath(REF string $path)
+{
+
+    string $parts = Split("\\", $path);
+    if (sizeof($parts) < 3) {
+	return false;
+    }
+
+    if (($parts[0] == "") && ($parts[1] == "??")) {
+	int $i=2;
+	$path = "";
+	while ($i < sizeof($parts)) {
+	    if ($i != 2) {
+		$path = "$path\\";
+	    }
+	    $path = "$path$parts[$i]";
+	    $i++;
+	}
+    } else if (($parts[0] == "") && ($parts[1] == "systemroot")) {
+	# get the root directory
+	string $root;
+	string $system;
+	ifnot (_GetSystemPaths($root, $system)) {
+	    echo "* Unable to determine system root";
+	    return false;
+	}
+
+	$path = "$root\\";
+	int $i=2;
+	while ($i < sizeof($parts)) {
+	    if ($i != 2) {
+		$path = "$path\\";
+	    }
+	    $path = "$path$parts[$i]";
+	    $i++;
+	}
+    }
+
+    return true;
+
+}
+# end DsGetUserModePath

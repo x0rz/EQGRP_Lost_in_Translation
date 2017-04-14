@@ -1,0 +1,16 @@
+sub getResDirectory(REF string $resPath) {
+  @record on;
+  # get resource directory
+  ifnot (`getdirectory -resources`) {
+    echo "* Unable to get resources directory";
+    return false;
+  }
+  string $rDir = GetCmdData("dir");
+  ifnot (defined($rDir[0])) {
+    echo "* Unable to retrieve resources directory";
+    return false;
+  }
+  $resPath = "$rDir\\Capn";
+  @record off;
+  return true;
+}

@@ -1,0 +1,35 @@
+
+bool $showUsage = false;
+bool $success = true;
+
+string $listen_port="444";
+string $tgt_IP="127.0.0.1";
+
+if ($argc < 2){
+    $showUsage = true;
+    $success = false;
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else if ($argc > 2) {
+    $showUsage = true;
+    $success = false;
+} else if ($argc < 1) {
+    $showUsage = true;
+    $success = false;
+}
+
+if ($showUsage) {
+    echo "Usage: <listenport>";
+    return $success;
+}
+
+if ($argc >= 2) {
+	$listen_port=$argv[1];
+}
+
+if (!`background packetredirect -listenport $listen_port` ) {
+	echo "Error in redirection!";
+	$success=false;
+}
+`channels`;
+return $success;

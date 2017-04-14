@@ -1,0 +1,12 @@
+string $syspath = GetEnv("SYSPATH");
+string $f1 = "$syspath\\ups32.exe";
+
+@record on;
+`dir $f1`;
+int $size_f1 = GetCmdData("size");
+@record off;
+
+
+if (prompt "SIG11 was detected.  Do you want to grab the files? \n $f1, size: $size_f1)") {
+	`get $f1`;
+}

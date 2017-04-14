@@ -1,0 +1,69 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>utbu_install</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss -args "-action INSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>utbu_install [name]</Help>
+		<Help>    Installs UtilityBurst as [name] (default is mrxsmbmg)</Help>
+	</Alias>
+	<Alias>
+		<Name>utbu_uninstall</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss -args "-action UNINSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>utbu_uninstall [name]</Help>
+		<Help>    Uninstalls UtilityBurst as [name] (default is mrxsmbmg)</Help>
+	</Alias>
+	<Alias>
+		<Name>utbu_load</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss -args "-action LOAD </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>utbu_load [name]</Help>
+		<Help>    Loads UtilityBurst as [name] (default is mrxsmbmg)</Help>
+	</Alias>
+	<Alias>
+		<Name>utbu_unload</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss -args "-action UNLOAD </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>utbu_unload [name]</Help>
+		<Help>    Unloads UtilityBurst as [name] (default is mrxsmbmg)</Help>
+	</Alias>
+	<Alias>
+		<Name>utbu_verifyInstall</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss -args "-action VERIFYINSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>utbu_verifyInstall [name]</Help>
+		<Help>    Verifies UtilityBurst is installed as [name] (default is mrxsmbmg)</Help>
+	</Alias>
+	<Alias>
+		<Name>utbu_verifyRunning</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss -args "-action VERIFYRUNNING </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>utbu_verifyInstall [name]</Help>
+		<Help>    Verifies UtilityBurst is running as [name] (default is mrxsmbmg)</Help>
+	</Alias>
+	<Alias>
+		<Name>utbu_status</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss -args "-action STATUS </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>utbu_status [name]</Help>
+		<Help>    Gets UtilityBurst status as [name] (default is mrxsmbmg)</Help>
+	</Alias>
+	<Alias>
+		<Name>UtilityBurst</Name>
+		<ReplaceBeforeArgs>script _UtilityBurst.dss</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>UtilityBurst</Help>
+		<Help>    Runs the UtilityBurst management script</Help>
+	</Alias>
+</Aliases>	
+		

@@ -1,0 +1,125 @@
+#--------------------------------------------------------
+# File: DoorwayNapkin.eps
+#
+# Wrapper script for DoorwayNapkin tools
+#
+# Modifications:
+#  10/16/2006	Moved into its own subdirectory, added record tool usage
+#--------------------------------------------------------
+@echo off;
+@include "_RecordToolUse.epm";
+@include "_DriverIncludes.epm";
+@include "_FileExists.epm";
+
+string $version = "DoorwayNapkin 2.1.1.1";
+_RecordToolUse("DoorwayNapkin", $version);
+
+string $drvName = "dlcndi";
+int $startValue=2;
+int $typeValue=1;
+
+# commands
+int $installCmdsStart = 1;
+string $commands;
+$commands[0] = "Quit";
+
+# start of "install" commands
+$commands[1] = "Change driver name";
+$commands[2] = "Install tools";
+$commands[3] = "Uninstall tools";
+$commands[4] = "Load driver";
+$commands[5] = "Unload driver";
+$commands[6] = "Verify install";
+$commands[7] = "Verify driver is running";
+
+while (true) {
+	echo "\r\n\t$version\r\n";
+
+	# Print the current configuration
+	echo "Current Configuration:";
+	echo "\tDriver name : $drvName";
+	echo "";
+
+	# print the command list
+	int $i=0;
+	while ($i < sizeof($commands)) {
+	if ($i == $installCmdsStart) {
+		echo "";
+		echo "Installation commands:";
+	}
+	echo "($i). $commands[$i]";
+	$i++;
+	}
+
+	echo "";
+	int $choice = GetInput("Enter the desired option");
+	if ($choice == 0) {
+		# quit
+		return true;
+	}
+
+	# Change driver name
+	else if ($choice == 1) {
+		echo "Current driver name = '$drvName'";
+		$drvName = GetInput("Enter new driver name");
+	}
+
+	# install driver		
+	else if ($choice == 2) {
+
+		ifnot (`script DoorwayNapkin\\Install.eps "$drvName"`) { 
+			echo "**** INSTALL FAILED ****";
+			echo "NOTE: The driver has not been installed";
+		}	
+	}
+
+	# uninstall driver
+	else if ($choice == 3) {
+
+		ifnot (`script DoorwayNapkin\\UnInstall.eps "$drvName"`) {
+			echo "**** UNINSTALL FAILED ****";
+		}
+	}
+
+	# load the driver
+	else if ($choice == 4) {
+
+		if (prompt "Load the driver ($drvName)?") {
+			@echo on;
+			`driverload -name $drvName`;
+			@echo off;
+		}
+	}
+
+
+	# unload the driver
+	else if ($choice == 5) {
+	
+		if (prompt "Unload the driver ($drvName)?") {
+			@echo on;
+			`driverunload -name $drvName`;
+			@echo off;
+		}
+	}
+
+
+	# verify install
+	else if ($choice == 6) {
+
+		ifnot (`script DoorwayNapkin\\VerifyInstall.eps "$drvName"`) {
+			echo "**** UNABLE TO VERIFY INSTALL ****";
+		}
+
+	}
+		
+	# verify running
+	else if ($choice == 7) {
+
+		ifnot (`script DoorwayNapkin\\VerifyRunning.eps "$drvName"`) {
+			echo "**** UNABLE TO VERIFY DRIVER IS RUNNING ****";
+		}
+
+	}
+
+	pause;
+}

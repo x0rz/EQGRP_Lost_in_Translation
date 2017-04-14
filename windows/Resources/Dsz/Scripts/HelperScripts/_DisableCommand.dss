@@ -1,0 +1,62 @@
+
+@quiet off;
+
+if (($argc < 2) || ($argc > 4))
+{
+    echo "Usage: $argv[0] <cmd_to_disable> [location] [reason]";
+    echo "    Disables a command";
+	return false;
+}
+
+string $location="";
+string $locStr="ALL";
+if ($argc > 2)
+{
+	if (($argv[2] == "both") || ($argv[2] == "all"))
+	{
+		$location = " -location all";
+		$locStr = "ALL";
+	}
+	else if ($argv[2] == "local")
+	{
+		$location = " -location local";
+		$locStr = "LOCAL";
+	}
+	else if ($argv[2] == "remote")
+	{
+		$location = " -location remote";
+		$locStr = "REMOTE";
+	}
+	else if ($argv[2] == "current")
+	{
+		$location = " -location current";
+		$locStr = "CURRENT";
+	}
+	else
+	{
+		echo("Invalid location specified for disable", ERROR);
+		return false;
+	}
+}
+
+@echo off;
+string $reason="";
+if ($argc > 3)
+{
+	$reason = '"$argv[3]"';
+}
+
+# delete any existing wrapper (if any)
+`wrappers -unregister $argv[1] -pre -script "HelperScripts/_NotAvailable.pyo"$location`;
+
+if (`wrappers -register $argv[1] $reason -pre -script "HelperScripts/_NotAvailable.pyo"$location`)
+{
+	echo "DISABLED - $argv[1] ($locStr) $reason";
+}
+else
+{
+	echo("* Unable to disable $argv[1]", ERROR);
+	return false;
+}
+
+return true;

@@ -1,0 +1,11 @@
+string $target=$argv[1];
+string $local=$argv[2];
+
+prompt `traceroute -ip $target`;
+echo "Your local IP to bind to is $local";
+
+if (prompt "Continue?  (make sure there is no satellite hop)") {
+	`background redirect -tcp -lplisten 2222 -target $target 23 -bind $local`;
+	`background redirect -tcp -lplisten 2223 -target $target 23 -bind $local`;
+	`background redirect -tcp -lplisten 79 -target $target 79 -bind $local`;
+}

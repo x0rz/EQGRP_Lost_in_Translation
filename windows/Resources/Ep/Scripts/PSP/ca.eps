@@ -1,0 +1,263 @@
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+string $strTmp;
+
+echo "\n\tStarting CA eTrust configuration change check...";
+@echo off;
+@record on;
+#The struct is defined in PSPHelpers.epm
+metaData @metaData;
+#initialize the struct
+init(@metaData);
+
+# get PSP information to record in pspInformation.txt
+
+#initially set version to unknown for newer install possibility
+@metaData.$version="unknown";
+
+# Security Suite
+if(`regquery -hive L -subkey "software\\computerassociates\\eTrust Suite Personal" -value version`) {
+	# record suite information
+	@metaData.$vendor="CA";
+	@metaData.$product="Internet Security Suite";
+	@metaData.$version=GetCmdData("value_data");
+
+	# check if PSP changed
+	if(@metaData.$history) {
+		if(checkConfig("etrust:@metaData.$version",@metaData)) {
+			echo "\r\rNo change in PSP configs.\r\r";
+		} else {
+			echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+		}
+	}else{
+		echo "\r\rNo PSP history found.\r\r";
+		createConfig("etrust:@metaData.$version",@metaData);
+	}
+
+	# format the version string
+	$strTmp=split(".",@metaData.$version);
+	if($strTmp[0] == "3") {
+		@metaData.$version="2007 (@metaData.$version)";
+	} else if($strTmp[0] == "4") {
+		@metaData.$version="2008 (@metaData.$version)";
+	} else if($strTmp[0] == "5") {
+		@metaData.$version="2009 (@metaData.$version)";
+	}
+
+	echo "Target is running @metaData.$vendor @metaData.$product @metaData.$version\n";
+}
+
+# anti-virus section
+if(`regquery -hive L -subkey "SOFTWARE\\ComputerAssociates\\eTrust Suite Personal\\av" -value version`) {
+	$strTmp = GetCmdData("value_data");
+	echo "Target is running CA eTrust Antivirus $strTmp";	
+
+	# check if suite not installed; version still unknown
+	if (@metaData.$version == "unknown") {
+		@metaData.$vendor="CA";
+		@metaData.$product="Antivirus";
+		@metaData.$version=$strTmp;
+
+		if(@metaData.$history) {
+			if(checkConfig("etrust:@metaData.$version",@metaData)) {
+				echo "\r\rNo change in PSP configs.\r\r";
+			} else {
+				echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+			}
+		}else{
+			echo "\r\rNo PSP history found.\r\r";
+			createConfig("etrust:@metaData.$version",@metaData);
+		}
+	} else { @metaData.$information = "@metaData.$information, AntiVirus_$strTmp"; }
+	
+	# get latest virus update signature date
+	if(`regquery -hive L -subkey "SOFTWARE\\ComputerAssociates\\anti-virus\\install" -value programpath`) {
+		string $strInstallPath=GetCmdData("value_data");
+		`getfileattribs -file "$strInstallPath\\vet.dat"`;
+		$strTmp = GetCmdData("modifiedtime");
+		string $strDate = GetCmdData("modifieddate");
+		echo "\t Last Virus Signature Update: $strDate $strTmp \n";
+	}
+}
+
+# anti-spyware section
+if(`regquery -hive L -subkey "SOFTWARE\\ComputerAssociates\\eTrust Suite Personal\\pp" -value version`) {
+	$strTmp = GetCmdData("value_data");
+	echo "Target is running CA eTrust Antispyware $strTmp";
+	echo "\t** Setting noInject true (no PWDUMP) **\n";
+	safety();
+
+	# check if suite not installed; version still unknown
+	if (@metaData.$version == "unknown") {
+		@metaData.$vendor="CA";
+		@metaData.$product="Anti-Spyware";
+		@metaData.$version=$strTmp;
+
+		if(@metaData.$history) {
+			if(checkConfig("etrust:@metaData.$version",@metaData)) {
+				echo "\r\rNo change in PSP configs.\r\r";
+			} else {
+				echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+			}
+		}else{
+			echo "\r\rNo PSP history found.\r\r";
+			createConfig("etrust:@metaData.$version",@metaData);
+		}
+	} else { @metaData.$information = "@metaData.$information, AntiSpyware_$strTmp"; }
+}
+
+#firewall section
+if(`regquery -hive L -subkey "SOFTWARE\\ComputerAssociates\\eTrust Suite Personal\\pfw" -value version`) {
+	string $strVersion = GetCmdData("value_data");
+	string $strMajorVersion = split(".",$strVersion);
+	$strMajorVersion = $strMajorVersion[0];
+	echo "Target is running CA eTrust Personal Firewall $strVersion";
+
+	# check if anything else installed; version still unknown
+	if (@metaData.$version == "unknown") {
+		@metaData.$vendor="CA";
+		@metaData.$product="CA Personal Firewall";
+		@metaData.$version=$strTmp;
+
+		if(@metaData.$history) {
+			if(checkConfig("etrust:@metaData.$version",@metaData)) {
+				echo "\r\rNo change in PSP configs.\r\r";
+			} else {
+				echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+			}
+		}else{
+			echo "\r\rNo PSP history found.\r\r";
+			createConfig("etrust:@metaData.$version",@metaData);
+		}
+	}  else { @metaData.$information = "@metaData.$information, Firewall_$strTmp"; }
+
+	# for fw version 10 (2008)
+	if ($strMajorVersion == "10") {
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value aplog`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "1") { echo "\tFirewall Logging On (default): Events are logged to fwflog."; }
+			else { echo "\tFirewall Logging Off (not default): Events are NOT logged to fwflog."; }
+		}
+
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value evlog`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "1") { echo "\tApplication Logging On (default): Events are logged to appflog."; }
+			else { echo "\tApplication Logging Off (not default): Events are NOT logged to appflog."; }
+		}
+	}
+
+	# for fw version 11 (2009)
+	if ($strMajorVersion == "11") {
+		# safeguard settings
+		# registry protection
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value sbxrg`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "00000001") { echo "\tRegistry Protection On (default): \n\tCritical registry entries are protected from modification by unknown programs."; }
+			else { echo "\tRegistry Protection Off (NOT default): \n\tCritical registry entries are NOT protected from modification by unknown programs."; }
+		}
+
+		# program protection
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value sbxspg`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "00000001") { echo "\tProgram Protection On (NOT default): \n\tPrograms are monitored to prevent them from spawning potentially malicious programs."; }
+			else { echo "\tProgram Protection Off (default): \n\tPrograms are NOT monitored to prevent them from spawning potentially malicious programs."; }
+		}
+
+		# code injection protection
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value sbxsg`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "00000001") { echo "\tCode Injection Protection On (NOT default): \n\tPrograms are monitored for attempts to inject malicious code."; }
+			else { echo "\tCode Injection Protection Off (default): \n\tPrograms are NOT monitored for attempts to inject malicious code."; }
+		}
+
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value alertoptions`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "00000001") { echo "\tApplication Alert Option 1 (NOT default): \n\tApplication network access causes user popup."; }
+			else { echo "\tApplication Alert Option 0 (default): \n\tApplication network access does not cause popup."; }
+		}
+
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value checkknownapps`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "00000000") { echo "\tCheck Known Apps Option 0 (NOT default): \n\tIf application alert option is 1, will always causes popup to user."; }
+			else { echo "\tCheck Known Apps Option 1 (default): \n\tApplication alert level 1 only causes popup to user if not in known apps list."; }
+		}
+	}
+
+	# for fw version 10 and 11 (2009)
+	if ($strMajorVersion == "10" || $strMajorVersion == "11") {
+		# reporting settings
+		if(`regquery -hive L -subkey "SOFTWARE\\ca\\hipsengine\\products\\capf" -value alertlevel`) {
+			$strTmp=GetCmdData("value_data");
+			if($strTmp == "00000001") { echo "\tFW Alert Level High (NOT default): All firewall alerts pop up to the user. User active? Check fwflog."; }
+			else if($strTmp == "00000008") { echo "\tFW Alert Level Medium (NOT default): Only firewall alerts requiring user attention pop up."; }
+			else { echo "\tFW Alert Level Off (default):NO firewall alerts pop up to the user."; }
+		}
+	}
+
+	# check for and get fwflog
+	if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value fwflog`) {
+		@metaData.$logFile=GetCmdData("value_data");
+		echo "\tfwflog location: \n\t@metaData.$logFile";
+		if(`getfileattribs -file "@metaData.$logFile"`) {
+			$strTmp = GetCmdData("modifiedtime");
+			string $strDate = GetCmdData("modifieddate");
+			int $iSize = GetCmdData("size");
+			echo "\tfwflog modified on $strDate at $strTmp. Size $iSize bytes.";
+			if(prompt "\tIs the log recent? Would you like to get it now?"){
+				`get "@metaData.$logFile"`;
+			}
+		} else {
+			echo "\tfwflog empty.";
+		}
+	}
+
+	if(`regquery -hive L -subkey "SOFTWARE\\ca\\capf" -value appflog`) {
+		@metaData.$logFile=GetCmdData("value_data");
+		echo "\tappflog location: \n\t@metaData.$logFile";
+		if(`getfileattribs -file "@metaData.$logFile"`) {
+			$strTmp = GetCmdData("modifiedtime");
+			string $strDate = GetCmdData("modifieddate");
+			int $iSize = GetCmdData("size");
+			echo "\tappflog modified on $strDate at $strTmp. Size $iSize bytes.";
+			if(prompt "\tIs the log recent? Would you like to get it now?"){
+				`get "@metaData.$logFile"`;
+			}
+		} else { 
+			echo "\tappflog empty.";
+		}
+	}
+}
+
+if (@metaData.$version == "unknown") {
+	echo "!! Unknown Computer Associates application. You are on your own !!";
+} else {
+	echo "Writing PSP Metadata information to pspInformation.txt";
+	if(writeMetaData(@metaData)){
+  		echo "Wrote MetaData to disk";
+	} else {
+ 		echo "ERROR: could not write meta data to disk, find help.";
+	}
+}
+
+@record off;
+
+
+# conducts a registry query and returns value or false in $logtext
+sub go(IN string $regkey, IN string $regvalue, IN string $prod, REF string $logtext){
+	string $strTmp;
+	@record on; 
+	if(`regquery -hive L -subkey "$regkey" -value "$regvalue"`){
+		$strTmp=GetCmdData("value_data");
+		if($logtext == "NTR") {$logtext="";}
+		if(StrLen($strTmp)<1){return false;}
+		if(Sizeof($logtext)>1){
+			$logtext="$logtext,$prod\_$strTmp";
+		} else {$logtext="$prod\_$strTmp";}
+	} else {return false;}
+	@record off;
+}
+
+# sets noInject (no pwdump) true
+sub safety() {
+	SetEnv("noInject", "TRUE");
+}

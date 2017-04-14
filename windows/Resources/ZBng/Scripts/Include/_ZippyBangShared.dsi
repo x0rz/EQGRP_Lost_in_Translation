@@ -1,0 +1,260 @@
+#--------------------------------------------------------
+# File: _ZippyBangShared.dsi
+#
+# Functions that are shared through ZippyBang script
+#
+# Modifications:
+#  10/08/2007	Created.
+#  06/02/2008	Prepared for initial release
+#--------------------------------------------------------
+@include "_File.dsi";
+@include "_Menu.dsi";
+
+
+#--------------------------------------------------------------#
+# AddCommandToStopList
+#
+#		Helper function to enqueue a command id for cleanup
+#--------------------------------------------------------------#
+sub AddCommandToStopList( REF string %params, IN int $id ) {
+	int $index = 0;
+	if( defined( %params{'id'} ) ) {
+		$index = sizeof( %params{'id'} );
+	}
+	%params{'id'}[$index] = "$id";
+	
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+# PrintCredentialInformation
+#
+#		Displays the current credential information
+#-------------------------------------------------------------------------------#
+sub PrintCredentialInformation( REF string %params ) {
+	if(
+			defined( %params{'token_handle'} ) && %params{'token_handle'} != "" &&
+			defined( %params{'token_alias'} )  && %params{'token_alias'} != ""  
+	) {
+		echo "Selected Token : %params{'token_alias'} (%params{'token_handle'})" ;
+	} else if(
+			defined( %params{'fullname'} ) &&
+			defined( %params{'username'} ) &&
+			defined( %params{'domain'}   ) &&
+			defined( %params{'password'} ) 
+	) {
+		echo "Username : %params{'username'}";
+		echo "Domain   : %params{'domain'}";
+		echo "Password : %params{'password'}";
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+# FileExistsAuth
+#
+#		Determines if a file exists with a given set of authorization
+#-------------------------------------------------------------------------------#
+Sub FileExistsAuth(IN STRING $file, IN string %params) {
+    return FileExistsAuth($file, "", %params);
+}	/* end _FileExists (no path) */
+
+#-------------------------------------------------------------------------------#
+# FileExistsAuth
+#
+#		Determines if a file exists with a given set of authorization
+#-------------------------------------------------------------------------------#
+Sub FileExistsAuth(IN STRING $file, IN STRING $path, IN string %params) {
+	@echo off;
+	bool $ok;
+    if (StrLen($path) == 0) {
+		return __FileExistsCmd( "%params{'prefix'} dir \"$file\"" );
+    } else {
+		return __FileExistsCmd( "%params{'prefix'} dir \"$path/$file\"" );
+	}
+}	/* end _FileExists (path) */
+
+#-------------------------------------------------------------------------------
+# _GetFiles
+#	Returns the files matching a given path and mask
+# Params:
+#	mask	- The file mask
+#	path	- Where to look
+#	files	- The matching files
+#-------------------------------------------------------------------------------
+Sub GetFilesAuth(IN STRING $path, IN STRING $mask, IN STRING %params, OUT STRING $files) {
+	return __GetFilesCmd( '%params{"prefix"} dir -mask "$mask" -path "$path/"', $files );
+}	/* end _GetFiles */
+
+#-------------------------------------------------------------------------------
+# PrintStatus
+#
+#		Makes printing
+#-------------------------------------------------------------------------------
+Sub PrintStatus( IN bool $status ) {
+	return PrintStatus( $status, GOOD, ERROR );
+}
+
+#-------------------------------------------------------------------------------
+Sub PrintStatus( IN bool $status, IN int $state ) {
+	return PrintStatus( $status, $state, $state );
+}
+
+#-------------------------------------------------------------------------------
+Sub PrintStatus( IN bool $status, IN int $good, IN int $bad ) {
+	if( $status ) {
+		echo( "    SUCCESS", $good );
+	} else {
+		echo( "    FAILED", $bad );
+	}
+	return $status;
+}
+
+#-------------------------------------------------------------------------------#
+# EnterUserInformation
+#
+#		Get username and password and domain from the user
+#-------------------------------------------------------------------------------#
+sub EnterUserInformation( REF string %params ) {
+	if( !GetUserNameAndPassword( %params{'fullname'}, %params{'password'} ) ) {
+		return false;
+	}
+	
+	if( !GetDomain( %params{'fullname'}, %params{'username'}, %params{'domain'} ) ) {
+		return false;
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+# EnterUserNameAndPassword
+#
+#		Get username and password and domain from the user
+#-------------------------------------------------------------------------------#
+sub GetUserNameAndPassword( OUT string $username, OUT string $password ) {
+	echo "Enter the username in a qualified manner.";
+	echo "Ex:  'foo\@bar' or 'bar\\foo' indicate user 'foo' in domain 'bar'";
+	echo "Ex:  'foo' indicates local user 'foo' on the target box";
+	GetInput( "Enter username", $username );
+	GetInput( "Enter (NULL) for no password", $password );
+	if( $password == "(NULL)" ) {
+		$password = "";
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+# GetDomain
+#
+#		Get domain from the username
+#-------------------------------------------------------------------------------#
+sub GetDomain( IN string $full, OUT string $user, OUT string $domain ) {
+	string $matches;
+	if( RegexMatch("^([^\\\\]*)\\\\([^\\\\]*)\$", $full, $matches ) && defined( $matches ) && sizeof( $matches ) == 2 ) {
+		$domain = $matches[0];
+		$user = $matches[1];
+	} else if( RegexMatch("^([^\\\\]*)\@([^\\\\]*)\$", $full, $matches ) && defined( $matches ) && sizeof( $matches ) == 2 ) {
+		$user = $matches[0];
+		$domain = $matches[1];
+	} else {
+		$user = $full;
+		$domain = "";
+	}
+	return true;
+	
+}
+
+#-------------------------------------------------------------------------------#
+# _HideAll
+#
+#		Hide all elements in the list
+#-------------------------------------------------------------------------------#
+sub _HideAll( REF string %menu, REF string $array ) {
+	for( int $i = 0; $i < sizeof( $array ); $i++) {
+		_HideOption( %menu, $array[$i] );
+	}
+}
+
+#-------------------------------------------------------------------------------#
+# _AddToSection
+#
+#		Adds 
+#-------------------------------------------------------------------------------#
+sub _AddToSection( REF string %menu, REF string $section, REF string $array, IN int $index, IN string $text, IN string $key, IN string $handler ) {
+	if( defined( $array[$index] ) && $array[$index] != "" ) {
+		# already exists, we just need to rename it
+		_RenameOption( %menu, $array[$index], $text );
+		_ShowOption( %menu, $array[$index] );
+		_SetOptionKey( %menu, $array[$index], $key );
+	} else {
+		string $temp;
+		_AddOption( %menu, $section, $text, $handler, true, $key, $temp );
+		$array[$index] = $temp;
+	}
+}
+
+#----------------------------------------------------------------
+sub IsCommandAvailable( IN string $cmd )
+{
+	return IsCommandAvailable( $cmd, IsLocal() );
+}
+
+#----------------------------------------------------------------
+sub IsCommandAvailable( IN string $cmd, IN bool $local )
+{
+	string $prefix;
+	if( $local ) {
+		$prefix = "local ";
+	} else {
+		$prefix = "";
+	}
+	@case-sensitive off;
+	# check the available command?
+	if( !`$prefix available -command $cmd` ) {
+		return false;
+	}
+	
+	# get command's disabled status
+	@record on;
+	if( !`local aliases -list` ) {
+		return false;
+	}
+	@record off;
+	object $aliases;
+	if( !( GetCmdData( "aliasitem", $aliases ) && defined( $aliases) ) ) {
+		return false;
+	}
+	
+	for (int $i=0; $i < sizeof($aliases); $i++) {
+		string $location, $replace, $a;
+		if( !(
+			GetObjectData( $aliases[$i], "location", $location ) && defined( $location ) &&
+			GetObjectData( $aliases[$i], "replace",  $replace  ) && defined( $replace  ) &&
+			GetObjectData( $aliases[$i], "alias",    $a        ) && defined( $a        )
+		) ) {
+			return false;
+		}
+		
+		if( !( $a == $cmd ) ) {
+			continue;
+		}
+		# this is the right command
+		
+		if( !($location == "BOTH" ||
+				( $local && ( $location == "LOCAL" ) ) ||
+				( !$local && ( $location == "REMOTE" ) )
+		) ) {
+			# this is not for our side
+			continue;
+		}
+		
+		# this is the right side
+		if( RegExMatch( "^.*/_NotAvailable.dss .*\$", $replace ) ) {
+			return false;
+		}
+		break;
+	}
+	
+	return true;
+}
+

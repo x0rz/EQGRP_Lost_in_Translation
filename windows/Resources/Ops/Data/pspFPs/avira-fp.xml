@@ -1,0 +1,15 @@
+<Software value="PSP">
+ <Vendor value="Avira" regkey="HKLM\software\avira">
+  <Product value="AntiVir Personal Edition Classic" regkey="HKLM\software\avira\antivir personaledition classic">
+  </Product>
+  <Product value="AntiVir Personal Edition Classic" regkey="HKLM\software\avira\antivir personaledition premium">
+  </Product>
+  <Product value="AntiVir Personal Edition Classic" regkey="HKLM\software\avira\antivir workstation">
+  </Product>
+  <Product value="AntiVir Personal Edition Classic" regkey="HKLM\software\avira\premium security suite">
+  </Product>
+  <Product value="%regdata%" regkey="HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Avira AntiVir Desktop" regsubkey="DisplayName">
+   <Version value="%regdata%" regkey="HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Avira AntiVir Desktop" regsubkey="DisplayVersion" />
+  </Product>
+ </Vendor>
+</Software>

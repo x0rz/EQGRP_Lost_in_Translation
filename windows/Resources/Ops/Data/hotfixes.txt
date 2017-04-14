@@ -1,0 +1,941 @@
+KB324929:MS02-068 Cumulative Patch for Internet Explorer
+KB328310:MS02-071 Flaw in Windows WM_TIMER Message Handling Could Enable Privilege Elevation
+KB329170:MS02-070 Flaw in SMB Signing Could Enable Group Policy to be Modified
+KB330994:MS03-014 Cumulative Patch for Outlook Express
+KB331065:MS03-009 Flaw in ISA Server DNS intrusion detection filter can cause Denial of Service
+KB331066:MS03-012 Flaw In Winsock Proxy Service And ISA Firewall Service Can Cause Denial Of Service
+KB331866:MS02-067 E-mail Header Processing Flaw Could Cause Outlook 2002 to Fail
+KB331953:MS03-010 Flaw in RPC Endpoint Mapper Could Allow Denial of Service Attacks
+KB810030:MS02-069 Flaw in Microsoft VM Could Enable System Compromise
+KB810487:MS03-002 Cumulative Patch for Microsoft Content Management Server
+KB810577:MS03-005 Unchecked Buffer in Windows Redirector Could Allow Privilege Elevation
+KB810833:MS03-001 Unchecked Buffer in Locator Service Could Lead to Code Execution
+KB810847:MS03-004 Cumulative Patch for Internet Explorer
+KB811114:MS03-018 Cumulative Patch for Internet Information Service
+KB811493:MS03-013 Buffer Overrun in Windows Kernel Message Handling could Lead to Elevated Privileges
+KB812262:MS03-003 Flaw in how Outlook 2002 handles V1 Exchange Server Security Certificates could lead to Information Disclosure
+KB812709:MS03-006 Flaw in Windows Me Help and Support Center Could Enable Code Execution
+KB813360:MS03-051 Buffer Overrun in Microsoft FrontPage Server Extensions Could Allow Code Execution
+KB813489:MS03-015 Cumulative Patch for Internet Explorer
+KB814078:MS03-008 Flaw in Windows Script Engine could allow code execution
+KB815021:MS03-007 Unchecked Buffer In Windows Component Could Cause Server Compromise
+KB815206:MS03-016 Cumulative Patch for BizTalk Server
+KB815495:MS03-031 Cumulative Patch for Microsoft SQL Server
+KB816093:MS03-011 Flaw in Microsoft VM Could Enable System Compromise
+KB816456:MS03-028 Flaw in ISA Server Error Pages Could Allow Cross-Site Scripting Attack
+KB816458:MS04-001 Vulnerability in H.323 Filter can Allow Remote Code Execution
+KB817606:MS03-024 Buffer Overrun in Windows Could Lead to Data Corruption
+KB817772:MS03-019 Flaw in ISAPI extension for Windows Media Services could cause denial of service
+KB817787:MS03-017 Flaw in Windows Media Player Skins Downloading Could Allow Code Execution
+KB818529:MS03-020 Cumulative Patch for Internet Explorer
+KB819639:MS03-021 Flaw In Windows Media Player May Allow Media Library Access
+KB819696:MS03-030 Unchecked Buffer in DirectX Could Enable System Compromise
+KB821557:MS03-027 Unchecked Buffer in Windows Shell Could Enable System Compromise
+KB822343:MS03-022 Flaw in ISAPI Extension for Windows Media Services Could Cause Code Execution
+KB822679:MS03-025 Flaw in Windows Message Handling through Utility Manager Could Enable Privilege Elevation
+KB822715:MS03-037 Flaw in Visual Basic for Applications Could Allow Arbitrary Code execution
+KB822831:BUG Driver Installation Program Does Not Install Device Drivers
+KB822925:MS03-032 Cumulative Patch for Internet Explorer
+KB823182:MS03-041 Vulnerability in Authenticode Verification Could Allow Remote Code Execution
+KB823353:MS04-018 Cumulative Security Update for Outlook Express
+KB823559:MS03-023 Buffer Overrun In HTML Converter Could Allow Code Execution
+KB823718:MS03-033 Unchecked Buffer in MDAC Function Could Enable System Compromise
+KB823718:MS03-033 Unchecked Buffer in MDAC Function Could Enable System Compromise 
+KB823803:MS03-029 Flaw in Windows Function Could Allow Denial of Service
+KB823980:MS03-026 Buffer Overrun In RPC Interface Could Allow Code Execution
+KB824105:MS03-034 Flaw in NetBIOS Could Lead to Information Disclosure
+KB824141:MS03-045 Buffer Overrun in the ListBox and in the ComboBox Control Could Allow Code Execution
+KB824145:MS03-048 Cumulative Security Update for Internet Explorer
+KB824146:MS03-039 Buffer Overrun In RPCSS Service Could Allow Code Execution
+KB824151:MS04-030 Vulnerability in WebDav XML Message Handler Could Lead to a Denial of Service
+KB825119:MS03-044 Buffer Overrun in Windows Help and Support Center Could Lead to System Compromise
+KB826232:MS03-042 Buffer Overflow in Windows Troubleshooter ActiveX Control Could Allow Code Execution
+KB827103:MS03-036 Buffer Overrun in WordPerfect Converter Could Allow Code Execution
+KB827104:MS03-038 Unchecked buffer in Microsoft Access Snapshot Viewer Could Allow Code Execution
+KB827653:MS03-035 Flaw in Microsoft Word Could Enable Macros to Run Automatically
+KB828028:MS04-007 ASN .1 Vulnerability Could Allow Code Execution
+KB828035:MS03-043 Buffer Overrun in Messenger Service Could Allow Code Execution
+KB828040:MS04-009 Vulnerability in Microsoft Outlook Could Allow Code Execution
+KB828489:MS03-047 Vulnerability in Exchange Server 5.5 Outlook Web Access Could Allow Cross-Site Scripting Attack
+KB828741:MS04-012 Cumulative Update for Microsoft RPC/DCOM
+KB828749:MS03-049 Buffer Overrun in the Workstation Service Could Allow Code Execution
+KB828750:MS03-040 Cumulative Patch for Internet Explorer
+KB829436:MS03-046 Vulnerability in Exchange Server Could Allow Arbitrary Code Execution
+KB830352:MS04-006 Vulnerability in the Windows Internet Naming Service (WINS) Could Allow Code Execution
+KB831527:MS03-050 Vulnerability in Microsoft Word and Microsoft Excel Could Allow Arbitrary Code to run
+KB831527:MS03-050 Vulnerability in Microsoft Word and Microsoft Excel Could Allow Arbitrary Code to run.
+KB832359:MS04-008 Vulnerability in Windows Media Services Could Allow a Denial of Service
+KB832483:MS04-003 Buffer Overrun in MDAC Function Could Allow Code Execution
+KB832759:MS04-002 Vulnerability in Exchange Server 2003 Could Lead to Privilege Escalation
+KB832894:MS04-004 Cumulative Security Update for Internet Explorer
+KB834707:MS04-038 Cumulative Security Update for Internet Explorer
+KB835150:MS04-005 Vulnerability in Virtual PC for Mac could lead to privilege elevation
+KB835732:MS04-011 Security Update for Microsoft Windows
+KB837001:MS04-014 Vulnerability in the Microsoft Jet Database Engine Could Allow Code Execution
+KB837009:MS04-013 Cumulative Security Update for Outlook Express
+KB838512:MS04-010 Vulnerability in MSN Messenger Could Allow Information Disclosure
+KB839643:MS04-016 Vulnerability in DirectPlay Could Allow Denial of Service
+KB839645:MS04-024 Vulnerability in Windows Shell Could Allow Remote Code Execution
+KB840315:MS04-023 Vulnerability in HTML Help Could Allow Code Execution
+KB840374:MS04-015 Vulnerability in Help and Support Center Could Allow Remote Code Execution
+KB840987:MS04-032 Security Update for Microsoft Windows
+KB841356:MS04-037 Vulnerability in Windows Shell Could Allow Remote Code Execution
+KB841373:MS04-021 Security Update for IIS 4.0
+KB841533:MS04-031 Vulnerability in NetDDE Could Allow Remote Code Execution
+KB841872:MS04-020 Vulnerability in POSIX Could Allow Code Execution
+KB841873:MS04-022 Vulnerability in Task Scheduler Could Allow Code Execution
+KB842463:MS04-026 Vulnerability in Exchange Server 5.5 Outlook Web Access Could Allow Cross-Site Scripting and Spoofing Attacks
+KB842526:MS04-019 Vulnerability in Utility Manager Could Allow Code Execution
+KB842689:MS04-017 Vulnerability in Crystal Reports Web Viewer Could Allow Information Disclosure and Denial of Service
+KB867282:MS05-014 Cumulative Security Update for Internet Explorer
+KB867801:MS04-025 Cumulative Security Update for Internet Explorer
+KB870763:MS04-045 Vulnerability in WINS Could Allow Remote Code Execution
+KB871250:MS05-003 Vulnerability in the Indexing Service Could Allow Remote Code Execution
+KB873333:MS05-012 Vulnerability in OLE and COM Could Allow Remote Code Execution
+KB873339:MS04-043 Vulnerability in HyperTerminal Could Allow Code Execution
+KB873350:MS04-029 Vulnerability in RPC Runtime Library Could Allow Information Disclosure and Denial of Service
+KB873352:MS05-005 Vulnerability in Microsoft Office XP could lead to Buffer Overrun
+KB873374:MS04-028 Buffer Overrun in JPEG Processing (GDI+) Could Allow Code Execution
+KB873376:MS04-034 Vulnerability in Compressed (zipped) Folders Could Allow Code Execution
+KB883935:MS04-036 Vulnerability in NNTP Could Allow Code Execution
+KB883939:MS05-025 Cumulative Security Update for Internet Explorer
+KB884933:MS04-027 Vulnerability in WordPerfect Converter Could Allow Code Execution
+KB885249:MS04-042 Vulnerability in DHCP Could Allow Remote Code Execution and Denial Of Service
+KB885250:MS05-011 Vulnerability in Server Message Block Could Allow Remote Code Execution
+KB885834:MS05-010 Vulnerability in the License Logging Service Could Allow Code Execution
+KB885835:MS04-044 Vulnerabilities in Windows Kernel and LSASS Could Allow Elevation of Privilege
+KB885836:MS04-041 Vulnerability in WordPad Could Allow Code Execution
+KB885881:MS04-035 Vulnerability in SMTP Could Allow Remote Code Execution
+KB886836:MS04-033 Vulnerability in Microsoft Excel Could Allow Code Execution
+KB887219:MS05-004 ASP.NET Path Validation Vulnerability
+KB887981:MS05-006 Vulnerability in Windows SharePoint Services and SharePoint Team Services Could Allow Cross-Site Scripting and Spoofing Attacks
+KB888113:MS05-015 Vulnerability in Hyperlink Object Library Could Allow Remote Code Execution
+KB888258:MS04-039 Vulnerability in ISA Server 2000 and Proxy Server 2.0 Could Allow Internet Content Spoofing
+KB888302:MS05-007 Vulnerability in Windows Could Allow Information Disclosure
+KB889167:MS06-010 Vulnerability in PowerPoint 2000 Could Allow Information Disclosure
+KB889293:MS04-040 Cumulative Security Update for Internet Explorer
+KB890046:MS05-032 Vulnerability in Microsoft Agent Could Allow Spoofing
+KB890047:MS05-008 Vulnerabilty in Windows Shell Could Allow Remote Code Execution
+KB890169:MS05-023 Vulnerabilities in Microsoft Word May Lead to Remote Code Execution
+KB890175:MS05-001 Vulnerability in HTML Help Could Allow Code Execution
+KB890261:MS05-009 Vulnerability in PNG Processing Could Lead to Buffer Overrun
+KB890859:MS05-018 Vulnerability in Windows Kernel Could Allow Elevation of Privilege and Denial of Service
+KB890923:MS05-020 Cumulative Security Update for Internet Explorer
+KB891711:MS05-002 Vulnerability in Cursor and Icon Format Handling Could Allow Remote Code Execution
+KB891781:MS05-013 Vulnerability in the DHTML Editing ActiveX Control could allow code execution
+KB892944:MS05-017 Vulnerability in Message Queuing Could Allow Code Execution
+KB893066:MS05-019 Vulnerabilities in TCP/IP Could Allow Remote Code Execution and Denial of Service
+KB893086:MS05-016 Vulnerability in Windows Shell that Could Allow Remote Code Execution
+KB893756:MS05-040 Vulnerability in Telephony Service Could Allow Remote Code Execution
+KB894320:MS05-024 Vulnerability in Web View Could Allow Remote Code Execution
+KB894549:MS05-021 Vulnerability in Exchange Server Could Allow Remote Code Execution
+KB895179:MS05-029 Vulnerability in Outlook Web Access for Exchange Server 5.5 Could Allow Cross-Site Scripting Attacks
+KB896358:MS05-026 Vulnerability in HTML Help Could Allow Remote Code Execution
+KB896422:MS05-027 Vulnerability in Server Message Block Could Allow Remote Code Execution
+KB896423:MS05-043 Vulnerability in Print Spooler Service Could Allow Remote Code Execution
+KB896424:MS05-053 Vulnerabilities in Graphics Rendering Engine Could Allow Code Execution
+KB896426:MS05-028 Vulnerability in Web Client Service Could Allow Remote Code Execution
+KB896428:MS05-033 Vulnerability in Telnet Client Could Allow Information Disclosure
+KB896597:MS05-022 Vulnerability in MSN Messenger Could Lead to Remote Code Execution
+KB896688:MS05-052 Cumulative Security Update for Internet Explorer
+KB896727:MS05-038 Cumulative Security Update for Internet Explorer
+KB897715:MS05-030 Cumulative Security Update in Outlook Express
+KB898458:MS05-031 Vulnerability in Step-by-Step Interactive Training Could Allow Remote Code Execution
+KB899587:MS05-042 Vulnerabilities in Kerberos Could Allow Denial of Service, Information Disclosure, and Spoofing
+KB899588:MS05-039 Vulnerability in Plug and Play Could Allow Remote Code Execution and Elevation of Privilege
+KB899589:MS05-046 Vulnerability in the Client Service for NetWare Could Allow Remote Code Execution
+KB899591:MS05-041 Vulnerability in Remote Desktop Protocol Could Allow Denial of Service
+KB899753:MS05-034 Cumulative Security Update for ISA Server 2000
+KB900725:MS05-049 Vulnerabilities in Windows Shell Could Allow Remote Code Execution
+KB901190:MS06-009 Vulnerability in the Korean Input Method Editor Could Allow Elevation of Privilege
+KB901214:MS05-036 Vulnerability in Microsoft Color Management Module Could Allow Remote Code Execution
+KB902400:MS05-051 Vulnerabilities in MSDTC and COM+ Could Allow Remote Code Execution
+KB903235:MS05-037 Vulnerability in JView Profiler Could Allow Remote Code Execution
+KB903672:MS05-035 Vulnerability in Microsoft Word Could Allow Remote Code Execution
+KB904706:MS05-050 Vulnerability in DirectShow Could Allow Remote Code Execution
+KB905413:MS06-012 Vulnerabilities in Microsoft Office Could Allow Remote Code Execution
+KB905414:MS05-045 Vulnerability in Network Connection Manager Could Allow Denial of Service
+KB905495:MS05-044 Vulnerability in the Windows FTP Client Could Allow File Transfer Location Tampering
+KB905749:MS05-047 Vulnerability in Plug and Play Could Allow Remote Code Execution and Local Elevation of Privilege
+KB905915:MS05-054 Cumulative Security Update for Internet Explorer
+KB907245:MS05-048 Vulnerability in the Microsoft Collaboration Data Objects Could Allow Remote Code Execution
+KB908523:MS05-055 Vulnerability in Windows Kernel Could Allow Elevation of Privilege
+KB908531:MS06-015 Vulnerability in Windows Explorer Could Allow Remote Code Execution
+KB910620:MS06-004 Cumulative Security Update for Internet Explorer
+KB910729:MS06-054 Vulnerability in Microsoft Publisher Could Allow Remote Code Execution
+KB911280:MS06-025 Vulnerability in Routing and Remote Access Could Allow Remote Code Execution
+KB911562:MS06-014 Vulnerability in the Microsoft Data Access Components (MDAC) Function Could Allow Code Execution
+KB911564:MS06-006 Vulnerability in Windows Media Player Plug-in with Non-Microsoft Internet Browsers Could Allow Remote Code Execution
+KB911565:MS06-005 Vulnerability in Windows Media Player Could Allow Remote Code Execution
+KB911567:MS06-016 Cumulative Security Update for Outlook Express
+KB911927:MS06-008 Vulnerability in Web Client Service Could Allow Remote Code Execution
+KB912442:MS06-029 Vulnerability in Microsoft Exchange Server Running Outlook Web Access Could Allow Script Injection
+KB912812:MS06-013 Cumulative Security Update for Internet Explorer
+KB912919:MS06-001 Vulnerability in Graphics Rendering Engine Could Allow Remote Code Execution
+KB913433:MS06-020 Vulnerabilities in Macromedia Flash Player from Adobe Could Allow Remote Code Execution
+KB913446:MS06-007 Vulnerability in TCP/IP Could Allow Denial of Service
+KB913580:MS06-018 Vulnerability in Microsoft Distributed Transaction Coordinator Could Allow Denial of Service
+KB914388:MS06-036 Vulnerability in DHCP Client Service Could Allow Remote Code Execution
+KB914389:MS06-030 Vulnerability in Server Message Block Could Allow Elevation of Privilege
+KB914798:MS06-011 Permissive Windows Services DACLs Could Allow Elevation of Privilege
+KB915384:MS06-039 Vulnerabilities in Microsoft Office Filters Could Allow Remote Code Execution
+KB916281:MS06-021 Cumulative Security Update for Internet Explorer
+KB916768:MS06-028 Vulnerability in Microsoft PowerPoint Could Allow Remote Code Execution
+KB916803:MS06-019 Vulnerability in Microsoft Exchange Could Allow Remote Code Execution
+KB917008:MS06-044 Vulnerability in Microsoft Management Console Could Allow Remote Code Execution
+KB917159:MS06-035 Vulnerability in Server Service Could Allow Remote Code Execution
+KB917283:MS06-033 Vulnerability in ASP.NET Could Allow Information Disclosure
+KB917284:MS06-038 Vulnerabilities in Microsoft Office Could Allow Remote Code Execution
+KB917285:MS06-037 Vulnerabilities in Microsoft Excel Could Allow Remote Code Execution
+KB917336:MS06-027 Vulnerability in Microsoft Word Could Allow Remote Code Execution
+KB917344:MS06-023 Vulnerability in Microsoft JScript Could Allow Remote Code Execution
+KB917422:MS06-051 Vulnerability in Windows Kernel Could Result in Remote Code Execution
+KB917537:MS06-034 Vulnerability in Microsoft Internet Information Services using Active Server Pages Could Allow Remote Code Execution
+KB917627:MS06-017 Vulnerability in Microsoft FrontPage Server Extensions Could Allow Cross-Site Scripting
+KB917734:MS06-024 Vulnerability in Windows Media Player Could Allow Remote Code Execution
+KB917736:MS06-031 Vulnerability in RPC Mutual Authentication Could Allow Spoofing
+KB917953:MS06-032 Vulnerability in TCP/IP Could Allow Remote Code Execution
+KB918118:MS07-013 Vulnerability in Microsoft RichEdit Could Allow Remote Code Execution
+KB918439:MS06-022 Vulnerability in ART Image Rendering Could Allow Remote Code Execution
+KB918547:MS06-026 Vulnerability in Graphics Rendering Engine Could Allow Remote Code Execution
+KB918899:MS06-042 Cumulative Security Update for Internet Explorer
+KB919007:MS06-052 Vulnerability in Pragmatic General Multicast (PGM) Could Result in Remote Code Execution
+KB920213:MS06-068 Vulnerability in Microsoft Agent Could Allow Remote Code Execution
+KB920214:MS06-043 Vulnerability in Microsoft Windows Could Allow Remote Code Execution
+KB920670:MS06-050 Vulnerabilities in Microsoft Windows Hyperlink Object Library Could Allow Remote Code Execution
+KB920683:MS06-041 Vulnerability in DNS Resolution Could Allow Remote Code Execution
+KB920685:MS06-053 Vulnerability in Indexing Service Could Allow Cross-Site Scripting
+KB920958:MS06-049 Vulnerability in Windows Kernel Could Result in Elevation of Privilege
+KB921398:MS06-045 Vulnerability in Windows Explorer Could Allow Remote Code Execution
+KB921503:MS07-043 Vulnerability in OLE Automation Could Allow Remote Code Execution
+KB921585:MS07-001 Vulnerability in Microsoft Office 2003 Brazilian Portuguese Grammar Checker Could Allow Remote Code Execution
+KB921645:MS06-047 Vulnerability in Microsoft Visual Basic for Applications Could Allow Remote Code Execution
+KB921883:MS06-040 Vulnerability in Server Service Could Allow Remote Code Execution
+KB922581:MS06-062 Vulnerabilities in Microsoft Office Could Allow Remote Code Execution
+KB922616:MS06-046 Vulnerability in HTML Help Could Allow Remote Code Execution
+KB922760:MS06-067 Cumulative Security Update for Internet Explorer
+KB922770:MS06-056 Vulnerability in ASP.NET 2.0 Could Allow Information Disclosure
+KB922819:MS06-064 Vulnerabilities in TCP/IP IPv6 Could Allow Denial of Service
+KB922968:MS06-048 Vulnerabilities in Microsoft Office Could Allow Remote Code Execution
+KB923191:MS06-057 Vulnerability in Windows Explorer Could Allow Remote Execution
+KB923414:MS06-063 Vulnerability in Server Service Could Allow Denial of Service
+KB923689:MS06-078 Vulnerability in Windows Media Format Could Allow Remote Code Execution
+KB923694:MS06-076 Cumulative Security Update for Outlook Express
+KB923723:MS07-005 Vulnerability in Step-by-Step Interactive Training Could Allow Remote Code Execution
+KB923789:MS06-069 Vulnerabilities in Macromedia Flash Player from Adobe Could Allow Remote Code Execution
+KB923810:MS07-055 Vulnerability in Kodak Image Viewer Could Allow Remote Code Execution
+KB923980:MS06-066 Vulnerabilities in Client Service for NetWare Could Allow Remote Code Execution
+KB924163:MS06-058 Vulnerabilities in Microsoft PowerPoint Could Allow Remote Code Execution
+KB924164:MS06-059 Vulnerabilities in Microsoft Excel Could Allow Remote Code Execution
+KB924191:MS06-061 Vulnerabilities in Microsoft XML Core Services Could Allow Remote Code Execution
+KB924270:MS06-070 Vulnerability in Workstation Service Could Allow Remote Code Execution
+KB924496:MS06-065 Vulnerability in Windows Object Packager Could Allow Remote Execution
+KB924554:MS06-060 Vulnerabilities in Microsoft Word Could Allow Remote Code Execution
+KB924667:MS07-012 Vulnerability in Microsoft MFC Could Allow Remote Code Execution
+KB925454:MS06-072 Cumulative Security Update for Internet Explorer
+KB925486:MS06-055 Vulnerability in Vector Markup Language Could Allow Remote Code Execution
+KB925674:MS06-073 Vulnerability in Visual Studio 2005 Could Allow Remote Code Execution
+KB925902:MS07-017 Vulnerabilities in GDI Could Allow Remote Code Execution
+KB925938:MS07-003 Vulnerabilities in Microsoft Outlook Could Allow Remote Code Execution
+KB925939:MS07-018 Vulnerabilities in Microsoft Content Management Server Could Allow Remote Code Execution
+KB926121:MS06-077 Vulnerability in Remote Installation Service Could Allow Remote Code Execution
+KB926122:MS07-039 Vulnerability in Windows Active Directory Could Allow Remote Code Execution
+KB926247:MS06-074 Vulnerability in SNMP Could Allow Remote Code Execution
+KB926255:MS06-075 Vulnerability in Windows Could Allow Elevation of Privilege
+KB926436:MS07-011 Vulnerability in Microsoft OLE Dialog Could Allow Remote Code Execution
+KB927051:MS07-030 Vulnerabilities in Microsoft Visio Could Allow Remote Code Execution
+KB927198:MS07-002 Vulnerabilities in Microsoft Excel Could Allow Remote Code Execution
+KB927779:MS07-009 Vulnerability in Microsoft Data Access Components Could Allow Remote Code Execution
+KB927802:MS07-007 Vulnerability in Windows Image Acquisition Service Could Allow Elevation of Privilege
+KB928088:MS06-071 Vulnerability in Microsoft XML Core Services Could Allow Remote Code Execution
+KB928090:MS07-016 Cumulative Security Update for Internet Explorer
+KB928255:MS07-006 Vulnerability in Windows Shell Could Allow Elevation of Privilege
+KB928843:MS07-008 Vulnerability in HTML Help ActiveX Control Could Allow Remote Code Execution
+KB929123:MS07-034 Cumulative Security Update for Outlook Express and Windows Mail
+KB929434:MS07-014 Vulnerabilities in Microsoft Word Could Allow Remote Code Execution
+KB929969:MS07-004 Vulnerability in Vector Markup Language Could Allow Remote Code Execution
+KB930178:MS07-021 Vulnerabilities in CSRSS Could Allow Remote Code Execution
+KB931212:MS07-040 Vulnerabilities in .NET Framework Could Allow Remote Code Execution
+KB931213:MS07-032 Vulnerability in Windows Vista Could Allow Information Disclosure
+KB931261:MS07-019 Vulnerability in Universal Plug and Play Could Allow Remote Code Execution
+KB931768:MS07-027 Cumulative Security Update for Internet Explorer
+KB931784:MS07-022 Vulnerability in Windows Kernel Could Allow Elevation of Privilege
+KB931832:MS07-026 Vulnerabilities in Microsoft Exchange Could Allow Remote Code Execution
+KB931906:MS07-028 Vulnerability in CAPICOM Could Allow Remote Code Execution
+KB932135:MS07-010 Vulnerability in Microsoft Malware Protection Engine Could Allow Remote Code Execution
+KB932168:MS07-020 Vulnerability in Microsoft Agent Could Allow Remote Code Execution
+KB932554:MS07-015 Vulnerabilities in Microsoft Office Could Allow Remote Code Execution
+KB933103:MS08-017 Vulnerabilities in Microsoft Office Web Components Could Allow Remote Code Execution
+KB933566:MS07-033 Cumulative Security Update for Internet Explorer
+KB933729:MS07-058 Vulnerability in RPC Could Allow Denial of Service
+KB934232:MS07-024 Vulnerabilities in Microsoft Word Could Allow Remote Code Execution
+KB934233:MS07-023 Vulnerabilities in Microsoft Excel Could Allow Remote Code Execution
+KB934873:MS07-025 Vulnerability in Microsoft Office Could Allow Remote Code Execution
+KB935807:MS07-038 Vulnerability in Windows Vista Firewall Could Allow Information Disclosure
+KB935839:MS07-035 Vulnerability in Win 32 API Could Allow Remote Code Execution
+KB935840:MS07-031 Vulnerability in the Windows Schannel Security Package Could Allow Remote Code Execution
+KB935966:MS07-029 Vulnerability in Windows DNS RPC Interface Could Allow Remote Code Execution
+KB936227:MS07-042 Vulnerability in Microsoft XML Core Services Could Allow Remote Code Execution
+KB936542:MS07-036 Vulnerabilities in Microsoft Excel Could Allow Remote Code Execution
+KB936548:MS07-037 Vulnerability in Microsoft Office Publisher 2007 Could Allow Remote Code Execution
+KB936782:MS07-047 Vulnerabilities in Windows Media Player Could Allow Remote Code Execution
+KB937143:MS07-045 Cumulative Security Update for Internet Explorer
+KB937894:MS07-065 Vulnerability in Message Queuing Could Allow Remote Code Execution
+KB937986:MS07-049 Vulnerability in Virtual PC and Virtual Server Could Allow Elevation of Privilege
+KB938123:MS07-048 Vulnerabilities in Windows Gadgets Could Allow Remote Code Execution
+KB938127:MS07-050 Vulnerability in Vector Markup Language Could Allow Remote Code Execution
+KB938827:MS07-051 Vulnerability in Microsoft Agent Could Allow Remote Code Execution
+KB938829:MS07-046 Vulnerability in GDI Could Allow Remote Code Execution
+KB939373:MS07-041 Vulnerability in Microsoft Internet Information Services Could Allow Remote Code Execution
+KB939653:MS07-057 Cumulative Security Update for Internet Explorer
+KB939778:MS07-053 Vulnerability in Windows Services for UNIX Could Allow Elevation of Privilege
+KB940965:MS07-044 Vulnerability in Microsoft Excel Could Allow Remote Code Execution
+KB941202:MS07-056 Security Update for Outlook Express and Windows Mail
+KB941522:MS07-052 Vulnerability in Crystal Reports for Visual Studio Could Allow Remote Code Execution
+KB941568:MS07-064 Vulnerabilities in DirectX Could Allow Remote Code Execution
+KB941644:MS08-001 Vulnerabilities in Windows TCP/IP Could Allow Remote Code Execution
+KB941672:MS07-062 Vulnerability in DNS Could Allow Spoofing
+KB942099:MS07-054 Vulnerability in MSN Messenger and Windows Live Messenger Could Allow Remote Code Execution
+KB942615:MS07-069 Cumulative Security Update for Internet Explorer
+KB942624:MS07-063 Vulnerability in SMBv2 Could Allow Remote Code Execution
+KB942695:MS07-060 Vulnerability in Microsoft Word Could Allow Remote Code Execution
+KB942830:MS08-006 Vulnerability in Internet Information Services Could Allow Remote Code Execution
+KB942831:MS08-005 Vulnerability in Internet Information Services Could Allow Elevation of Privilege
+KB943078:MS07-066 Vulnerability in Windows Kernel Could Allow Elevation of Privilege
+KB943460:MS07-061 Vulnerability in Windows URI Handling Could Allow Remote Code Execution
+KB943485:MS08-002 Vulnerability in LSASS Could Allow Local Elevation of Privilege
+KB944533:MS08-010 Cumulative Security Update for Internet Explorer
+KB944653:MS07-067 Vulnerability in Macrovision Driver Could Allow Local Elevation of Privilege
+KB946026:MS08-007 Vulnerability in WebDAV Mini-Redirector Could Allow Remote Code Execution
+KB946456:MS08-004 Vulnerability in Windows TCP/IP Could Allow Denial of Service
+KB946538:MS08-003 Vulnerability in Active Directory Could Allow Denial of Service
+KB947077:MS08-009 Vulnerability in Microsoft Word Could Allow Remote Code Execution
+KB947081:MS08-011 Vulnerabilities in Microsoft Works File Converter Could Allow Remote Code Execution
+KB947085:MS08-012 Vulnerabilities in Microsoft Office Publisher Could Allow Remote Code Execution
+KB947108:MS08-013 Vulnerability in Microsoft Office Could Allow Remote Code Execution
+KB947890:MS08-008 Vulnerability in OLE Automation Could Allow Remote Code Execution
+KB949029:MS08-014 Vulnerabilities in Microsoft Excel Could Allow Remote Code Execution
+KB949030:MS08-016 Vulnerabilities in Microsoft Office Could Allow Remote Code Execution
+KB949031:MS08-015 Vulnerability in Microsoft Outlook Could Allow Remote Code Execution
+KB_UNKNOWN:MS00-001 Malformed IMAP Request Vulnerability
+KB_UNKNOWN:MS00-002 Malformed Conversion Data Vulnerability
+KB_UNKNOWN:MS00-003 Spoofed LPC Port Request Vulnerability
+KB_UNKNOWN:MS00-004 RDISK Registry Enumeration File Vulnerability
+KB_UNKNOWN:MS00-005 Malformed RTF Control Word Vulnerability
+KB_UNKNOWN:MS00-006 Malformed Hit-Highlighting Argument Vulnerability
+KB_UNKNOWN:MS00-007 Recycle Bin Creation Vulnerability
+KB_UNKNOWN:MS00-008 Registry Permissions Vulnerability
+KB_UNKNOWN:MS00-009 Image Source Redirect Vulnerability
+KB_UNKNOWN:MS00-010 Site Wizard Input Validation Vulnerability
+KB_UNKNOWN:MS00-011 VM File Reading Vulnerability
+KB_UNKNOWN:MS00-012 Remote Agent Permissions Vulnerability
+KB_UNKNOWN:MS00-013 Misordered Windows Media Services Handshake Vulnerability
+KB_UNKNOWN:MS00-014 SQL Query Abuse Vulnerability
+KB_UNKNOWN:MS00-015 Clip Art Buffer Overrun Vulnerability
+KB_UNKNOWN:MS00-016 Malformed Media License Request Vulnerability
+KB_UNKNOWN:MS00-017 DOS Device in Path Name Vulnerability
+KB_UNKNOWN:MS00-018 Chunked Encoding Post Vulnerability
+KB_UNKNOWN:MS00-019 Virtualized UNC Share Vulnerability
+KB_UNKNOWN:MS00-020 Desktop Separation Vulnerability
+KB_UNKNOWN:MS00-021 Malformed TCP/IP Print Request Vulnerability
+KB_UNKNOWN:MS00-022 XLM Text Macro Vulnerability
+KB_UNKNOWN:MS00-023 Myriad Escaped Characters Vulnerability
+KB_UNKNOWN:MS00-024 OffloadModExpo Registry Permissions Vulnerability
+KB_UNKNOWN:MS00-025 Link View Server-Side Component Vulnerability
+KB_UNKNOWN:MS00-026 Mixed Object Access Vulnerability
+KB_UNKNOWN:MS00-027 Malformed Environment Variable Vulnerability
+KB_UNKNOWN:MS00-028 Server-Side Image Map Components Vulnerability
+KB_UNKNOWN:MS00-029 IP Fragment Reassembly Vulnerability
+KB_UNKNOWN:MS00-030 Malformed Extension Data in URL Vulnerability
+KB_UNKNOWN:MS00-031 Undelimited .HTR Request and File Fragment Reading via .HTR Vulnerabilities
+KB_UNKNOWN:MS00-032 Protected Store Key Length Vulnerability
+KB_UNKNOWN:MS00-033 Frame Domain Verification and Unauthorized Cookie Access and Malformed Component Attribute Vulnerabilities
+KB_UNKNOWN:MS00-034 Office 2000 UA Control Vulnerability
+KB_UNKNOWN:MS00-035 SQL Server 7.0 Service Pack Password Vulnerability
+KB_UNKNOWN:MS00-036 ResetBrowser Frame and Host Announcement Frame Vulnerabilities
+KB_UNKNOWN:MS00-037 HTML Help File Code Execution Vulnerability
+KB_UNKNOWN:MS00-038 Malformed Windows Media Encoder Request Vulnerability
+KB_UNKNOWN:MS00-039 SSL Certificate Validation Vulnerabilities
+KB_UNKNOWN:MS00-040 Remote Registry Access Authentication Vulnerability
+KB_UNKNOWN:MS00-041 DTS Password Vulnerability
+KB_UNKNOWN:MS00-042 Active Setup Download Vulnerability
+KB_UNKNOWN:MS00-043 Malformed E-mail Header Vulnerability
+KB_UNKNOWN:MS00-044 Absent Directory Browser Argument Vulnerability
+KB_UNKNOWN:MS00-045 Persistent Mail-Browser Link Vulnerability
+KB_UNKNOWN:MS00-046 Cache Bypass Vulnerability
+KB_UNKNOWN:MS00-047 NetBIOS Name Server Protocol Spoofing Vulnerability
+KB_UNKNOWN:MS00-048 Stored Procedure Permissions Vulnerability
+KB_UNKNOWN:MS00-049 Office HTML Script and IE Script Vulnerabilities
+KB_UNKNOWN:MS00-050 Telnet Server Flooding Vulnerability
+KB_UNKNOWN:MS00-051 Excel REGISTER.ID Function Vulnerability
+KB_UNKNOWN:MS00-052 Relative Shell Path Vulnerability
+KB_UNKNOWN:MS00-053 Service Control Manager Named Pipe Impersonation Vulnerability
+KB_UNKNOWN:MS00-054 Malformed IPX Ping Packet Vulnerability
+KB_UNKNOWN:MS00-055 Scriptlet Rendering Vulnerability
+KB_UNKNOWN:MS00-056 Microsoft Office HTML Object Tag Vulnerability
+KB_UNKNOWN:MS00-057 File Permission Canonicalization Vulnerability
+KB_UNKNOWN:MS00-058 Specialized Header Vulnerability
+KB_UNKNOWN:MS00-059 Java VM Applet Vulnerability
+KB_UNKNOWN:MS00-060 IIS Cross-Site Scripting Vulnerabilities
+KB_UNKNOWN:MS00-062 Local Security Policy Corruption Vulnerability
+KB_UNKNOWN:MS00-063 Invalid URL Vulnerability
+KB_UNKNOWN:MS00-064 Unicast Service Race Condition Vulnerability
+KB_UNKNOWN:MS00-065 Still Image Service Privilege Escalation Vulnerability
+KB_UNKNOWN:MS00-066 Malformed RPC Packet Vulnerability
+KB_UNKNOWN:MS00-067 Windows 2000 Telnet Client NTLM Authentication Vulnerability
+KB_UNKNOWN:MS00-068 OCX Attachment Vulnerability
+KB_UNKNOWN:MS00-069 Simplified Chinese IME State Recognition Vulnerability
+KB_UNKNOWN:MS00-070 Multiple LPC and LPC Ports Vulnerabilities
+KB_UNKNOWN:MS00-071 Word Mail Merge Vulnerability
+KB_UNKNOWN:MS00-072 Share Level Password Vulnerability
+KB_UNKNOWN:MS00-073 Malformed IPX NMPI Packet Vulnerability
+KB_UNKNOWN:MS00-074 WebTV for Windows Denial of Service Vulnerability
+KB_UNKNOWN:MS00-075 Microsoft VM ActiveX Component Vulnerability
+KB_UNKNOWN:MS00-076 Cached Web Credentials Vulnerability
+KB_UNKNOWN:MS00-077 NetMeeting Desktop Sharing Vulnerability
+KB_UNKNOWN:MS00-078 Web Server Folder Traversal Vulnerability
+KB_UNKNOWN:MS00-079 HyperTerminal Buffer Overflow Vulnerability
+KB_UNKNOWN:MS00-080 Session ID Cookie Marking Vulnerability
+KB_UNKNOWN:MS00-081 New Variant of VM File Reading Vulnerability
+KB_UNKNOWN:MS00-082 Malformed MIME Header Vulnerability
+KB_UNKNOWN:MS00-083 Netmon Protocol Parsing Vulnerability
+KB_UNKNOWN:MS00-084 Indexing Services Cross Site Scripting Vulnerability
+KB_UNKNOWN:MS00-085 ActiveX Parameter Validation Vulnerability
+KB_UNKNOWN:MS00-086 Web Server File Request Parsing Vulnerability
+KB_UNKNOWN:MS00-087 Terminal Server Login Buffer Overflow Vulnerability
+KB_UNKNOWN:MS00-088 Exchange User Account Vulnerability
+KB_UNKNOWN:MS00-089 Domain Account Lockout Vulnerability
+KB_UNKNOWN:MS00-090 .ASX Buffer Overrun and .WMS Script Execution Vulnerabilities
+KB_UNKNOWN:MS00-091 Incomplete TCP/IP Packet Vulnerability
+KB_UNKNOWN:MS00-092 Extended Stored Procedure Parameter Parsing Vulnerability
+KB_UNKNOWN:MS00-093 Browser Print Template and File Upload via Form Vulnerabilities
+KB_UNKNOWN:MS00-094 Phone Book Service Buffer Overflow Vulnerability
+KB_UNKNOWN:MS00-095 Registry Permissions Vulnerability
+KB_UNKNOWN:MS00-096 SNMP Parameters Vulnerability
+KB_UNKNOWN:MS00-097 Severed Windows Media Server Connection Vulnerability
+KB_UNKNOWN:MS00-098 Indexing Service File Enumeration Vulnerability
+KB_UNKNOWN:MS00-099 Directory Service Restore Mode Password Vulnerability
+KB_UNKNOWN:MS00-100 Malformed Web Form Submission Vulnerability
+KB_UNKNOWN:MS01-001 Web Client Will Perform NTLM Authentication Regardless of Security Settings
+KB_UNKNOWN:MS01-002 PowerPoint 2000 File Parser Contains Unchecked Buffer
+KB_UNKNOWN:MS01-003 Weak Permissions on Winsock Mutex Can Allow Service Failure
+KB_UNKNOWN:MS01-004 Malformed .HTR Request Allows Reading of File Fragments
+KB_UNKNOWN:MS01-005 Packaging Anomaly Could Cause Hotfixes to be Removed
+KB_UNKNOWN:MS01-006 Invalid RDP Data Can Cause Terminal Server Failure
+KB_UNKNOWN:MS01-007 Network DDE Agent Requests Can Enable Code to Run in System Context
+KB_UNKNOWN:MS01-008 Malformed NTLMSSP Request Can Enable Code to Run with System Privileges
+KB_UNKNOWN:MS01-009 Malformed PPTP Packet Stream Can Cause Kernel Exhaustion
+KB_UNKNOWN:MS01-010 Windows Media Player Skins Files Can Enable Java Code to Execute
+KB_UNKNOWN:MS01-011 Malformed Request to Domain Controller Can Cause CPU Exhaustion
+KB_UNKNOWN:MS01-012 Outlook - Outlook Express VCard Handler Contains Unchecked Buffer
+KB_UNKNOWN:MS01-013 Windows 2000 Event Viewer Contains Unchecked Buffer
+KB_UNKNOWN:MS01-014 Malformed URL Can Cause Service Failure in IIS 5.0 and Exchange 2000
+KB_UNKNOWN:MS01-015 IE Can Divulge Location of Cached Content
+KB_UNKNOWN:MS01-016 Malformed WebDAV Request Can Cause IIS to Exhaust CPU Resources
+KB_UNKNOWN:MS01-017 Erroneous VeriSign-Issued Digital Certificates Pose Spoofing Hazard
+KB_UNKNOWN:MS01-018 Visual Studio VB-TSQL Object Contains Unchecked Buffer
+KB_UNKNOWN:MS01-019 Passwords for Compressed Folders are Recoverable
+KB_UNKNOWN:MS01-020 Incorrect MIME Header Can Cause IE to Execute E-mail Attachment
+KB_UNKNOWN:MS01-021 Web Request Can Cause Access Violation in ISA Server Web Proxy Service
+KB_UNKNOWN:MS01-022 WebDAV Service Provider Can Allow Scripts to Levy Requests as User
+KB_UNKNOWN:MS01-023 Unchecked Buffer in ISAPI Extension Could Enable Compromise of IIS 5.0 Server
+KB_UNKNOWN:MS01-024 Malformed Request to Domain Controller Can Cause Memory Exhaustion
+KB_UNKNOWN:MS01-025 Index Server Search Function Contains Unchecked Buffer
+KB_UNKNOWN:MS01-026 14 May 2001 Cumulative Patch for IIS
+KB_UNKNOWN:MS01-027 Flaws in Web Server Certificate Validation Could Enable Spoofing
+KB_UNKNOWN:MS01-028 RTF Document Linked to Template Can Run Macros Without Warning
+KB_UNKNOWN:MS01-029 Windows Media Player .ASX Processor Contains Unchecked Buffer
+KB_UNKNOWN:MS01-030 Incorrect Attachment Handling in Exchange OWA Can Execute Script
+KB_UNKNOWN:MS01-031 Predictable Named Pipes Could Enable Privilege Elevation via Telnet
+KB_UNKNOWN:MS01-032 SQL Query Method Enables Cached Administrator Connection to be Reused
+KB_UNKNOWN:MS01-033 Unchecked Buffer in Index Server ISAPI Extension Could Enable Web Server Compromise
+KB_UNKNOWN:MS01-034 Malformed Word Document Could Enable Macro to Run Automatically
+KB_UNKNOWN:MS01-035 FrontPage Server Extension Sub-Component Contains Unchecked Buffer
+KB_UNKNOWN:MS01-036 Function Exposed via LDAP over SSL Could Enable Passwords to be Changed
+KB_UNKNOWN:MS01-037 Authentication Error in SMTP Service Could Allow Mail Relaying
+KB_UNKNOWN:MS01-038 Outlook View Control Exposes Unsafe Functionality
+KB_UNKNOWN:MS01-039 Services for Unix 2.0 Telnet and NFS Services Contain Memory Leaks
+KB_UNKNOWN:MS01-040 Invalid RDP Data Can Cause Memory Leak in Terminal Services
+KB_UNKNOWN:MS01-041 Malformed RPC Request Can Cause Service Failure
+KB_UNKNOWN:MS01-042 Windows Media Player .NSC Processor Contains Unchecked Buffer
+KB_UNKNOWN:MS01-043 NNTP Service in Windows NT 4.0 and Windows 2000 Contains Memory Leak
+KB_UNKNOWN:MS01-044 15 August 2001 Cumulative Patch for IIS
+KB_UNKNOWN:MS01-045 ISA Server H.323 Gatekeeper Service Contains Memory Leak
+KB_UNKNOWN:MS01-046 Access Violation in Windows 2000 IRDA Driver Can Cause System to Restart
+KB_UNKNOWN:MS01-047 OWA Function Allows Unauthenticated User to Enumerate Global Address List
+KB_UNKNOWN:MS01-048 Malformed Request to RPC Endpoint Mapper Can Cause RPC Service to Fail
+KB_UNKNOWN:MS01-049 Deeply-nested OWA Request Can Consume Server CPU Availability
+KB_UNKNOWN:MS01-051 Malformed Dotless IP Address Can Cause Web Page to be Handled in Intranet Zone
+KB_UNKNOWN:MS01-052 Invalid RDP Data Can Cause Terminal Service Failure
+KB_UNKNOWN:MS01-053 Downloaded Applications Can Execute on Mac IE 5.1 for OS X
+KB_UNKNOWN:MS01-054 Invalid Universal Plug and Play Request Can Disrupt System Operation
+KB_UNKNOWN:MS01-055 13 November 2001 Cumulative Patch for IE
+KB_UNKNOWN:MS01-056 Windows Media Player .ASF Processor Contains Unchecked Buffer
+KB_UNKNOWN:MS01-057 Specially Formed Script in HTML Mail Can Execute in Exchange 5.5 OWA
+KB_UNKNOWN:MS01-058 13 December 2001 Cumulative Patch for IE
+KB_UNKNOWN:MS01-059 Unchecked Buffer in Universal Plug and Play Can Lead to System Compromise
+KB_UNKNOWN:MS01-060 SQL Server Text Formatting Functions Contain Unchecked Buffers
+KB_UNKNOWN:MS02-001 Trusting Domains Do Not Verify Domain Membership of SIDs in Authorization Data
+KB_UNKNOWN:MS02-002 Malformed Network Request Can Cause Office v. X for Mac to Fail
+KB_UNKNOWN:MS02-003 Exchange 2000 System Attendant Incorrectly Sets Remote Registry Permissions
+KB_UNKNOWN:MS02-004 Unchecked Buffer in Telnet Server Could Lead to Arbitrary Code Execution
+KB_UNKNOWN:MS02-005 11 February 2002 Cumulative Patch for Internet Explorer
+KB_UNKNOWN:MS02-006 Unchecked Buffer in SNMP Service Could Enable Arbitrary Code to be Run
+KB_UNKNOWN:MS02-007 SQL Server Remote Data Source Function Contain Unchecked Buffers
+KB_UNKNOWN:MS02-008 XMLHTTP Control Can Allow Access to Local Files
+KB_UNKNOWN:MS02-009 Incorrect VBScript Handling in IE Can Allow Web Pages to Read Local Files
+KB_UNKNOWN:MS02-010 Unchecked Buffer in ISAPI Filter Could Allow Commerce Server Compromise
+KB_UNKNOWN:MS02-011 Authentication Flaw Could Allow Unauthorized Users To Authenticate To SMTP Service
+KB_UNKNOWN:MS02-012 Malformed Data Transfer Request Can Cause Windows SMTP Service to Fail
+KB_UNKNOWN:MS02-013 04 March 2002 Cumulative VM Update
+KB_UNKNOWN:MS02-014 Unchecked Buffer in Windows Shell Could Lead to Code Execution
+KB_UNKNOWN:MS02-015 28 March 2002 Cumulative Patch for Internet Explorer
+KB_UNKNOWN:MS05-006 MS05-006
+KB_UNKNOWN:MS06-002 Vulnerability in Embedded Web Fonts Could Allow Remote Code Execution
+KB_UNKNOWN:MS06-003 Vulnerability in TNEF Decoding in Microsoft Outlook and Microsoft Exchange Could Allow Remote Code Execution
+KB_UNKNOWN:MS07-059 MS07-059
+KB_UNKNOWN:MS07-068 Vulnerability in Windows Media File Format Could Allow Remote Code Execution (941569 and 944275)
+KB_UNKNOWN:MS98-001 Disabling Creation of Local Groups on a Domain by Non-Administrative Users
+KB_UNKNOWN:MS98-002 Error Message Vulnerability Against Secured Internet Servers
+KB_UNKNOWN:MS98-003 File Access Issue with Windows NT Internet Information Server
+KB_UNKNOWN:MS98-004 Unauthorized ODBC Data Access with RDS and IIS
+KB_UNKNOWN:MS98-005 Unwanted Data Issue with Office 98 for the Macintosh
+KB_UNKNOWN:MS98-006 Potential Denial-of-Service in IIS FTP Server due to Passive Connections
+KB_UNKNOWN:MS98-007 Potential SMTP and NNTP Denial-of-Service Vulnerabilities
+KB_UNKNOWN:MS98-008 Long file name Security Issue affecting Microsoft Outlook 98 and Microsoft Outlook Express 4.x
+KB_UNKNOWN:MS98-009 Windows NT Privilege Elevation Attack
+KB_UNKNOWN:MS98-010 Information on the Back Orifice Program
+KB_UNKNOWN:MS98-011 Window.External JScript Vulnerability in Microsoft Internet Explorer 4.0
+KB_UNKNOWN:MS98-012 Updates available for Security Vulnerabilities in Microsoft PPTP
+KB_UNKNOWN:MS98-013 Internet Explorer Cross Frame Navigate Vulnerability
+KB_UNKNOWN:MS98-014 RPC Spoofing Denial of Service on Windows NT
+KB_UNKNOWN:MS98-015 Untrusted Scripted Paste Issue in Microsoft Internet Explorer 4.01
+KB_UNKNOWN:MS98-016 Dotless IP Address Issue in Microsoft Internet Explorer 4
+KB_UNKNOWN:MS98-017 Named Pipes Over RPC Vulnerability
+KB_UNKNOWN:MS98-018 Excel CALL Vulnerability
+KB_UNKNOWN:MS98-019 IIS GET Vulnerability
+KB_UNKNOWN:MS98-020 Frame Spoof Vulnerability
+KB_UNKNOWN:MS99-001 Exposure in Forms 2.0 TextBox Control that allows data to be read from user's Clipboard
+KB_UNKNOWN:MS99-002 Word 97 Template Vulnerability
+KB_UNKNOWN:MS99-003 IIS Malformed FTP List Request Vulnerability
+KB_UNKNOWN:MS99-004 Authentication Processing Error in Windows NT 4.0 Service Pack 4
+KB_UNKNOWN:MS99-005 BackOffice Server 4.0 Does Not Delete Installation Setup File
+KB_UNKNOWN:MS99-007 Taskpads Scripting Vulnerability
+KB_UNKNOWN:MS99-008 Windows NT Screen Saver Vulnerability
+KB_UNKNOWN:MS99-009 Malformed Bind Request Vulnerability
+KB_UNKNOWN:MS99-010 File Access Vulnerability in Personal Web Server
+KB_UNKNOWN:MS99-011 DHTML Edit Vulnerability
+KB_UNKNOWN:MS99-012 MSHTML Update Available for Internet Explorer
+KB_UNKNOWN:MS99-013 File Viewers Vulnerability
+KB_UNKNOWN:MS99-014 Excel 97 Virus Warning Vulnerabilities
+KB_UNKNOWN:MS99-015 Malformed Help File Vulnerability
+KB_UNKNOWN:MS99-016 Malformed Phonebook Entry  Vulnerability
+KB_UNKNOWN:MS99-017 RAS and RRAS Password Vulnerability
+KB_UNKNOWN:MS99-018 Malformed Favorites Icon Vulnerability
+KB_UNKNOWN:MS99-019 Malformed HTR Request Vulnerability
+KB_UNKNOWN:MS99-020 Malformed LSA Request Vulnerability
+KB_UNKNOWN:MS99-021 CSRSS Worker Thread Exhaustion Vulnerability
+KB_UNKNOWN:MS99-022 Double Byte Code Page Vulnerability
+KB_UNKNOWN:MS99-023 Malformed Image Header Vulnerability
+KB_UNKNOWN:MS99-024 Unprotected IOCTLs Vulnerability
+KB_UNKNOWN:MS99-025 Unauthorized Access to IIS Servers through ODBC Data Access with RDS
+KB_UNKNOWN:MS99-026 Malformed Dialer Entry Vulnerability
+KB_UNKNOWN:MS99-027 Encapsulated SMTP Address Vulnerability
+KB_UNKNOWN:MS99-028 Terminal Server Connection Request Flooding Vulnerability
+KB_UNKNOWN:MS99-029 Malformed HTTP Request Header Vulnerability
+KB_UNKNOWN:MS99-030 Office ODBC Vulnerabilities
+KB_UNKNOWN:MS99-031 Virtual Machine Sandbox Vulnerability
+KB_UNKNOWN:MS99-032 scriptlet.typelib/Eyedog Vulnerability
+KB_UNKNOWN:MS99-033 Malformed Telnet Argument Vulnerability
+KB_UNKNOWN:MS99-034 Fragmented IGMP Packet Vulnerability
+KB_UNKNOWN:MS99-035 Set Cookie Header Caching Vulnerability
+KB_UNKNOWN:MS99-036 Windows NT 4.0 Does Not Delete Unattended Installation File
+KB_UNKNOWN:MS99-037 ImportExportFavorites Vulnerability
+KB_UNKNOWN:MS99-038 Spoofed Route Pointer Vulnerability
+KB_UNKNOWN:MS99-039 Domain Resolution and FTP Download Vulnerabilities
+KB_UNKNOWN:MS99-040 Download Behavior Vulnerability
+KB_UNKNOWN:MS99-041 RASMAN Security Descriptor Vulnerability
+KB_UNKNOWN:MS99-042 IFRAME ExecCommand Vulnerability
+KB_UNKNOWN:MS99-043 Javascript Redirect Vulnerability
+KB_UNKNOWN:MS99-044 Excel SYLK Vulnerability
+KB_UNKNOWN:MS99-045 Virtual Machine Verifier Vulnerability
+KB_UNKNOWN:MS99-046 Improve TCP Initial Sequence Number Randomness
+KB_UNKNOWN:MS99-047 Malformed Spooler Request Vulnerability
+KB_UNKNOWN:MS99-048 Active Setup Control Vulnerability
+KB_UNKNOWN:MS99-049 File Access URL Vulnerability
+KB_UNKNOWN:MS99-050 Server-side Page Reference Redirect Vulnerability
+KB_UNKNOWN:MS99-051 IE Task Scheduler Vulnerability
+KB_UNKNOWN:MS99-052 Legacy Credential Caching Vulnerability
+KB_UNKNOWN:MS99-053 Windows Multithreaded SSL ISAPI Filter Vulnerability
+KB_UNKNOWN:MS99-054 WPAD Spoofing Vulnerability
+KB_UNKNOWN:MS99-055 Malformed Resource Enumeration Argument Vulnerability
+KB_UNKNOWN:MS99-056 Syskey Keystream Reuse Vulnerability
+KB_UNKNOWN:MS99-057 Malformed Security Identifier Request Vulnerability
+KB_UNKNOWN:MS99-058 Virtual Directory Naming Vulnerability
+KB_UNKNOWN:MS99-059 Malformed TDS Packet Header Vulnerability
+KB_UNKNOWN:MS99-060 HTML Mail Attachment Vulnerability
+KB_UNKNOWN:MS99-061 Escape Character Parsing Vulnerability
+Q143484:IIS 2.0/3.0 Services Stop with Large Client Requests DoS
+Q147222:Group of Hotfixes for Exchange 5.5 and IIS 4.0
+Q159573:RRAS Hotfix 1.0
+Q167040:NT4.0 PPTP Update
+Q175093:February 2000 Leap Year
+Q216913:BIOS Date Value Does Not Immediately Update on January 1, 2000
+Q229607:File Corruption on an NTFS Volume with More Than 4 Million Files
+Q230677:Malformed Phonebook Entry Security Vulnerability in RAS Client
+Q230681:DUN Credentials Cached When Save Password Not Selected with RAS
+Q231337:Netdde.exe Does Not Relay WM_DDE_TERMINATE to Remote Clients
+Q231457:Malformed Request Causes LSA Service to Stop Responding
+Q231605:Malformed Help File Causes Help Utility to Stop Responding
+Q232449:Sample ASP Code May be Used to View Unsecured Server Files
+Q233323:Exceeding MaxRequestThreads May Cause Windows NT to Hang
+Q234351:Memory Leak When Performance Counters Are Not Available
+Q236359:Denial of Service Attack Using Unprotected IOCTL Function Call
+Q237185:Access Violation Error Message When You Quit Phone Dialer
+Q238020:NNTP Service Converts to Two-Digit Years Incorrectly
+Q238329:Fragmented IGMP Packet May Promote "Denial of Service" Attack
+Q238606:Page Contents Visible When Certain Dot Extensions Present in the Virtual Directory Name
+Q239114:Updated Version of Microsoft Jet 4.0 Available
+Q239132:Exchange Clients Appear to Intermittently Hang During Normal Operation
+Q240195:NET USER /TIMES Command Does Not Work in Year 2000
+Q240382:Fix for IP Source Routing Vulnerability
+Q243649:Patch Available for "Malformed Spooler Request" Vulnerability
+Q243835:TCP Sequence Fix
+Q244599:Fixes Required in TCSEC C2 Security Evaluation Configuration for Windows NT 4.0 Service Pack 6a
+Q245148:Change in WINLOGON Service NT4 SP6
+Q245678:Accessing Notes without Admin Rights fix
+Q246009:NT4 Service Pack 6a
+Q246045:Named Pipes fix
+Q246400:UNKNOWN - MS KNOWLEDGE BASE ARTICLE NOT AVAILABLE
+Q246467:RAS Server Stops Responding to New PPP Connection Requests
+Q247869:LPC Fix
+Q248183:Syskey Utility Reuses Keystream
+Q248399:Shared Workstation Setup may Permit Access to Recycle Bin Files
+Q249108:RDISK Registry Fix
+Q249599:Virtual Directory Mapped to UNC Returns Server-Side Script Code When URL Contains Additional Characters at the End of the Request
+Q249863:English Exportable Server Gated Cryptography Add-on for I.E. 3.0.2  Download - Windows95
+Q249973:RTF File Viewer Fix
+Q251381:Iomega Tools Do Not Display Parallel Port Drives in Windows 2000
+Q252463:Index Server Fix
+Q252693:Chunked Encoding Request with No Data Causes IIS Memory Leak
+Q252795:Added back W2K support for virtual serial ports
+Q253934:W2K Critical Update, Index Server Reveals location of web pagers
+Q257870:TCP/IP Print Request Fix
+Q258873:Mail TURN Command fix
+Q259622:Command Environment Fix
+Q259728:IP Fragment Fix
+Q260205:HTTP with large number dots and slashes causes excess CPU load
+Q260233:Support for ATA 100 (mode 5) in W2K
+Q260347:IIS 4 Fix for Cross-Site Scripting Issues
+Q260838:MS00-031 IIS Stops Servicing HTR Requests
+Q261606:Video Hangs When You Run a 3D Graphics Programs
+Q262694:Reset Browser Fix
+Q263968:MS02-035 SQL Server Installation Process May Leave Passwords on System
+Q264684:Remote Registry Access Fix
+Q265296:Toshiba PC Card Controller May Power 3.3-Volt R2 PC Card at 5 Volts
+Q265365:FRS Creates Unneeded Folders in DFS Root Alternates
+Q265714:NT4 SNMP Registry Entries readable
+Q266433:Patch for Numerous Vulnerabilities in the LPC Port System Calls
+Q267559:Get on HTR file causes DoS or Directory Browsing
+Q269239:NetBIOS Vulnerability May Cause Duplicate Name on the Network Conflicts
+Q269862:Patch Released for Canonicalization Error Issue
+Q270676:Users Might Gain Full Control of a System via the "Simplified Chinese IME State Recognition" Vulnerability
+Q271652:Malformed URL DoS
+Q274149:Cookies Are Not Marked as Secure in IIS
+Q274835:Buffer Overflow in Network Monitor May Cause Vulnerability
+Q275286:W2K SP2 Updates for ISA Server
+Q275567:Multiple NetBT Sessions hang local host
+Q276471:Hyperterminal buffer overflow
+Q277873:Web Server file request parsing vulnerability
+Q278438:Japanese W2K, Pagemaker Printer Bug
+Q278499:MS00-084 Update Available for Indexing Service Vulnerability
+Q279336:Winsock Mutex Vulnerability
+Q280119:NTLMSSP Escalation Vulnerability
+Q280322:Front Page Malformed Web Submission Security
+Q280838:Index Service File Enumeration Vulnerability
+Q281428:Parallel Port Zip Bug
+Q282010:ACC2002 The Updated Version of Microsoft Jet 4.0 Is Available in the Download Center
+Q282784:Qfecheck.exe verifies installation of W2K/XP hotfixes
+Q285156:Unchecked Event Viewer Buffer Overflow
+Q285851:Network DDE Agent Request Vulnerability
+Q285985:File Fragment via HTR Vulnerability
+Q286733:Potential data loss because of lack of shutdown notification
+Q286818:Malformed URL DoS in IIS 5.0
+Q287030:W2K VM Build 3802
+Q287397:Malformed Domain Controller Request
+Q287687:Terminal Services Licensing Change
+Q287917:WMI Registry Provider doesn't support UNICODE
+Q288165:16 bit programs that call GlobalAlloc for large memory can hang
+Q291340:Token Handel Leak in LSASS when using basic authentication
+Q291597:IsDBCSLeadByteEx() takes long time if passed Code Page CP_UTF8
+Q291840:Anonymous Client Permissions on Exchange 2000 Newsgroup Folders Do Not Work
+Q291845:Malformed WebDAV Request Can Cause IIS to Exhaust CPU Resources
+Q292435:Invalid RDP Data can cause memory leak in terminal services
+Q293826:14 May 2001 Cumulative Patch for IIS
+Q294391:Kerberos DoS fix
+Q294472:MS99-057 Index Server search function contains unchecked buffer
+Q294831:Server.HTMLEncode corrupts high UTF8 characters
+Q295534:MS01-026 Superflous decoding operation can allow command execution through IIS
+Q295577:Disk amanagement snap-in displays red X for volumes spanning multiple disk
+Q295688:USN Journal Log not processcompletely during mount
+Q296074:W2K registration wizard displays incorrect phone number
+Q296185:Index Service Search Function Contains Unchecked Buffer
+Q297835:Subsequent COM calls may not work after call to Microsoft.DiskQuota object
+Q297961:W2K SP2 causes SCSI Bus Resets during startup on LSI controller
+Q298009:Cipher.exe security tool for encrypted filesystem
+Q298012:Malformed RPC Request can cause service Failure
+Q299444:Post NT4 SP6a Security Rollup Package
+Q299553:Predictable Name Pipes Could Enable Priviege Elevation via Telnet
+Q299687:Function exposed via LDAP over SSL enables password change
+Q299796:MS00-077 DoS on port 1720 may cause memory leak in conf.exe
+Q299956:High CPU Utilization When You Print to a Hewlett-Packard Multifunction Printer
+Q300477:MS01-035 Potential buffer overflow in Visual Studio RAD
+Q300845:MS02-013 Java applet can redirect browser port
+Q300972:.ida/.idq IIS overflow
+Q300980:RSVP Service provider causes WinSock to stop responding
+Q301077:W2K WinBond Floppy disk controller doesn't report data underrun correctly
+Q301337:PMTU Detection May Not Work After You Install Windows 2000 Service Pack 2
+Q301625:15 Aug 2001 Cumulative Patch for IIS
+Q302450:Deadlock in USB stack while resuming from suspend
+Q302755:Authentication Error in SMTP Service Could Allow Mail Relaying
+Q302827:Stop 0x00000050 message when using CD ROM
+Q303984:NNTP Service Memory Leak
+Q304135:Double Byte Field name in ASP file improperly encoded with utf8
+Q304158:NT4 Hyperterminal Buffer Overflow
+Q304229:16-Bit OLE Servers Started from 16-Bit Programs Create Extra VDMs in Terminal Server Sessions
+Q305399:Malformed Request to RPC Endpoint Mapper can Cause RPC Service to Fail Originally posted September 10, 2001
+Q305929:Invalid Cert signature after NT4 SRP installation
+Q305933:USB Devices Stop Working After Resuming from Standby
+Q306455:Your Computer May Stop Responding When Resuming from Standby
+Q306676:The Computer Cannot Enter Standby or Hibernate If a Direct3D-Based Screen Saver Is Running
+Q307153:Error Messages Appear During Upgrade from Windows Me or Windows 98 to Windows XP
+Q307271:Patch available for USB Isochronous Data transfer issues
+Q307274:Windows XP Stops Responding (Hangs) During Windows Shutdown
+Q307298:MS02-004 Telnet Server Is Vulnerable to a Denial-of-Service Attack
+Q307454:Invalid RDP Data can cause Terminal Service Failure
+Q307869:Files and Settings Are Not Transferred When You Use the Files and Settings Transfer Wizard
+Q308131:You May Not Be Able to Sign Up for the Internet by Using a Modem
+Q308210:Remote Assistance May Not Connect to a Multiple-Homed Windows XP Computer with the Personal Firewall Feature Enabled
+Q308387:Autolfn.exe May Build Sound Files with Damaged File Names
+Q308402:'The Password Is Not Valid' Error Message Appears When You Log On to Recovery Console in Windows XP
+Q308677:Error Message Appears When a Limited User Tries to Stream Media in Windows Media Player
+Q308678:Changing International Settings May Cause Unpredictable Behavior
+Q308928:The MCI_PLAY Command Returns No Response for Five or More Seconds
+Q309056:Error Message 'All.part2' Is Null or Not an Object
+Q309126:An error message appears with Asus Video adapter in XP
+Q309376:UNKNOWN - MS KNOWLEDGE BASE ARTICLE NOT AVAILABLE
+Q309521:XP Update Package 10/25/2001
+Q309691:XP update for CD burners
+Q310051:Windows 2000 Does Not Recognize a Digital Video Camera or Other 1394 OHCI Devices When Connected
+Q310437:Cannot start the UPS service problem
+Q310507:Enabling Acoustic Echo Cancellation and DVCamera/TV tuner support in windows messenger
+Q310510:Playback and Copy-Protection Issues When You Try to Play the Snow White and the Seven Dwarfs DVD Movie
+Q310527:Stop Error when you upgrade from W2K Bad_Pool_Caller 0x02
+Q310528:Issues installing XP on cmputer with wireless LAN adapters
+Q310601:Computer Does Not Enter Standby Mode If Power Options Profile Is Set to Standby After 45 or More Minutes
+Q310703:SRP Q299444 may cause Lexmark printers to stop responding
+Q311345:Long Delay with No Prompt Between the Time When You Click Finish and When the Desktop Loads
+Q311401:W2K Security Rollup Pack 1
+Q311442:Error Message Setup Cannot Continue. Please Contact Microsoft Technical Support. (Error 3E6h)
+Q311446:You Cannot Start Programs (.exe Files) When Your Computer Is Infected with the SirCam Virus
+Q311455:You Cannot View the Files on a Disc After You Replace a CD-R or CD-RW Drive with a DVD or CD-ROM Drive
+Q311537:Devices May Not Power Up Properly When They Resume from Standby
+Q311542:Devices May Not Power Up Properly When Resuming From Standby
+Q311822:Your Computer May Hang If You Unexpectedly Remove a PC Card Storage Device While the Computer Is in Standby
+Q311889:Cannot Establish a remote assistance connection
+Q311967:MS02-017 Unchecked Buffer in the Multiple UNC Provider Could Enable Code Execution
+Q311967:MS02-017 unchecked buffer in multiple UNC provider
+Q312368:Data Loss May Occur After Reinstalling, Repairing, or Upgrading Windows XP
+Q312369:Data Loss after reinstalling, repairing, or upgrading XP
+Q312370:Universal Serial Bus 2.0 Support in Windows XP
+Q312895:NT4 version of Q311967, MS02-017 unchecked buffer in multiple UNC provider
+Q312942:Missing Data or Program Settings After Upgrade to Windows XP
+Q312943:UNKNOWN - MS KNOWLEDGE BASE ARTICLE NOT AVAILABLE
+Q313450:MS02-12 Malformed data transfer may cause smtp to stop working
+Q313484:XP application compatability update, 12/2001
+Q313582:W2K Post SP2 COM+ hotfix rollup package 18.1
+Q313596:Cannot Select a .jpg Image as Your Desktop Background Image
+Q313664:Using 802.1x Authentication on Computers Running Windows 2000
+Q313829:unchecked buffer in windows shell could lead to code running
+Q314057:"NTLDR Is Missing" Error Message When You Upgrade or Install Windows XP Over Windows 95, Windows 98, or Windows Millennium Edition
+Q314147:unchecked SNMP buffer may allow code to run
+Q314862:update available for intelligent background transfer service
+Q314931:Missing Data or Program Settings After You Upgrade to Windows XP
+Q315000:Unchecked buffer in universal plug and play can compromise XP
+Q315403:Stop 0x000000ed error message when volume on IDE drive with caching enabled is mounted
+Q316134:You Cannot Log On to Windows XP After Running the Out-of-Box Experience
+Q316253:"Tour of Windows XP" and "Windows Newsgroups" Links in Windows XP Help and Support Do Not Work
+Q316333:MS02-034 Cumulative Patch for SQL Server
+Q316333:MS02-038 Unchecked Buffer in SQL Server 2000 Utilities Could Allow Code Execution
+Q316333:MS02-043 Cumulative Patch for SQL Server
+Q316333:MS02-056 Cumulative Patch for SQL Server
+Q316333:MS02-061 Elevation of Privilege in SQL Server Web Tasks
+Q316397:Windows XP Real-Time Communication Client Support for Network Address Translation
+Q316430:Performance of Microsoft Commerce Server-based Programs May Degrade Over Time
+Q317138:MS02-036 Authentication Flaw in Microsoft Metadirectory Services Could Allow Privilege Elevation
+Q317272:Computer Stops Responding When You Resume from S3 State in Windows XP
+Q317277:You receive "System has recovered from a serious error" after every reboot
+Q318138:MS02-029 Unchecked Buffer in Remote Access Service Phonebook Allows Code to Run
+Q318138:MS02-029 Unchecked Buffer in Remote Access Service Phonebook Could Lead to Code Execution
+Q318388:The Original Keyboard Layout Is Used After You Configure a New Default Input Method Editor
+Q318593:MS02-016 Opening Group Policy Files for Exclusive Read Blocks Policy Application
+Q318966:Problems Viewing, Editing, or Printing Some Images in Windows XP
+Q319322:Windows Management Instrumentation Cannot Register Permanent Event Consumer with Dynamic Classes
+Q319507:MS02-020 SQL Extended Procedure Functions Contain Unchecked Buffers
+Q319580:XP application compatibility update
+Q319733:April 2002 cumulitive IIS 4.0, 5.0, 5.1 patch
+Q319733:MS02-018 Cumulative Patch for Internet Information Service
+Q319825:Shared Documents Folders Are Missing From My Computer
+Q320174:Compact Disc Recorded in Windows XP Is Missing Files or Folders or Is Unreadable
+Q320176:UNKNOWN - MS KNOWLEDGE BASE ARTICLE NOT AVAILABLE
+Q320206:MS02-024 Authentication Flaw in Windows Debugger Can Cause Elevated Privileges
+Q320206:MS02-024 Authentication Flaw in Windows Debugger Can Lead to Elevated Privileges
+Q320436:MS02-025 Malformed Mail Attribute Can Cause Exchange 2000 to Exhaust CPU Resources
+Q320552:Problems with the InterActual DVD Playback Program
+Q320678:WMI AccessCheck Receives Local Administrator's SID
+Q320920:MS02-032 Cumulative Patch for Windows Media Player
+Q321064:Computer Hangs for 15 Seconds When You Use Your Zip Drive
+Q321232:MS02-023 15 May 2002 Cumulative Patch for Internet Explorer
+Q321309:MS02-019 Unchecked Buffer in Internet Explorer and Office for Mac Can Cause Code to Execute
+Q321599:MS02-028 Heap Overrun in HTR Chunked Encoding Could Enable Web Server Compromise
+Q321661:MS02-022 Unchecked Buffer in MSN Chat Control Can Lead to Code Execution
+Q321804:MS02-021 E-mail Editor Flaw Could Lead to Script Execution on Reply or Forward
+Q321856:UNKNOWN - MS KNOWLEDGE BASE ARTICLE NOT AVAILABLE
+Q321911:MS02-030 Unchecked Buffer in SQLXML Could Lead to Code Execution
+Q322011:You Cannot Preview a Fax in the Fax Console
+Q322273:MS02-033 Unchecked Buffer in Profile Service Could Allow Code Execution in Commerce Server
+Q322289:MS02-026 Unchecked Buffer in ASP.NET Worker Process
+Q322842:A Lock Occurs Between Two Threads of System GDI in Windows 2000
+Q322913:WM_TIMER Messages May Stop Being Delivered to Programs in Windows 2000
+Q323172:MS02-048 Flaw in Certificate Enrollment Control Could Allow Deletion of Digital Certificates
+Q323255:MS02-055 Unchecked Buffer in Windows Help Facility Could Enable Code Execution
+Q323322:Cannot Use Sony VAIO PCG-C1MRX Internal Camera with Windows Messenger After You Apply Q316397
+Q323759:MS02-047 Cumulative Patch for Internet Explorer
+Q323875:MS02-039 Buffer Overruns in SQL Server 2000 Resolution Service Could Enable Code Execution
+Q323889:MS02-027 Unchecked Buffer in Gopher Protocol Handler Can Run Code of Attacker's Choice
+Q324096:MS02-053 Buffer Overrun in SmartHTML Interpreter Could Allow Code Execution
+Q324380:MS02-051 Cryptographic Flaw in RDP Protocol Can Cause Information Disclosure
+Q324380:MS02-051 Cryptographic Flaw in RDP Protocol can Lead to Information Disclosure
+Q324458:MS02-031 Cumulative Patches for Excel and Word for Windows
+Q324929:MS02-068 Cumulative Patch for Internet Explorer December 2002
+Q326075:MS02-041 Unchecked Buffer in Content Management Server Could Enable Server Compromise
+Q326322:MS02-037 Server Response To SMTP Client EHLO Command Results In Buffer Overrun
+Q326568:MS02-049 Flaw Could Enable Web Page to Launch Visual FoxPro 6.0 Application Without Warning
+Q326573:MS02-040 Unchecked Buffer in MDAC Function Could Enable SQL Server Compromise
+Q326830:MS02-045 Unchecked Buffer in Network Share Provider can lead to Denial of Service
+Q326886:MS02-042 Flaw in Network Connection Manager Can Cause Rights Elevation
+Q326886:MS02-042 Flaw in Network Connection Manager Could Enable Privilege Elevation
+Q327269:CardBus PC Cards May No Longer Function on Specific Docking Stations After You Apply SP3
+Q327384:Unrecognizable Characters Appear in Instance Names of Performance Counters or Incorrect Performance Data Is Collected After You Apply Windows 2000 Service Pack 3
+Q327521:MS02-046 Buffer Overrun in TSAC ActiveX Control Could Allow Code Execution
+Q327522:MS02-064 Windows 2000 Default Permissions Could Allow Trojan Horse Program
+Q327536:"Stop 0x0000006b" or Setup Stops Responding at "Setup is Starting Windows" When You Install a Windows XP SP1 Client Image from a RIS Server
+Q327696:MS02-062 Cumulative Patch for Internet Information Service
+Q327979:Game Stops Responding (Hangs) or Quits Unexpectedly When Introductory Video Clip Is Played
+Q328130:MS02-044 Unsafe Functions in Office Web Components
+Q328145:UNKNOWN - MS KNOWLEDGE BASE ARTICLE NOT AVAILABLE
+Q328310:MS02-071 Flaw in Windows WM_TIMER Message Handling Can Enable Privilege Elevation
+Q328477:Services.exe May Hang When You Restart a Service
+Q328523:Removing Default Startup of Internet Explorer from the Internet Connection Wizard
+Q328676:MS02-058 Unchecked Buffer in Outlook Express S/MIME Parsing Could Enable System Compromise
+Q328940:MS02-060 Flaw in Windows XP Help and Support Center Could Enable File Deletion
+Q328970:MS02-066 Cumulative Patch for Internet Explorer
+Q329048:MS02-054 Unchecked Buffer in File Decompression Functions Could Lead to Code Execution
+Q329077:MS02-052 Flaw in Java VM JDBC Classes Could Allow Code Execution
+Q329115:MS02-050 Certificate Validation Flaw Could Enable Identity Spoofing
+Q329170:MS02-070 Flaw in SMB Signing May Permit Group Policy to Be Modified
+Q329209:MS02-057 Flaw in Services for Unix 3.0 Interix SDK Could Allow Code Execution
+Q329251:UNKNOWN - MS KNOWLEDGE BASE ARTICLE NOT AVAILABLE
+Q329390:MS02-072 Unchecked Buffer in Windows Shell Could Enable System Compromise
+Q329414:MS02-065 Buffer Overrun in Microsoft Data Access Components Could Lead to Code Execution
+Q329441:You Cannot Create a Network Connection After You Restore Windows XP
+Q329553:Cannot Obtain Device Driver Updates from the Windows Update Web Site
+Q329834:MS02-063 Unchecked Buffer in PPTP Implementation Could Enable Denial of Service Attacks
+Q330008:MS02-059 Flaw in Word Fields and Excel External Updates Could Lead to Information Disclosure
+Q330994:MS03-014 Cumulative Patch for Outlook Express April 2003
+Q331065:MS03-009 Flaw in ISA Server DNS intrusion detection filter can cause Denial of Service
+Q331066:MS03-012 Flaw in Winsock Proxy Service Can Cause Denial of Service
+Q331866:MS02-067 E-mail Header Processing Flaw Could Cause Outlook 2002 to Fail
+Q331953:MS03-010 Flaw in RPC Endpoint Mapper Could Allow Denial of Service Attacks
+Q810030:MS02-069 Flaw in Microsoft VM May Compromise Windows
+Q810038:Stop 0x0E3 Error Occurs When Redirector Thread Tries to Release a Lock
+Q810487:MS03-002 Cumulative Patch for Microsoft Content Management Server January 2003
+Q810565:Hyperlinks Open in Internet Explorer Instead of in Default Browser or Help and Support Center
+Q810577:MS03-005 Unchecked Buffer in Windows Redirector May Permit Privilege Elevation
+Q810649:Hyperlinks Open in Internet Explorer Instead of in the Default Browser
+Q810833:MS03-001 Unchecked Buffer in the Locator Service Might Permit Code to Run
+Q810847:MS03-004 Cumulative Patch for Internet Explorer
+Q811114:MS03-018 May 2003 Cumulative Patch for Internet Information Services (IIS)
+Q811493:MS03-013 Buffer Overrun in Windows Kernel Message Handling Could Lead to Elevated Privileges
+Q811630:HTML Help Update to Limit Functionality When It Is Invoked with the window.showHelp( ) Method
+Q812262:MS03-003 Flaw in how Outlook 2002 handles V1 Exchange Server Security Certificates could lead to Information Disclosure
+Q812709:MS03-006 Flaw in Windows Me Help and Support Center Could Enable Code Execution
+Q813360:MS03-051 Buffer Overrun in Microsoft FrontPage Server Extensions Could Allow Code Execution
+Q813489:MS03-015 Cumulative Patch for Internet Explorer April 2003
+Q814033:Cannot Install Driver Updates from the Windows Update Web Site
+Q814078:MS03-008 Flaw in Windows Script Engine could allow code execution
+Q814995:Some Program Compatibility Fixes Stop Working After You Install the 328310 Update
+Q815021:MS03-007 Unchecked Buffer in Windows Component May Cause Web Server Compromise
+Q815206:MS03-016 Cumulative Patch for BizTalk Server April 2003
+Q815495:MS03-031 Cumulative Patch for Microsoft SQL Server July 2003
+Q816093:MS03-011 Flaw in the Microsoft VM Could Enable System Compromise
+Q816456:MS03-028 Flaw in ISA Server Error Pages Could Allow Cross-Site Scripting Attack
+Q816458:MS04-001 Vulnerability in H.323 Filter can Allow Remote Code Execution
+Q817287:Windows Update 643 Error and the Catalog Database
+Q817606:MS03-024 Buffer Overrun in Windows Could Lead to Data Corruption
+Q817772:MS03-019 Flaw in ISAPI extension for Windows Media Services could cause denial of service
+Q817787:MS03-017 Flaw in Windows Media Player Skins Downloading Could Allow Code Execution
+Q818043:L2TP/IPSec NAT-T Update for Windows XP and Windows 2000
+Q818529:MS03-020 Cumulative Patch for Internet Explorer June 2003
+Q819639:MS03-021 Flaw In Windows Media Player May Allow Media Library Access
+Q819696:MS03-030 Unchecked Buffer in DirectX Could Enable System Compromise
+Q821557:MS03-027 Unchecked Buffer in Windows Shell Could Enable System Compromise
+Q822343:MS03-022 Flaw in ISAPI Extension for Windows Media Services Could Cause Code Execution
+Q822679:MS03-025 Flaw in Windows Message Handling through Utility Manager Could Enable Privilege Elevation
+Q822715:MS03-037 Flaw in Visual Basic for Applications Could Allow Arbitrary Code execution
+Q822925:MS03-032 Cumulative Patch for Internet Explorer August 2003
+Q823182:MS03-041 Vulnerability in Authenticode Verification Could Allow Remote Code Execution
+Q823353:MS04-018 Cumulative Security Update for Outlook Express
+Q823559:MS03-023 Buffer Overrun In HTML Converter Could Allow Code Execution
+Q823718:MS03-033 Unchecked Buffer in MDAC Function Could Enable System Compromise
+Q823803:MS03-029 Flaw in Windows Function Could Allow Denial of Service
+Q823980:MS03-026 Buffer Overrun in RPC May Allow Code Execution
+Q824105:MS03-034 Flaw in NetBIOS Could Lead to Information Disclosure
+Q824141:MS03-045 Buffer Overrun in the ListBox and in the ComboBox Control Could Allow Code Execution
+Q824145:MS03-048 Cumulative Security Update for Internet Explorer
+Q824146:MS03-039 Buffer Overrun In RPCSS Service Could Allow Code Execution
+Q825119:MS03-044 Buffer Overrun in Windows Help and Support Center Could Lead to System Compromise
+Q826232:MS03-042 Buffer Overflow in Windows Troubleshooter ActiveX Control Could Allow Code Execution
+Q827103:MS03-036 Buffer Overrun in WordPerfect Converter Could Allow Code Execution
+Q827104:MS03-038 Unchecked buffer in Microsoft Access Snapshot Viewer Could Allow Code Execution
+Q827653:MS03-035 Flaw in Microsoft Word Could Enable Macros to Run Automatically
+Q828028:MS04-007 ASN .1 Vulnerability Could Allow Code Execution
+Q828035:MS03-043 Buffer Overrun in Messenger Service Could Allow Code Execution
+Q828040:MS04-009 Vulnerability in Microsoft Outlook Could Allow Code Execution
+Q828489:MS03-047 Vulnerability in Exchange Server 5.5 Outlook Web Access Could Allow Cross-Site Scripting Attack
+Q828741:MS04-012 Cumulative Update for Microsoft RPC/DCOM
+Q828749:MS03-049 Buffer Overrun in the Workstation Service Could Allow Code Execution
+Q828750:MS03-040 Cumulative Patch for Internet Explorer
+Q829436:MS03-046 Vulnerability in Exchange Server Could Allow Arbitrary Code Execution
+Q830352:MS04-006 Vulnerability in the Windows Internet Naming Service (WINS) Could Allow Code Execution
+Q831527:MS03-050 Vulnerability in Microsoft Word and Microsoft Excel Could Allow Arbitrary Code to run
+Q832359:MS04-008 Vulnerability in Windows Media Services Could Allow a Denial of Service
+Q832483:MS04-003 Buffer Overrun in MDAC Function Could Allow Code Execution
+Q832759:MS04-002 Vulnerability in Exchange Server 2003 Could Lead to Privilege Escalation
+Q832894:MS04-004 Cumulative Security Update for Internet Explorer
+Q835150:MS04-005 Vulnerability in Virtual PC for Mac could lead to privilege elevation
+Q835732:MS04-011 Security Update for Microsoft Windows
+Q837001:MS04-014 Vulnerability in the Microsoft Jet Database Engine Could Allow Code Execution
+Q837009:MS04-013 Cumulative Security Update for Outlook Express
+Q838512:MS04-010 Vulnerability in MSN Messenger Could Allow Information Disclosure
+Q839643:MS04-016 Vulnerability in DirectPlay Could Allow Denial of Service
+Q839645:MS04-024 Vulnerability in Windows Shell Could Allow Remote Code Execution
+Q840315:MS04-023 Vulnerability in HTML Help Could Allow Code Execution
+Q840374:MS04-015 Vulnerability in Help and Support Center Could Allow Remote Code Execution
+Q841373:MS04-021 Security Update for IIS 4.0
+Q841872:MS04-020 Vulnerability in POSIX Could Allow Code Execution
+Q841873:MS04-022 Vulnerability in Task Scheduler Could Allow Code Execution
+Q842526:MS04-019 Vulnerability in Utility Manager Could Allow Code Execution
+Q842689:MS04-017 Vulnerability in Crystal Reports Web Viewer Could Allow Information Disclosure and Denial of Service
+Q867801:MS04-025 Cumulative Security Update for Internet Explorer
+SP2SRP1:W2K SP2 Security rollup patch 1

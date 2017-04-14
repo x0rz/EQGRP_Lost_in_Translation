@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="Ping_Target_Flav" id="239">
+
+    <Interfaces>
+        <Interface provider="0x01021021" id="0x01010031" />
+    </Interfaces>
+    
+    <Dependencies/>
+    
+    <Lp>Yes</Lp>
+	<Target>Yes</Target>
+    
+    <Architecture type="i386">
+    
+        <Platform family="winnt">
+            <Version major="5+" minor="*" other="*">
+                <File loadtype="file">i386-winnt-vc9s/release/Ping_Target_Flav.dll</File>
+                <File loadtype="memory">i386-winnt-vc9s/release/Ping_Target_Flav.dll</File>
+            </Version>
+        </Platform>
+        
+    </Architecture>
+
+	<Architecture type="x64">
+
+		<Platform family="winnt">
+			<Version major="5+" minor="*" other="*">
+				<File loadtype="file">x64-winnt-vc9s/release/Ping_Target_Flav.dll</File>
+				<File loadtype="memory">x64-winnt-vc9s/release/Ping_Target_Flav.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

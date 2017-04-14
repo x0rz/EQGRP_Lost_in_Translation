@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName="Tasking/Mcl_Cmd_UpTime_Tasking.pyo" providerType="script">
+
+	<Command id="0" name="UpTime">
+		<Help>Retrieves the time since the system was started</Help>
+		<Input>
+			<Option name='target' optional='true'>
+				<Argument name='machine' data='target'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='target' type='string'/>
+		</Output>
+	</Command>
+	
+</Plugin>

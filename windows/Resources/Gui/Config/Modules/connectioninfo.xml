@@ -1,0 +1,16 @@
+<Plugin id="3">
+	<Name>Commands</Name>
+	<Class>ddb.dsz.plugin.connectioninfo.ConnectionInfo</Class>
+	<Description>Displays the status of all connections</Description>
+	<Logo>images/clock.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>false</UserStartable>
+	<Hide>false</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>false</UserClose>
+	<CanClose>false</CanClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

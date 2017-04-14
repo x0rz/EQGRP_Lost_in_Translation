@@ -1,0 +1,17 @@
+connect / as sysdba
+spool dc221.tmp
+@dc22.tmp $ORACLEUSER
+spool off
+@dc23.tmp $ORACLEUSER
+set termout off
+spool dc222.tmp
+set echo on
+@dc24.tmp
+spool off
+set echo off
+set pagesize 55
+set linesize 80
+set arraysize 150
+set escape ~
+set null ~~~
+set termout on

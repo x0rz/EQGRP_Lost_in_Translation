@@ -1,0 +1,17 @@
+# any line that begins with a '#' is discarded as a comment
+
+# DMGZ commandline
+[-action <INSTALL|UNINSTALL|UPGRADE|VERIFYINSTALL|VERIFYRUNNING|LOAD|UNLOAD|STATUS>]
+	Do the specific action, rather than show a menu
+[-driver [name]]
+	Sets the driver name
+[-oldname <name>]
+	UPGRADE specific. Sets the driver name for the uninstall only. Use -driver for the new name.
+[-silent]
+	Do not display anything
+[-quiet]
+	Do not ask questions
+[-verbose]
+	Be verbose
+[-method <DSZ|DEMI>]
+	Which method to use?

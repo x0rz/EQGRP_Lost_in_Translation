@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Mkdir_Tasking.pyo' providerType='script'>
+	<Command id='0' name='Mkdir'>
+
+		<Help>Creates a directory</Help>
+
+		<Input>
+			<Argument name='directory' optional='false' data='dir'/>
+		</Input>
+
+		<Output>
+			<Data name='dir' type='string'/>
+		</Output>
+
+	</Command>
+</Plugin>

@@ -1,0 +1,14 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='22' name='GetNetAddr'>
+
+    <Help>Gets the network addresses for the current session</Help>
+
+    <Input/>
+    <Output/>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,66 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31003'>
+
+  <Command id='16' name='Script'>
+
+    <Help>For information about scripting, please see user documentation.</Help>
+
+    <Input>
+      <Argument name='Script' optional='false' data='script'>
+	<Help>The script to run.</Help>
+      </Argument>
+
+      <Argument name='Arg1' optional='true' data='arg1'>
+	<Help>Script arguments...</Help>
+      </Argument>
+
+      <Argument name='Arg2' optional='true' data='arg2'/>
+      <Argument name='Arg3' optional='true' data='arg3'/>
+      <Argument name='Arg4' optional='true' data='arg4'/>
+      <Argument name='Arg5' optional='true' data='arg5'/>
+      <Argument name='Arg6' optional='true' data='arg6'/>
+      <Argument name='Arg7' optional='true' data='arg7'/>
+      <Argument name='Arg8' optional='true' data='arg8'/>
+      <Argument name='Arg9' optional='true' data='arg9'/>
+      <Argument name='Arg10' optional='true' data='arg10'/>
+      <Argument name='Arg11' optional='true' data='arg11'/>
+      <Argument name='Arg12' optional='true' data='arg12'/>
+      <Argument name='Arg13' optional='true' data='arg13'/>
+      <Argument name='Arg14' optional='true' data='arg14'/>
+      <Argument name='Arg15' optional='true' data='arg15'/>
+      <Argument name='Arg16' optional='true' data='arg16'/>
+      <Argument name='Arg17' optional='true' data='arg17'/>
+      <Argument name='Arg18' optional='true' data='arg18'/>
+      <Argument name='Arg19' optional='true' data='arg19'/>
+      <Argument name='Arg20' optional='true' data='arg20'/>
+
+    </Input>
+
+    <Output>
+      <Data name='script' type='string'/>
+      <Data name='arg1' type='string'/>
+      <Data name='arg2' type='string'/>
+      <Data name='arg3' type='string'/>
+      <Data name='arg4' type='string'/>
+      <Data name='arg5' type='string'/>
+      <Data name='arg6' type='string'/>
+      <Data name='arg7' type='string'/>
+      <Data name='arg8' type='string'/>
+      <Data name='arg9' type='string'/>
+      <Data name='arg10' type='string'/>
+      <Data name='arg11' type='string'/>
+      <Data name='arg12' type='string'/>
+      <Data name='arg13' type='string'/>
+      <Data name='arg14' type='string'/>
+      <Data name='arg15' type='string'/>
+      <Data name='arg16' type='string'/>
+      <Data name='arg17' type='string'/>
+      <Data name='arg18' type='string'/>
+      <Data name='arg19' type='string'/>
+      <Data name='arg20' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

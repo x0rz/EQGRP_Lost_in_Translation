@@ -1,0 +1,373 @@
+: Saved
+: Written by enable_15 at 22:49:58.534 UTC Sun Aug 11 2013
+PIX Version 6.3(5)
+interface ethernet0 100full
+interface ethernet1 100full
+interface ethernet2 100full
+interface ethernet3 100full
+interface ethernet4 100full
+interface ethernet5 100full
+nameif ethernet0 clients security10
+nameif ethernet1 paygate security80
+nameif ethernet2 host security90
+nameif ethernet3 dmz security70
+nameif ethernet4 smartstream security20
+nameif ethernet5 mgmt security95
+enable password Ro5XpDeSuehPBEdi encrypted
+passwd Ro5XpDeSuehPBEdi encrypted
+hostname ENSBDPIX3
+domain-name ciscopix.com
+fixup protocol dns maximum-length 512
+fixup protocol ftp 21
+fixup protocol h323 h225 1720
+fixup protocol h323 ras 1718-1719
+fixup protocol http 80
+fixup protocol rsh 514
+fixup protocol rtsp 554
+fixup protocol sip 5060
+fixup protocol sip udp 5060
+fixup protocol skinny 2000
+fixup protocol smtp 25
+fixup protocol sqlnet 1521
+fixup protocol tftp 69
+names
+name 192.168.201.207 pg-qtel
+name 192.168.201.205 pg-dgcx
+name 192.168.201.201 pg-arcapita
+name 192.168.218.209 endssdb1
+name 192.168.218.208 endssapp1
+name 10.155.0.0 ss-client-nw
+name 192.168.200.166 ensbdnbcr2
+name 192.168.200.165 ensbdnbcr1
+name 10.149.7.0 pg-sslvpn-nw
+name 10.149.3.0 fmhs-sslvpn-nw
+name 10.149.11.0 nw-sslvpn-nw
+name 10.149.13.0 ins-sslvpn-nw
+name 192.168.200.104 sl3
+name 192.168.200.245 ftp
+name 192.168.203.215 ensbdtasw1
+name 10.153.4.64 qfqf-gnat-nw
+name 192.168.208.10 ensbdmgmt1
+name 192.168.208.11 ensbdmgmt2
+name 192.168.200.246 ftp2
+object-group network smartstream-srv-group 
+  network-object endssapp1 255.255.255.255 
+  network-object endssdb1 255.255.255.255 
+object-group service ss-services tcp 
+  port-object eq 10000 
+  port-object eq ftp 
+  port-object eq 30003 
+access-list dmz_access_in permit ip any any 
+access-list dmz_access_in permit icmp any any 
+access-list dmz_access_in remark To be removed after the activiation
+access-list dmz_access_in permit ip host ensbdtasw1 any 
+access-list dmz_access_in remark To be removed after the activiation
+access-list dmz_access_in permit icmp host ensbdtasw1 any 
+access-list paygate_access_in permit ip any any 
+access-list paygate_access_in permit icmp any any 
+access-list clients_access_in permit tcp nw-sslvpn-nw 255.255.255.0 host 192.168.206.208 object-group ss-services 
+access-list clients_access_in permit tcp ins-sslvpn-nw 255.255.255.0 host 192.168.206.208 object-group ss-services 
+access-list clients_access_in permit tcp ss-client-nw 255.255.0.0 host 192.168.206.208 object-group ss-services 
+access-list clients_access_in permit icmp any any 
+access-list clients_access_in permit tcp any any eq www 
+access-list clients_access_in permit tcp any any eq https 
+access-list clients_access_in remark 
+access-list clients_access_in permit tcp 10.71.0.0 255.255.0.0 any eq 3389 
+access-list clients_access_in remark 
+access-list clients_access_in permit tcp 10.72.0.0 255.255.0.0 any eq 3389 
+access-list clients_access_in permit tcp 10.149.0.0 255.255.0.0 any eq 3389 
+access-list clients_access_in remark ACCESS FROM OLD CAGE - KXB 21JULY2010
+access-list clients_access_in permit ip 192.168.106.0 255.255.254.0 any 
+access-list clients_access_in permit tcp qfqf-gnat-nw 255.255.255.192 host 192.168.206.230 eq www 
+access-list host_access_in permit icmp any any 
+access-list host_access_in permit ip any any 
+access-list smartstream_access_in permit ip any any 
+access-list smartstream_access_in permit icmp any any 
+access-list mgmt_access_in permit ip any any 
+access-list mgmt_access_in permit icmp any any 
+pager lines 20
+logging history informational
+mtu clients 1500
+mtu paygate 1500
+mtu host 1500
+mtu dmz 1500
+mtu smartstream 1500
+mtu mgmt 1500
+ip address clients 192.168.206.3 255.255.255.0
+ip address paygate 192.168.201.3 255.255.255.0
+ip address host 192.168.200.3 255.255.255.0
+ip address dmz 192.168.203.3 255.255.255.0
+ip address smartstream 192.168.218.3 255.255.255.0
+ip address mgmt 192.168.208.3 255.255.255.0
+ip audit info action alarm
+ip audit attack action alarm
+failover
+failover timeout 0:00:00
+failover poll 15
+failover ip address clients 192.168.206.252
+failover ip address paygate 192.168.201.252
+failover ip address host 192.168.200.252
+failover ip address dmz 192.168.203.252
+failover ip address smartstream 192.168.218.252
+failover ip address mgmt 192.168.208.252
+pdm location 0.0.0.0 0.0.0.0 host
+pdm location 192.168.200.33 255.255.255.255 host
+pdm location 192.168.200.34 255.255.255.255 host
+pdm location 192.168.200.59 255.255.255.255 host
+pdm location 192.168.200.62 255.255.255.255 host
+pdm location pg-arcapita 255.255.255.255 paygate
+pdm location 192.168.201.203 255.255.255.255 paygate
+pdm location pg-dgcx 255.255.255.255 paygate
+pdm location 192.168.200.35 255.255.255.255 paygate
+pdm location 192.168.200.201 255.255.255.255 host
+pdm location 192.168.201.35 255.255.255.255 paygate
+pdm location 192.168.200.203 255.255.255.255 host
+pdm location 192.168.200.205 255.255.255.255 host
+pdm location 192.168.203.201 255.255.255.255 dmz
+pdm location 192.168.206.201 255.255.255.255 clients
+pdm location 192.168.206.203 255.255.255.255 clients
+pdm location 192.168.206.205 255.255.255.255 clients
+pdm location 192.168.201.110 255.255.255.255 paygate
+pdm location 192.168.202.249 255.255.255.255 host
+pdm location 192.168.202.249 255.255.255.255 paygate
+pdm location 192.168.202.249 255.255.255.255 dmz
+pdm location 192.168.202.249 255.255.255.255 clients
+pdm location 192.168.206.220 255.255.255.255 clients
+pdm location 192.168.206.225 255.255.255.255 clients
+pdm location 192.168.203.220 255.255.255.255 dmz
+pdm location 192.168.203.225 255.255.255.255 dmz
+pdm location 192.168.200.51 255.255.255.255 host
+pdm location 192.168.200.71 255.255.255.255 host
+pdm location pg-qtel 255.255.255.255 paygate
+pdm location 192.168.200.207 255.255.255.255 host
+pdm location 192.168.206.207 255.255.255.255 clients
+pdm location 192.168.200.25 255.255.255.255 host
+pdm location 192.168.200.20 255.255.255.255 host
+pdm location 10.72.110.0 255.255.255.0 clients
+pdm location 192.168.203.230 255.255.255.255 dmz
+pdm location 192.168.200.22 255.255.255.255 host
+pdm location 0.0.0.0 255.0.0.0 clients
+pdm location 10.71.120.0 255.255.255.0 clients
+pdm location 192.168.203.0 255.255.255.0 dmz
+pdm location 192.168.200.72 255.255.255.255 host
+pdm location 192.168.203.235 255.255.255.255 dmz
+pdm location 192.168.200.52 255.255.255.255 host
+pdm location 192.168.200.95 255.255.255.255 host
+pdm location 192.168.200.96 255.255.255.255 host
+pdm location 192.168.206.235 255.255.255.255 clients
+pdm location 192.168.201.111 255.255.255.255 paygate
+pdm location 192.168.201.112 255.255.255.255 paygate
+pdm location 192.168.200.35 255.255.255.255 host
+pdm location 192.168.200.10 255.255.255.255 host
+pdm location 192.168.200.11 255.255.255.255 host
+pdm location 192.168.200.11 255.255.255.255 dmz
+pdm location 192.168.203.110 255.255.255.255 dmz
+pdm location 192.168.203.111 255.255.255.255 dmz
+pdm location nw-sslvpn-nw 255.255.255.0 clients
+pdm location 10.154.0.0 255.255.0.0 clients
+pdm location pg-sslvpn-nw 255.255.255.0 clients
+pdm location 10.153.2.0 255.255.255.192 clients
+pdm location endssdb1 255.255.255.255 smartstream
+pdm location endssapp1 255.255.255.255 smartstream
+pdm location ins-sslvpn-nw 255.255.255.0 clients
+pdm location 10.149.0.0 255.255.0.0 clients
+pdm location ss-client-nw 255.255.0.0 clients
+pdm location 10.71.0.0 255.255.0.0 clients
+pdm location 10.72.0.0 255.255.0.0 clients
+pdm location 10.153.0.64 255.255.255.192 clients
+pdm location ensbdnbcr1 255.255.255.255 host
+pdm location ensbdnbcr2 255.255.255.255 host
+pdm location fmhs-sslvpn-nw 255.255.255.0 clients
+pdm location sl3 255.255.255.255 host
+pdm location 192.168.219.0 255.255.255.0 host
+pdm location 10.154.9.128 255.255.255.192 clients
+pdm location ftp 255.255.255.255 host
+pdm location 192.168.211.0 255.255.255.0 clients
+pdm location 172.28.0.0 255.255.0.0 host
+pdm location 192.168.200.208 255.255.255.255 host
+pdm location 192.168.209.0 255.255.255.0 host
+pdm location 192.168.200.32 255.255.255.255 host
+pdm location 192.168.200.4 255.255.255.255 host
+pdm location 192.168.200.100 255.255.255.255 host
+pdm location 192.168.211.0 255.255.255.0 host
+pdm location 192.168.200.15 255.255.255.255 host
+pdm location 192.168.211.15 255.255.255.255 host
+pdm location 192.168.200.17 255.255.255.255 host
+pdm location 192.168.202.249 255.255.255.255 mgmt
+pdm location 192.168.106.0 255.255.254.0 clients
+pdm location ensbdtasw1 255.255.255.255 dmz
+pdm location 10.149.105.201 255.255.255.255 clients
+pdm location 10.149.105.202 255.255.255.255 clients
+pdm location 10.149.105.203 255.255.255.255 clients
+pdm location 192.168.203.113 255.255.255.255 dmz
+pdm location 192.168.203.114 255.255.255.255 dmz
+pdm location 10.15.0.0 255.255.255.0 clients
+pdm location 10.14.0.0 255.255.255.0 clients
+pdm location 10.31.5.130 255.255.255.255 clients
+pdm location 10.33.10.202 255.255.255.255 clients
+pdm location 10.33.14.0 255.255.255.0 clients
+pdm location 10.40.5.32 255.255.255.255 clients
+pdm location 10.40.5.63 255.255.255.255 clients
+pdm location 10.40.6.0 255.255.255.0 clients
+pdm location 10.40.14.201 255.255.255.255 clients
+pdm location 10.41.5.32 255.255.255.255 clients
+pdm location 10.41.6.1 255.255.255.255 clients
+pdm location qfqf-gnat-nw 255.255.255.192 clients
+pdm location 0.0.0.0 255.255.255.255 mgmt
+pdm location ensbdmgmt1 255.255.255.255 mgmt
+pdm location ensbdmgmt2 255.255.255.255 mgmt
+pdm location ensbdmgmt2 255.255.255.255 host
+pdm group smartstream-srv-group smartstream
+pdm logging informational 100
+pdm history enable
+arp timeout 14400
+nat (host) 0 192.168.211.15 255.255.255.255 0 0
+static (dmz,host) 192.168.200.220 192.168.203.220 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.200.225 192.168.203.225 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.200.235 192.168.203.235 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.200.230 192.168.203.230 netmask 255.255.255.255 0 0 
+static (paygate,dmz) 192.168.203.201 pg-arcapita netmask 255.255.255.255 0 0 
+static (paygate,dmz) 192.168.203.203 192.168.201.203 netmask 255.255.255.255 0 0 
+static (paygate,dmz) 192.168.203.205 pg-dgcx netmask 255.255.255.255 0 0 
+static (paygate,dmz) 192.168.203.207 pg-qtel netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.208.12 192.168.201.112 netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.200.35 192.168.201.35 netmask 255.255.255.255 0 0 
+static (host,paygate) pg-arcapita 192.168.200.201 netmask 255.255.255.255 0 0 
+static (paygate,clients) 192.168.206.201 pg-arcapita netmask 255.255.255.255 0 0 
+static (paygate,clients) 192.168.206.203 192.168.201.203 netmask 255.255.255.255 0 0 
+static (paygate,clients) 192.168.206.205 pg-dgcx netmask 255.255.255.255 0 0 
+static (paygate,clients) 192.168.206.207 pg-qtel netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.200.201 pg-arcapita netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.200.203 192.168.201.203 netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.200.205 pg-dgcx netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.200.207 pg-qtel netmask 255.255.255.255 0 0 
+static (dmz,clients) 192.168.206.220 192.168.203.220 netmask 255.255.255.255 0 0 
+static (dmz,clients) 192.168.206.225 192.168.203.225 netmask 255.255.255.255 0 0 
+static (dmz,clients) 192.168.206.230 192.168.203.230 netmask 255.255.255.255 0 0 
+static (dmz,clients) 192.168.206.235 192.168.203.235 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.35 192.168.200.35 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.59 192.168.200.59 netmask 255.255.255.255 0 0 
+static (host,paygate) 192.168.201.71 192.168.200.71 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.33 192.168.200.33 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.34 192.168.200.34 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.71 192.168.200.71 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.20 192.168.200.20 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.22 192.168.200.22 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.25 192.168.200.25 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.72 192.168.200.72 netmask 255.255.255.255 0 0 
+static (host,paygate) 192.168.201.72 192.168.200.72 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.95 192.168.200.95 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.96 192.168.200.96 netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.200.10 192.168.201.110 netmask 255.255.255.255 0 0 
+static (paygate,host) 192.168.200.11 192.168.201.111 netmask 255.255.255.255 0 0 
+static (host,paygate) 192.168.201.111 192.168.200.11 netmask 255.255.255.255 0 0 
+static (host,paygate) 192.168.201.110 192.168.200.10 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.203.111 192.168.200.11 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.200.10 192.168.203.110 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.200.11 192.168.203.111 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.200.13 192.168.203.113 netmask 255.255.255.255 0 0 
+static (dmz,host) 192.168.200.14 192.168.203.114 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.110 192.168.200.10 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.111 192.168.200.11 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.53 192.168.200.51 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.51 192.168.200.52 netmask 255.255.255.255 0 0 
+static (smartstream,clients) 192.168.206.208 endssapp1 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.53 192.168.200.51 netmask 255.255.255.255 0 0 
+static (dmz,smartstream) 192.168.218.230 192.168.203.230 netmask 255.255.255.255 0 0 
+static (smartstream,clients) 192.168.206.209 endssdb1 netmask 255.255.255.255 0 0 
+static (smartstream,host) 192.168.200.209 endssdb1 netmask 255.255.255.255 0 0 
+static (smartstream,host) 192.168.200.208 endssapp1 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.110 192.168.200.10 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.165 ensbdnbcr1 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.166 ensbdnbcr2 netmask 255.255.255.255 0 0 
+static (host,paygate) 192.168.201.104 sl3 netmask 255.255.255.255 0 0 
+static (host,dmz) 192.168.203.245 ftp netmask 255.255.255.255 0 0 
+static (host,smartstream) endssapp1 192.168.200.208 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.32 192.168.200.32 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.25 192.168.200.25 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.4 192.168.200.4 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.15 192.168.200.15 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.17 192.168.200.17 netmask 255.255.255.255 0 0 
+static (dmz,clients) 192.168.206.215 ensbdtasw1 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.51 192.168.200.52 netmask 255.255.255.255 0 0 
+static (mgmt,smartstream) 192.168.218.10 ensbdmgmt1 netmask 255.255.255.255 0 0 
+static (mgmt,smartstream) 192.168.218.11 ensbdmgmt2 netmask 255.255.255.255 0 0 
+static (host,smartstream) 192.168.218.111 192.168.200.11 netmask 255.255.255.255 0 0 
+access-group clients_access_in in interface clients
+access-group paygate_access_in in interface paygate
+access-group host_access_in in interface host
+access-group dmz_access_in in interface dmz
+access-group smartstream_access_in in interface smartstream
+access-group mgmt_access_in in interface mgmt
+route clients 0.0.0.0 0.0.0.0 192.168.206.4 1
+route clients 0.0.0.0 0.0.0.0 192.168.206.5 15
+route clients 10.14.0.0 255.255.255.0 192.168.206.5 2
+route clients 10.15.0.0 255.255.255.0 192.168.206.5 2
+route clients 10.31.5.130 255.255.255.255 192.168.206.5 2
+route clients 10.33.10.202 255.255.255.255 192.168.206.5 2
+route clients 10.33.14.0 255.255.255.0 192.168.206.5 2
+route clients 10.40.5.32 255.255.255.255 192.168.206.5 2
+route clients 10.40.5.63 255.255.255.255 192.168.206.5 2
+route clients 10.40.6.0 255.255.255.0 192.168.206.5 2
+route clients 10.40.14.201 255.255.255.255 192.168.206.5 2
+route clients 10.41.5.32 255.255.255.255 192.168.206.5 2
+route clients 10.41.6.1 255.255.255.255 192.168.206.5 2
+route clients 10.71.120.0 255.255.255.0 192.168.206.27 1
+route clients 10.72.110.0 255.255.255.0 192.168.206.6 1
+route clients 10.72.110.0 255.255.255.0 192.168.206.27 10
+route clients 10.149.0.0 255.255.0.0 192.168.206.7 2
+route clients 10.153.0.64 255.255.255.192 192.168.206.4 1
+route clients 10.153.2.0 255.255.255.192 192.168.206.4 1
+route clients 10.154.0.0 255.255.0.0 192.168.206.4 2
+route clients 10.154.9.128 255.255.255.192 192.168.206.4 1
+route host 172.28.0.0 255.255.0.0 192.168.200.1 2
+route clients 192.168.106.0 255.255.254.0 192.168.206.4 2
+route host 192.168.209.0 255.255.255.0 192.168.200.1 2
+route host 192.168.211.0 255.255.255.0 192.168.200.1 2
+route host 192.168.211.15 255.255.255.255 192.168.200.1 1
+route host 192.168.219.0 255.255.255.0 192.168.200.1 1
+timeout xlate 3:00:00
+timeout conn 1:00:00 half-closed 0:10:00 udp 0:02:00 rpc 0:10:00 h225 1:00:00
+timeout h323 0:05:00 mgcp 0:05:00 sip 0:30:00 sip_media 0:02:00
+timeout sip-disconnect 0:02:00 sip-invite 0:03:00
+timeout uauth 0:05:00 absolute
+aaa-server TACACS+ protocol tacacs+ 
+aaa-server TACACS+ max-failed-attempts 3 
+aaa-server TACACS+ deadtime 10 
+aaa-server RADIUS protocol radius 
+aaa-server RADIUS max-failed-attempts 3 
+aaa-server RADIUS deadtime 10 
+aaa-server LOCAL protocol local 
+http server enable
+http 0.0.0.0 0.0.0.0 clients
+http 192.168.201.110 255.255.255.255 paygate
+http 0.0.0.0 0.0.0.0 paygate
+http 0.0.0.0 0.0.0.0 host
+http 0.0.0.0 0.0.0.0 dmz
+http 192.168.208.0 255.255.255.0 mgmt
+snmp-server host mgmt ensbdmgmt2
+no snmp-server location
+no snmp-server contact
+snmp-server community ^enSBSXstr1ng^
+snmp-server enable traps
+tftp-server mgmt ensbdmgmt1 /
+floodguard enable
+telnet 192.168.202.249 255.255.255.255 clients
+telnet 0.0.0.0 0.0.0.0 paygate
+telnet 192.168.202.249 255.255.255.255 paygate
+telnet 0.0.0.0 0.0.0.0 host
+telnet 192.168.202.249 255.255.255.255 host
+telnet 192.168.202.249 255.255.255.255 dmz
+telnet 0.0.0.0 0.0.0.0 mgmt
+telnet timeout 5
+ssh timeout 5
+console timeout 0
+terminal width 80
+banner login EastNets Service Bureau
+banner login NOTICE TO USERS
+banner login This computer is a property of EastNets (R). Any or all use of this system is governed by the Security Policies of EastNets Service Bureau (ENSB).
+banner login Any or all uses of this system, and all files on this system may be monitored, recorded, audited, or inspected  at the discretion of EastNets Management.
+banner login Unauthorized or improper use of this system may result in administrative disciplinary action and civil and criminal penalties. By continuing to use this system you indicate your awareness of and consent to these terms and conditions of use. LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.
+banner login Please contact ENSB Infrastructure Team to obtain a copy of the Security Policy or visit ENSB portal at http://entranet.eastnets.com/sites/ENSB/.
+Cryptochecksum:81a3d0a8ba7c3afa7d90a8b63f00e307
+: end

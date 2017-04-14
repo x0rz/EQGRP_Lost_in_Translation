@@ -1,0 +1,17 @@
+if ($argc < 2 ) {
+	echo "USAGE: $argv[0] <targetIP> <targetPort>(Default Port = 80)\r\n";
+	return false;
+}
+
+string $ip;
+$ip=$argv[1];
+
+string $port;
+$port="80";
+
+
+if ($argc == 3){
+	$port = $argv[2];
+}
+
+`banner -ip $ip -port $port -send "HEAD / HTTP/1.0\r\nAccept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, */*\r\nAccept-language: en-us\r\nAccept-encoding: gzip, deflate\r\nUser-Agent: Mozilla/4.0\r\nContent-Type: text/html\r\n\r\n"`;

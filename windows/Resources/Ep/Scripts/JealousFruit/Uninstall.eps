@@ -1,0 +1,79 @@
+#--------------------------------------------------------
+# File: Uninstall.eps
+#
+# Wrapper script for Uninstall of DarkSkyline tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+if ($driver == "") {
+    echo "Invalid driver name given";
+    return false;
+}
+
+ifnot (prompt "Are you sure you want to uninstall $driver?") {
+    return false;
+}
+
+@record on;
+
+# get the root directory
+string $systemroot;
+
+if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+    $systemroot = GetCmdData("enum_keyvalue_data");
+}
+
+ifnot (defined($systemroot[0])) {
+    echo "* Unable to determine system root";
+    return false;
+}
+@record off;
+
+bool $rtn = true;
+
+echo "Unloading driver";
+if (`driverunload -name $driver`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $rtn = false;
+}
+
+echo "Removing registry key";
+if (`regdelkey -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -recursive`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $rtn = false;
+}
+
+echo "Removing $driver.sys";
+if (`del $driver.sys -path "$systemroot\\system32\\drivers"`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $rtn = false;
+}
+
+echo "Removing nt_cmd.exe";
+if (`del nt_cmd.exe -path "$systemroot"`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $rtn = false;
+}
+
+
+return $rtn;
+return true;

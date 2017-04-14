@@ -1,0 +1,60 @@
+#--------------------------------------------------------
+# File: rot13.eps
+#
+# Translates to and from ROT-13. This is to view obfuscated 
+# registry keys.
+#
+# This program requires another file, rot13.pl  to be located
+# in d:\opsdisk\tools\rot13.pl
+#
+#   Version 1 - 2008, 22 Oct
+#--------------------------------------------------------
+
+
+# ***** SET THIS TO WHERE the perl ROT-13 decoder is.  *****
+string $rot13_location = "D:\\opsdisk\\tools\\rot13.pl";
+
+if ($argc < 2) {
+	showusage();
+}
+
+else {
+
+	string $rot13results;
+	string $temparg = $argv[1];
+
+	@echo off;
+	@record on;
+	ifnot (`local run -command "perl $rot13_location $temparg" -redirect`) {
+		echo "ERROR: local perl call failed, string needs to be parsed better";
+		return false;
+	}
+	
+	@record off;
+	@echo on;
+
+	$rot13results = GetCmdData("output");
+	echo $rot13results;
+}
+return true;
+
+
+
+
+#=============================================================================
+sub showusage ()
+{
+		echo "ROT13:";
+		echo "------------------------------------------------------- ";
+		echo "  Takes one argument and converts it from ROT-13";
+		echo "  Some registry keys are encoded in ROT-13 to prevent simple string queries";
+		echo " ";
+		echo "  rot13 \"(string to decode)\"";
+		echo "        ex.  rot13 \"EHACNGU:P:\\JVAQBJF\\flfgrz32\\ert.rkr\\\" ";
+		echo "  results:   RUNPATH:C:\\WINDOWS\\system32\\reg.exe\\";
+		echo " ";
+
+		return true;
+}
+
+

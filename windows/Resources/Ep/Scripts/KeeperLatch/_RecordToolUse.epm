@@ -1,0 +1,43 @@
+#-------------------------------------------------------------------------------
+# _RecordToolUse
+#    Records the use of a tool
+# Params:
+#    name - The name of the tool
+#    version - The tool version
+#-------------------------------------------------------------------------------
+@include "_FileExists.epm";
+@include "_GetDirectory.epm";
+
+Sub _RecordToolUse(IN STRING $name, IN STRING $version)
+{
+
+    if ($name == "") {
+	echo "* No name given -- cannot record tool use";
+	return false;
+    }
+
+    string $usedToolDir = "UsedTools";
+    string $logDir;
+    ifnot (_GetLpLogsDirectory($logDir)) {
+	echo "* Failed to get logs directory -- cannot record tool use";
+	return false;
+    }
+
+    # make sure the directory exists
+    ifnot (_FileExists($usedToolDir, $logDir)) {
+	`local mkdir "$logDir\\$usedToolDir"`;
+    }
+    
+    # write the file
+    string $lines;
+    $lines[0] = "-------------------------------------------------------------------";
+    $lines[1] = "NAME=$name";
+    $lines[2] = "VERSION=$version";
+    ifnot (WriteFile("$logDir\\$usedToolDir\\$name.txt", true, $lines)) {
+	echo "* Failed to write lines to file -- cannot record tool use";
+	return false;
+    }
+
+    return true;
+
+}	/* end _RecordToolUse */

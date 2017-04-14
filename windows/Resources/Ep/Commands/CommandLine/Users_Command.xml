@@ -1,0 +1,22 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31322'>
+ <Command id='16' name='users'>
+  <Help>Returns the list of users on the given machine. </Help>
+  <Input>
+   <Option name="local" optional="false" group='type'>
+    <Set data='local' value='true'/>
+    <Help>Get local users</Help>
+   </Option>
+   <Option name="remote" optional="false" group='type'>
+    <Set data='local' value='false'/>
+    <Argument name="servername" data="servername" />
+    <Help>Get remote server's users</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='local' type='bool' default="true"/>
+   <Data name='servername' type='string'/>
+  </Output>
+ </Command>
+</Plugin>

@@ -1,0 +1,8 @@
+
+from ops.data import OpsClass, OpsField, DszObject, DszCommandObject, cmd_definitions
+import dsz
+if ('eventlogquery' not in cmd_definitions):
+    eventlogdsz = OpsClass('eventlog', {'numrecords': OpsField('numrecords', dsz.TYPE_INT), 'oldestrecordnum': OpsField('oldestrecordnum', dsz.TYPE_INT), 'mostrecentrecordnum': OpsField('mostrecentrecordnum', dsz.TYPE_INT), 'lastmodifieddate': OpsField('lastmodifieddate', dsz.TYPE_STRING), 'lastmodifiedtime': OpsField('lastmodifiedtime', dsz.TYPE_STRING), 'name': OpsField('name', dsz.TYPE_STRING)}, DszObject, single=False)
+    eventrecorddsz = OpsClass('record', {'id': OpsField('id', dsz.TYPE_INT), 'number': OpsField('number', dsz.TYPE_INT), 'datewritten': OpsField('datewritten', dsz.TYPE_STRING), 'timewritten': OpsField('timewritten', dsz.TYPE_STRING), 'user': OpsField('user', dsz.TYPE_STRING), 'computer': OpsField('computer', dsz.TYPE_STRING), 'source': OpsField('source', dsz.TYPE_STRING), 'eventtype': OpsField('eventtype', dsz.TYPE_STRING), 'string': OpsClass('string', {'value': OpsField('value', dsz.TYPE_STRING)}, DszObject, single=False), 'data': OpsClass('data', {'value': OpsField('value', dsz.TYPE_STRING)}, DszObject, single=True)}, DszObject, single=False)
+    eventlogquerycommand = OpsClass('eventlogquery', {'eventlog': eventlogdsz, 'record': eventrecorddsz}, DszCommandObject)
+    cmd_definitions['eventlogquery'] = eventlogquerycommand

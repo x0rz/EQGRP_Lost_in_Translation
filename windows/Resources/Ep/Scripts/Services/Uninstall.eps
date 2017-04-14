@@ -1,0 +1,77 @@
+#--------------------------------------------------------
+# File: Uninstall.eps
+#
+# Wrapper script for Uninstall of DarkSkyline tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#--------------------------------------------------------
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <ServiceName>>";
+    return false;
+}
+
+string $ServiceName = $argv[1];
+
+if ($serviceName == "") {
+    echo "Invalid service name given";
+    return false;
+}
+
+ifnot (prompt "Are you sure you want to uninstall $serviceName?") {
+    return false;
+}
+
+@record on;
+
+# get the root directory
+string $systemroot;
+
+if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+    $systemroot = GetCmdData("enum_keyvalue_data");
+}
+
+ifnot (defined($systemroot[0])) {
+    echo "* Unable to determine system root";
+    return false;
+}
+@record off;
+
+bool $rtn = true;
+
+echo "Check to see if we need to stopping $serviceName";
+if (`script VerifyRunning.eps $serviceName`) {
+	echo "$serviceName is running, stopping service";
+	echo "Stopping $serviceName";
+	@echo on;
+	if (`run -command ".\\sc stop $serviceName" -redirect stop`){
+		echo "    Stop $serviceName SUCCESS";
+	} else {
+		echo "    Stop $serviceName FAILED (continuing anyway)";
+		$rtn = false;
+	}
+	@echo off;
+} 
+
+
+echo "Deleting Service";
+@echo on;
+if (`run -command ".\\sc delete $serviceName" -redirect delete`){
+    echo "    Delete $serviceName SUCCESS";
+} else {
+    echo "    Delete $serviceName FAILED (continuing anyway)";
+    $rtn = false;
+}
+@echo off;
+
+
+echo "Removing $serviceName";
+if (`del $serviceName.exe -path "$systemroot\\system32"`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $rtn = false;
+}
+
+return $rtn;

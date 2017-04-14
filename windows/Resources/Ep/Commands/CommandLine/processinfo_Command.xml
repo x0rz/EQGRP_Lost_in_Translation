@@ -1,0 +1,26 @@
+<?xml version='1.0' ?>
+<Plugin id='31341'>
+
+	<Command id='16' name='processinfo'>
+	
+		<Help>Gets info on the given process</Help>
+		
+		<Input>
+			<Option name='id' optional='true'>
+				<Argument name='#' data='id'/>
+				<Help>The id of the process to be queried.</Help>
+			</Option>
+			
+			<Option name='elevate' optional='true'>
+				<Set data="elevate" value="true"/>
+				<Help>Attempt to elevate to open the process (if necessary).</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='id' type='uint32_t'/>
+			<Data name='elevate' type='bool' default='false'/>
+		</Output>
+	</Command>
+	
+</Plugin>

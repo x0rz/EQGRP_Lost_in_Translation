@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31373'>
+
+  <Command id='16' name='admode'>
+
+    <Help>Retrieves the mode of an Active Directory server</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

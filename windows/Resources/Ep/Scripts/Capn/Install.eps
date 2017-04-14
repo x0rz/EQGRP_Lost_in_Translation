@@ -1,0 +1,85 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of Capn tools
+#
+# Modifications:
+#  8/10/2005	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_GetSystemVersion.epm";
+
+#@echo off;
+
+@include "getDefaults.eps";
+@include "getResDir.eps";
+
+
+
+# Get the defaults
+string $driver; 
+string $captureFile;
+string $userModeFile;
+string $helperFile;
+getDefaultPaths($driver, $captureFile, $helperFile);
+
+# Get the resource path
+string $resPath;
+getResDirectory($resPath);
+
+if (($argc < 2) || ($argc > 4)) {
+    echo "Usage: $argv[0] <driverName> [captureFile] [userModeExe]";
+    return false;
+}
+
+if ($argc >= 3) {
+  $captureFile = $argv[2];
+}
+
+if($argc >= 4){
+  $userModeFile = $argv[3];
+}
+	
+$driver = $argv[1];
+
+# check to make sure we're Windows 2000 or higher
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (_GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows 2000 or greater";
+    pause;
+} else if ($majorVersion < 5) {
+    # less than Windows 2000
+    echo "*** Target system is pre-2000. ***";
+    echo "    Capn is not compatible with this system";
+    return false;
+}
+
+ifnot (_DriverInstall($driver, "Capn", 2, 1)) {
+    return false;
+}
+
+# add the extra registry keys
+bool $keysAdded = true;
+
+echo "Adding extra registry key";
+ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value file -type REG_EXPAND_SZ -data "$captureFile"`) {
+    echo "    FAILED";
+    return false;
+}
+
+# set maximum file size
+if (`script SetMaxFileSize.eps $driver`) {
+    echo "SET OF MAXIMUM CAPTURE FILE SIZE SUCCESSFULL";
+} else {
+    echo "**** UNABLE TO SET NEW MAXIMUM CAPTURE FILE SIZE ****";
+    return false;
+}
+
+# we're done...
+return true;

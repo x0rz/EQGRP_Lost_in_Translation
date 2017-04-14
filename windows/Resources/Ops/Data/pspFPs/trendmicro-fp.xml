@@ -1,0 +1,11 @@
+<Software value="PSP">
+	<Vendor value="Trend Micro" regkey="hklm\software\trendmicro">
+		<Product value="Officescan" regkey="hklm\software\trendmicro\PC-cillinntcorp">
+			<Version value="regdata" regkey="hklm\software\trendmicro\PC-cillinntcorp\currentversion\misc." regvalue="Programver">
+				<Server value="regdata" regkey="hklm\software\trendmicro\PC-cillinntcorp\currentversion" regvalue="Server" />
+				<FirewallStatus value="regdata" regkey="hklm\software\trendmicro\nsc\pfw" regvalue="Status" />
+			</Version>
+		</Product>
+		<Product value="Titanium" directory="%ProgramFiles%\Trend Micro\Titanium" />
+	</Vendor>
+</Software>

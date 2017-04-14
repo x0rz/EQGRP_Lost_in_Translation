@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_InjectDll_Tasking.pyo" providerType="script">
+	
+    <Command name="InjectDll" id="0">
+        <Help>Loads a DLL into a given process</Help>
+
+        <Input>
+			<Option name='library' optional='false'>
+				<Help>The library to be injected</Help>
+				<Argument name='name' data='library'/>
+			</Option>
+			
+			<Option name='id' optional='false'>
+				<Help>The process ID into which to inject</Help>
+				<Argument name='value' data='procId'/>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies memory access and thread method - will use current default if not specified.</Help>
+				<Argument name='memory' data='memory'/>
+				<Argument name='thread' data='thread'/>
+			</Option>
+		</Input>
+
+        <Output>
+			<Data name='library' type='string'/>
+			<Data name='procId' type='uint32_t'/>
+			<Data name='memory'    type='string'/>
+			<Data name='thread'    type='string'/>
+		</Output>
+    </Command>
+</Plugin>

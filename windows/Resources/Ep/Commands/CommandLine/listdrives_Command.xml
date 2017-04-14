@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31306'>
+
+  <Command id='16' name='listdrives'>
+
+    <Help>Returns information on available drives.</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

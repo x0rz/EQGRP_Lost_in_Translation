@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_Grep_Tasking.pyo' providerType='script'>
+
+    <Command name='Grep' id='0'>
+
+		<Help>Searches files for a specified string.</Help>
+
+		<Input>
+			<Argument name='path_and_mask' optional='true' data='path_and_mask'/>
+			
+			<Option name='recursive' optional='true'>
+				<Set data='recursive' value='true'/>
+			</Option>
+
+			<Option name='mask' optional='true'>
+				<Argument name='filemask' data='mask'/>
+			</Option>
+
+			<Option name='path' optional='true'>
+				<Help>Do a grep from a directory other than the current one.</Help>
+				<Help>If '*' do a grep of all directories on all fixed drives</Help>
+
+				<Argument name='path' data='path'/>
+			</Option>
+
+			<Option name='max' optional='true'>
+				<Help>Continue to return listings up to the number specified.  If zero,</Help>
+				<Help>return all listings.  Default: 100</Help>
+				
+				<Argument name='number' data='max'/>
+			</Option>
+
+			<Option name='time' optional='true'>
+				<Help>Time type to use in after/before/age and display</Help>
+				<Help>(defaults to modified)</Help>
+
+				<Argument name='type'>
+					<Value string='accessed'>
+						<Set data='timetype' value='1'/>
+						<Set param='timetype' value='Accessed'/>
+					</Value>
+					<Value string='modified'>
+						<Set data='timetype' value='2'/>
+						<Set param='timetype' value='Modified'/>
+					</Value>
+					<Value string='created'>
+						<Set data='timetype' value='3'/>
+						<Set param='timetype' value='Created'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='age' optional='true'>
+				<Help>Only search files that are at most 'interval' old ([hh:][mm:]ss)</Help>
+
+				<Argument name='interval' data='age'/>
+			</Option>
+
+			<Option name='after' optional='true'>
+				<Help>Only search files with timestamps after the given date.</Help>
+				<Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+				
+				<Argument name='date' data='after'/>
+			</Option>
+
+			<Option name='before' optional='true'>
+				<Help>Only search files with timestamps before the given date</Help>
+				<Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+				
+				<Argument name='date' data='before'/>
+			</Option>
+
+			<Option name='pattern' optional='false'>
+				<Argument name='phrase' data='phrase'/>
+				<Help>The phrase(s) to search the given file(s) for</Help>
+				<Help>The phrases need to be of the form 'phrase1|phrase2|...|phraseX'</Help>
+			</Option>
+
+			<Option name='nocase' optional='true'>
+				<Help>Ignore case when matching phrases</Help>
+				<Set data='nocase' value='true'/>
+			</Option>
+
+			<Option name='listall' optional='true'>
+				<Help>Record matching files that don't also contain any matching strings</Help>
+				<Set data='listall' value='true'/>
+			</Option>
+
+			<Option name='unicode' optional='true'>
+				<Help>Act on the file(s) as UNICODE files.</Help>
+				<Set data='unicode' value='true'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='path_and_mask' type='string'/>
+			<Data name='mask'			type='string'/>
+			<Data name='path'			type='string'/>
+			<Data name='recursive'		type='bool'		default='false'/>
+			<Data name='max'			type='uint32_t' default='100'/>
+			<Data name='timetype'		type='uint8_t'	default='2'/>
+			<Data name='age'			type='time'/>
+			<Data name='after'			type='datetime'/>
+			<Data name='before'			type='datetime'/>
+			<Data name='phrase'			type='string'/>
+			<Data name='nocase'			type='bool'		default='false'/>
+			<Data name='listall'		type='bool'		default='false'/>
+			<Data name='unicode'		type='bool'		default='false'/>
+		</Output>
+		
+    </Command>
+</Plugin>

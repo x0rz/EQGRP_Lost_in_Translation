@@ -1,0 +1,34 @@
+
+@include "_CommandModification.dsi";
+@include "_Versions.dsi";
+@echo off;
+
+bool $rtn = true;
+bool $bDisable = false;
+
+string $arch, $compiledArch;
+_GetArch($arch);
+_GetCompiledArch($compiledArch);
+if (($arch != $compiledArch) && !_IsWindowsVistaOrGreater())
+{
+	# can't test on WOW64 boxes
+	$bDisable = true;
+}
+
+int $major;
+int $minor;
+int $sp;
+if (_GetOsVersion($major, $minor, $sp))
+{
+	if (($major == 5) && ($minor == 1) && ($sp == 0))
+	{
+		# papercut doesn't work on XP SP0 boxes
+		$bDisable = true;
+	}
+}
+
+if ($bDisable)
+{
+	_DisableCommand("Papercut");
+}
+return $rtn;

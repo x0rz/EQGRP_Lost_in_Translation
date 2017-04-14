@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+<Plugin id='31415'>
+	<Command id='16' name='modifyAuthentication'>	
+ 		<Help>Disables authentication. It modifies the system to allow 
+		a given user to be authenticated without the need for the users
+		password. </Help> 		
+		<Input>
+			<Option name='user' optional='false'>
+				<Help>The user to authenticate</Help>
+				<Argument name="UserName" data="user" />
+			</Option>
+		</Input>
+		<Output>
+			<Data name='user' type='string' />
+		</Output> 
+	</Command>
+</Plugin>

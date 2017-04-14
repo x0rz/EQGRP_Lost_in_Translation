@@ -1,0 +1,6 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25158' script='DataHandlers/Mcl_Cmd_KisuComms_DataHandler.pyo'>
+	<DisplayTransform>kisucomms_display.xsl</DisplayTransform>
+	<StorageTransform>kisucomms_storage.xsl</StorageTransform>
+</DataHandler>

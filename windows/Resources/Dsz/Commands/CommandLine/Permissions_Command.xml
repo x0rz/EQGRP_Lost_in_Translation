@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Permissions_Tasking.pyo' providerType='script'>
+ 
+    <Command name="Permissions" id="0">
+
+        <Help>Check or manipulate the permissions on a given opbject.</Help>
+
+		<Input>
+			<Option name='file' optional='false' group='type'>
+				<Set data='type' value='1'/>
+				<Argument name='name' data='object'/>
+			</Option>
+			
+			<Option name='key' optional='false' group='type'>
+				<Set data='type' value='2'/>
+
+				<Help>Which hive to use</Help>
+				<Help>U - HKEY_USERS</Help> 
+				<Help>L - HKEY_LOCAL_MACHINE</Help> 
+				<Help>C - HKEY_CURRENT_USER</Help> 
+				<Help>R - HKEY_CLASSES_ROOT</Help> 
+				
+				<Argument name="hive" optional="false">
+					<Value string="U">
+						<Set data="object" value="USERS" />
+					</Value>
+					<Value string="L">
+						<Set data="object" value="MACHINE" />
+					</Value>
+					<Value string="C">
+						<Set data="object" value="CURRENT_USER" />
+					</Value>
+					<Value string="R">
+						<Set data="object" value="CLASSES_ROOT" />
+					</Value>
+				</Argument>
+				<Argument name='key' data='extra' optional='true'/>
+			</Option>
+			
+			<Option name='share' optional='false' group='type'>
+				<Set data='type' value='3'/>
+				<Set data='objectType' value='5'/>
+				<Argument name='share' data='object'/>
+			</Option>
+
+			<Option name='object' optional='false' group='type'>
+				<Set data='type' value='3'/>
+				<Argument name='objectType'>
+					<Value string="SE_FILE_OBJECT">
+						<Set data="objectType" value="1"/>
+					</Value>
+					<Value string="SE_SERVICE">
+						<Set data="objectType" value="2"/>
+					</Value>
+					<Value string="SE_PRINTER">
+						<Set data="objectType" value="3"/>
+					</Value>
+					<Value string="SE_REGISTRY_KEY">
+						<Set data="objectType" value="4"/>
+					</Value>
+					<Value string="SE_LMSHARE">
+						<Set data="objectType" value="5"/>
+					</Value>
+					<Value string="SE_KERNEL_OBJECT">
+						<Set data="objectType" value="6"/>
+					</Value>
+					<Value string="SE_WINDOW_OBJECT">
+						<Set data="objectType" value="7"/>
+					</Value>
+					<Value string="SE_DS_OBJECT">
+						<Set data="objectType" value="8"/>
+					</Value>
+					<Value string="SE_DS_OBJECT_ALL">
+						<Set data="objectType" value="9"/>
+					</Value>
+					<Value string="SE_PROVIDER_DEFINED_OBJECT">
+						<Set data="objectType" value="10"/>
+					</Value>
+					<Value string="SE_WMIGUID_OBJECT">
+						<Set data="objectType" value="11"/>
+					</Value>
+					<Value string="SE_REGISTRY_WOW64_32KEY">
+						<Set data="objectType" value="12"/>
+					</Value>
+				</Argument>
+				<Argument name='name' data='object'/>
+			</Option>
+			
+			<Option name='query' optional='true' group='action'>
+				<Help>Query the permissions on a given object</Help>
+				<Set data='action' value='1'/>
+				<Reject>sid</Reject>
+				<Reject>permanent</Reject>
+			</Option>
+			
+			<Option name='modify' optional='true' group='action'>
+				<Help>Modify DACL access permission</Help>
+				<Help>  Grant - Combines with existing permissions</Help>
+				<Help>  Set - Overrides existing permission</Help>
+				<Help>  Deny - Adds ACCESS_DENIED_ACE_TYPE</Help>
+				<Help>  Revoke - Removes all ACCESS_ALLOWED_ACE_TYPE</Help>
+				<Set data='action' value='2'/>
+				<Argument name="name">
+					<Value string="Grant">
+						<Set data="mode" value="1"/>
+					</Value>
+					<Value string="Set">
+						<Set data="mode" value="2"/>
+					</Value>
+					<Value string="Deny">
+						<Set data="mode" value="3"/>
+					</Value>
+					<Value string="Revoke">
+						<Set data="mode" value="4"/>
+					</Value>
+				</Argument>
+				<Require>sid</Require>
+			</Option>
+
+			<Option name='permanent' optional='true'>
+				<Help>Change to object permissions will not be undone when command stopped</Help>
+				<Set data='permanent' value='true'/>
+			</Option>
+			
+			<Option name='sid' optional='true'>
+				<Help>SID(User/Group) for which to modify permission</Help>
+				<Argument optional="false" data="sid" name="SID"/>
+			</Option>
+			
+			<Option name='access' optional='true'>
+				<Help>32-bit access rights mask. Default: GENERIC_ALL</Help>
+				<Argument optional='false' data='access' name='#'/>
+			</Option>
+			
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint8_t'/>
+			<Data name='object' type='string'/>
+			<Data name='extra' type='string'/>
+			<Data name='action' type='uint8_t' default='1'/>
+			<Data name='mode' type='uint8_t' default='0'/>
+			<Data name='permanent' type='bool' default='false'/>
+			<Data name='sid' type='string'/>
+			<Data name='access' type='uint32_t' default='0x10000000'/>
+			<Data name='objectType' type='uint32_t'/>
+		</Output>
+		
+    </Command>
+</Plugin>

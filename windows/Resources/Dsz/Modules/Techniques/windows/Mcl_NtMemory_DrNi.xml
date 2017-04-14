@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Technique name='Mcl_NtMemory_DrNi' id='115'>
+
+	<Implementation value='2'/>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type='x64'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+
+</Technique>

@@ -1,0 +1,8 @@
+@record on;
+`get C:\winnt\debug\DCPROMO.LOG`;
+DnsDomainName
+`systemversion`;
+string $timestamp;
+`logedit -file C:\winnt\debug\DCPROMO.LOG -replace $timestamp`;
+
+@record off;

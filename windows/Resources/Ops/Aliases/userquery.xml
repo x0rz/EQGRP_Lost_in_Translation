@@ -1,0 +1,8 @@
+<?xml version='1.0' ?>
+<Aliases>
+	<Alias>
+		<Name>userquery</Name>
+		<ReplaceBeforeArgs>python windows/userquery.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+	</Alias>
+</Aliases>

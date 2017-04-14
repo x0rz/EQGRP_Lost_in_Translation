@@ -1,0 +1,85 @@
+#--------------------------------------------------------
+# File: StandardInstall
+#
+# Performs a standard install of the BehavePeking tools
+#
+# Modifications:
+#  29 Aug 2005	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if (($argc < 2) || ($argc > 3)) {
+    echo "Usage: $argv[0] <driverName> [localExe]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $localExe;
+if ($argc > 2) {
+    $localExe = $argv[2];
+}
+
+# perform the install
+ifnot (`script InstallDriver.eps $driver`) {
+    return false;
+}
+ 
+# load the driver
+echo "Loading the $driver driver";
+if (`driverload -name $driver`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# set the filter
+ifnot (`script SetFilter.eps $driver tcp_port80_data.filt`) {
+    return false;
+}
+
+# start scanning
+echo "Starting scanning";
+if (`webtipper -name $driver -control start`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# configure the exe (if necessary)
+if ((defined($localExe) == false) || (strlen($localExe) == 0)) {
+    @record on;
+    if (`script BehavePeking\\ConfigureExe.eps`) {
+	$localExe = GetCmdData("file");
+	SetCmdData(STRING, "file", $localExe);
+    } else {
+	return false;
+    }
+    @record off;
+}
+
+# install the exe driver
+@echo on;
+echo "\r\n\r\n";
+ifnot (`dp_install $localExe 1`) {
+    return false;
+}
+
+echo "";
+echo "Waiting for exe to start";
+Sleep(5000);
+
+# show status
+`dp_status`;
+`script GetStatus.eps $driver`;
+
+echo "";
+echo "NOTE: If the status listed above does not show the executable as running,";
+echo "      wait until 'dp_status' show the exe as running.  At that point run";
+echo "      'script BehavePeking\\GetStatus.eps $driver' to determine whether";
+echo "      the exe has registered as expected.";
+echo "";
+
+return true;

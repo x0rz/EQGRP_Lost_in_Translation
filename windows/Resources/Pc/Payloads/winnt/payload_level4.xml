@@ -1,0 +1,162 @@
+<Payloads>
+	<Payload>
+		<Description>Standard TCP Generic</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_dll</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 4 TCP DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>HTTP Proxy Generic</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_http_dll</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 4 HTTP DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>Standard TCP AppCompat-enabled</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_FRPA_dll</BaseFile>
+		<Persistence>AppCompat</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 4 TCP AppCompat DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>HTTP Proxy AppCompat-enabled</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_http_FRPA_dll</BaseFile>
+		<Persistence>AppCompat</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 4 HTTP AppCompat DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>Standard TCP UtilityBurst-enabled</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_UTBU_dll</BaseFile>
+		<Persistence>UtilityBurst</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 4 TCP UtilityBurst DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>HTTP Proxy UtilityBurst-enabled</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_http_UTBU_dll</BaseFile>
+		<Persistence>UtilityBurst</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 4 HTTP UtilityBurst DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>Standard TCP WinsockHelperApi-enabled</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_WSHA_dll</BaseFile>
+		<Persistence>WinsockHelperApi</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 4 TCP Winsock DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>HTTP Proxy WinsockHelperApi-enabled</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_http_WSHA_dll</BaseFile>
+		<Persistence>WinsockHelperApi</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 4 HTTP Winsock DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>Standard TCP</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>exe</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_exe</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 4 TCP EXE</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>HTTP Proxy</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>exe</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/i386-winnt/release/PC_Level4_http_exe</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 4 HTTP EXE</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+</Payloads>

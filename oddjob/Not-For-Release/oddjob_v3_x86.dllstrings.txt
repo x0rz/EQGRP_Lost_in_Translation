@@ -1,0 +1,624 @@
+QQSVW
+SVW3
+pSVW
+CDPP
+PWVj
+@@f;
+uM!E
+SVWh
+Phx8
+@@f;
+QSVWhX6
+t1WPV
+tdVSP
+tB9}
+PWWV
+u39]
+tUSh
+Shp6
+uXjHSh
+PWWh
+t-Wj
+uq9}
+PSWWW
+PSWj
+AAHHJu
+Wj Y
+j=Yf
+j=Yf
+u 9E
+YY9}
+4891r)
+D$$ 
+D$hSP
+D$`P
+D$ P
+D$ P
+QQSV
+u#jHj
+t;8]
+u6jD
+PVVh
+It&It
+@@f;
+@@f;
+AAf;
+@@f;
+SVW3
+vMh@4
+SSSS
+w6SSj
+SSSS
+w9SSj
+ SVW3
+PjYjCV
+QQVW
+jUY3
+9A;M
+SuPW
+@@f;
+@@f;
+t!SWP
+@@f;
+t>Sj
+_^9]
+jUZ3
+PSSSSSSh 
+PSSj
+t	VP
+GGBBf
+SSSSS
+AAf9
+WWWWW
+uaVj
+uL9=0g
+AAFFf
+wIVSP
+9=0g
+FVSj
+VVVVV
+r	f=Z
+r	f=Z
+ CCGG
+t=f;
+CCGG
+95`g
+VVVVV
+r	f=Z
+r	f=Z
+ GGBB
+8VVVVV
+f91t
+AAKu
+AAGGf;
+_^[]
+u59=@_
+9=@_
+VVVVV
+VVVVV
+uWS3
+ueSj
+@_^[
+ VW}
+j?^;
+Y__^[
+9csm
+VVVVV
+VVVVV
+YYu6h
+QQSV3
+SSSSS
+PPPPP
+SSSSS
+SSSSS
+SSSSS
+_[^]
+_^[]
+VVVV
+RPSV
+90tN
+@t7f
+PPPPP
+t$hT(
+YYt1V
+Y;=xY
+Whd(
+0A@@Ju
+95Dg
+Fh=pS
+Wto=
+Y_^[]
+_^[]
+Fpt"
+S99t
+~du	
+jThX<
+j$j _W
+Nj$j 
+QQVW3
+t)WSR
+PPPPP
+?"u?
+< tI<	tE
+@@f9
+@@f9
+SSS+
+@PWSS
+t!SS
+WWWWW
+t!hX)
+URPQQh
+L$,3
+UVWS
+[_^]
+SVWj
+_^[]
+9MZt
+_^[]
+t+Ht
+PPPPP
+ SVW
+SSSSS
+tm95
+SSSSS
+0SSSSS
+_^[]
+0SSSSS
+_^[]
+VVVVV
+WWWWW
+WWWWW
+VVVVV
+VVVVV
+GGAAf
+@@FFf
+@@FF
+WWWWW
+VVVVV
+VVVVV
+VVVVV
+Yt"V
+Yt.V
+Yt"V
+Yt.V
+Yt"V
+YYt}
+~%9M
+QVj	
+r 8^
+v	N+D$
+oV f
+o^0f
+of@f
+onPf
+ov`f
+o~pf
+j,hX=
+u8SS3
+u$SS
+t!VV9u u
+9] SS
+v$;5
+PPPPPPPP
+_^[]
+0SSSSS
+PPPPPPPP
+u6SSj
+t	@@;
+uR9]
+9] u
+9E Yt
+SSSS
+txVS
+t0WWWWW
+Af#E
+SVWUj
+]_^[
+;t$,v-
+UQPXY]Y[
+VW|[;
+_^[]
+VVVVV
+~,WPV
+98t^
+tVPV
+t/9U
+~"WP
+^SSSSS
+j"^SSSSS
+QSWVj
+WWWWW
+<Xt	
+u,9E
+u29u
+SSSSV
+t<Vj
+t+SSVPV
+WWWWW
+u:hX)
+SVW}
+E 9}
+WWWW
+tb9} u
+@h44
+WWWWW
+_^[]
+WWWWW
+SSSSS
+WWWWW
+WWWWW
+^_[3
+CorExitProcess
+mscoree.dll
+runtime error 
+TLOSS error
+SING error
+DOMAIN error
+R6034
+An application has made an attempt to load the C runtime library incorrectly.
+Please contact the application's support team for more information.
+R6033
+- Attempt to use MSIL code from this assembly during native code initialization
+This indicates a bug in your application. It is most likely the result of calling an MSIL-compiled (/clr) function from a native constructor or from DllMain.
+R6032
+- not enough space for locale information
+R6031
+- Attempt to initialize the CRT more than once.
+This indicates a bug in your application.
+R6030
+- CRT not initialized
+R6028
+- unable to initialize heap
+R6027
+- not enough space for lowio initialization
+R6026
+- not enough space for stdio initialization
+R6025
+- pure virtual function call
+R6024
+- not enough space for _onexit/atexit table
+R6019
+- unable to open console device
+R6018
+- unexpected heap error
+R6017
+- unexpected multithread lock error
+R6016
+- not enough space for thread data
+This application has requested the Runtime to terminate it in an unusual way.
+Please contact the application's support team for more information.
+R6009
+- not enough space for environment
+R6008
+- not enough space for arguments
+R6002
+- floating point support not loaded
+Microsoft Visual C++ Runtime Library
+<program name unknown>
+Runtime Error!
+Program: 
+(null)
+Invalid parameter passed to C runtime function.
+EncodePointer
+KERNEL32.DLL
+DecodePointer
+FlsFree
+FlsSetValue
+FlsGetValue
+FlsAlloc
+ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+InitializeCriticalSectionAndSpinCount
+GetProcessWindowStation
+GetUserObjectInformationA
+GetLastActivePopup
+GetActiveWindow
+MessageBoxA
+USER32.DLL
+( 8PX
+700WP
+`h````
+xpxxxx
+('8PW
+700PP
+`h`hhh
+xppwpp
+ !"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
+ !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~
+HH:mm:ss
+dddd, MMMM dd, yyyy
+MM/dd/yy
+December
+November
+October
+September
+August
+July
+June
+April
+March
+February
+January
+Saturday
+Friday
+Thursday
+Wednesday
+Tuesday
+Monday
+Sunday
+SetThreadStackGuarantee
+SunMonTueWedThuFriSat
+JanFebMarAprMayJunJulAugSepOctNovDec
+CONOUT$
+IsWow64Process
+alwo
+p	PfH
+GetSystemTimeAsFileTime
+GetModuleFileNameW
+SetErrorMode
+GetFileAttributesW
+TerminateProcess
+GetTempPathW
+MoveFileW
+CloseHandle
+GetWindowsDirectoryW
+DeleteFileW
+GetCurrentProcessId
+GetTempFileNameW
+GetFileSize
+MoveFileExW
+WriteFile
+ReadFile
+CreateFileW
+GetLastError
+ExitProcess
+VirtualQuery
+CreateProcessW
+VirtualFree
+OpenProcess
+SetLastError
+VirtualAlloc
+Process32FirstW
+Process32NextW
+CreateToolhelp32Snapshot
+GetEnvironmentVariableW
+GetCurrentProcess
+GetComputerNameW
+GetModuleHandleW
+WideCharToMultiByte
+GetVersionExW
+GetProcAddress
+LocalAlloc
+LocalFree
+FindResourceW
+LoadResource
+SizeofResource
+LockResource
+HeapFree
+HeapAlloc
+HeapReAlloc
+GetCommandLineA
+GetVersionExA
+UnhandledExceptionFilter
+SetUnhandledExceptionFilter
+HeapDestroy
+HeapCreate
+DeleteCriticalSection
+LeaveCriticalSection
+EnterCriticalSection
+GetModuleHandleA
+GetStdHandle
+GetModuleFileNameA
+OutputDebugStringA
+TlsGetValue
+TlsAlloc
+TlsSetValue
+TlsFree
+InterlockedIncrement
+InterlockedDecrement
+GetCurrentThreadId
+GetCPInfo
+GetACP
+GetOEMCP
+SetHandleCount
+GetFileType
+GetStartupInfoA
+FreeEnvironmentStringsA
+GetEnvironmentStrings
+FreeEnvironmentStringsW
+GetEnvironmentStringsW
+QueryPerformanceCounter
+GetTickCount
+InitializeCriticalSection
+RtlUnwind
+LoadLibraryA
+SetFilePointer
+GetConsoleCP
+GetConsoleMode
+MultiByteToWideChar
+Sleep
+LCMapStringA
+LCMapStringW
+GetStringTypeA
+GetStringTypeW
+GetLocaleInfoA
+SetStdHandle
+WriteConsoleA
+GetConsoleOutputCP
+WriteConsoleW
+VirtualProtect
+GetSystemInfo
+CreateFileA
+FlushFileBuffers
+KERNEL32.dll
+wsprintfW
+USER32.dll
+CryptAcquireContextW
+CryptDeriveKey
+CryptReleaseContext
+CryptGenRandom
+CryptEncrypt
+CryptCreateHash
+CryptDestroyKey
+CryptDecrypt
+CryptDestroyHash
+CryptHashData
+OpenProcessToken
+GetUserNameW
+GetTokenInformation
+EqualSid
+AllocateAndInitializeSid
+FreeSid
+ADVAPI32.dll
+CoTaskMemFree
+CoCreateInstance
+CoUninitialize
+CoInitializeEx
+ole32.dll
+ABABABABABABABABABAB.dll
+start
+                          
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+                          
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level="asInvoker" uiAccess="false"></requestedExecutionLevel>
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+</assembly>PA
+5/6L6
+888C8_8q8
+:>;W;j;`<f<s<
+<==q=
+>+>x>
+?0?{?
+5I5Z5
+546G6N6p6x6
+7`8i8
+909T9m9{9
+9p:{:
+[0w0
+202?2X2
+9K9W9
+=h=n=}=
+>!?[?a?j?o?{?
+Q0[0o4
+5+8C8b8
+8%9A9
+:B:a:k:u:
+;);;;
+>d>y>
+0 1T1Z1f1
+292@2K3
+6.646:6?6_6d6n6
+:&:.:6:>:J:S:X:^:h:q:|:
+<&<0<<<E<M<W<]<c<p<w<
+="=+=>=b=
+>,>2>9>F>M>S>[>a>s>x>
+101C1N1T1Z1_1h1
+2+2<2B2S2
+2T6`6
+919N9
+;T;o;u;~;
+;3<;<M<U<h<x<}<
+===B=M=R=p=
+>Q>i>t>
+?>?Q?c?
+j0r0
+749d9
+?"?-?9?N?T?]?d?|?
+0#000Q0[0v0
+152=2
+3#3*30373=3E3L3Q3Y3b3n3s3x3~3
+4=4C4
+6C6a6h6l6p6t6x6|6
+6F7Q7l7s7x7|7
+8 8j8p8t8x8|8
+9Z9q9
+:/;<;F;T;];g;
+<A<[<
+=&>2>E>W>r>z>
+>!?J?[?~?
+C0m0
+2)2e2V3
+5P5X5
+6K6]6
+707=7
+8j:}:
+:0;6;L;W;n;z;
+<'<Y<r<
+=)=9=k=q=z=
+=*>_>x>
+? ?$?n?t?x?|?
+0 0A0k0
+293G3
+4 4%454d4r4
+5(6B6Y6_6r6w6
+899F9e9}9
+30d0z0
+3*353C3Q3X3g3s3
+3&454>4[4
+9+9*:
+>#>c>
+3"545F5h5z5
+597F7N7\7n7z7
+:5;A;
+=.=D=Y=y=
+=6>R>
+?'?D?N?W?b?w?~?
+0#0(060
+121=1`1
+1g2o2
+7*7D7a7
+9a:t:
+;T<h=
+> >/>
+>8?d?
+1L2{2P4V4\4b4
+2$2(2
+\:`:
+; ;$;,;0;8;<;D;H;P;T;\;`;h;l;
+<0<P<l<p<
+=0=L=P=l=p=x=|=
+>0>P>
+3$3,343<3D3L3T3\3`3d3
+9(989\9h9l9p9t9x9
+9@:D:H:L:P:T:X:\:`:d:h:p:
+= =$=(=,=0=4=8=<=@=D=H=L=P=T=X=\=`=d=h=l=p=t=x=|=
+(null)
+kernel32.dll
+         (((((                  H
+         h((((                  H
+                                 H
+kernel32
+https
+https
+https
+version
+%s%s%d%d%s
+COMMONPROGRAMFILES(x86)
+<Process pid=%d ppid=%d threadCount=%d %s\>
+%s\%s
+rundll
+rundll32
+rundll32
+BINARY
+Microsoft Enhanced Cryptographic Provider v1.0
+Microsoft Enhanced Cryptographic Provider v1.0
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-
+Microsoft Enhanced Cryptographic Provider v1.0
+Microsoft Enhanced Cryptographic Provider v1.0
+Process id: %lu
+%s/%s%s
+%s\Temp\%s
+%s%s
+%s%d%dupdate.xml
+%s/%d%dupdate.xml
+%s/uploads/%d%d%d%d%d%d%d%d%d%s
+rundll32.exe "%s",%S %s%s
+rundll32.exe

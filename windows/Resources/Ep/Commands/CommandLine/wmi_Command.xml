@@ -1,0 +1,41 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31412'>
+
+  <Command id='16' name='wmi'>
+
+    <Help>
+	Uses WMI to query the target and remotely execute a process.
+    </Help>
+
+    <Input>
+	<Option name='target' optional='false' >
+	    <Argument name='target' data='target' />
+	    <Help>\\IP\root\cimv2</Help>
+	</Option>
+	<Option name='touch' optional='true' >
+	    <Set data='touch' value='true'/>
+	    <Help>Query remote OS, Service Pack, Language Pack, and SYSROOT</Help>
+	</Option>
+	<Option name='plist' optional='true' >
+	    <Set data='plist' value='true' />
+	    <Help>View remote processes</Help>
+	</Option>
+	<Option name='run' optional='true' >
+	    <Set data='runcmd' value='true' />
+	    <Argument name='cmd_string' data='cmd_string' />
+	    <Help>Execute remote process</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='target' type='string' />
+	<Data name='touch' type='bool' default='false' />
+	<Data name='plist' type='bool' default='false' />
+	<Data name='runcmd' type='bool' default='false' />
+	<Data name='cmd_string' type='string' />
+    </Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='23' name='GenerateData'>
+
+		<Help>Re-generate command data for a given command</Help>
+
+		<Input>
+			<Option name='id' optional='false'>
+				<Help>The command for which to create data</Help>
+				
+				<Argument name='cmd_id' data='cmdId'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='cmdId' type='uint32_t'/>
+		</Output>
+
+  </Command>
+
+</Plugin>

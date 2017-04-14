@@ -1,0 +1,34 @@
+# blah
+@include "ifthen\\execute.epm";
+
+@echo off;
+@case-sensitive off;
+
+@include "_ProcessList.epm";
+@include "_StringFunctions.epm";
+
+sub searchProcesses(IN string $processes, IN string $actions)
+{
+	int $ids;
+	string $names;
+	_GetProcessList($ids, $names);
+
+	int $size = sizeof($processes);
+	int $i = 0;
+
+	while($i < $size)
+	{
+		string $name;
+		foreach $name ($names)
+		{
+			if($processes[$i] == $name)
+			{
+				echo "match: $name";
+				echo "\taction: $actions[$i]";
+				execute($actions[$i]);
+				break;
+			}
+		}
+		$i++;
+	}
+}

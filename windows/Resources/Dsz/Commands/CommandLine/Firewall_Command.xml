@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_Firewall_Tasking.pyo" providerType="script">
+
+	<Command name="Firewall" id="0">
+		<Help>Reports on, or manipulates, the Windows firewall settings.</Help>
+		<Input>
+			<!-- choice in actions -->
+			<Option optional='false' name='status' group='action'>
+				<Set data='action' value='1' />
+				<Reject>port</Reject>
+				<Reject>protocol</Reject>
+				<Reject>name</Reject>
+				<Reject>openOnly</Reject>
+				<Reject>permanent</Reject>
+				<Reject>group</Reject>
+				<Reject>direction</Reject>
+			</Option>
+			<Option optional='false' name='enable' group='action'>
+				<Set data='action' value='2' />
+				<Require>port</Require>
+				<Require>protocol</Require>				
+			</Option>
+			<Option optional='false' name='delete' group='action'>
+			<Help>XP and 2003 remove rule matching port and protocol</Help>
+			<Help>Vista and above remove rule matching name</Help>
+			<Set data='action' value='3'/>
+				<Require>port</Require>
+				<Require>protocol</Require>
+				<Require>name</Require>
+				<Reject>openOnly</Reject>
+				<Reject>permanent</Reject>
+				<Reject>group</Reject>
+				<Reject>direction</Reject>
+			</Option>
+			
+			<!-- parameters for the enable action -->
+            <Option optional="true" name="port">
+                <Argument optional="false" data="portNum" name="#"/>
+            </Option>
+            
+            <Option optional="true" name="protocol">
+				<Argument name="name">
+					<Value string="TCP">
+						<Set data='protocol' value='0'/>
+					</Value>
+					<Value string="UDP">
+						<Set data='protocol' value='1'/>
+					</Value>
+				</Argument>
+            </Option>
+
+			<Option optional="true" name="permanent" group='retain'>
+				<Help>Changes will not be undone when command is stopped</Help>
+				<Set value="true" data="permanent"/>
+			</Option>
+
+            <Option optional="true" name="openOnly" group='retain'>
+				<Help>Deprecated. Use -permanent instead. Changes will not be undone when command is stopped</Help>
+                <Set value="true" data="permanent"/>
+            </Option>
+			
+            <Option optional="true" name="direction">
+				<Argument name="name">
+					<Value string="In">
+						<Set data='direction' value='0'/>
+					</Value>
+					<Value string="Out">
+						<Set data='direction' value='1'/>
+					</Value>
+				</Argument>
+				<Help>For Vista and above only.</Help>
+            </Option>			
+			
+			<Option optional="true" name ="name">
+				<Argument optional="false" data="name" name="Rule name"/>
+				<Help>For Vista and above only.</Help>
+			</Option>
+			
+			<Option optional="true" name="group">
+				<Argument optional="false" data="group" name="Group"/>
+				<Help>For Vista and above only.</Help>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+
+		</Input>
+        <Output>
+			<Data name='action' type='uint8_t' default='0'/>
+            <Data name="portNum" type="uint16_t" default="0"/>
+            <Data name="protocol" type="uint8_t" default="0"/>
+			<Data name="permanent" type="bool" default="false"/>
+			<Data name="direction" type="bool" default="0"/>
+			<Data name="name" type="string" default="Network Discovery"/>
+			<Data name="group" type="string" default=""/>
+			<Data name='method' type='string'/>
+		</Output>
+		
+	</Command>
+</Plugin>

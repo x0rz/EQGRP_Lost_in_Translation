@@ -1,0 +1,1 @@
+select name, tbl_name from SQLITE_MASTER where type like 'view' order by name, tbl_name

@@ -1,0 +1,7 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+[-user <username>]
+    Username to query
+[-all]
+    Query all users

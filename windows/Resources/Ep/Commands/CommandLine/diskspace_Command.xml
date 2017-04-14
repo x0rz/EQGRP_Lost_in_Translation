@@ -1,0 +1,16 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31303'>
+ <Command id='16' name='diskspace'>
+  <Help>Returns the amount of diskspace in a directory.</Help>
+  <Input>
+   <Argument name='dir|path' optional='true' data='directory'>
+    <Help>Specify the specific drive, or a folder on the drive, to get the space for</Help>
+    <Help>If you exempt this argument, diskspace will be gotten for all fixed drives.</Help>
+   </Argument>
+  </Input>
+  <Output>
+   <Data name='directory' type='string'/>
+  </Output>
+ </Command>
+</Plugin>

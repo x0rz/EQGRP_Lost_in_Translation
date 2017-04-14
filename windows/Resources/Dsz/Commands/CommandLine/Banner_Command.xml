@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Banner_Tasking.pyo' providerType='script'>
+
+	<Command name="Banner" id="0">
+	
+		<Help>Connects to a host on a given port and optionally retrieves a banner.</Help>
+		
+		<Input>
+			<Option name='ip' optional='false'>
+				<Argument name='ip_addr' data='targetAddress' />
+				<Help>The IP address of the target machine</Help>
+			</Option>
+			
+			<Option name='tcp' optional='true' group='protocol'>
+				<Set data='protocol' value='1' />
+				<Help>Use TCP (default).</Help>
+			</Option>
+			
+			<Option name='udp' optional='true' group='protocol'>
+				<Set data='protocol' value='2' />
+				<Help>Use UDP</Help>
+			</Option>
+			
+			<Option name='icmp' optional='true' group='protocol'>
+				<Set data='protocol' value='3' />
+				<Help>Use ICMP</Help>
+			</Option>
+			
+			<Option name='port' optional='true'>
+				<Argument name='dstPort' data='dstPort' />
+				<Argument name='srcPort' data='srcPort' optional='true' />
+				<Help>The port to which to connect</Help>
+			</Option>
+			
+			<Option name='wait' optional='true'>
+				<Argument name='secs' data='wait' />
+				<Help>How long, in seconds, to wait for a valid response from the selected port (default=10).</Help>
+			</Option>
+			
+			<Option name='send' optional='true'>
+				<Argument name='...' data='...' />
+				<Help>The data to send</Help>
+			</Option>
+			
+			<Option name='broadcast' optional='true'>
+				<Set data='broadcast' value='true' />
+				<Help>Send broadcast datagrams (udp/icmp)</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='targetAddress' type='ipaddr' />
+			<Data name='protocol' type='uint8_t' default='1' />
+			<Data name='dstPort' type='uint16_t' default='0' />
+			<Data name='srcPort' type='uint16_t' default='0' />
+			<Data name='wait' type='time' default='10s' />
+			<Data name='...' type='string' />
+			<Data name='broadcast' type='bool' default='false' />
+		</Output>
+	</Command>
+</Plugin>

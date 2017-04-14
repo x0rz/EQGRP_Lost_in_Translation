@@ -1,0 +1,20 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>vget</Name>
+		<ReplaceBeforeArgs>python windows\vget.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: vget -F [Full Path to File] -p [path to file] -m [mask] Optional: -t [bytes] -hex -nosend
+	Options:
+	-t [bytes] : grab last x bytes of file (tail)
+	-nosend : move file to nosend dir
+	-hex : open file in hex editor
+	Ex. vget -m connections.log -p C:\Documents and Settings\user\logs -t 10000 -nosend
+	Ex. vget -F C:\Documents and Settings\user\logs\connections.log -t 10000 -nosend -hex
+</Help>
+<Options>
+    <Option>vget</Option>
+</Options>
+  </Alias>
+</Aliases>

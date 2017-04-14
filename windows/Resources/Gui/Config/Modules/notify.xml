@@ -1,0 +1,16 @@
+<Plugin id="12">
+	<Name>Notify</Name>
+	<Class>ddb.dsz.plugin.notify.NotifyWindow</Class>
+	<Description>A table of commands started with the notify prefix</Description>
+	<Logo>images/knotify.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>false</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>true</UserClose>
+	<CanClose>true</CanClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

@@ -1,0 +1,40 @@
+#-------------------------------------------------------------------------------
+# File: malget.eps
+# Description: Tries to get a file, then tries copyget, and then tries bindump.
+#
+# 26 July 2007  Created....
+#
+#-------------------------------------------------------------------------------
+
+string $fileToGet;
+if ($argc != 2) {
+	$fileToGet=GetInput("What is the full path to the binary to download?");
+} else {
+	$fileToGet=$argv[1];
+	echo "$fileToGet";
+}
+
+if (prompt "Would you like to try to regular get the binary?") {
+	if (`get "$fileToGet" -foreground`) {
+		return true;
+	} else {
+		echo "Regular get failed...";
+	}
+}
+
+if (prompt "Would you like to try to copyget the binary?") {
+	if (`copyget "$fileToGet"`) {
+		return true;
+	} else {
+		echo "Copyget failed...";
+	}
+}
+
+
+if (prompt "Would you like to try to bindump the binary (grab out of memory)?") {
+	if (`script bindump.eps $fileToGet`) {
+		return true;
+	}
+}
+
+echo "All get methods failed.  Sorry, there's nothing else I can do!";

@@ -1,0 +1,114 @@
+
+@include "_VersionChecks.dsi";
+
+#----------------------------------------------------
+# _GetArch
+#	Returns the architecture
+#----------------------------------------------------
+sub _GetArch(OUT string $arch)
+{
+	return _GetArch($arch, %_sgEnv{'script_target_address'});
+}
+sub _GetArchLocal(OUT string $arch)
+{
+	return _GetArch($arch, %_sgEnv{'script_source_address'});
+}
+sub _GetArch(OUT string $arch, IN string $tgt)
+{
+	return GetEnv('_ARCH', $arch, 0, $tgt);
+}
+# END _GetArch
+
+#----------------------------------------------------
+# _GetCompiledArch
+#	Returns the compiled architecture
+#----------------------------------------------------
+sub _GetCompiledArch(OUT string $arch)
+{
+	return _GetCompiledArch($arch, %_sgEnv{'script_target_address'});
+}
+sub _GetCompiledArchLocal(OUT string $arch)
+{
+	return _GetCompiledArch($arch, %_sgEnv{'script_source_address'});
+}
+sub _GetCompiledArch(OUT string $arch, IN string $tgt)
+{
+	return GetEnv('_COMPILED_ARCH', $arch, 0, $tgt);
+}
+# END _GetCompiledArch
+
+#----------------------------------------------------
+# _GetCompiledOsFamily
+#	Returns the compiled os
+#----------------------------------------------------
+sub _GetCompiledOsFamily(OUT string $os)
+{
+	return _GetCompiledOsFamily($os, %_sgEnv{'script_target_address'});
+}
+sub _GetCompiledOsFamilyLocal(OUT string $os)
+{
+	return _GetCompiledOsFamily($os, %_sgEnv{'script_source_address'});
+}
+sub _GetCompiledOsFamily(OUT string $os, IN string $tgt)
+{
+	return GetEnv('_COMPILED_OS', $os, 0, $tgt);
+}
+# END _GetCompiledOsFamily
+
+#----------------------------------------------------
+# _GetOsFamily
+#	Returns the os
+#----------------------------------------------------
+sub _GetOsFamily(OUT string $os)
+{
+	return _GetOsFamily($os, %_sgEnv{'script_target_address'});
+}
+sub _GetOsFamilyLocal(OUT string $os)
+{
+	return _GetOsFamily($os, %_sgEnv{'script_source_address'});
+}
+sub _GetOsFamily(OUT string $os, IN string $tgt)
+{
+	return GetEnv('_OS', $os, 0, $tgt);
+}
+# END _GetOsFamily
+
+#----------------------------------------------------
+# _GetOsVersion
+#	Returns the os version
+#----------------------------------------------------
+sub _GetOsVersion(OUT int $major, OUT int $minor, OUT int $other)
+{
+	return _GetOsVersion($major, $minor, $other, %_sgEnv{'script_target_address'});
+}
+sub _GetOsVersion(OUT int $major, OUT int $minor)
+{
+	int $other;
+	return _GetOsVersion($major, $minor, $other, %_sgEnv{'script_target_address'});	
+}
+sub _GetOsVersion(OUT int $major)
+{
+	int $minor, $other;
+	return _GetOsVersion($major, $minor, $other, %_sgEnv{'script_target_address'});	
+}
+sub _GetOsVersionLocal(OUT int $major, OUT int $minor, OUT int $other)
+{
+	return _GetOsVersion($major, $minor, $other, %_sgEnv{'script_source_address'});
+}
+sub _GetOsVersionLocal(OUT int $major, OUT int $minor)
+{
+	int $other;
+	return _GetOsVersion($major, $minor, $other, %_sgEnv{'script_source_address'});
+}
+sub _GetOsVersionLocal(OUT int $major)
+{
+	int $minor, $other;
+	return _GetOsVersion($major, $minor, $other, %_sgEnv{'script_source_address'});
+}
+sub _GetOsVersion(OUT int $major, OUT int $minor, OUT int $other, IN string $tgt)
+{
+	return (GetEnv('_MAJOR_VERSION', $major, 0, $tgt) &&
+			GetEnv('_MINOR_VERSION', $minor, 0, $tgt) &&
+			GetEnv('_OTHER_VERSION', $other, 0, $tgt));
+}
+# END _GetOsVersion

@@ -1,0 +1,40 @@
+@echo on;
+@record on;
+`getdirectory  -scripts`;
+string $ScriptsDir = GetCmdData("dir");
+@record off;
+ifnot (defined($ScriptsDir[0])) {
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+
+string $args="";
+string $arg;
+
+if($argc < 2){
+	echo "Usage: $argv[0] <scan type> <target IP> [dst port] [src port]\n";
+	echo "Usage: $argv[0] scans : to list available scans\n";
+	return false;
+}
+int $i=1;
+while ($i < sizeof($argv)) {
+#	$arg=split(" ", $argv[$i]);
+	$arg=$argv[$i];
+#	ifnot ($arg == $argv[$i]) {
+#		$arg="\"$argv[$i]\"";
+#	}
+# TODO: when split works again, go back to being smart with quotes
+#if ($args == "") {
+				#$args="\"$arg\"";
+#} else {
+		$args="$args $arg";
+	#}
+	$i++;
+}
+
+ifnot (`local run -command "perl $ScriptsDir\\..\\..\\..\\Tools\\make_scan_script.pl $args" -redirect scan`) {
+	echo "* $argv[0]: Script failed";
+	return false;
+} else {
+	@echo on;
+	return `script redirect_scan.eps`;
+}

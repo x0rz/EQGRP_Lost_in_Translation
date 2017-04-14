@@ -1,0 +1,101 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>diffhour</Name>
+		<ReplaceBeforeArgs>python diffhour.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: diffhour [options]
+Options:
+	[-mask (mask)]
+		Mask to use for the dir command, default is *
+	[-path (path)]
+		Path to use for the dir command, default is *
+	[-age (time)]
+		Path to use for the dir command, default is 1h, may be ([#y][#w][#d][#h][#m][#s])
+	[-recursive]
+		If present, dir will be done recursively, otherwise will not be recursive
+	[-restart]
+		If present, will not compare with previous results and will start a new baseline
+	[-safe]
+		Will run times and then craft a before/after parameter, rather then use dir's age parameter
+	[-sysdrive]
+		Will only run the dir against the system drive
+	[-nodiff]
+		Do not run a diffhour, only a normal hour
+    [-noquiet]
+        Display the results of the dir to screen
+    [-fromtime (DSZ_time)]
+        Date from which to calculate the age. Default is to calculate normally. (Must be "YYYY-MM-DD [hh:mm:ss]")
+    [-centeredtime (DSZ_time)]
+        Date from which to calculate the age in both directions. Default is to calculate normally. (Must be "YYYY-MM-DD [hh:mm:ss]
+    [-fromstart]
+        Calculate the time since the first 'time' command run on this cpaddr and use that for the age value. (Compatible with -safe)")
+</Help>
+<Options>
+    <Option>mask</Option>
+    <Option>path</Option>
+    <Option>age</Option>
+    <Option>recursive</Option>
+    <Option>restart</Option>
+    <Option>safe</Option>
+    <Option>sysdrive</Option>
+    <Option>nodiff</Option>
+    <Option>noquiet</Option>
+    <Option>fromtime</Option>
+    <Option>centeredtime</Option>
+</Options>
+  </Alias>
+<Alias>
+	<Name>hour</Name>
+	<ReplaceBeforeArgs>python diffhour.py -args "-nodiff -recursive -age 1h </ReplaceBeforeArgs>
+	<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+<Help>	
+	Usage: hour [options]
+Options:
+	[-safe]
+		Will run times and then craft a before/after parameter, rather then use dir's age parameter
+	[-sysdrive]
+		Will only run the dir against the system drive
+    [-noquiet]
+        Display the results of the dir to screen
+    [-fromtime (DSZ_time)]
+        Date from which to calculate the age. Default is to calculate normally. (Must be "YYYY-MM-DD [hh:mm:ss]")
+    [-centeredtime (DSZ_time)]
+        Date from which to calculate the age in both directions. Default is to calculate normally. (Must be "YYYY-MM-DD [hh:mm:ss]")
+</Help>
+<Options>
+    <Option>safe</Option>
+    <Option>sysdrive</Option>
+    <Option>noquiet</Option>
+    <Option>fromtime</Option>
+    <Option>centeredtime</Option>
+</Options>
+</Alias>
+<Alias>
+	<Name>nhour</Name>
+	<ReplaceBeforeArgs>python diffhour.py -args "-nodiff -recursive -age </ReplaceBeforeArgs>
+	<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+<Help>		
+	Usage: nhour [age] [options]
+Options:
+	[-safe]
+		Will run times and then craft a before/after parameter, rather then use dir's age parameter
+	[-sysdrive]
+		Will only run the dir against the system drive
+    [-noquiet]
+        Display the results of the dir to screen
+    [-fromtime (DSZ_time)]
+        Date from which to calculate the age. Default is to calculate normally. (Must be "YYYY-MM-DD [hh:mm:ss]")
+    [-centeredtime (DSZ_time)]
+        Date from which to calculate the age in both directions. Default is to calculate normally. (Must be "YYYY-MM-DD [hh:mm:ss]")
+</Help>
+<Options>
+    <Option>safe</Option>
+    <Option>sysdrive</Option>
+    <Option>noquiet</Option>
+    <Option>fromtime</Option>
+    <Option>centeredtime</Option>
+</Options>
+</Alias>
+</Aliases>

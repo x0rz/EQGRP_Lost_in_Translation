@@ -1,0 +1,160 @@
+
+@include "_Versions.dsi";
+
+@include "_WindowsNt4.dsi";
+@include "_Windows2000.dsi";
+@include "_WindowsXp.dsi";
+@include "_Windows2003.dsi";
+@include "_WindowsVista.dsi";
+@include "_Windows7.dsi";
+@include "_Windows8.dsi";
+
+#----------------------------------------------------
+# _IsWindows
+#	Returns whether the current target is Windows
+#----------------------------------------------------
+sub _IsWindows()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os))
+	{
+		if ($os == "winnt" ||
+			$os == "win9x")
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows
+
+#----------------------------------------------------
+# _IsWindowsLocal
+#	Returns whether the local os is Windows
+#----------------------------------------------------
+sub _IsWindowsLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os))
+	{
+		if ($os == "winnt" ||
+			$os == "win9x")
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsLocal
+
+#----------------------------------------------------
+# _IsWindows9x
+#	Returns the whether the current target is Windows 9x
+#----------------------------------------------------
+sub _IsWindows9x()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os))
+	{
+		return ($os == "win9x");
+	}
+	
+	return false;
+
+}
+# END _IsWindows9x
+
+#----------------------------------------------------
+# _IsWindowsNt
+#	Returns the whether the current target is Windows Nt family
+#----------------------------------------------------
+sub _IsWindowsNt()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os))
+	{
+		return ($os == "winnt");
+	}
+	
+	return false;
+
+}
+# END _IsWindowsNt
+
+#----------------------------------------------------
+# _IsWindowsNtLocal
+#	Returns the whether the local os is Windows Nt family
+#----------------------------------------------------
+sub _IsWindowsNtLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os))
+	{
+		return ($os == "winnt");
+	}
+	
+	return false;
+
+}
+# END _IsWindowsNtLocal
+
+#----------------------------------------------------
+# _IsWindowsHome
+#	Returns the whether the current target is a "home" version
+#----------------------------------------------------
+sub _IsWindowsHome()
+{
+	@echo off;
+	
+	bool $home=false;
+	if (GetEnv("_VERSION_HOME", $home))
+	{
+		return $home;
+	}
+	else
+	{
+		@record on;
+		if (`systemversion`)
+		{
+			if (GetCmdData("VersionInfo::Flags::Personal", $home) && defined($home))
+			{
+				SetEnv("_VERSION_HOME", "$home");
+				return $home;
+			}
+		}
+		@record off;
+		
+		# assume not home on error
+		return false;
+	}
+
+}
+# END _IsWindowsHome
+
+#----------------------------------------------------
+# _IsWindowsHome
+#	Returns the whether the current target is a "home" version
+#----------------------------------------------------
+sub _IsWindowsWow64()
+{
+	@echo off;
+	
+	string $arch, $compiledArch;
+	_GetArch($arch);
+	_GetCompiledArch($compiledArch);
+	return ($arch != $compiledArch);
+
+}
+# END _IsWindowsWow64

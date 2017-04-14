@@ -1,0 +1,16 @@
+<Plugin id="2">
+	<Name>Implant Console</Name>
+	<Class>ddb.dsz.plugin.appconsole.ImplantConsole</Class>
+	<Description>An output screen for stdout and stderr of the implant application</Description>
+	<Logo>images/gnome-applications.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>false</UserStartable>
+	<Hide>false</Hide>
+	<Unhide>true</Unhide>
+	<Detach>false</Detach>
+	<UserClose>false</UserClose>
+	<CanClose>false</CanClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

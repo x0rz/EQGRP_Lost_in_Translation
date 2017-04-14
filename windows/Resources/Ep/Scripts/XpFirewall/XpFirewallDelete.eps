@@ -1,0 +1,52 @@
+#---------------------------------------------------------------------------
+# File: Del.eps
+#
+# Delete ports from firewall registry keys.  Used via Firewall aliases.
+#
+# Modifications:
+#   10/12/04	Created.
+#---------------------------------------------------------------------------
+
+@case-sensitive off;
+@echo off;
+
+if ($argc != 3 || 
+    (<int>$argv[1] < 1) || 
+    (<int>$argv[1] > 65535) ||
+    (($argv[2] != "tcp") && ($argv[2] != "udp"))) {
+    echo "Usage: $argv[0] <port number> <TCP|UDP>";
+    return false;
+}
+
+# Make protocol consistent with other registry entries
+if ( $argv[2] == "tcp"){
+    $argv[2] = "TCP";
+} else if ($argv[2] == "udp" ){
+    $argv[2] = "UDP";
+} else {
+    echo "Invalid protocol";
+    return false;
+}
+
+string $delValue = "$argv[1]:$argv[2]";
+string $subkey = "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy";
+
+bool $rtn = true;
+
+echo "Deleting $delValue from DomainProfile";
+if (`regdelkey -hive l -key $subkey\\DomainProfile\\GloballyOpenPorts\\List -value $delValue`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    $rtn = false;
+}
+
+echo "Deleting $delValue from StandardProfile";
+if (`regdelkey -hive l -key $subkey\\StandardProfile\\GloballyOpenPorts\\List -value $delValue`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    $rtn = false;
+}
+
+return $rtn;

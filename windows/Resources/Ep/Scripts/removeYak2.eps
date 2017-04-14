@@ -1,0 +1,31 @@
+#####################################################
+#             Checking For YAK
+#####################################################
+@echo off;
+bool $success;
+if (`yak verify`){
+	#found yak on target. Action needed
+	WriteFile("foundYAK.txt", TRUE, "YAK WAS FOUND ON TARGET! YOU MUST RUN REMOVEYAK.EPS");
+	`local run -command "perl -e \\"exec('notepad foundYAK.txt')\\"" -redirect`;
+}
+#check for the registry key of interest.
+if (`regquery -hive L -subkey "system\\currentcontrolset\\enum\\root\\legacy_kbpnp"`) {
+	WriteFile("foundYAK.txt", TRUE, "YAK WAS FOUND ON TARGET! YOU MUST RUN REMOVEYAK.EPS");
+	`local run -command "perl -e \\"exec('notepad foundYAK.txt')\\"" -redirect`;
+}
+
+#find how many controlSet's there are
+int $controlNums = 0;
+
+bool $keepGoing = true;
+while ($keepGoing) {
+	$controlNums++;
+	@echo off;
+	if (`regquery -hive L -subkey "system\\controlset00$controlNums"`) {
+		@echo on;
+		if (`regquery -hive L -subkey "system\\controlset00$controlNums\\enum\\root\\legacy_kbpnp"`) {
+			WriteFile("foundYAK.txt", TRUE, "YAK WAS FOUND ON TARGET! YOU MUST RUN REMOVEYAK.EPS");
+			`local run -command "perl -e \\"exec('notepad foundYAK.txt')\\"" -redirect`;
+		}
+	} else { $keepGoing = false; }
+} 

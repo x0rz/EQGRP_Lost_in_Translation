@@ -1,0 +1,26 @@
+
+@include "_ProcessList.epm";
+
+if (($argc == 1) || ($argv[1] == "?")) {
+    echo "Usage: RunAsSystem.eps <cmd_to_run>";
+    echo "    Runs a command as the child of the services.exe process";
+    if ($argc > 1) {
+	return true;
+    } else {
+	return false;
+    }
+}
+
+string $parentProc = "services.exe";
+int $parentId;
+ifnot (_FindProcessOnList($parentProc, $parentId)) {
+    echo "* Failed to find '$parentProc' to launch child";
+    return false;
+}
+
+ifnot (defined($parentId) || ($parentId == 0)) {
+    echo "* Failed to find id for '$parentProc'";
+    return false;
+}
+
+return `runaschild -pid $parentId -command "$argv[1]"`;

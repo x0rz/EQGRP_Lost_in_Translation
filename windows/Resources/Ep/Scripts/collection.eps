@@ -1,0 +1,16 @@
+# automatically do collection for this target: mail, dirwalk tasking, and recurring directory tasking
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+`local run -command "perl $ScriptsDir\\..\\..\\..\\tools\\make_collection_script.pl" -redirect collection`;
+
+`script do_collect.eps`;

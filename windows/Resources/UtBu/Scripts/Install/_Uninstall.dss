@@ -1,0 +1,60 @@
+
+@include "_File.dsi";
+@include "_Paths.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+
+string $driverName = "mrxsmbmg";
+if ($argc >= 2)
+{
+	$driverName = $argv[1];
+}
+
+string $dllName;
+if (!_GetRegistryValue("L",
+					   "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters",
+					   "Excluded",
+					   $dllName))
+{
+	# failed to get alternate name -- use default
+	# get the system path
+	string $sysPath;
+	if (!_GetSystemPath($sysPath))
+	{
+		echo("* Failed to get system path", ERROR);
+		return false;
+	}
+
+	$dllName = "$sysPath\\vldpkg.dll";
+}
+
+if (!GetInput("PC DLL install name", $dllName, $dllName))
+{
+	echo("* Failed to get PC uninstall name", ERROR);
+	return false;
+}
+
+# make sure the file exists
+if (!_FileExists($dllName))
+{
+	echo("* Failed to find $dllName", ERROR);
+	return false;
+}
+
+echo "Deleting PC";
+if (!`delete -file "$dllName" -afterreboot`)
+{
+	echo("    FAILED", ERROR);
+}
+else
+{
+	echo("    MARKED FOR DELETION", GOOD);
+}
+
+# uninstall the UtBu driver
+if (!`utbu_uninstall -name $driverName -quiet`)
+{
+	return false;
+}
+
+return true;

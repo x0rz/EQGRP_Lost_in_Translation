@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31311'>
+
+ <Command id='16' name='rmdir'>
+
+  <Help>Removes an empty directory.</Help>
+
+  <Input>
+   <Argument name='string' data='directory'>
+    <Help>Target directory to remove.</Help>
+   </Argument>
+  </Input>
+
+  <Output>
+   <Data name='directory' type='string'/>
+  </Output>
+
+ </Command>
+
+</Plugin>

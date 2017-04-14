@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+  <Command id='5' name='Help'>
+
+    <Help>Returns a list of possible commands or help for a particular command.</Help>
+    
+    <Input>
+		<Argument name='command' data='command' optional='true'/>
+		
+		<Option name='all' optional='true'>
+			<Set data='showAll' value='true'/>
+		</Option>
+    </Input>
+    
+    <Output>
+		<Data name='command' type='string'/>
+		<Data name='showAll' type='bool'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

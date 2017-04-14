@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+  <Command id='15' name='KeepAlive'>
+
+    <Help>Sends requests to remote address on a periodic basis to verify connectivity</Help>
+
+    <Input>
+		<Option name='delay' optional='true'>
+			<Argument name='value' data='delay'>
+				<Help>The time to wait between requests ([#d][#h][#m][#s])</Help>
+			</Argument>
+		</Option>
+    </Input>
+
+	<Output>
+		<Data name='delay' type='time' default='1m'/>
+	</Output>
+
+  </Command>
+
+</Plugin>

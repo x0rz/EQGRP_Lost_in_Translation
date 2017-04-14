@@ -1,0 +1,36 @@
+<?xml version='1.0' ?>
+
+<Module id='21' name='NetbufMgr'>
+
+    <Interfaces>
+		<Interface id='0x01c16f85' provider='0x03020001'/>
+		<Interface id='0x01c16f86' provider='0x03020001'/>
+    </Interfaces>
+
+    <Dependencies>
+    </Dependencies>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+	<Architecture type='i386'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+
+</Module>

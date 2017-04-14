@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31350'>
+
+  <Command id='16' name='queryeventlogs'>
+
+    <Help>Retrieves some basic information about the event logs on the remote computer</Help>
+
+    <Input>
+     <Option name="log" optional='true'>
+      <Argument name='non_standard_log_name' optional='false' data='log'/>
+     </Option>
+    </Input>
+
+    <Output>
+	<Data name='log' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

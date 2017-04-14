@@ -1,0 +1,702 @@
+# Database initialization script
+# 2009-04-06 - Created
+# Note: To specify datatype put a space and the datatype in the column field
+# BUG: Why can't you pull out multiple objects from a single command?
+# BUG: DSZ truncates large arrays due to memory so large batch inserts will get truncated
+@include "_DatabaseIncludes.dsi";
+@include "_SQLiteIncludes.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@include "Ops_GenericFunctions.dsi";
+@include "_Menu.dsi";
+
+# If an existing database isn't found create a new one
+sub createDB(IN string $logDir, IN string $resourceDir) {
+	string $output;
+	string $driveLetter;
+	string $prepsDir;
+	getPrepsFolder($driveLetter, $prepsDir);
+	string $IP;
+	string $IPw;
+	getIpFolder($IP, $IPw);
+	string $project;
+	getProjectName($project);
+	string $targetPreps = "$project\\\\$IPw";
+	if (defined($IPw)) {
+		if ($project != "NOPROJECT" && !FileGetFiles($targetPreps, "target.db", $output)) {
+			echo("Could not find a previous database. If this is not a new box did you prep?", WARNING);
+			`local copy $resourceDir[0]\\Ops\\Tools\\target.db $logDir\\target.db`;
+		} else {
+			echo("Detected previous database. Thanks for prepping.", GOOD);
+			`lpsetenv -name OPS_Project -value $project`;
+		}	
+	}
+	int $dbHandle;
+	_sqlOpen("$logDir\\target.db", $dbHandle);
+	####################
+	# Processlist Tables
+	# 1. process_history
+	# 2. processlist
+	####################
+	string $procHistory;
+	$procHistory[0] = "PID INT";
+	$procHistory[1] = "PPID";
+	$procHistory[2] = "NAME";
+	$procHistory[3] = "USER";
+	$procHistory[4] = "PATH";
+	$procHistory[5] = "FIRST_SEEN";
+
+	# Create table to hold process information which is unique based on name, path
+	_sqliteCreateTable($dbHandle, "process_history", $procHistory, "");
+	`local database -exec $dbHandle "create unique index process_unique on process_history (name, path)"`;
+	
+	string $procColumns;
+	$procColumns[0] = "PID INT";
+	$procColumns[1] = "PPID";
+	$procColumns[2] = "NAME";
+	$procColumns[3] = "USER";
+	$procColumns[4] = "PATH";
+	# Recreate table with current processlist information
+	`local database -exec $dbHandle "DROP TABLE processlist"`;
+	_sqliteCreateTable($dbHandle, "processlist", $procColumns, "");
+	
+	#####################
+	# Networking Tables
+	# 1. Network
+	# 2. Interface
+	#####################
+	string $netColumns;
+	$netColumns[0] = "HOST_NAME";
+	$netColumns[1] = "DNS_SERVERS";
+	$netColumns[2] = "DOMAIN_NAME";
+
+	_sqliteCreateTable($dbHandle, "network", $netColumns, "");
+	`local database -exec $dbHandle "create unique index network_unique on network (host_name, dns_servers, domain_name)"`;
+
+	string $intColumns;
+	$intColumns[0] = "MAC";
+	$intColumns[1] = "IP";
+	$intColumns[2] = "NETMASK";
+	$intColumns[3] = "DESCRIPTION";
+	$intColumns[4] = "GATEWAY";
+	$intColumns[5] = "DHCP_SERVER";
+
+	_sqliteCreateTable($dbHandle, "interface", $intColumns, "");
+	`local database -exec $dbHandle "create unique index interface_unique on interface (mac, ip)"`;
+	
+	#####################
+	# Applications Table
+	#####################
+	string $uninstallCol;
+	$uninstallCol[0] = "NAME"; 
+	$uninstallCol[1] = "VERSION";
+	$uninstallCol[2] = "DESCRIPTION";
+	$uninstallCol[3] = "INSTALL_DATE";
+	_sqliteCreateTable($dbHandle, "applications", $uninstallCol, "");
+	`local database -exec $dbHandle "create unique index application_unique on applications (name, description)"`;
+	
+	#####################
+	# Services Table
+	#####################
+	string $servicesCol;
+	$servicesCol[0] = "SERVICE";
+	$servicesCol[1] = "DISPLAY_NAME";
+	$servicesCol[2] = "STATE";
+	_sqliteCreateTable($dbHandle, "services", $servicesCol, "");
+	`local database -exec $dbHandle "create unique index service_unique on services (service)"`;
+	
+	#####################
+	# Dir Tables
+	# 1. WINDOWS
+	# 2. System32
+	#####################
+	string $windowsCol;
+	$windowsCol[0] = "NAME";
+	$windowsCol[1] = "SIZE INT";
+	$windowsCol[2] = "MODIFIED";
+	$windowsCol[3] = "ACCESSED";
+	$windowsCol[4] = "CREATED";
+	`local database -exec $dbHandle "DROP TABLE windows"`;
+	_sqliteCreateTable($dbHandle, "windows", $windowsCol, "");
+	`local database -exec $dbHandle "create unique index windows_unique on windows (name)"`;
+
+	string $system32Col;
+	$system32Col[0] = "NAME";
+	$system32Col[1] = "SIZE INT";
+	$system32Col[2] = "MODIFIED";
+	$system32Col[3] = "ACCESSED";
+	$system32Col[4] = "CREATED";
+	`local database -exec $dbHandle "DROP TABLE system32"`;
+	_sqliteCreateTable($dbHandle, "system32", $system32Col, "");
+	`local database -exec $dbHandle "create unique index system32_unique on system32 (name)"`;
+
+	#####################
+	# Drivers Table
+	# 1. drivers
+	# 2. loaded_drivers
+	#####################
+	string $driversCol;
+	$driversCol[0] = "NAME";
+	$driversCol[1] = "SIZE INT";
+	$driversCol[2] = "HASH";
+	$driversCol[3] = "MODIFIED";
+	$driversCol[4] = "ACCESSED";
+	$driversCol[5] = "CREATED";
+	_sqliteCreateTable($dbHandle, "drivers", $driversCol, "");
+	`local database -exec $dbHandle "create unique index drivers_unique on drivers (name)"`;
+	
+	string $loadedDrivers;
+	$loadedDrivers[0] = "NAME";
+	_sqliteCreateTable($dbHandle, "loaded_drivers", $loadedDrivers, "");
+	`local database -exec $dbHandle "create unique index loadedDrivers_unique on loaded_drivers (name)"`;
+	_sqlClose( $dbHandle );
+}
+######################################################################################
+# returns the drive letter from the LP environment variable. Includes the :
+# Also returns path to preps with the assumption it is located under \preps
+# Preps is now DSZOPSDisk\Resources\Ops\preps
+sub getPrepsFolder(OUT string $driveLetter, OUT string $prepsDir) {
+	string $dir;
+	Ops_GetResourcePath($dir);
+	
+	$prepsDir = "$dir/preps";
+	_NormalizePath($prepsDir, _IsWindowsLocal());
+	
+	if (_IsUnixLocal())	{
+		$driveLetter = "";
+	} else	{
+		$driveLetter = $prepsDir;
+		RegExSub("^([a-zA-Z]:).*", "\$1", $driveLetter);
+	}
+	return true;
+}
+#Determine the IP the target is post-processed under
+#Returns the IP in the first variable
+#Returns the IP with w appended in the second variable
+#The second is needed because of string limitations in EP
+sub getIpFolder(OUT string $IP, OUT string $IPw) {
+	string $dir = %_sgEnv{"log_path"};
+	string $temp;
+	SplitPath($dir, $temp);
+	$IP = $temp[1];
+	$IPw = "w";
+	$IPw = "$IP$IPw";
+	return true;
+}
+
+#This function will determine the project name from the preps directory
+#If they have two folders in the preps directory, we make them choose which one they want
+#We return the project name
+sub getProjectName(OUT string $project) {
+	string $folderList;
+	string $prepsDir;
+	string $driveLetter;
+	getPrepsFolder($driveLetter, $prepsDir);
+	FileGetDirs($prepsDir, "*", $folderList);
+
+	for (int $i=0; $i < sizeof($folderList); $i++)
+	{
+		# ignore non-folders and the . and .. files
+		if ($folderList[$i] == "." || $folderList[$i] == "..")
+		{ 
+			continue;
+		}
+	}
+
+	if (sizeof($folderList) > 1) {
+		# not sure why they have 2, but we'll accomodate
+		echo("I've found more than 1 possible project names in the preps directory\n", WARNING);
+		string $chosen;
+		_ExecuteSimpleMenu("Pick a project", $folderList, $chosen);
+		undef($folderList);
+		$project = $chosen;
+	} else if (defined($folderlist)) {
+		$project = $folderlist;
+	} else {
+		$project = "NOPROJECT";
+	}
+	return true;
+}
+######################################################################################
+# Function: getTable - returns raw results of a query against a table
+# $dbHandle - Handle to SQLite database
+# $query - SQL query to be run
+# $update - TRUE - Update current processlist or FALSE - use cached 
+# $output - TRUE - Print query output or FALSE - don't print query output
+# %tableResults - Query output
+sub getTable(IN int $dbHandle, IN string $table, IN string $query, IN bool $update, IN bool $output) {
+	string $logDir;
+	GetEnv("_LOGPATH", $logDir);
+
+	string $resourceDir; 
+	_GetLpResourcesDirectory( $resourceDir );
+	if ($update) {
+		if ($table == "process_history") {
+			populateProcTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "processlist") {
+			populateProcTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "network") {
+			populateNetworkingTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "interface") {
+			populateNetworkingTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "applications") {
+			populateApplicationsTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "services") {
+			populateServicesTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "windows") {
+			populateWindowsTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "system32") {
+			populateSystem32Table($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "drivers") {
+			populateDriverTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "loaded_drivers") {
+			populateDriverTable($dbHandle, $resourceDir, $logDir);
+		} else {
+			echo "Error table ($table) not found";
+		}
+		
+	}
+	if ($output) {
+		@echo on;
+		`local database -exec $dbHandle "$query"`;
+		@echo off;
+	} else {
+		# No output no query. Just populated the table.
+	}
+}
+
+# Function: getTable - returns results of a query against 
+#			a table in a hash table (columns are keys)
+# $dbHandle - Handle to SQLite database
+# $query - SQL query to be run
+# $update - TRUE - Update current processlist or FALSE - use cached 
+# $output - TRUE - Print query output or FALSE - don't print query output
+# %tableResults - Query output
+sub getTable(IN int $dbHandle, IN string $table, IN string $query, IN bool $update, IN bool $output, OUT string %tableResults) {
+	string $logDir;
+	GetEnv("_LOGPATH", $logDir);
+
+	string $resourceDir; 
+	_GetLpResourcesDirectory( $resourceDir );
+	
+	if ($update) {
+		if ($table == "process_history") {
+			populateProcTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "processlist") {
+			populateProcTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "network") {
+			populateNetworkingTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "interface") {
+			populateNetworkingTables($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "applications") {
+			populateApplicationsTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "services") {
+			populateServicesTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "windows") {
+			populateWindowsTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "system32") {
+			populateSystem32Table($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "drivers") {
+			populateDriverTable($dbHandle, $resourceDir, $logDir);
+		} else if ($table == "loaded_drivers") {
+			populateDriverTable($dbHandle, $resourceDir, $logDir);
+		} else {
+			echo "Error table ($table) not found";
+		}
+	}
+	if ($output) {
+		@echo on;
+		_sqlExec( $dbHandle, $query, %tableResults );
+		@echo off;
+	} else {
+		_sqlExec( $dbHandle, $query, %tableResults );
+	}
+}
+# Function: batchInsert - performs a batch insert into a table
+# Assumes an open SQL connection
+sub batchInsert(IN string $batch, IN int $dbHandle) {
+	string $batchInsert;
+	for( int $i=0; $i < sizeof( $batch ); $i++ ) {
+		StrCat($batchInsert, $batch[$i]);
+		StrCat($batchInsert, ";");
+	}
+	# Batch insert
+	`local database -exec $dbHandle "BEGIN TRANSACTION;"`;
+	`local database -exec $dbHandle "$batchInsert"`;
+	`local database -exec $dbHandle "END TRANSACTION;"`;
+}
+# Holds historical information of all processes seen on a machine and when
+# Joined with current processlist table to find new processes on a machine
+sub populateProcTables(IN int $dbHandle, IN string $resourceDir, IN string $logDir) {
+	string %emptyResult;
+	string %tableResults;
+	
+	#############################
+	# Populate processlist table
+	#############################
+	object $processes;
+	object $created;
+	int $pid;
+	int $ppid;
+	int $batchCounter = 0;
+	string $name;
+	string $user;
+	string $path;
+	string $date;
+	string $procInserts;
+	string $batchProcInsert;
+	string $procHistoryInserts;
+	string $batchHistoryInsert;
+	@record on;
+	`processes -list`;
+	@record off;
+
+	GetCmdData("InitialProcessListItem::ProcessItem", $processes);
+	GetCmdData("InitialProcessListItem::ProcessItem::id", $pid);
+	GetCmdData("InitialProcessListItem::ProcessItem::parentId", $ppid);
+	GetCmdData("InitialProcessListItem::ProcessItem::name", $name);
+	GetCmdData("InitialProcessListItem::ProcessItem::user", $user);
+	GetCmdData("InitialProcessListItem::ProcessItem::path", $path);
+	GetEnv("Ops_Date", $date);
+	# Build all the insert statements
+	for( int $i=0; $i < sizeof( $processes ); $i++ ) {
+		# Batch inserts (new into process_history, current running into processlist)
+		# Memory limit workaround: Do batch insert on every 25 inserts
+		$procInserts[$batchCounter] = "INSERT or ignore INTO process_history (PID, PPID, NAME, USER, PATH, FIRST_SEEN) VALUES (\\\"$pid[$i]\\\", \\\"$ppid[$i]\\\", \\\"$name[$i]\\\", \\\"$user[$i]\\\", \\\"$path[$i]\\\", \\\"$date\\\")";
+		$procHistoryInserts[$batchCounter] = "INSERT or ignore INTO processlist (PID, PPID, NAME, USER, PATH) VALUES (\\\"$pid[$i]\\\", \\\"$ppid[$i]\\\", \\\"$name[$i]\\\", \\\"$user[$i]\\\", \\\"$path[$i]\\\")";
+		if($batchCounter == 50) {
+			batchInsert($procInserts, $dbHandle);
+			batchInsert($procHistoryInserts, $dbHandle);
+			$batchCounter = 0;
+		}
+		$batchCounter++;
+	}
+	# In cases less than 25 or 26 (to get that last one) etc...
+	batchInsert($procInserts, $dbHandle);
+	batchInsert($procHistoryInserts, $dbHandle);
+	return true;
+}
+
+sub populateNetworkingTables(IN int $dbHandle, IN string $resourceDir, IN string $logDir) {
+	string %emptyResult;
+	string %tableResults;
+
+	@record on;
+	`ifconfig`;
+	@record off;
+
+	#############################
+	# Populate the network table
+	#############################
+	object $fixed;
+	GetCmdData("FixedDataItem", $fixed);
+	string $hostName;
+	string $domainName;
+	object $dnsServers;
+	object $dnsServer;
+	string $dnsIp;
+	string $netInserts;
+	for (int $i=0; $i < sizeof($fixed); $i++) {
+		GetObjectData($fixed[$i], "hostname", $hostName);
+		GetObjectData($fixed[$i], "domainname", $domainName);
+		GetObjectData($fixed[$i], "dnsservers", $dnsServers);
+		GetObjectData($dnsServers, "dnsserver", $dnsServer);
+		for (int $j=0; $j < sizeof($dnsServer); $j++) {
+			GetObjectData($dnsServers, "dnsserver[$j]::Ip", $dnsIp);
+			$netInserts[$j] = "INSERT or ignore INTO network (HOST_NAME, DOMAIN_NAME, DNS_SERVERS) VALUES (\\\"$hostName\\\", \\\"$domainName\\\", \\\"$dnsIp\\\")";
+		}
+	}
+	###############################
+	# Populate the interface table
+	###############################
+	object $iface;
+	GetCmdData("InterfaceItem", $iface); 
+	string $netmask;
+	string $description;
+	string $gateway;
+	string $dhcpServer;
+	string $intInserts;
+	int $totalInserts = 0;
+	for (int $i=0; $i < sizeof($iface); $i++)
+	{
+		string $mac;
+		GetObjectData($iface[$i], "Address", $mac);
+		GetObjectData($iface[$i], "description", $description);
+		GetObjectData($iface[$i], "Gateway::Ip", $gateway);
+		GetObjectData($iface[$i], "Dhcp::Ip", $dhcpServer);
+		string $ips;
+		GetObjectData($iface[$i], "IpAddress::mask", $netmask);
+		GetObjectData($iface[$i], "IpAddress::Ip", $ips);
+		for (int $j=0; $j < sizeof($ips); $j++)
+		{
+			if($ips[$j] != "127.0.0.1") {
+				$intInserts[$totalInserts] = "INSERT or ignore INTO interface (MAC, IP, NETMASK, DESCRIPTION, GATEWAY, DHCP_SERVER) VALUES (\\\"$mac\\\", \\\"$ips[$j]\\\",\\\"$netmask\\\", \\\"$description\\\", \\\"$gateway\\\", \\\"$dhcpServer\\\")";	
+				$totalInserts++;
+			}
+		}
+	}
+	###################
+	# Database Inserts
+	# sqlExec clears our current command data (we can only hold one command in memory at a time).
+	###################
+	string $batchIntInserts;
+	string $batchNetInserts;
+	# Append them all for a single insert
+	for( int $i=0; $i < sizeof( $intInserts ); $i++ ) {
+		StrCat($batchIntInserts, $intInserts[$i]);
+		StrCat($batchIntInserts, ";");
+	}
+	for( int $i=0; $i < sizeof( $netInserts ); $i++ ) {
+		StrCat($batchNetInserts, $netInserts[$i]);
+		StrCat($batchNetInserts, ";");
+	}
+	# Batch insert
+	`local database -exec $dbHandle "BEGIN TRANSACTION;"`;
+	`local database -exec $dbHandle "$batchIntInserts"`;
+	`local database -exec $dbHandle "$batchNetInserts"`;
+	`local database -exec $dbHandle "END TRANSACTION;"`;
+	return true;
+}
+
+sub populateApplicationsTable(IN int $dbHandle, IN string $resourceDir, IN string $logDir) {
+	string %emptyResult;
+	string %tableResults;
+	object $packages;
+	int $batchCounter = 0;
+	string $name;
+	string $version;
+	string $description;
+	string $installDate;
+	string $appInserts;
+	#------------------------------------
+	# Updated to use the packages command
+	# instead of the uninstall key
+	#------------------------------------
+	@record on;
+	`packages`;
+	@record off;
+	GetCmdData("package", $packages);
+	###################
+	# Database Inserts
+	# sqlExec clears our current command data (we can only hold one command in memory at a time).
+	###################
+	for (int $i=0; $i < sizeof($packages); $i++) {
+			GetObjectData($packages[$i], "name", $name);
+			GetObjectData($packages[$i], "version", $version);
+			GetObjectData($packages[$i], "description", $description);
+			GetObjectData($packages[$i], "installDate", $installDate);
+			$appInserts[$batchCounter] = "INSERT or ignore INTO applications (NAME, VERSION, DESCRIPTION, INSTALL_DATE) VALUES (\\\"$name\\\", \\\"$version\\\",\\\"$description\\\", \\\"$installDate\\\")";
+			if($batchCounter == 50) {
+				batchInsert($appInserts, $dbHandle);
+				$batchCounter = 0;
+			}
+			$batchCounter++;
+	}
+	# In cases less than 25 or 26 (to get that last one) etc...
+	batchInsert($appInserts, $dbHandle);
+	return true;
+}
+
+sub populateServicesTable(IN int $dbHandle, IN string $resourceDir, IN string $logDir) {
+	string %emptyResult;
+	string %tableResults;
+	
+	object $services;
+	int $batchCounter = 0;
+	string $serviceName;
+	string $displayName;
+	string $state;
+	string $serviceInserts;
+	string $batchServiceInsert;
+	@record on;
+	`services`;
+	@record off;
+	
+	GetCmdData("Service", $services);
+	###################
+	# Database Inserts
+	# sqlExec clears our current command data (we can only hold one command in memory at a time).
+	###################
+	for (int $i = 0; $i < sizeof($services); $i++) {
+		GetObjectData($services[$i], "serviceName", $serviceName);
+		GetObjectData($services[$i], "displayName", $displayName);
+		GetObjectData($services[$i], "state", $state);
+		$serviceInserts[$batchCounter] = "INSERT or ignore INTO services (SERVICE, DISPLAY_NAME, STATE) VALUES (\\\"$serviceName\\\", \\\"$displayName\\\",\\\"$state\\\")";
+		if($batchCounter == 50) {
+			batchInsert($serviceInserts, $dbHandle);
+			$batchCounter = 0;
+		}
+		$batchCounter++;
+	}
+	# In cases less than 25 or 26 (to get that last one) etc...
+	batchInsert($serviceInserts, $dbHandle);
+	return true;
+}
+
+sub populateWindowsTable(IN int $dbHandle, IN string $resourceDir, IN string $logDir) {
+	string %emptyResult;
+	string %tableResults;
+	string $systemDir;
+	GetEnv("OPS_SYSTEMDIR", $systemDir);
+	
+	# Directory listing of WINDOWS or WINNT
+	@record on;
+	`dir -mask * -path $systemDir\\..\\ -max 0`;
+	@record off;
+	
+	object $dirItem;
+	object $fileItem;
+	string $name;
+	int $size;
+	int $batchCounter = 0;
+	string $mTime;
+	string $aTime;
+	string $cTime;
+	string $winInserts;
+	string $batchWinInsert;
+	GetCmdData("DirItem", $dirItem);
+	###################
+	# Database Inserts
+	# sqlExec clears our current command data (we can only hold one command in memory at a time).
+	###################
+	for (int $i = 0; $i < sizeof($dirItem); $i++) {
+		GetObjectData($dirItem[$i], "FileItem", $fileItem);
+		for (int $i = 0; $i < sizeof($fileItem); $i++) {
+			GetObjectData($fileItem[$i], "name", $name);
+			GetObjectData($fileItem[$i], "size", $size);
+			GetObjectData($fileItem[$i], "FileTimes::Modified::time", $mTime);
+			GetObjectData($fileItem[$i], "FileTimes::Accessed::time", $aTime);
+			GetObjectData($fileItem[$i], "FileTimes::Created::time", $cTime);
+			$winInserts[$batchCounter] = "INSERT or ignore INTO windows (NAME, SIZE, MODIFIED, ACCESSED, CREATED) VALUES (\\\"$name\\\", \\\"$size\\\",\\\"$mTime\\\",\\\"$aTime\\\",\\\"$cTime\\\")";
+			if($batchCounter == 100) {
+				batchInsert($winInserts, $dbHandle);
+				$batchCounter = 0;
+			}
+			$batchCounter++;
+		}
+	}
+	# In cases less than 25 or 26 (to get that last one) etc...
+	batchInsert($winInserts, $dbHandle);
+	return true;
+}
+
+sub populateSystem32Table(IN int $dbHandle, IN string $resourceDir, IN string $logDir) {
+	string %emptyResult;
+	string %tableResults;
+	string $systemDir;
+	GetEnv("OPS_SYSTEMDIR", $systemDir);
+	
+	# Directory listing of system32
+	@record on;
+	`dir -mask * -path $systemDir -max 0`;
+	@record off;
+	
+	object $dirItem;
+	object $fileItem;
+	string $name;
+	int $size;
+	int $batchCounter = 0;
+	string $mTime;
+	string $aTime;
+	string $cTime;
+	string $system32Inserts;
+	string $batchSystem32Insert;
+	GetCmdData("DirItem", $dirItem);
+	###################
+	# Database Inserts
+	# sqlExec clears our current command data (we can only hold one command in memory at a time).
+	###################
+	for (int $i = 0; $i < sizeof($dirItem); $i++) {
+		GetObjectData($dirItem[$i], "FileItem", $fileItem);
+		for (int $i = 0; $i < sizeof($fileItem); $i++) {
+			GetObjectData($fileItem[$i], "name", $name);
+			GetObjectData($fileItem[$i], "size", $size);
+			GetObjectData($fileItem[$i], "FileTimes::Modified::time", $mTime);
+			GetObjectData($fileItem[$i], "FileTimes::Accessed::time", $aTime);
+			GetObjectData($fileItem[$i], "FileTimes::Created::time", $cTime);
+			$system32Inserts[$batchCounter] = "INSERT or ignore INTO system32 (NAME, SIZE, MODIFIED, ACCESSED, CREATED) VALUES (\\\"$name\\\", \\\"$size\\\",\\\"$mTime\\\",\\\"$aTime\\\",\\\"$cTime\\\")";
+			if($batchCounter == 100) {
+				batchInsert($system32Inserts, $dbHandle);
+				$batchCounter = 0;
+			}
+			$batchCounter++;
+		}
+	}
+	# In cases less than 25 or 26 (to get that last one) etc...
+	batchInsert($system32Inserts, $dbHandle);
+	return true;
+}
+
+sub populateDriverTable(IN int $dbHandle, IN string $resourceDir, IN string $logDir) {
+	# Pull loaded driver information
+	@record on;
+	`drivers -list`;
+	@record off;
+	
+	int $batchCounter = 0;
+	string %emptyResult;
+	string %tableResults;
+	string $systemDir;
+	string $driverName;
+	string $driverInsert;
+	string $batchDriverInsert;
+	object $driverItem;
+	
+	GetEnv("OPS_SYSTEMDIR", $systemDir);
+	GetCmdData("DriverItem", $driverItem);
+	###################
+	# Database Inserts
+	# sqlExec clears our current command data (we can only hold one command in memory at a time).
+	###################
+	for ( int $i=0; $i < sizeof($driverItem); $i++) {
+		GetObjectData($driverItem[$i], "name", $driverName);
+		$driverInsert[$batchCounter] = "INSERT or ignore INTO loaded_drivers (NAME) VALUES (\\\"$driverName\\\")";
+		if($batchCounter == 50) {
+			batchInsert($driverInsert, $dbHandle);
+			$batchCounter = 0;
+		}
+		$batchCounter++;
+	}
+	# In cases less than 25 or 26 (to get that last one) etc...
+	batchInsert($driverInsert, $dbHandle);
+	
+	# Directory listing of drivers for hash calculation
+	@record on;
+	`dir -mask * -path $systemDir\\drivers -max 0 -hash`;
+	@record off;
+	
+	object $dirItem;
+	object $fileItem;
+	string $name;
+	int $size;
+	$batchCounter = 0;
+	string $hash;
+	string $mTime;
+	string $aTime;
+	string $cTime;
+	string $dirInsert;
+	string $batchDirInsert;
+	GetCmdData("DirItem", $dirItem);
+	###################
+	# Database Inserts
+	# sqlExec clears our current command data (we can only hold one command in memory at a time).
+	###################
+	for (int $i = 0; $i < sizeof($dirItem); $i++) {
+		GetObjectData($dirItem[$i], "FileItem", $fileItem);
+		for (int $i = 0; $i < sizeof($fileItem); $i++) {
+			GetObjectData($fileItem[$i], "name", $name);
+			GetObjectData($fileItem[$i], "size", $size);
+			GetObjectData($fileItem[$i], "Hash::Value", $hash);
+			GetObjectData($fileItem[$i], "FileTimes::Modified::time", $mTime);
+			GetObjectData($fileItem[$i], "FileTimes::Accessed::time", $aTime);
+			GetObjectData($fileItem[$i], "FileTimes::Created::time", $cTime);
+			$dirInsert[$batchCounter] = "INSERT or ignore INTO drivers (NAME, SIZE, HASH, MODIFIED, ACCESSED, CREATED) VALUES (\\\"$name\\\",\\\"$size\\\",\\\"$hash\\\",\\\"$mTime\\\",\\\"$aTime\\\",\\\"$cTime\\\")";
+			if($batchCounter == 50) {
+				batchInsert($dirInsert, $dbHandle);
+				$batchCounter = 0;
+			}
+			$batchCounter++;
+		}
+	}
+	# In cases less than 25 or 26 (to get that last one) etc...
+	batchInsert($driverInsert, $dbHandle);
+}

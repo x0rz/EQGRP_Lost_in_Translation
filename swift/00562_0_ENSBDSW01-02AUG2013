@@ -1,0 +1,332 @@
+
+!
+! Last configuration change at 13:09:06 ZP4 Tue Jul 16 2013
+! NVRAM config last updated at 13:09:07 ZP4 Tue Jul 16 2013
+!
+version 12.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service sequence-numbers
+!
+hostname SW1_R1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$hqa8$dhoSENtP/B83aE9trxClH0
+!
+no aaa new-model
+clock timezone ZP4 4
+system mtu routing 1500
+ip subnet-zero
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3555448576
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3555448576
+ revocation-check none
+ rsakeypair TP-self-signed-3555448576
+!
+!
+crypto pki certificate chain TP-self-signed-3555448576
+ certificate self-signed 01 nvram:IOS-Self-Sig#3601.cer
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+spanning-tree vlan 10,104-105,190,196,200-204,206-209,211,213 priority 24576
+spanning-tree vlan 214-215,217-219,224,235 priority 24576
+spanning-tree vlan 101-102,225,227 priority 4096
+!
+vlan internal allocation policy ascending
+!
+!
+!
+interface GigabitEthernet0/1
+ switchport access vlan 224
+!
+interface GigabitEthernet0/2
+ switchport access vlan 224
+!
+interface GigabitEthernet0/3
+!
+interface GigabitEthernet0/4
+ switchport mode trunk
+!
+interface GigabitEthernet0/5
+ switchport mode trunk
+!
+interface GigabitEthernet0/6
+ switchport access vlan 101
+ switchport mode access
+!
+interface GigabitEthernet0/7
+ switchport access vlan 204
+ switchport mode access
+!
+interface GigabitEthernet0/8
+ switchport access vlan 104
+ switchport mode access
+ no cdp enable
+!
+interface GigabitEthernet0/9
+ switchport access vlan 205
+ switchport mode access
+!
+interface GigabitEthernet0/10
+ switchport access vlan 102
+ switchport mode access
+!
+interface GigabitEthernet0/11
+ switchport access vlan 196
+ switchport mode access
+!
+interface GigabitEthernet0/12
+ description VPN-ColdStandBy
+ switchport access vlan 206
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet0/13
+ description VPN-ColdStandBy
+ switchport access vlan 215
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet0/14
+ description VPN-ColdStandBy
+ switchport access vlan 101
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet0/15
+ description VPN-ColdStandBy
+ switchport access vlan 225
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet0/16
+ description VPN-ColdStandBy
+ switchport access vlan 235
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet0/17
+ description VPN-ColdStandBy
+ switchport access vlan 224
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet0/18
+ description VPN-ColdStandBy
+ switchport access vlan 102
+ switchport mode access
+ shutdown
+!
+interface GigabitEthernet0/19
+ description VPN-ColdStandBy
+ shutdown
+!
+interface GigabitEthernet0/20
+ description VPN-ColdStandBy
+ shutdown
+!
+interface GigabitEthernet0/21
+ description VPN-ColdStandBy
+ switchport access vlan 104
+ shutdown
+!
+interface GigabitEthernet0/22
+ description VPN-ColdStandBy
+ switchport access vlan 105
+ shutdown
+!
+interface GigabitEthernet0/23
+ description ENSBDVPN1
+ switchport access vlan 206
+ switchport mode access
+!
+interface GigabitEthernet0/24
+ description ENSBDVPN1
+ switchport access vlan 215
+ switchport mode access
+!
+interface GigabitEthernet0/25
+ description ENSBDVPN1
+ switchport access vlan 101
+ switchport mode access
+!
+interface GigabitEthernet0/26
+ description ENSBDVPN1
+ switchport access vlan 225
+ switchport mode access
+!
+interface GigabitEthernet0/27
+ description ENSBDVPN1
+ switchport access vlan 235
+ switchport mode access
+!
+interface GigabitEthernet0/28
+ description ENSBDVPN1
+ switchport access vlan 224
+ switchport mode access
+!
+interface GigabitEthernet0/29
+ description ENSBDVPN1
+ switchport access vlan 102
+ switchport mode access
+!
+interface GigabitEthernet0/30
+ description ENSBDVPN1
+!
+interface GigabitEthernet0/31
+ description ENSBDVPN1
+!
+interface GigabitEthernet0/32
+ description ENSBDVPN1
+ switchport access vlan 104
+!
+interface GigabitEthernet0/33
+ description ENSBDVPN1
+ switchport access vlan 105
+!
+interface GigabitEthernet0/34
+ description ENSBDVPN5
+ switchport access vlan 206
+ switchport mode access
+!
+interface GigabitEthernet0/35
+ description ENSBDVPN5
+ switchport access vlan 207
+ switchport mode access
+!
+interface GigabitEthernet0/36
+ description ENSBDVPN5
+ switchport access vlan 101
+ switchport mode access
+!
+interface GigabitEthernet0/37
+ description ENSBDVPN5
+ switchport access vlan 211
+ switchport mode access
+!
+interface GigabitEthernet0/38
+ description ENSBDVPN5
+!
+interface GigabitEthernet0/39
+ description ENSBDVPN5
+!
+interface GigabitEthernet0/40
+ description ENSBDVPN5
+ switchport access vlan 102
+ switchport mode access
+!
+interface GigabitEthernet0/41
+ switchport access vlan 101
+ switchport mode access
+!
+interface GigabitEthernet0/42
+ switchport access vlan 101
+ switchport mode access
+!
+interface GigabitEthernet0/43
+ switchport access vlan 101
+ switchport mode access
+!
+interface GigabitEthernet0/44
+ description AEINAEAD-MPLS
+ switchport access vlan 225
+ switchport mode access
+ no cdp enable
+ spanning-tree portfast
+ spanning-tree bpdufilter enable
+!
+interface GigabitEthernet0/45
+ description AEINAEAD-MPLS
+ switchport access vlan 225
+ switchport mode access
+ no cdp enable
+!
+interface GigabitEthernet0/46
+ switchport access vlan 235
+ switchport mode access
+ media-type rj45
+ speed 100
+ duplex full
+ no cdp enable
+!
+interface GigabitEthernet0/47
+ switchport mode trunk
+!
+interface GigabitEthernet0/48
+ switchport mode trunk
+!
+interface Vlan1
+ no ip address
+ no ip route-cache
+ shutdown
+!
+interface Vlan150
+ no ip address
+ no ip route-cache
+!
+interface Vlan208
+ ip address 192.168.208.21 255.255.255.0
+ no ip route-cache
+!
+ip http server
+ip http secure-server
+logging trap warnings
+logging 192.168.208.11
+access-list 101 permit ahp host 192.168.215.137 host 192.168.215.140
+access-list 101 permit esp host 192.168.215.137 host 192.168.215.140
+access-list 101 permit udp host 192.168.215.137 host 192.168.215.140 eq isakmp
+snmp-server community ENSB RW
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps transceiver all
+snmp-server enable traps tty
+snmp-server enable traps cluster
+snmp-server enable traps entity
+snmp-server enable traps cpu threshold
+snmp-server enable traps vtp
+snmp-server enable traps vlancreate
+snmp-server enable traps vlandelete
+snmp-server enable traps flash insertion removal
+snmp-server enable traps port-security
+snmp-server enable traps envmon fan shutdown supply temperature status
+snmp-server enable traps power-ethernet group 1
+snmp-server enable traps power-ethernet police
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps config-ctid
+snmp-server enable traps rtr
+snmp-server enable traps bridge newroot topologychange
+snmp-server enable traps stpx inconsistency root-inconsistency loop-inconsistency
+snmp-server enable traps syslog
+snmp-server enable traps mac-notification change move threshold
+snmp-server enable traps vlan-membership
+snmp-server enable traps errdisable
+snmp-server host 192.168.208.11 ENSB 
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ password 7 013357015545352D0F495A1E16171C432B
+ logging synchronous
+ login
+line vty 5 15
+ password 7 013357015545352D0F495A1E16171C432B
+ logging synchronous
+ login
+!
+end

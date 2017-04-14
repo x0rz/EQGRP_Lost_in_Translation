@@ -1,0 +1,48 @@
+#-------------------------------------------------------------------------------
+# GetSystemPaths
+#	Retrieves the remote system paths
+# Params:
+#	root - The location of the Windows directory
+#	system - The name of the system file in the windows directory
+#-------------------------------------------------------------------------------
+Sub GetSystemPaths(OUT string $root, OUT string $system)
+{
+
+    bool $haveDirs = GetEnv("sysDirsSet");
+    if ($haveDirs) {
+
+	# already got the dirs
+	$root = GetEnv("sysDirRoot");
+	$system = GetEnv("sysDirSystem");
+
+    } else {
+
+	# have to get the directories
+	@echo off;
+	@record on;
+	if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+	    # NT family
+	    $root = GetCmdData("enum_keyvalue_data");
+	    $system = "system32";
+	} else if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion" -value SystemRoot`) {
+	    # 9x family
+	    $root = GetCmdData("enum_keyvalue_data");
+	    $system = "system";
+	}
+	@record off;
+	@echo on;
+
+	ifnot (defined($root) && defined($system)) {
+	    # didn't get directories
+	    return false;
+	}
+
+	bool $set = true;
+	ifnot (SetEnv("sysDirRoot", $root)) { $set = false; }
+	ifnot (SetEnv("sysDirSystem", $system)) { $set = false; }
+	SetEnv("sysDirsSet", "$set");
+    }
+
+    return true;
+
+} /* END GetSystemPaths */

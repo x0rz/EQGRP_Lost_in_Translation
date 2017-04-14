@@ -1,0 +1,20 @@
+<Software value="PSP">
+	<Vendor value="Dr. Web" regkey="hklm\software\IDAVlab">
+		<Version value="%regdata%" regkey="hklm\system\CurrentControlSet\Services\DwProt\Parameters"  regvalue="Version" />
+		<Version value="%regdata%" regkey="hklm\software\idavlab\installedcomponents"  regvalue="producttype" />
+		<Product value="%regdata%" regkey="hklm\system\CurrentControlSet\Services\DwProt\Parameters"  regvalue="Version" />
+		<Product value="Dr. Web for Workstations" regkey="hklm\software\idavlab\installedcomponents">
+			<LogFile value="%regdata%" regkey="hklm\system\currentcontrolset\services\dwprot\parameters\files\4" regvalue="name" />
+		</Product>
+		<Product value="Dr. Web Enterprise" regkey="hklm\software\IDAVlab\Enterprise Suite">
+			<LogFile value="%regdata%" regkey="hklm\system\currentcontrolset\services\dwprot\parameters\files\2" regvalue="name" />
+			<LogFile value="%regdata%" regkey="hklm\system\currentcontrolset\services\dwprot\parameters\files\4" regvalue="name" />
+		</Product>
+		<Product value="Dr. Web 6 Pro" regkey="hklm\software\idavlab\firewall">
+			<Firewall value="active" regkey="hklm\software\doctor web\firewal\sys" regvalue="state" regcompare="=" regdata="1" />
+		</Product>
+		<Logginglevel value="Lowest" regkey="hklm\software\Doctor Web\Scanning Engine\SpIDer Guard\settings" regvalue="Log/Verbose" regcompare="=" regdata="0" />
+		<Logginglevel value="Medium" regkey="hklm\software\Doctor Web\Scanning Engine\SpIDer Guard\settings" regvalue="Log/Verbose" regcompare="=" regdata="1" />
+		<LogsShowDebug value="%regdata%" regkey="hklm\software\Doctor Web\Scanning Engine\SpIDer Guard\setting" regvalue="Log/Debugging" />
+	</Vendor>
+</Software>

@@ -1,0 +1,9 @@
+@record on;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion" -value InstallDate`;
+@record off;
+string $regValues;
+$regValues=GetCmdData("value_data");
+
+string $scriptsDir = GetEnv("OpsdiskTools");
+
+`local run -command "perl $ScriptsDir\\installdate.pl $regValues" -redirect installdate`;

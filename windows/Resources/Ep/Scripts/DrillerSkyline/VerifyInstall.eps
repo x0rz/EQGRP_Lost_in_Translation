@@ -1,0 +1,61 @@
+#--------------------------------------------------------
+# File: VerifyInstall.eps
+#
+# Wrapper script for verify install of DrillerSkyline tools
+#
+# Modifications:
+#  12/12/2006	Stole from DS
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+	echo "Usage: $argv[0] <driverName>";
+	return false;
+}
+
+string $driver = $argv[1];
+
+ifnot (_DriverVerifyInstall($driver, 2, 1)) {
+	return false;
+}
+
+#--------------------------------------
+# perform extra checks on registry data
+#--------------------------------------
+bool $valid = true;
+
+# need to check the following items:
+#   do we have a capture file?
+#   is the driver responding (via -status)
+
+bool $driverRunning = false;
+if (`serialsniffer -driver $driver -status`) {
+	# driver running
+	$driverRunning = true;
+}
+
+bool $retVal;
+@record on;
+$retVal = `serialsniffer -driver $driver -getStoredSettings`;
+@record off;
+
+string $logFile = GetCmdData("logfile");
+#int    $maxSize = GetCmdData("maxSize");
+#string $devices = GetCmdData("device");
+
+echo "Checking for log file";
+if(sizeof($logfile) == 1) {
+	if ($driverRunning) {
+		echo "	PASSED";
+	} else {
+		echo "	PASSED CONDITIONALLY (driver not running)";
+	}
+} else {
+	echo "    FAILED";
+	$valid = false;
+}
+
+# we're done...
+return $valid;

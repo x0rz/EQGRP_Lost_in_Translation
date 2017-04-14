@@ -1,0 +1,7 @@
+doorwaynapkin	script DoorwayNapkin.eps
+dn_install	script DoorwayNapkin\Install.eps dlcndi
+dn_uninstall	script DoorwayNapkin\Uninstall.eps dlcndi
+dn_load		driverload -name dlcndi
+dn_unload	driverunload -name dlcndi
+dn_verify	script DoorwayNapkin\VerifyInstall.eps dlcndi
+dn_running	script DoorwayNapkin\VerifyRunning.eps dlcndi

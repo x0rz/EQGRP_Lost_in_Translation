@@ -1,0 +1,85 @@
+#--------------------------------------------------------
+# File: checkEPversion.eps
+# 
+# Script to see if box has the current version of PC
+#
+# 3/5/2009 created
+#--------------------------------------------------------
+@include "_FileExists.epm";
+
+# This is the hash for the DLL of PC 1.6.3
+string $knownGoodHash = "b0c6b44eb05b97a26197d1d6145d47b785550d3b";
+string $knownBadHash =  "93eb2a863c0d5d483873b85e3834f9a67bcc494a";
+
+# Dir for the known names of PC
+@echo off;
+string $filename = '';
+if (_FileExists("appinit.dll")) {
+	$filename = "appinit.dll";
+}
+if (_FileExists("msvcp57.dll")) { 
+	$filename = "msvcp57.dll";
+}
+if (_FileExists("msvcp58.dll")) {
+	$filename = "msvcp58.dll";
+}
+@echo on;
+
+# If we found a LVL4 DLL, compute a checksum and compare to the known good
+if($filename == ''){
+	return true;
+} else {
+	@record on;
+	@echo off;
+	`checksum -mask $filename`;
+	string $checksum=GetCmdData("checksum_value");
+	@echo on;
+
+	if($checksum == $knownGoodHash) {
+		# The correct checksum was found
+		echo "***********************************************************************";
+		echo "*                                                                     *";
+		echo "*  ALERT                                                              *";
+		echo "*                                                                     *";
+		echo "*  $filename matches the hash for PC 1.6.5.2                         *";
+		echo "*                                                                     *";
+		echo "*  Check the PSP to determine whether to keep PC installed            *";
+		echo "*  Seek help if you're unsure about this decision.                    *";
+		echo "*                                                                     *";
+		echo "***********************************************************************";
+		@record off;
+		pause;
+		return true;
+	}
+
+	if($checksum == $knownBadHash) {
+		echo "***********************************************************************";
+		echo "*                                                                     *";
+		echo "*  DANGER                                                             *";
+		echo "*                                                                     *";
+		echo "*  $filename matches the hash for PC 1.5                             *";
+		echo "*                                                                     *";
+		echo "*  Check the PSP to determine whether to keep PC installed            *";
+		echo "*  Seek help if you're unsure about this decision.                    *";
+		echo "*                                                                     *";
+		echo "***********************************************************************";
+		@record off;
+		pause;
+		return true;
+	}
+
+	# Not known good or known bad. "Consider" upgrading
+	echo "***********************************************************************";
+	echo "*                                                                     *";
+	echo "*  WARNING                                                            *";
+	echo "*                                                                     *";
+	echo "*  $filename doesn't appear to be PC 1.5 or 1.6.5.2                  *";
+	echo "*                                                                     *";
+	echo "*  Check the PSP to determine whether to keep PC installed            *";
+	echo "*  Seek help if you're unsure about this decision.                    *";
+	echo "*                                                                     *";
+	echo "***********************************************************************";
+	@record off;
+	pause;
+	return true;
+}

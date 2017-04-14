@@ -1,0 +1,189 @@
+###################################################################################
+#
+# File: Setup.epm
+#
+# Modifications:
+#  15 Apr 2004	Created
+#  08 Jul 2004  Modified script to continue even if nlsccstr.dll unavailable
+#  14 Jul 2004  Modified to handle initially empty path environment variable values
+#		  and to handle paths from registry both with and without ending '\' char
+#  20 Jun 2005  Corrected spelling of registry
+#  24 Jun 2005  Added EscapeQuotes routine to handle double quotes within the original path
+#  12 Jul 2005  Added capability to allow user to enter the path (location of dlls)
+#                  and dataPath (location of data files) if registry keys could not be found
+#
+###################################################################################
+
+@include "_FileExists.epm";
+
+sub SetupLotusEnv(OUT bool $LNPathFound, OUT string $dataPath)
+{
+
+	$LNPathFound = false;
+	$dataPath = "";
+
+	@echo off;
+	echo "Checking for essential Lotus Domino/Notes Resources:\r\n";
+	echo "Checking registry keys for Lotus Domino/Notes paths";
+
+	@record on;
+	# Get Lotus Domino path to verify Lotus environment (Lotus Server)
+	string $newLotusPath = "";
+	
+	if (`regquery -hive L -subkey software\\lotus\\domino -value path`) {
+
+		string $dominoPath = GetCmdData("value_data");
+		echo "Registry Key for Lotus Domino path (Server) found: $dominoPath";
+		$newLotusPath = splitPath($dominoPath);
+		ifnot ($newLotusPath[1] == ""){
+			$newLotusPath = $dominoPath;
+		}
+		if (`regquery -hive L -subkey software\\lotus\\domino -value datapath`) {
+			string $dominoData = GetCmdData("value_data");
+			echo "Data Path for Lotus Domino found: $dominoData";
+			$dataPath = splitPath("$dominoData");
+			ifnot ($dataPath[1] == ""){
+				$dataPath = $dominoData;
+			}
+		}
+		else {
+			echo "Domino Data Path (Server) not found";
+		}
+		
+	}
+	else {
+		echo "Registry key for Lotus Domino path (Server) not found"; 
+		#Get Lotus Notes path to verify Lotus environment (Lotus client)
+
+		if (`regquery -hive L -subkey software\\lotus\\notes -value path`) {
+			string $notesPath = GetCmdData("value_data");
+			echo "Registry Key for Lotus Notes path (Client) found: $notesPath";
+			$LNPathFound = true;
+			# Remove last \ due to quirk in EP scripting with \" sequences
+			$newLotusPath = splitPath("$notesPath");
+			ifnot ($newLotusPath[1] == ""){
+				$newLotusPath = $notesPath;
+			}
+			if (`regquery -hive L -subkey software\\lotus\\notes -value datapath`) {
+				string $notesData = GetCmdData("value_data");
+				echo "Data Path for Lotus Notes found: $notesData";
+				$dataPath = splitPath("$notesData");
+				ifnot ($dataPath[1] == ""){
+					$dataPath = $notesData;
+				}
+			}
+			else {
+				echo "Domino Data Path (Server) not found";
+			}
+		}
+		else {
+			echo "Registry key for Lotus Notes path (Client) not found";
+			echo "Since the Lotus paths were not found, it is unlikely that the required\r\nLotus files reside on this machine.";
+			ifnot (prompt "\r\nCheck for files anyway?") {
+				return false;
+			}
+		}
+	}
+
+
+	# If registry keys could not be found, allow user to enter location of required dll.
+	if ($newLotusPath == "") {
+		$newLotusPath = GetInput("\r\nEnter path to Lotus dlls--e.g.C:\\Lotus\\Domino (type quit to exit)");
+		if ($newLotusPath == "quit") {
+			return false;
+		}
+	}
+	if ($dataPath == "") {
+		$dataPath = GetInput("\r\nEnter path to Lotus data files--e.g. C:\\Lotus\\Domino\\Data (type quit to exit)");
+		if ($dataPath == "quit") {
+			return false;
+		}
+	}
+
+	# Add domino path to path environment variable
+	ifnot ($newLotusPath == "") {
+		string $pathValue = "";
+		if (`environment -get -var path`) {
+			echo "Attempting to get the current value for the environment variable path";
+			string $origPath = GetCmdData("varValue");
+			EscapeQuotes($origPath);
+			$pathValue = "$origPath;$newLotusPath";
+		}
+		else {
+			$pathValue = $newLotusPath;
+		}
+
+		# Set current path environment variable to the Lotus path
+		echo "Attempting to set the path environment variable to include lotus path";
+		if (`environment -var path -set "$pathValue"`) {
+			echo "$newLotusPath added to environment variable path successfully";
+		}			
+		else {
+			echo "Environment variable path could not be set";
+		}	
+	}
+
+	@record off;
+
+	# Find required Lotus Domino/Notes files
+	string $reqFiles;
+	$reqFiles[0] = "js32.dll";
+	$reqFiles[1] = "ltsci*.tlb";
+	$reqFiles[2] = "nlsccstr.dll";
+	$reqFiles[3] = "nnotes.dll";
+	$reqFiles[4] = "nstrings.dll";
+	$reqFiles[5] = "notes.ini";
+
+	bool $filesMissing = false;
+	int $i = 0;
+	echo "Checking for required Lotus files";
+	while ($i < sizeof($reqFiles)) {
+		ifnot (_FileExists($reqFiles[$i], $newLotusPath)) {
+			echo "$newLotusPath\\$reqFiles[$i] is missing";
+			# Keep going if missing file is nlsccstr.dll since this does not exist for older versions of Notes
+			if ($i == 2) {
+			   	$filesMissing = false;
+				echo "$reqFiles[$i] is not required for older versions of Lotus Domino, so continue.";
+			}
+			else {
+			   	$filesMissing = true;	
+			}		
+		}
+	
+		$i++;
+	}
+	if ($filesMissing) {
+		echo "Essential Lotus files are missing so unable to proceed";
+		return false;
+	}
+	else {
+		echo "Required Lotus files found\r\n";
+	}
+
+	return true;
+}
+# end SetupLotusEnv
+
+#############################################################################################################
+#
+# Subroutine EscapeQuotes
+#
+# Escapes any double quotes that may be original path so that we can surround the entire, new path
+# with double quotes without causing a syntax error. (We have to surround the entire path in double
+# quotes in case it contains a space.)
+#
+#############################################################################################################
+
+Sub EscapeQuotes(REF STRING $newPath) {
+	string $theParts = split("\"", $newPath);
+	int $counter = sizeof($theParts);
+	if ($counter > 0) {
+		string $newStr = $theParts[0];
+		int $i=1;
+		while ($i < $counter) {
+			$newStr = "$newStr\\\"$theParts[$i]";
+			$i++;
+		}
+		$newPath = $newStr;
+	}	
+}

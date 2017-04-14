@@ -1,0 +1,172 @@
+<?xml version="1.0" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="Plugin">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Command" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence> <!-- order matters -->
+							<xs:element ref="Help" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element ref="Input" />
+							<xs:element ref="Output" />
+							<xs:element ref="Default" minOccurs="0" />
+						</xs:sequence>
+						<xs:attribute name="id" type="dszProcedureId" use="required" />
+						<xs:attribute name="name" type="dszName" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="interface" type="dszPluginId" use="optional" />
+			<xs:attribute name="provider" type="dszPluginId" use="optional" />
+			<xs:attribute name="providerName" type="xs:string" use="optional" />
+			<xs:attribute name="providerType" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Help" type="xs:string" />
+	
+	<xs:element name="Input">
+		<xs:complexType>
+			<xs:sequence> <!-- order matters -->
+				<xs:element name="Argument" type="InputArgument" form="unqualified" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element name="Option" type="InputOption" form="unqualified" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="optionprefix" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Output">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Data" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="endian" type="endianType" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Default">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="Display" type="xs:string" />
+				<xs:element name="Parameter">
+					<xs:complexType>
+						<xs:attribute name="name" type="dszName" use="required"/>
+						<xs:attribute name="value" type="xs:string" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Data">
+		<xs:complexType>
+			<xs:attribute name="name" type="dszName" use="required" />
+			<xs:attribute name="type" type="dszType" use="required" />
+			<xs:attribute name="default" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Set">
+		<xs:complexType>
+			<xs:attribute name="data" type="dszName" use="optional" />
+			<xs:attribute name="param" type="dszName" use="optional" />
+			<xs:attribute name="value" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Value">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="Set" />
+			</xs:choice>
+			<xs:attribute name="string" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- Types -->
+	<xs:simpleType name="dszType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="int8_t" />
+			<xs:enumeration value="uint8_t" />
+			<xs:enumeration value="int16_t" />
+			<xs:enumeration value="uint16_t" />
+			<xs:enumeration value="int32_t" />
+			<xs:enumeration value="int64_t" />
+			<xs:enumeration value="uint32_t" />
+			<xs:enumeration value="uint64_t" />
+			<xs:enumeration value="bool" />
+			<xs:enumeration value="string" />
+			<xs:enumeration value="bytearray" />
+			<xs:enumeration value="datetime" />
+			<xs:enumeration value="ipv4addr" />
+			<xs:enumeration value="ipv6addr" />
+			<xs:enumeration value="ipaddr" />
+			<xs:enumeration value="time" />
+			<xs:enumeration value="cpaddr" />
+			<xs:enumeration value="cpcidr" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="endianType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="big" />
+			<xs:enumeration value="little" />
+			<xs:enumeration value="native" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name='dszPluginId'>
+		<xs:restriction base='xs:string'>
+			<xs:minLength value='3' />
+			<xs:maxLength value='10' />
+			<xs:pattern value='0x[0-9a-fA-F]*' />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="dszProcedureId">
+		<xs:restriction base="xs:byte">
+			<xs:minInclusive value="0" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="dszName">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="OptionArgument">
+		<xs:choice minOccurs="0" maxOccurs="unbounded"> <!-- order does not matter -->
+			<xs:element ref="Help" />
+			<xs:element ref="Set" />
+			<xs:element ref="Value" />
+		</xs:choice>
+		<xs:attribute name="name" type="dszName" use="required" />
+		<xs:attribute name="data" type="dszName" use="optional" />
+		
+		<xs:attribute name="optional" type="xs:boolean" use="optional" />
+	</xs:complexType>
+	
+	<xs:complexType name="InputArgument">
+		<xs:complexContent>
+			<xs:extension base="OptionArgument">
+				<xs:attribute name="group" type="dszName" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="InputOption">
+		<xs:choice minOccurs="0" maxOccurs="unbounded"> <!-- order does not matter -->
+			<xs:element ref="Help" />
+			<xs:element ref="Set" />
+			<xs:element name="Argument" type="OptionArgument" form="unqualified" />
+			<xs:element name="Reject" type="xs:string" form="unqualified" />
+			<xs:element name="Require" type="xs:string" form="unqualified" />
+		</xs:choice>
+		<xs:attribute name="name" type="dszName" use="required" />
+		<xs:attribute name="optional" type="xs:boolean" use="optional" />
+		<xs:attribute name="group" type="dszName" use="optional" />
+	</xs:complexType>
+	
+</xs:schema>

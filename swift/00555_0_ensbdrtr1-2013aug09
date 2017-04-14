@@ -1,0 +1,780 @@
+
+!
+! Last configuration change at 00:55:54 UTC Fri May 10 2013 by ensb
+! NVRAM config last updated at 00:58:44 UTC Fri May 10 2013 by ensb
+!
+version 12.4
+service timestamps debug uptime
+service timestamps log datetime localtime
+service password-encryption
+!
+hostname ENSBDRTR1
+!
+boot-start-marker
+boot system flash:c3825-ipbase-mz.124-24.T5.bin
+boot-end-marker
+!
+card type e1 1
+logging message-counter syslog
+logging buffered 4096
+enable secret 5 $1$85QF$0zprzPbrh20noxfLqUzNJ1
+enable password 7 045819560C71481F054A
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authentication ppp default local
+!
+!
+aaa session-id common
+no network-clock-participate slot 1 
+!
+ip source-route
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+multilink bundle-name authenticated
+isdn switch-type basic-net3
+!
+!
+!
+username admin password 7 0307495B055F251D420C
+username ensb password 7 047E0A151B0F495A1A
+username ENSBBRTR1 password 7 094D5D0D1F0404160D
+username Router password 7 106B080A1139171F1F
+username HQ-AS-1 password 7 123C04040625091039
+username ENSBPRTR1 password 7 11584B56
+username ENSBDRTR1 password 7 12485744
+username ensbpk password 7 094F471A1A0A
+username asdf1 password 7 094F471A1A0A
+username abc password 7 104F0B1A
+username OASIS-INTERNET-ROUTER password 7 08044D5D1D37160301
+username HQR4 password 7 09694F1A0D2B120618
+username cbom password 7 045809560271415C1C
+archive
+ log config
+  hidekeys
+!
+!
+controller E1 1/0
+ framing NO-CRC4 
+ pri-group timeslots 1-31
+!
+controller E1 1/1
+!
+!
+!
+!
+interface Loopback0
+ no ip address
+!
+interface Loopback1
+ description For PSTN Dialin Interface
+ ip address 10.92.115.1 255.255.255.128
+!
+interface GigabitEthernet0/0
+ description Connected to MPLS line (207)
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/0.1
+ description MPLS-1-207
+ encapsulation dot1Q 18
+ ip address 192.168.207.139 255.255.255.248
+!
+interface GigabitEthernet0/0.2
+ description MPLS-2-215
+ encapsulation dot1Q 225
+ ip address 192.168.215.139 255.255.255.240
+!
+interface GigabitEthernet0/1
+ description connected to EthernetLAN
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1.1
+ description Dialin-1 Network 
+ encapsulation dot1Q 207
+ ip address 192.168.207.1 255.255.255.192
+!
+interface GigabitEthernet0/1.2
+ description Dialin-2 Network
+ encapsulation dot1Q 215
+ ip address 192.168.215.1 255.255.255.224
+!
+interface Serial0/0/0
+ description BANK MELLI IRAN
+ ip address 10.10.33.18 255.255.255.252
+ encapsulation ppp
+!
+interface Serial0/0/1
+ description SHARJAH ISLAMIC BANK
+ ip address 10.10.201.1 255.255.255.252
+ encapsulation ppp
+!
+interface Serial0/1/0
+ description KIAKKWKW IPLC
+ ip address 172.16.1.2 255.255.255.252
+!
+interface Serial0/1/1
+ no ip address
+ clock rate 2000000
+!
+interface Serial1/0:15
+ description connected to Dial-inPCs PRI)
+ ip address 10.91.116.1 255.255.255.128
+ encapsulation ppp
+ no ip split-horizon
+ dialer idle-timeout 10000
+ dialer-group 102
+ isdn switch-type primary-net5
+ peer default ip address pool ENSBDRTR1-PRI
+ no cdp enable
+ ppp authentication pap
+!
+interface BRI2/0
+ description connected to Dial-inPCs(ISDN)
+ no ip address
+ encapsulation ppp
+ dialer pool-member 1
+ dialer pool-member 2
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap pap
+!
+interface BRI2/1
+ description connected to Dial-inPCs(ISDN)_1
+ no ip address
+ encapsulation ppp
+ dialer rotary-group 2
+ dialer-group 102
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap pap
+!
+interface BRI2/2
+ description connected to Dial-inPCs(ISDN)_2
+ no ip address
+ encapsulation ppp
+ dialer rotary-group 3
+ dialer-group 102
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap pap
+!
+interface BRI2/3
+ description connected to Dial-inPCs(ISDN)_3
+ no ip address
+ encapsulation ppp
+ dialer rotary-group 4
+ dialer-group 102
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap pap
+!
+interface BRI2/4
+ description connected to Dial-inPCs(ISDN)_4
+ no ip address
+ encapsulation ppp
+ dialer rotary-group 5
+ dialer-group 102
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap pap
+!
+interface BRI2/5
+ description connected to Dial-inPCs(ISDN)_5
+ no ip address
+ encapsulation ppp
+ dialer rotary-group 6
+ dialer-group 102
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap pap
+!
+interface BRI2/6
+ description connected to Dial-inPCs(ISDN)_6
+ no ip address
+ encapsulation ppp
+ dialer rotary-group 7
+ dialer-group 102
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap pap
+!
+interface BRI2/7
+ description connected to Dial-inPCs(ISDN)_7
+ no ip address
+ encapsulation ppp
+ dialer pool-member 1
+ isdn switch-type basic-net3
+ isdn point-to-point-setup
+ no cdp enable
+ ppp authentication chap
+!
+interface Async0/322
+ no ip address
+ encapsulation slip
+!
+interface Async0/323
+ no ip address
+ encapsulation slip
+!
+interface Async0/324
+ no ip address
+ encapsulation slip
+!
+interface Async0/325
+ no ip address
+ encapsulation slip
+!
+interface Async0/326
+ no ip address
+ encapsulation slip
+!
+interface Async0/327
+ no ip address
+ encapsulation slip
+!
+interface Async0/328
+ no ip address
+ encapsulation slip
+!
+interface Async0/329
+ no ip address
+ encapsulation slip
+!
+interface Async0/330
+ no ip address
+ encapsulation slip
+!
+interface Async0/331
+ no ip address
+ encapsulation slip
+!
+interface Async0/332
+ no ip address
+ encapsulation slip
+!
+interface Async0/333
+ no ip address
+ encapsulation slip
+!
+interface Async0/334
+ no ip address
+ encapsulation slip
+!
+interface Async0/335
+ no ip address
+ encapsulation slip
+!
+interface Async0/336
+ no ip address
+ encapsulation slip
+!
+interface Async0/337
+ no ip address
+ encapsulation slip
+!
+interface Async0/338
+ no ip address
+ encapsulation slip
+!
+interface Async0/339
+ no ip address
+ encapsulation slip
+!
+interface Async0/340
+ no ip address
+ encapsulation slip
+!
+interface Async0/341
+ no ip address
+ encapsulation slip
+!
+interface Async0/342
+ no ip address
+ encapsulation slip
+!
+interface Async0/343
+ no ip address
+ encapsulation slip
+!
+interface Async0/344
+ no ip address
+ encapsulation slip
+!
+interface Async0/345
+ no ip address
+ encapsulation slip
+!
+interface Async0/346
+ no ip address
+ encapsulation slip
+!
+interface Async0/347
+ no ip address
+ encapsulation slip
+!
+interface Async0/348
+ no ip address
+ encapsulation slip
+!
+interface Async0/349
+ no ip address
+ encapsulation slip
+!
+interface Async0/350
+ no ip address
+ encapsulation slip
+!
+interface Async0/351
+ no ip address
+ encapsulation slip
+!
+interface Async0/352
+ no ip address
+ encapsulation slip
+!
+interface Async0/353
+ no ip address
+ encapsulation slip
+!
+interface Async0/354
+ no ip address
+ encapsulation slip
+!
+interface Async0/355
+ no ip address
+ encapsulation slip
+!
+interface Async0/356
+ no ip address
+ encapsulation slip
+!
+interface Async0/357
+ no ip address
+ encapsulation slip
+!
+interface Async0/386
+ no ip address
+ encapsulation slip
+!
+interface Async0/387
+ no ip address
+ encapsulation slip
+!
+interface Async0/388
+ no ip address
+ encapsulation slip
+!
+interface Async0/389
+ no ip address
+ encapsulation slip
+!
+interface Async0/390
+ no ip address
+ encapsulation slip
+!
+interface Async0/391
+ no ip address
+ encapsulation slip
+!
+interface Async0/392
+ no ip address
+ encapsulation slip
+!
+interface Async0/393
+ no ip address
+ encapsulation slip
+!
+interface Async0/394
+ no ip address
+ encapsulation slip
+!
+interface Async0/395
+ no ip address
+ encapsulation slip
+!
+interface Async0/396
+ no ip address
+ encapsulation slip
+!
+interface Async0/397
+ no ip address
+ encapsulation slip
+!
+interface Async0/398
+ no ip address
+ encapsulation slip
+!
+interface Async0/399
+ no ip address
+ encapsulation slip
+!
+interface Async0/400
+ no ip address
+ encapsulation slip
+!
+interface Async0/401
+ no ip address
+ encapsulation slip
+!
+interface Async0/402
+ no ip address
+ encapsulation slip
+!
+interface Async0/403
+ no ip address
+ encapsulation slip
+!
+interface Async0/404
+ no ip address
+ encapsulation slip
+!
+interface Async0/405
+ no ip address
+ encapsulation slip
+!
+interface Async0/406
+ no ip address
+ encapsulation slip
+!
+interface Async0/407
+ no ip address
+ encapsulation slip
+!
+interface Async0/408
+ no ip address
+ encapsulation slip
+!
+interface Async0/409
+ no ip address
+ encapsulation slip
+!
+interface Async0/410
+ no ip address
+ encapsulation slip
+!
+interface Async0/411
+ no ip address
+ encapsulation slip
+!
+interface Async0/412
+ no ip address
+ encapsulation slip
+!
+interface Async0/413
+ no ip address
+ encapsulation slip
+!
+interface Async0/414
+ no ip address
+ encapsulation slip
+!
+interface Async0/415
+ no ip address
+ encapsulation slip
+!
+interface Async0/416
+ no ip address
+ encapsulation slip
+!
+interface Async0/417
+ no ip address
+ encapsulation slip
+!
+interface Async0/418
+ no ip address
+ encapsulation slip
+!
+interface Async0/419
+ no ip address
+ encapsulation slip
+!
+interface Async0/420
+ no ip address
+ encapsulation slip
+!
+interface Async0/421
+ no ip address
+ encapsulation slip
+!
+interface Dialer0
+ no ip address
+!
+interface Dialer1
+ description connected to Dial-inPCs(ISDN)
+ ip address 10.91.115.1 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ peer default ip address pool ENSBDRTR1-Group-1
+ no cdp enable
+ ppp max-bad-auth 3
+ ppp authentication pap
+!
+interface Dialer2
+ description connected to Dial-inPCs(ISDN)_1
+ ip address 10.91.115.9 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer in-band
+ dialer idle-timeout 10000
+ dialer-group 102
+ peer default ip address pool ENSBDRTR1-Group-2
+ no cdp enable
+ ppp authentication pap
+!
+interface Dialer3
+ description connected to Dial-inPCs(ISDN)_2
+ ip address 10.91.115.17 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer in-band
+ dialer idle-timeout 10000
+ dialer-group 102
+ peer default ip address pool ENSBDRTR1-Group-3
+ no cdp enable
+ ppp authentication pap
+!
+interface Dialer4
+ description connected to Dial-inPCs(ISDN)_3
+ ip address 10.91.115.25 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer in-band
+ dialer idle-timeout 10000
+ dialer-group 102
+ peer default ip address pool ENSBDRTR1-Group-4
+ no cdp enable
+ ppp authentication pap
+!
+interface Dialer5
+ description connected to Dial-inPCs(ISDN)_4
+ ip address 10.91.115.33 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer in-band
+ dialer idle-timeout 10000
+ dialer-group 102
+ peer default ip address pool ENSBDRTR1-Group-5
+ no cdp enable
+ ppp authentication pap
+!
+interface Dialer6
+ description connected to Dial-inPCs(ISDN)_5
+ ip address 10.91.115.41 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer in-band
+ dialer idle-timeout 10000
+ dialer-group 102
+ peer default ip address pool ENSBDRTR1-Group-6
+ no cdp enable
+ ppp authentication pap
+!
+interface Dialer7
+ description connected to Dial-inPCs(ISDN)_6
+ ip address 10.91.115.49 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer in-band
+ dialer idle-timeout 10000
+ dialer-group 102
+ peer default ip address pool ENSBDRTR1-Group-7
+ no cdp enable
+ ppp authentication pap
+!
+interface Dialer8
+ description connected to Dial-inPCs(ISDN)_7
+ ip address 10.91.115.57 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer pool 1
+ dialer idle-timeout 10000
+ dialer-group 102
+ peer default ip address pool ENSBDRTR1-Group-8
+ no cdp enable
+ ppp authentication pap
+!
+interface Dialer9
+ description connected to BankSaderatIran
+ ip address 10.91.115.65 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer pool 1
+ dialer remote-name Router
+ dialer idle-timeout 10000 either
+ dialer-group 102
+ no cdp enable
+ ppp authentication chap pap
+!
+interface Dialer10
+ description connected to OAB
+ ip address negotiated
+ encapsulation ppp
+ no ip split-horizon
+ dialer pool 1
+ dialer remote-name HQR4
+ dialer idle-timeout 10000 either
+ dialer-group 102
+ no cdp enable
+ ppp authentication chap pap
+ ppp chap hostname HQR4
+ ppp chap password 7 09694F1A0D2B120618
+ ppp pap sent-username HQR4 password 7 08044D5D1D37000301
+ ppp multilink
+!
+interface Dialer11
+ description connected to PSTN Dialin clients
+ ip unnumbered Loopback1
+ encapsulation ppp
+ ip tcp header-compression
+ dialer in-band
+ dialer-group 101
+ peer default ip address pool PSTNPool1
+ no cdp enable
+ ppp authentication pap chap
+!
+interface Dialer12
+ description connected to Oasis Capital
+ ip address 10.91.115.89 255.255.255.248
+ encapsulation ppp
+ no ip split-horizon
+ dialer pool 1
+ dialer remote-name OASIS-INTERNET-ROUTER
+ dialer idle-timeout 10000 either
+ dialer-group 102
+ no cdp enable
+ ppp authentication chap pap
+!
+interface Dialer60
+ ip address 5.5.5.1 255.255.255.252
+ encapsulation ppp
+ shutdown
+ dialer pool 1
+ dialer remote-name ENSBPRTR1
+ dialer string 0
+ dialer-group 101
+ no peer default ip address
+ ppp authentication chap
+!
+interface Dialer70
+ ip address 6.6.6.1 255.255.255.252
+ encapsulation ppp
+ dialer pool 1
+ dialer remote-name ENSBURTR1
+ dialer string 0
+ dialer-group 101
+ ppp authentication chap
+!
+interface Dialer101
+ description connected to ISDN ENSBBRTR1
+ ip address 10.92.115.249 255.255.255.248
+ encapsulation ppp
+ dialer pool 1
+ dialer remote-name ENSBBRTR1
+ dialer idle-timeout 120 either
+ dialer fast-idle 30
+ dialer string 90097317584471
+ dialer-group 101
+ no peer default ip address
+ no cdp enable
+ ppp authentication chap
+!
+interface Dialer1001
+ description connected to testdxb
+ ip address 10.91.115.81 255.255.255.248
+ encapsulation ppp
+ dialer pool 1
+ peer default ip address 10.91.115.82
+ ppp authentication chap callin
+ ppp chap hostname asdf1
+!
+interface Group-Async1
+ physical-layer async
+ no ip address
+ encapsulation slip
+!
+ip local pool PSTNPool1 10.92.115.2 10.92.115.100
+ip local pool ENSBDRTR1-Group-1 10.91.115.2 10.91.115.3
+ip local pool ENSBDRTR1-Group-2 10.91.115.10 10.91.115.11
+ip local pool ENSBDRTR1-Group-3 10.91.115.18 10.91.115.19
+ip local pool ENSBDRTR1-Group-4 10.91.115.26 10.91.115.27
+ip local pool ENSBDRTR1-Group-5 10.91.115.34 10.91.115.35
+ip local pool ENSBDRTR1-Group-6 10.91.115.42 10.91.115.43
+ip local pool ENSBDRTR1-Group-7 10.91.115.50 10.91.115.51
+ip local pool ENSBDRTR1-Group-8 10.91.115.58 10.91.115.59
+ip local pool ENSBDRTR1-PRI 10.91.116.10 10.91.116.40
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 192.168.207.5
+ip route 1.1.1.1 255.255.255.255 Serial0/0/0
+ip route 10.0.0.0 255.255.255.240 10.10.201.2
+ip route 10.10.33.20 255.255.255.252 Serial0/0/0
+ip route 10.10.200.0 255.255.255.248 10.10.201.2
+ip route 10.95.115.0 255.255.255.0 Dialer60
+ip route 192.168.100.0 255.255.255.0 Dialer9
+ip route 192.168.200.0 255.255.255.0 Dialer9
+ip route 192.168.206.10 255.255.255.255 192.168.215.4
+ip route 192.168.206.110 255.255.255.255 192.168.215.4
+ip route 192.168.206.111 255.255.255.255 192.168.215.4
+ip route 192.168.208.0 255.255.255.240 172.16.1.1
+ip route 192.168.217.0 255.255.255.192 Dialer101
+ip route 192.168.247.0 255.255.255.0 Dialer60
+ip route 192.168.248.0 255.255.255.0 Dialer70
+!
+!
+ip http server
+!
+access-list 101 permit ip any any log
+access-list 101 permit icmp any any log
+access-list 101 permit esp any any log
+access-list 101 permit ahp any any log
+access-list 101 permit udp any any
+access-list 102 permit ip any any log
+access-list 102 permit icmp any any log
+access-list 102 permit esp any any log
+access-list 102 permit ahp any any log
+access-list 102 permit udp any any
+access-list 105 permit ip any any log
+dialer-list 1 protocol ip permit
+dialer-list 101 protocol ip list 101
+dialer-list 102 protocol ip list 102
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ password 7 02050D480809
+ logging synchronous
+line aux 0
+line 0/322 0/357
+line 0/386 0/421
+line vty 0 4
+ session-timeout 10 
+ exec-timeout 0 0
+ password 7 096C1F0C174B24302509103D2436236215
+ logging synchronous
+line vty 5 9
+ session-timeout 10 
+ password 7 013357015545352D0F495A1E16171C432B
+!
+scheduler allocate 20000 1000
+end

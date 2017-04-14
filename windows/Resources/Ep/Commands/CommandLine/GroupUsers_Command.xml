@@ -1,0 +1,46 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31328'>
+ <Command id='16' name='groupusers'>
+
+  <Help>Returns the list of (global or local) groups on the given machine</Help>
+
+  <Input>
+   <Option name="group" optional="false">
+    <Argument name="groupName" data="groupName" optional="false" />
+    <Help>The group to query (such as 'administrators' or 'domain admins')</Help>
+   </Option>
+
+   <Option name="local" optional="false" group="type">
+    <Set data="local" value="true" />
+    <Argument name="remote_server" data="servername" optional="true">
+     <Help>The remote server to query in the form '\\name'. If no name is</Help>
+     <Help>specified, the local machine is queried.</Help>
+    </Argument>
+    <Help>groups are things such as Administrators, Power Users, etc...</Help>
+   </Option>
+
+   <Option name="global" optional="false" group="type">
+    <Set data="local" value="false" />
+    <Argument name="remote_server" data="servername" optional="true">
+     <Help>The remote server to query in the form '\\name'. If no name is</Help>
+     <Help>specified, the local machine is queried.</Help>
+    </Argument>
+    <Help>groups are things such as Domain Admins</Help>
+    <Help>NOTE: Global groups can only be queried from a machine which</Help>
+    <Help>provides authentication authority for the specified groups.</Help>
+    <Help>For example, a workstation or stand-alone server will not have</Help>
+    <Help>any global groups. The global groups on a domain controller or</Help>
+    <Help>Active Directory member server will represent the groups for</Help>
+    <Help>the domain of which that server is a controller.</Help>
+   </Option>
+  </Input>
+
+  <Output>
+   <Data name='local' type='bool' default="0"/>
+   <Data name='groupName' type='string'/>
+   <Data name='servername' type='string'/>
+  </Output>
+
+ </Command>
+</Plugin>

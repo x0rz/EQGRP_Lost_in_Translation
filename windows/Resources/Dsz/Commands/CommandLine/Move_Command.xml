@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Move_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='Move'>
+	
+		<Help>Moves a given file to the specified name</Help>
+		
+		<Input>
+			<Argument name='srcFile' optional='false' data='src'>
+				<Help>The file to be moved.</Help>
+			</Argument>
+			
+			<Argument name='dstFile' optional='false' data='dst'>
+				<Help>The location to which the file is to be moved.</Help>
+			</Argument>
+			
+			<Option name='afterReboot' optional='true'>
+				<Help>Perform the move following reboot</Help>
+				<Set data='afterReboot' value='true' />
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='src' type='string' />
+			<Data name='dst' type='string' />
+			<Data name='afterReboot' type='bool' default='false' />
+		</Output>
+		
+	</Command>
+	
+</Plugin>

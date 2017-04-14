@@ -1,0 +1,44 @@
+string $docsandsettings = GetEnv("SYSTEMROOT");
+$docsandsettings = "$docsandsettings\\..\\Documents and Settings";
+
+@record on;
+`dir * -path "$docsandsettings"`;
+@record off;
+
+string $subkeys = GetCmdData('name');
+string $subkey;
+
+foreach $subkey ($subkeys)
+{
+	if ($subkey == ".")
+	{
+		continue;
+	}
+
+	if ($subkey == "..")
+	{
+		continue;
+	}
+
+	if (`script dirwrapper.eps "$docsandsettings\\$subkey\\Local Settings\\Temp\\result.dat"`)
+	{
+		return true;
+	}
+
+	if (`script dirwrapper.eps "$docsandsettings\\$subkey\\Local Settings\\Temp\\data.dat"`)
+	{
+		return true;
+	}
+	
+	if (`script dirwrapper.eps "$docsandsettings\\$subkey\\Local Settings\\Temp\\Acrobat.dll"`)
+	{
+		return true;
+	}
+	
+	if (`script dirwrapper.eps "$docsandsettings\\$subkey\\Local Settings\\Temp\\first.tmp"`)
+	{
+		return true;
+	}
+}
+
+return false;

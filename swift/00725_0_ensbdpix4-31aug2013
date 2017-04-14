@@ -1,0 +1,933 @@
+: Saved
+: Written by enable_15 at 06:29:09.551 UTC Sun Sep 1 2013
+!
+PIX Version 8.0(2) 
+!
+hostname ENSBUSPIX
+domain-name sag
+enable password Ro5XpDeSuehPBEdi encrypted
+names
+name 192.168.202.20 sag-srv2
+name 192.168.211.17 vpn1-2-nsrp
+name 192.168.211.16 vpn2-int
+name 192.168.211.15 vpn1-int
+name 172.28.0.70 FEBKUS6L-LA-ws2
+name 172.28.0.71 FEBKUS6L-LA-ws3
+name 172.28.0.72 FEBKUS6L-LA-ws4
+name 172.28.0.73 FEBKUS6L-LA-ws5
+name 172.28.0.74 FEBKUS6L-LA-ws6
+name 172.28.0.199 FEBKUS6L-IR-ws3
+name 172.28.0.200 FEBKUS6L-IR-ws4
+name 172.28.0.201 FEBKUS6L-IR-ws5
+name 172.28.0.202 FEBKUS6L-IR-ws6
+name 172.28.0.203 FEBKUS6L-IR-ws7
+name 10.100.200.0 ensb-mgmt-nw
+name 192.168.211.0 ensb-dxb-nw
+name 192.168.211.50 host-srv1
+name 192.168.211.51 host-srv2
+name 192.168.211.52 host-srv3
+name 172.28.0.197 FEBKUS6L-IR-ws1
+name 172.28.0.198 FEBKUS6L-IR-ws2
+name 172.28.0.69 FEBKUS6L-LA-ws1
+name 172.28.0.75 FEBKUS6L-LA-ws7
+name 192.168.111.0 ensb-us-nw description US Network
+name 192.168.213.201 unirisx-srv1
+name 10.100.205.0 unirisx-mgmt-nw
+name 192.168.213.202 unirisx-srv2
+name 192.168.213.203 unirisx-srv3
+name 172.28.1.68 IDXDUS33-ws1
+name 172.28.1.69 IDXDUS33-ws2
+name 172.28.1.70 IDXDUS33-ws3
+name 10.100.210.0 unirisx-pharos-nw description Unirisx-Pharos Dial-in IP Pool
+name 192.168.209.52 ensbusl3
+name 192.168.209.50 ensbusl1
+name 192.168.209.51 ensbusl2
+name 192.168.208.0 ensb-dxb-mgmt-nw
+name 172.28.1.133 RBBCUS6L-ws1
+name 172.28.1.134 RBBCUS6L-ws2
+name 192.168.214.100 finmex-srv1 description Finmex Portal Server1
+name 10.100.215.0 finmex-mgmt-nw description finmex-mgmt-pool
+name 172.28.1.193 GPSXUS55-loopback
+name 172.28.1.194 GPSXUS55-mgmt1
+name 172.28.1.195 GPSXUS55-mgmt2
+name 172.28.1.196 GPSXUS55-nsrp
+name 172.28.1.198 GPSXUS55-ws1
+name 172.28.1.199 GPSXUS55-ws2
+name 172.28.1.200 GPSXUS55-ws3
+name 172.28.1.201 GPSXUS55-ws4
+name 172.28.1.202 GPSXUS55-ws5
+name 172.28.1.135 RBBCUS6L-ws3
+name 172.28.1.136 RBBCUS6L-ws4
+name 172.28.2.129 CAGPBMHM-LB
+name 192.168.209.31 CAGP-SRV1
+name 192.168.209.32 CAGP-SRV2
+name 192.168.226.0 ensb-jo-nw
+name 172.28.2.130 CAGPBMHM-MGMT-VPN1-OLD
+name 172.28.2.132 CAGPBMHM-NSRP-OLD
+name 10.149.10.0 nw-sslvpn-nw description ENSBNW SSLVPN IP
+name 192.168.202.25 sagfin1
+name 192.168.202.26 sagfin2
+name 192.168.202.22 sagsns1
+name 192.168.202.23 sagsns2
+name 192.168.202.21 sagtest1
+name 206.201.131.9 UNIRISX-KEYSRV
+name 192.168.214.105 enMORE-srvr1
+name 4.3.2.0 Vitname-NW
+name 192.168.202.245 enFTP1
+name 193.43.238.250 BICs-HomeSend-Test
+name 193.43.238.249 BICs-HomeSend-Prod
+name 192.168.214.51 SL1
+name 192.168.202.30 swp-nlb
+name 192.168.202.28 swp-srv1
+name 192.168.202.29 swp-srv2
+name 192.168.214.106 enMORE-srvr2
+name 10.100.220.0 cs-support-nw
+name 192.168.214.107 enMORE-srvr3
+name 192.168.214.108 enMORE-srvr4
+name 192.168.211.230 en.MoreWebSRVR1 description en.More Web Server 1
+name 84.45.85.251 RemitONE-Srvr1 description RemitONE Public IP 1
+name 84.45.85.253 RemitONE-Srvr2 description RemitONE Public IP 2
+name 84.45.85.222 RemitONE-Test_Srvr1 description RemitONE Public IP 3
+name 84.45.85.199 RemitONE-Srvr3
+name 84.45.85.195 RemitONE-Srvr4
+name 192.168.202.101 ensbdrsa2
+dns-guard
+!
+interface Ethernet0
+ nameif clients
+ security-level 10
+ ip address 192.168.211.1 255.255.255.0 
+!
+interface Ethernet1
+ nameif host
+ security-level 70
+ ip address 192.168.209.1 255.255.255.0 
+!
+interface Ethernet2
+ nameif sag
+ security-level 80
+ ip address 192.168.202.4 255.255.255.0 
+!
+interface Ethernet3
+ description unirisx zone
+ nameif unirisx
+ security-level 30
+ ip address 192.168.213.1 255.255.255.0 
+!
+interface Ethernet4
+ description mgmt zone
+ nameif mgmt
+ security-level 50
+ ip address 192.168.208.4 255.255.255.0 
+!
+interface Ethernet5
+ no nameif
+ no security-level
+ no ip address
+!
+interface Ethernet5.1
+ description Finemx Portal Interface
+ vlan 214
+ nameif finmex
+ security-level 20
+ ip address 192.168.214.1 255.255.255.0 
+!
+passwd Ro5XpDeSuehPBEdi encrypted
+banner login EastNets Service Bureau
+banner login NOTICE TO USERS
+banner login This computer is a property of EastNets (R). Any or all use of this system is governed by the Security Policies of EastNets Service Bureau (ENSB).
+banner login Any or all uses of this system, and all files on this system may be monitored, recorded, audited, or inspected  at the discretion of EastNets Management.
+banner login Unauthorized or improper use of this system may result in administrative disciplinary action and civil and criminal penalties. By continuing to use this system you indicate your awareness of and consent to these terms and conditions of use. LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning.
+banner login Please contact ENSB Infrastructure Team to obtain a copy of the Security Policy or visit ENSB portal at http://entranet.eastnets.com/sites/ENSB/.
+ftp mode passive
+dns domain-lookup clients
+dns domain-lookup host
+dns domain-lookup sag
+dns domain-lookup unirisx
+dns domain-lookup mgmt
+dns domain-lookup finmex
+dns server-group DefaultDNS
+ domain-name sag
+object-group network sag-servers-prod
+ network-object host sagsns1
+ network-object host sagfin2
+object-group network ensb-vpns-group
+ network-object vpn1-int 255.255.255.255
+ network-object vpn2-int 255.255.255.255
+ network-object vpn1-2-nsrp 255.255.255.255
+object-group service msih-ports-udp udp
+ port-object range 9000 9059
+ port-object range 48200 48200
+ port-object range 48100 48105
+ port-object range 135 135
+ port-object range 48002 48009
+ port-object range 6500 6501
+ port-object range 1029 1029
+object-group service msih-ports-udp-casmf udp
+ port-object range 5101 5105
+ port-object range 5206 5207
+object-group service swift-dns-port udp
+ port-object range domain domain
+object-group service symantec-av udp
+ port-object range 38293 38293
+ port-object range 2967 2967
+object-group service FMSIH-OUT-TCP tcp
+ port-object range 9100 9106
+ port-object range 6500 6501
+object-group service FMSIH-OUT-TCP-CASMF tcp
+ group-object FMSIH-OUT-TCP
+ port-object range 5206 5207
+ port-object range 5101 5105
+object-group service FMSIH-PRINT-TCP tcp
+ port-object range 9100 9106
+object-group service msih-ports-tcp tcp
+ port-object range 9000 9059
+ port-object range 48200 48200
+ port-object range 48100 48105
+ port-object range 135 135
+ port-object range 48009 48009
+ port-object range 6500 6501
+ port-object range 1029 1029
+ port-object eq ssh
+object-group service msih-ports-tcp-casmf tcp
+ group-object msih-ports-tcp
+ port-object range 5206 5207
+ port-object range 5101 5105
+object-group service snmp tcp-udp
+ port-object range 161 162
+object-group service doubletake tcp-udp
+ port-object range 1105 1106
+ port-object range 1100 1100
+object-group service msih-ports tcp-udp
+ port-object range 48200 48200
+ port-object range 48100 48105
+ port-object range 135 135
+ port-object range 48009 48009
+ port-object range 6500 6501
+ port-object range 9000 9049
+ port-object range 1029 1029
+object-group service shared-ports tcp
+ port-object range 445 445
+ port-object range netbios-ssn netbios-ssn
+ port-object range 137 137
+ port-object eq 138
+object-group service swift-49168-9 tcp
+ port-object range 49168 49169
+object-group service swift-cara-port tcp
+ port-object range 709 709
+object-group service swift-dialup-port tcp
+ port-object eq www
+object-group service swift-direcotry-ports tcp
+ port-object range 1400 1409
+ port-object range 1600 1609
+ port-object range 1100 1109
+ port-object range ldap ldap
+ port-object range 1300 1309
+ port-object range 1500 1509
+ port-object range 1200 1209
+object-group service swift-myswift-webserver-port tcp
+ port-object range https https
+object-group service swift-rvs-port tcp
+ port-object range 49170 49170
+object-group service swift-secrets-webserver-port tcp
+ port-object range 49172 49172
+object-group service swift-switch-ports tcp
+ port-object range 50153 50190
+ port-object range 52100 52399
+ port-object range 49500 49510
+ port-object range 50200 50806
+object-group service swift-web-connector-ports tcp
+ port-object eq www
+ port-object range 49171 49171
+object-group service vnc-port tcp
+ port-object range 5800 5800
+ port-object range 5900 5900
+object-group network sag-srv-test
+ network-object sagsns1 255.255.255.255
+object-group network sag-servers-prod_ref
+ network-object 192.168.246.20 255.255.255.255
+ network-object 192.168.246.25 255.255.255.255
+ network-object 192.168.209.25 255.255.255.255
+ network-object 192.168.209.20 255.255.255.255
+object-group network ensb-dxb-nw
+ network-object ensb-dxb-nw 255.255.255.0
+object-group service web-ports tcp
+ port-object eq www
+ port-object eq https
+object-group network sag-servers-prod1
+ network-object sag-srv2 255.255.255.255
+ network-object sagfin1 255.255.255.255
+object-group network sag-servers-prod_ref_1
+ network-object 192.168.211.25 255.255.255.255
+ network-object 192.168.211.20 255.255.255.255
+object-group network FEBKUS6L-ws-nw
+ network-object FEBKUS6L-LA-ws2 255.255.255.255
+ network-object FEBKUS6L-LA-ws3 255.255.255.255
+ network-object FEBKUS6L-LA-ws4 255.255.255.255
+ network-object FEBKUS6L-LA-ws5 255.255.255.255
+ network-object FEBKUS6L-LA-ws6 255.255.255.255
+ network-object FEBKUS6L-LA-ws7 255.255.255.255
+ network-object FEBKUS6L-IR-ws2 255.255.255.255
+ network-object FEBKUS6L-IR-ws3 255.255.255.255
+ network-object FEBKUS6L-IR-ws4 255.255.255.255
+ network-object FEBKUS6L-IR-ws5 255.255.255.255
+ network-object FEBKUS6L-IR-ws6 255.255.255.255
+ network-object FEBKUS6L-IR-ws7 255.255.255.255
+ network-object FEBKUS6L-LA-ws1 255.255.255.255
+ network-object host FEBKUS6L-IR-ws1
+object-group network sharedsaa-saa-group
+ network-object host host-srv1
+ network-object host host-srv2
+ network-object host host-srv3
+object-group network ensb-mgmt-nw
+ network-object ensb-mgmt-nw 255.255.255.0
+ network-object ensb-dxb-nw 255.255.255.0
+ network-object ensb-dxb-mgmt-nw 255.255.255.0
+object-group protocol TCPUDP
+ protocol-object udp
+ protocol-object tcp
+object-group protocol DM_INLINE_PROTOCOL_2
+ protocol-object udp
+ protocol-object tcp
+object-group network ensb-us-nw
+ network-object ensb-us-nw 255.255.255.0
+object-group network unirisx-srv-group
+ network-object host 192.168.211.201
+ network-object host 192.168.211.202
+ network-object host 192.168.211.203
+object-group network unirisx-mgmt-group
+ network-object unirisx-mgmt-nw 255.255.255.0
+object-group service RDP tcp
+ port-object eq 3389
+object-group network IDXDUS33-nw
+ network-object host IDXDUS33-ws1
+ network-object host IDXDUS33-ws2
+ network-object host IDXDUS33-ws3
+object-group network unirisx-pharos-group
+ network-object unirisx-pharos-nw 255.255.255.0
+object-group network DM_INLINE_NETWORK_1
+ network-object host ensbusl1
+ network-object host ensbusl2
+ network-object host ensbusl3
+ network-object host CAGP-SRV1
+ network-object host CAGP-SRV2
+object-group network DM_INLINE_NETWORK_2
+ network-object host ensbusl1
+ network-object host ensbusl2
+ network-object host ensbusl3
+ network-object host CAGP-SRV1
+ network-object host CAGP-SRV2
+object-group network DM_INLINE_NETWORK_3
+ network-object host unirisx-srv1
+ network-object host unirisx-srv2
+ network-object host unirisx-srv3
+object-group network DM_INLINE_NETWORK_4
+ network-object host unirisx-srv1
+ network-object host unirisx-srv2
+ network-object host unirisx-srv3
+object-group network RBBCUS6L-ws-nw
+ network-object host RBBCUS6L-ws1
+ network-object host RBBCUS6L-ws2
+ network-object host RBBCUS6L-ws3
+ network-object host RBBCUS6L-ws4
+object-group network finmex-mgmt-group
+ network-object finmex-mgmt-nw 255.255.255.0
+object-group service DM_INLINE_SERVICE_1
+ service-object icmp 
+ service-object tcp eq smtp 
+object-group network GPSXUS55-nw
+ network-object host GPSXUS55-loopback
+ network-object host GPSXUS55-mgmt1
+ network-object host GPSXUS55-mgmt2
+ network-object host GPSXUS55-nsrp
+ network-object host GPSXUS55-ws1
+ network-object host GPSXUS55-ws2
+ network-object host GPSXUS55-ws3
+ network-object host GPSXUS55-ws4
+ network-object host GPSXUS55-ws5
+object-group network CAGPBMHM-nw
+ network-object host CAGPBMHM-NSRP-OLD
+ network-object host 172.28.2.133
+ network-object host 172.28.2.134
+ network-object host 172.28.2.135
+ network-object host 172.28.2.136
+ network-object host 172.28.2.137
+ network-object host 172.28.2.138
+ network-object host 172.28.2.139
+ network-object host 172.28.2.140
+ network-object host 172.28.2.141
+ network-object host 172.28.2.142
+ network-object host 172.28.2.143
+ network-object host 172.28.2.144
+ network-object host 172.28.2.145
+ network-object host CAGPBMHM-LB
+ network-object host CAGPBMHM-MGMT-VPN1-OLD
+ network-object host 172.28.2.146
+ network-object host 172.28.2.147
+ network-object host 172.28.2.148
+ network-object host 172.28.2.149
+ network-object host 172.28.2.150
+ network-object host 172.28.2.151
+ network-object host 172.28.2.152
+ network-object host 172.28.2.153
+ network-object host 172.28.2.154
+ network-object host 172.28.2.157
+ network-object host 172.28.2.158
+ network-object host 172.28.2.159
+ network-object host 172.28.2.160
+ network-object host 172.28.2.161
+ network-object host 172.28.2.162
+ network-object host 172.28.2.163
+ network-object host 172.28.2.164
+ network-object host 172.28.2.165
+ network-object host 172.28.2.166
+ network-object host 172.28.2.167
+ network-object host 172.28.2.168
+ network-object host 172.28.2.169
+ network-object host 172.28.2.170
+ network-object host 172.28.2.171
+ network-object host 172.28.2.173
+ network-object host 172.28.2.174
+ network-object host 172.28.2.172
+ network-object host 172.28.2.175
+ network-object host 172.28.2.176
+ network-object host 172.28.2.177
+object-group network CAGP-SRV-GROUP
+ network-object host CAGP-SRV1
+ network-object host CAGP-SRV2
+object-group service sidestation tcp
+ port-object eq 8401
+object-group service sql tcp
+ port-object eq 1433
+object-group service DM_INLINE_TCP_1 tcp
+ group-object msih-ports
+ port-object eq ftp
+ port-object eq ssh
+ group-object sidestation
+ group-object sql
+object-group network CAPG-SRV-GROUP-NAT
+ network-object host 192.168.211.31
+ network-object host 192.168.211.32
+object-group service Unirisx-Keysrv tcp
+ description keyserver.hostidp.com on TCP port 18021
+ port-object eq 18201
+object-group network DM_INLINE_NETWORK_5
+ group-object sag-servers-prod
+ group-object sag-servers-prod1
+object-group network en.More-srvr
+ network-object host enMORE-srvr1
+ network-object host enMORE-srvr2
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group network en.More-srvr_ref
+ network-object host 192.168.211.105
+ network-object host 192.168.211.106
+ network-object host 192.168.211.107
+ network-object host 192.168.211.108
+ network-object host enMORE-srvr4
+ network-object host enMORE-srvr3
+object-group network CAGPBMHM-NW-DR
+ network-object 172.28.2.192 255.255.255.192
+object-group service DM_INLINE_TCP_3 tcp
+ group-object msih-ports
+ group-object sidestation
+ group-object sql
+ port-object eq ftp
+ port-object eq ssh
+object-group network en.More_Customers
+ network-object Vitname-NW 255.255.255.0
+object-group service DM_INLINE_TCP_2 tcp
+ port-object eq 4443
+ port-object eq 7777
+ port-object eq 8080
+ port-object eq 8081
+ port-object eq www
+ port-object eq https
+ port-object eq ftp
+ port-object eq ftp-data
+object-group service DM_INLINE_TCP_4 tcp
+ port-object eq 4443
+ port-object eq 7777
+ port-object eq 8080
+ port-object eq 8081
+ port-object eq www
+ port-object eq https
+ port-object eq ftp
+ port-object eq ftp-data
+object-group service DM_INLINE_TCP_5 tcp
+ port-object eq ftp
+ port-object eq ftp-data
+ port-object eq ssh
+object-group service shared-ports-udp udp
+ port-object eq 139
+ port-object eq 445
+ port-object eq netbios-dgm
+ port-object eq netbios-ns
+object-group service DM_INLINE_TCP_7 tcp
+ port-object eq ftp
+ port-object eq ftp-data
+ port-object eq ssh
+object-group network ftp-srv_ref-clients
+ network-object host 192.168.211.115
+object-group network ftp-srv_ref-finmex
+ network-object host 192.168.214.245
+object-group network DM_INLINE_NETWORK_6
+ network-object host BICs-HomeSend-Prod
+ network-object host BICs-HomeSend-Test
+object-group network DM_INLINE_NETWORK_7
+ network-object host BICs-HomeSend-Prod
+ network-object host BICs-HomeSend-Test
+object-group service DM_INLINE_TCP_6 tcp
+ port-object eq ftp
+ port-object eq ftp-data
+ port-object eq ssh
+object-group service DM_INLINE_SERVICE_2
+ service-object tcp eq www 
+ service-object tcp eq https 
+ service-object tcp-udp eq domain 
+object-group service DM_INLINE_TCP_8 tcp
+ port-object eq 3389
+ port-object eq www
+ port-object eq https
+object-group service DM_INLINE_TCP_9 tcp
+ port-object eq www
+ port-object eq https
+object-group service DM_INLINE_TCP_10 tcp
+ port-object eq ftp
+ port-object eq ftp-data
+object-group network swp-srvrs
+ network-object host swp-srv1
+ network-object host swp-srv2
+ network-object host swp-nlb
+object-group service DM_INLINE_SERVICE_3
+ service-object icmp 
+ service-object tcp eq 48600 
+ service-object tcp eq https 
+object-group network DM_INLINE_NETWORK_8
+ network-object host 192.168.211.105
+ network-object host 192.168.211.106
+ network-object host enMORE-srvr4
+ network-object host enMORE-srvr3
+object-group network DM_INLINE_NETWORK_9
+ network-object host 192.168.211.105
+ network-object host 192.168.211.106
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_10
+ network-object host 192.168.211.105
+ network-object host 192.168.211.106
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_11
+ network-object host 192.168.211.105
+ network-object host 192.168.211.106
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group service DM_INLINE_TCP_11 tcp
+ port-object eq 3389
+ port-object eq www
+ port-object eq https
+object-group service mgmt-bkup-tcp tcp
+ port-object eq 445
+ port-object range 137 netbios-ssn
+ port-object eq 2967
+ port-object range 10000 10025
+ port-object range 10250 10275
+object-group service mgmt-bkup-udp udp
+ port-object eq 445
+ port-object range netbios-ns 139
+ port-object eq 2967
+ port-object eq 38293
+object-group network DM_INLINE_NETWORK_12
+ network-object host enMORE-srvr1
+ network-object host enMORE-srvr2
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_13
+ network-object host enMORE-srvr1
+ network-object host enMORE-srvr3
+object-group network DM_INLINE_NETWORK_14
+ network-object host enMORE-srvr2
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_15
+ network-object host enMORE-srvr1
+ network-object host enMORE-srvr3
+object-group network DM_INLINE_NETWORK_16
+ network-object host enMORE-srvr2
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_17
+ network-object host enMORE-srvr1
+ network-object host enMORE-srvr3
+object-group network DM_INLINE_NETWORK_18
+ network-object host enMORE-srvr2
+ network-object host enMORE-srvr4
+object-group service DM_INLINE_SERVICE_4
+ service-object tcp eq 8401 
+ service-object udp eq 8401 
+object-group network en.More_Web_Servers
+ network-object host en.MoreWebSRVR1
+object-group network DM_INLINE_NETWORK_19
+ group-object en.More-srvr
+ group-object en.More-srvr_ref
+object-group network DM_INLINE_NETWORK_20
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group service ReportingSvc tcp
+ port-object eq 1111
+object-group service DM_INLINE_SERVICE_5
+ service-object tcp eq 135 
+ service-object tcp eq 137 
+ service-object tcp eq 138 
+ service-object tcp eq 1433 
+ service-object tcp eq 1434 
+ service-object tcp eq ftp 
+ service-object udp eq 135 
+ service-object tcp range 5000 5100 
+ service-object tcp eq 3372 
+ service-object tcp eq 445 
+ service-object udp eq 139 
+ service-object udp eq 1434 
+ service-object tcp eq 3389 
+ service-object tcp eq 1111 
+object-group service DM_INLINE_SERVICE_6
+ service-object tcp eq 1111 
+ service-object tcp eq 135 
+ service-object tcp eq 137 
+ service-object tcp eq 138 
+ service-object tcp range 5000 5100 
+ service-object tcp eq https 
+ service-object tcp eq ssh 
+ service-object udp eq 135 
+ service-object tcp eq 1433 
+ service-object tcp eq 1434 
+ service-object tcp eq 3372 
+ service-object tcp eq 445 
+ service-object udp eq 139 
+ service-object udp eq 1434 
+ service-object tcp eq 3389 
+object-group network RemitONE-Srvrs
+ network-object host RemitONE-Test_Srvr1
+ network-object host RemitONE-Srvr1
+ network-object host RemitONE-Srvr2
+ network-object host RemitONE-Srvr3
+object-group network DM_INLINE_NETWORK_21
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_22
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_23
+ network-object host 192.168.206.188
+ network-object host 192.168.206.189
+object-group network DM_INLINE_NETWORK_24
+ network-object host 192.168.214.10
+ network-object host 192.168.214.11
+object-group network DM_INLINE_NETWORK_25
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group network DM_INLINE_NETWORK_26
+ network-object host enMORE-srvr3
+ network-object host enMORE-srvr4
+object-group service DM_INLINE_TCP_12 tcp
+ port-object eq www
+ port-object eq https
+object-group network DM_INLINE_NETWORK_27
+ network-object host 192.168.211.105
+ network-object host 192.168.211.106
+object-group network DM_INLINE_NETWORK_28
+ network-object host 192.168.211.105
+ network-object host 192.168.211.106
+object-group service DM_INLINE_TCP_13 tcp
+ port-object eq www
+ port-object eq https
+access-list clients_access_in remark Allow en.More Level 3 MGMT Group to access en.More APP Servers
+access-list clients_access_in extended permit tcp 10.100.150.0 255.255.255.240 object-group DM_INLINE_NETWORK_27 object-group DM_INLINE_TCP_13 
+access-list clients_access_in remark Deny any traffic from en.More Level 3 MGMT Group
+access-list clients_access_in extended deny ip 10.100.150.0 255.255.255.240 object-group DM_INLINE_NETWORK_28 
+access-list clients_access_in remark Allow en.More Level 3 MGMT Group to access en.More Servers
+access-list clients_access_in extended permit tcp 10.100.150.0 255.255.255.240 object-group DM_INLINE_NETWORK_25 object-group DM_INLINE_TCP_12 
+access-list clients_access_in remark Deny any traffic from en.More Level 3 MGMT Group
+access-list clients_access_in extended deny ip 10.100.150.0 255.255.255.240 object-group DM_INLINE_NETWORK_26 
+access-list clients_access_in remark Allow HTTPS from RemitONE to en.More-srvr4
+access-list clients_access_in extended permit tcp object-group RemitONE-Srvrs object-group DM_INLINE_NETWORK_21 eq https 
+access-list clients_access_in remark Deny any traffic from RemitONE to en.More-srvr4 for Security
+access-list clients_access_in extended deny ip object-group RemitONE-Srvrs object-group DM_INLINE_NETWORK_22 
+access-list clients_access_in extended permit icmp any any 
+access-list clients_access_in extended permit tcp any object-group sag-servers-prod eq 48002 
+access-list clients_access_in extended permit tcp any object-group sag-servers-prod eq 48003 
+access-list clients_access_in extended permit tcp object-group en.More_Customers object-group en.More-srvr_ref eq www 
+access-list clients_access_in extended permit tcp object-group DM_INLINE_NETWORK_7 object-group en.More-srvr_ref object-group DM_INLINE_TCP_2 
+access-list clients_access_in extended permit tcp object-group en.More_Customers object-group ftp-srv_ref-clients object-group DM_INLINE_TCP_7 
+access-list clients_access_in extended permit tcp any object-group ftp-srv_ref-clients object-group DM_INLINE_TCP_6 
+access-list clients_access_in extended permit object-group DM_INLINE_PROTOCOL_2 object-group FEBKUS6L-ws-nw object-group sharedsaa-saa-group object-group msih-ports 
+access-list clients_access_in extended permit object-group DM_INLINE_PROTOCOL_2 object-group GPSXUS55-nw object-group sharedsaa-saa-group object-group msih-ports 
+access-list clients_access_in extended permit object-group DM_INLINE_PROTOCOL_2 object-group IDXDUS33-nw object-group sharedsaa-saa-group object-group msih-ports 
+access-list clients_access_in extended permit object-group DM_INLINE_PROTOCOL_2 object-group RBBCUS6L-ws-nw object-group sharedsaa-saa-group object-group msih-ports 
+access-list clients_access_in extended permit object-group DM_INLINE_PROTOCOL_2 object-group CAGPBMHM-nw object-group sharedsaa-saa-group object-group msih-ports 
+access-list clients_access_in extended permit object-group DM_INLINE_PROTOCOL_2 host ensb-us-nw object-group sharedsaa-saa-group object-group msih-ports 
+access-list clients_access_in extended permit tcp ensb-us-nw 255.255.255.0 object-group sharedsaa-saa-group eq 3389 
+access-list clients_access_in extended permit tcp ensb-mgmt-nw 255.255.255.0 object-group sharedsaa-saa-group eq 3389 
+access-list clients_access_in remark disconnect
+access-list clients_access_in extended permit tcp unirisx-mgmt-nw 255.255.255.0 object-group unirisx-srv-group eq 3389 inactive 
+access-list clients_access_in extended permit ip object-group FEBKUS6L-ws-nw ensb-dxb-nw 255.255.255.0 inactive 
+access-list clients_access_in remark USA DC access to DXB DC
+access-list clients_access_in extended permit ip ensb-us-nw 255.255.255.0 ensb-dxb-nw 255.255.255.0 
+access-list clients_access_in remark Unirisx Customer - disconnect
+access-list clients_access_in extended permit tcp any object-group unirisx-srv-group object-group web-ports inactive 
+access-list clients_access_in remark Unirisx Customer - disconnect
+access-list clients_access_in extended permit tcp any object-group unirisx-srv-group eq ftp inactive 
+access-list clients_access_in remark Unirisx Customer - disconnect
+access-list clients_access_in extended permit icmp any object-group unirisx-srv-group inactive 
+access-list clients_access_in remark Unirisx Keysrv - disconnect
+access-list clients_access_in extended permit tcp host UNIRISX-KEYSRV object-group unirisx-srv-group object-group Unirisx-Keysrv inactive 
+access-list clients_access_in remark ENSB mgmt
+access-list clients_access_in extended permit ip ensb-mgmt-nw 255.255.255.0 any 
+access-list clients_access_in remark disconnect
+access-list clients_access_in extended permit tcp unirisx-pharos-nw 255.255.255.0 host 192.168.211.203 eq 3389 inactive 
+access-list clients_access_in extended permit tcp finmex-mgmt-nw 255.255.255.0 host 192.168.211.100 eq 3389 
+access-list clients_access_in extended permit tcp finmex-mgmt-nw 255.255.255.0 object-group DM_INLINE_NETWORK_8 object-group DM_INLINE_TCP_8 
+access-list clients_access_in remark Access List between en.More Web Server and en.More Servers
+access-list clients_access_in extended permit object-group DM_INLINE_SERVICE_5 object-group en.More_Web_Servers object-group DM_INLINE_NETWORK_19 
+access-list clients_access_in remark Access List between en.More Web Server and en.More Servers (reporting Service) (AD-06JUN2012)
+access-list clients_access_in extended permit tcp object-group en.More_Web_Servers object-group DM_INLINE_NETWORK_20 object-group ReportingSvc 
+access-list clients_access_in remark Publish enMore Internet (requested by HM). AD.
+access-list clients_access_in extended permit tcp any object-group DM_INLINE_NETWORK_9 object-group DM_INLINE_TCP_9 
+access-list clients_access_in remark Publish enMore ftp Internet. To be enabled when needed only. AD.
+access-list clients_access_in extended permit tcp any object-group DM_INLINE_NETWORK_10 object-group DM_INLINE_TCP_10 
+access-list clients_access_in remark FOR TESTING PURPOSES ONLY. DISABLE AFTER TESTING
+access-list clients_access_in extended permit tcp any object-group DM_INLINE_NETWORK_11 object-group DM_INLINE_TCP_11 inactive 
+access-list clients_access_in extended permit icmp any host 192.168.211.100 
+access-list clients_access_in extended permit tcp any host 192.168.211.100 object-group web-ports 
+access-list clients_access_in extended permit tcp any host 192.168.211.100 eq ftp 
+access-list clients_access_in extended permit tcp object-group CAGPBMHM-nw object-group CAPG-SRV-GROUP-NAT object-group DM_INLINE_TCP_1 
+access-list clients_access_in extended permit tcp object-group CAGPBMHM-NW-DR object-group CAPG-SRV-GROUP-NAT object-group DM_INLINE_TCP_3 
+access-list clients_access_in extended permit ip ensb-jo-nw 255.255.255.0 ensb-dxb-nw 255.255.255.0 
+access-list clients_access_in extended permit ip nw-sslvpn-nw 255.255.255.0 ensb-dxb-nw 255.255.255.0 
+access-list clients_access_in remark disabled April 1, 2013
+access-list clients_access_in extended permit tcp any any eq 30003 inactive 
+access-list clients_access_in remark disabled April 1, 2013
+access-list clients_access_in extended permit udp any any eq 30003 inactive 
+access-list clients_access_in extended permit udp any object-group en.More-srvr_ref eq nameserver 
+access-list clients_access_in extended permit object-group DM_INLINE_SERVICE_3 host 172.28.0.0 object-group swp-srvrs 
+access-list clients_access_in extended permit tcp cs-support-nw 255.255.255.0 host enMORE-srvr1 eq www 
+access-list clients_access_in extended permit tcp cs-support-nw 255.255.255.0 host enMORE-srvr1 eq https 
+access-list clients_access_in extended permit ip host en.MoreWebSRVR1 ensb-dxb-mgmt-nw 255.255.255.0 
+access-list clients_access_in extended permit icmp host en.MoreWebSRVR1 ensb-dxb-mgmt-nw 255.255.255.0 
+access-list sag_access_in extended permit icmp any object-group en.More-srvr 
+access-list sag_access_in extended permit ip any object-group en.More-srvr 
+access-list sag_access_in extended permit icmp any any 
+access-list sag_access_in extended permit tcp any any eq 3389 
+access-list sag_access_in extended permit ip any any 
+access-list swift_access_in extended permit ip any any 
+access-list Hosting extended permit object-group DM_INLINE_PROTOCOL_2 object-group CAGP-SRV-GROUP object-group CAGPBMHM-nw object-group msih-ports inactive 
+access-list Hosting extended permit icmp 192.168.209.0 255.255.255.0 ensb-us-nw 255.255.255.0 
+access-list Hosting extended permit tcp 192.168.209.0 255.255.255.0 ensb-us-nw 255.255.255.0 eq 3389 
+access-list Hosting extended permit icmp 192.168.209.0 255.255.255.0 any 
+access-list Hosting extended permit tcp 192.168.209.0 255.255.255.0 object-group sag-servers-prod eq 48002 
+access-list Hosting extended permit tcp 192.168.209.0 255.255.255.0 object-group sag-servers-prod eq 48003 
+access-list Hosting extended permit object-group TCPUDP object-group sharedsaa-saa-group object-group FEBKUS6L-ws-nw object-group msih-ports 
+access-list Hosting extended permit object-group DM_INLINE_PROTOCOL_2 object-group sharedsaa-saa-group object-group IDXDUS33-nw object-group msih-ports 
+access-list Hosting extended permit object-group DM_INLINE_PROTOCOL_2 object-group sharedsaa-saa-group object-group RBBCUS6L-ws-nw object-group msih-ports 
+access-list Hosting extended permit object-group DM_INLINE_PROTOCOL_2 object-group sharedsaa-saa-group object-group GPSXUS55-nw object-group msih-ports 
+access-list Hosting extended permit object-group DM_INLINE_PROTOCOL_2 object-group sharedsaa-saa-group object-group CAGPBMHM-nw object-group msih-ports 
+access-list Hosting extended permit tcp 192.168.209.0 255.255.255.0 any object-group FMSIH-PRINT-TCP 
+access-list Hosting extended permit ip 192.168.209.0 255.255.255.0 any log 
+access-list Hosting extended permit ip ensb-dxb-nw 255.255.255.0 ensb-jo-nw 255.255.255.0 
+access-list Hosting remark test only
+access-list Hosting extended permit ip any any inactive 
+access-list Hosting extended permit ip host 192.168.211.31 any inactive 
+access-list Hosting extended permit icmp host 192.168.211.31 any inactive 
+access-list Hosting extended permit ip 192.168.209.0 255.255.255.0 192.168.200.0 255.255.255.0 
+access-list Hosting extended permit icmp 192.168.209.0 255.255.255.0 192.168.200.0 255.255.255.0 
+access-list Hosting extended permit icmp any any 
+access-list unirisx_access_in remark keyserver.hostidp.com on TCP port 18021
+access-list unirisx_access_in extended permit tcp host unirisx-srv1 host UNIRISX-KEYSRV object-group Unirisx-Keysrv 
+access-list unirisx_access_in remark DNS for host. AD
+access-list unirisx_access_in extended permit udp host unirisx-srv1 any eq domain 
+access-list unirisx_access_in extended permit ip 192.168.213.0 255.255.255.0 any 
+access-list unirisx_access_in extended permit icmp 192.168.213.0 255.255.255.0 any 
+access-list mgmt_access_in extended permit icmp ensb-dxb-mgmt-nw 255.255.255.0 object-group DM_INLINE_NETWORK_2 
+access-list mgmt_access_in extended permit ip ensb-dxb-mgmt-nw 255.255.255.0 object-group DM_INLINE_NETWORK_1 
+access-list mgmt_access_in extended permit icmp ensb-dxb-mgmt-nw 255.255.255.0 object-group DM_INLINE_NETWORK_3 
+access-list mgmt_access_in extended permit ip ensb-dxb-mgmt-nw 255.255.255.0 object-group DM_INLINE_NETWORK_4 
+access-list mgmt_access_in extended permit icmp any any 
+access-list mgmt_access_in extended permit ip ensb-dxb-mgmt-nw 255.255.255.0 object-group DM_INLINE_NETWORK_13 
+access-list mgmt_access_in extended permit ip ensb-dxb-mgmt-nw 255.255.255.0 object-group DM_INLINE_NETWORK_14 
+access-list mgmt_access_in extended permit tcp host enMORE-srvr1 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-tcp 
+access-list mgmt_access_in extended permit tcp host enMORE-srvr2 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-tcp 
+access-list mgmt_access_in extended permit udp host enMORE-srvr1 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-udp 
+access-list mgmt_access_in extended permit udp host enMORE-srvr2 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-udp 
+access-list mgmt_access_in extended permit ip host enMORE-srvr1 ensb-dxb-mgmt-nw 255.255.255.0 
+access-list mgmt_access_in extended permit ip host enMORE-srvr3 ensb-dxb-mgmt-nw 255.255.255.0 
+access-list mgmt_access_in extended permit ip host enMORE-srvr4 ensb-dxb-mgmt-nw 255.255.255.0 
+access-list mgmt_access_in extended permit ip ensb-dxb-mgmt-nw 255.255.255.0 host en.MoreWebSRVR1 
+access-list mgmt_access_in extended permit icmp ensb-dxb-mgmt-nw 255.255.255.0 host en.MoreWebSRVR1 
+access-list finmex_access_in remark Tempo Access List to update windows
+access-list finmex_access_in extended permit tcp host enMORE-srvr4 object-group RemitONE-Srvrs eq https 
+access-list finmex_access_in extended permit ip host finmex-srv1 finmex-mgmt-nw 255.255.255.0 
+access-list finmex_access_in extended permit tcp host finmex-srv1 any object-group web-ports 
+access-list finmex_access_in extended permit tcp host finmex-srv1 any eq ftp 
+access-list finmex_access_in extended permit object-group DM_INLINE_PROTOCOL_2 host finmex-srv1 any eq domain 
+access-list finmex_access_in extended permit icmp host finmex-srv1 any 
+access-list finmex_access_in extended permit object-group DM_INLINE_SERVICE_1 host finmex-srv1 object-group DM_INLINE_NETWORK_5 
+access-list finmex_access_in remark Access List between en.More Servers and en.More Web Server
+access-list finmex_access_in extended permit ip object-group en.More-srvr object-group en.More_Web_Servers inactive 
+access-list finmex_access_in remark Access List between en.More Servers and en.More Web Server
+access-list finmex_access_in extended permit object-group DM_INLINE_SERVICE_6 object-group en.More-srvr object-group en.More_Web_Servers 
+access-list finmex_access_in extended permit icmp object-group en.More-srvr host 192.168.214.245 
+access-list finmex_access_in extended permit tcp host enMORE-srvr1 host SL1 eq ftp inactive 
+access-list finmex_access_in extended permit object-group DM_INLINE_SERVICE_4 object-group en.More-srvr object-group DM_INLINE_NETWORK_23 
+access-list finmex_access_in extended permit icmp object-group en.More-srvr any 
+access-list finmex_access_in extended permit icmp host enMORE-srvr2 any inactive 
+access-list finmex_access_in extended permit ip object-group en.More-srvr ensb-dxb-mgmt-nw 255.255.255.0 inactive 
+access-list finmex_access_in extended permit tcp object-group en.More-srvr object-group DM_INLINE_NETWORK_6 object-group DM_INLINE_TCP_4 
+access-list finmex_access_in remark Internet Access - For Licensing Only. To be disabled after use. AD
+access-list finmex_access_in extended permit object-group DM_INLINE_SERVICE_2 object-group en.More-srvr any inactive 
+access-list finmex_access_in remark Internet Access - For Licensing Only. To be disabled after use. AD
+access-list finmex_access_in extended permit object-group DM_INLINE_PROTOCOL_2 object-group en.More-srvr any eq domain inactive 
+access-list finmex_access_in extended permit tcp object-group en.More-srvr object-group ftp-srv_ref-finmex object-group DM_INLINE_TCP_5 
+access-list finmex_access_in remark Internet Access - For Licensing Only. To be disabled after use. AD
+access-list finmex_access_in extended permit tcp object-group en.More-srvr any eq ftp inactive 
+access-list finmex_access_in extended permit ip object-group en.More-srvr object-group ftp-srv_ref-finmex 
+access-list finmex_access_in extended permit tcp object-group DM_INLINE_NETWORK_15 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-tcp 
+access-list finmex_access_in extended permit tcp object-group DM_INLINE_NETWORK_16 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-tcp 
+access-list finmex_access_in extended permit udp object-group DM_INLINE_NETWORK_17 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-udp 
+access-list finmex_access_in extended permit udp object-group DM_INLINE_NETWORK_18 ensb-dxb-mgmt-nw 255.255.255.0 object-group mgmt-bkup-udp 
+access-list finmex_access_in extended permit ip host enMORE-srvr1 ensb-dxb-mgmt-nw 255.255.255.0 
+access-list finmex_access_in extended permit ip object-group DM_INLINE_NETWORK_12 object-group DM_INLINE_NETWORK_24 
+pager lines 20
+logging enable
+logging asdm errors
+mtu clients 1500
+mtu host 1500
+mtu sag 1500
+mtu unirisx 1500
+mtu mgmt 1500
+mtu finmex 1500
+failover
+failover lan unit primary
+icmp unreachable rate-limit 1 burst-size 1
+icmp permit any finmex
+asdm image flash:/asdm-602.bin
+asdm location sag-srv2 255.255.255.255 sag
+asdm location sagfin1 255.255.255.255 sag
+asdm location vpn1-int 255.255.255.255 clients
+asdm location vpn2-int 255.255.255.255 clients
+asdm location vpn1-2-nsrp 255.255.255.255 clients
+asdm location sagsns1 255.255.255.255 sag
+asdm group sag-servers-prod sag
+asdm group ensb-vpns-group clients
+asdm group sag-srv-test sag
+asdm group sag-servers-prod_ref clients reference sag-servers-prod
+asdm group ensb-dxb-nw clients
+no asdm history enable
+arp timeout 14400
+static (host,clients) host-srv1 ensbusl1 netmask 255.255.255.255 
+static (host,clients) host-srv2 ensbusl2 netmask 255.255.255.255 
+static (host,clients) host-srv3 ensbusl3 netmask 255.255.255.255 
+static (unirisx,clients) 192.168.211.201 unirisx-srv1 netmask 255.255.255.255 
+static (unirisx,clients) 192.168.211.202 unirisx-srv2 netmask 255.255.255.255 
+static (unirisx,clients) 192.168.211.203 unirisx-srv3 netmask 255.255.255.255 
+static (host,sag) 192.168.202.50 host-srv1 netmask 255.255.255.255 
+static (host,sag) 192.168.202.51 host-srv2 netmask 255.255.255.255 
+static (host,sag) 192.168.202.52 host-srv3 netmask 255.255.255.255 
+static (sag,finmex) 192.168.214.25 sagfin2 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.22 sagsns1 netmask 255.255.255.255 
+static (finmex,clients) 192.168.211.100 finmex-srv1 netmask 255.255.255.255 
+static (finmex,sag) finmex-srv1 finmex-srv1 netmask 255.255.255.255 
+static (mgmt,finmex) 192.168.214.10 192.168.208.10 netmask 255.255.255.255 
+static (mgmt,finmex) 192.168.214.11 192.168.208.11 netmask 255.255.255.255 
+static (finmex,clients) 192.168.211.105 enMORE-srvr1 netmask 255.255.255.255 
+static (host,finmex) SL1 host-srv2 netmask 255.255.255.255 
+static (finmex,clients) 192.168.211.106 enMORE-srvr2 netmask 255.255.255.255 
+static (sag,host) 192.168.209.25 sagfin1 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.25 sag-srv2 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.208 192.168.200.208 netmask 255.255.255.255 
+static (sag,host) 192.168.209.208 192.168.200.208 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.21 sagtest1 netmask 255.255.255.255 
+static (sag,finmex) 192.168.214.21 sagtest1 netmask 255.255.255.255 
+static (sag,host) 192.168.209.21 sagtest1 netmask 255.255.255.255 
+static (sag,host) 192.168.209.22 sagsns1 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.115 enFTP1 netmask 255.255.255.255 
+static (sag,finmex) 192.168.214.245 enFTP1 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.111 192.168.202.11 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.28 swp-srv1 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.29 swp-srv2 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.30 swp-nlb netmask 255.255.255.255 
+static (host,clients) 192.168.211.31 CAGP-SRV2 netmask 255.255.255.255 
+static (host,clients) 192.168.211.32 CAGP-SRV1 netmask 255.255.255.255 
+static (finmex,clients) enMORE-srvr3 enMORE-srvr3 netmask 255.255.255.255 
+static (finmex,clients) enMORE-srvr4 enMORE-srvr4 netmask 255.255.255.255 
+static (sag,clients) 192.168.211.101 ensbdrsa2 netmask 255.255.255.255 
+access-group clients_access_in in interface clients
+access-group Hosting in interface host
+access-group sag_access_in in interface sag
+access-group unirisx_access_in in interface unirisx
+access-group mgmt_access_in in interface mgmt
+access-group finmex_access_in in interface finmex
+route clients 0.0.0.0 0.0.0.0 vpn1-2-nsrp 1
+route sag 10.149.11.0 255.255.255.0 192.168.202.1 1
+route clients ensb-us-nw 255.255.255.0 vpn1-2-nsrp 1
+route sag 192.168.200.0 255.255.255.0 192.168.202.1 2
+route sag ensb-dxb-mgmt-nw 255.255.255.0 192.168.202.1 5
+route sag 192.168.216.22 255.255.255.255 192.168.202.1 2
+route sag 192.168.216.25 255.255.255.255 192.168.202.1 2
+route sag 192.168.216.33 255.255.255.255 192.168.202.1 2
+route sag 192.168.218.0 255.255.255.0 192.168.202.1 2
+route clients BICs-HomeSend-Prod 255.255.255.255 vpn1-2-nsrp 1
+route clients BICs-HomeSend-Test 255.255.255.255 vpn1-2-nsrp 1
+timeout xlate 3:00:00
+timeout conn 1:00:00 half-closed 0:10:00 udp 0:02:00 icmp 0:00:02
+timeout sunrpc 0:10:00 h323 0:05:00 h225 1:00:00 mgcp 0:05:00 mgcp-pat 0:05:00
+timeout sip 0:30:00 sip_media 0:02:00 sip-invite 0:03:00 sip-disconnect 0:02:00
+timeout uauth 0:05:00 absolute
+dynamic-access-policy-record DfltAccessPolicy
+http server enable
+http 192.168.209.0 255.255.255.0 host
+http 192.168.202.0 255.255.255.0 sag
+http ensb-dxb-mgmt-nw 255.255.255.0 mgmt
+snmp-server host mgmt 192.168.208.11 community ^enSBSXstr1ng^
+no snmp-server location
+no snmp-server contact
+snmp-server enable traps snmp authentication linkup linkdown coldstart
+no crypto isakmp nat-traversal
+telnet 192.168.209.0 255.255.255.0 host
+telnet 192.168.202.0 255.255.255.0 sag
+telnet ensb-dxb-mgmt-nw 255.255.255.0 mgmt
+telnet timeout 5
+ssh 192.168.208.11 255.255.255.255 mgmt
+ssh timeout 5
+console timeout 0
+threat-detection basic-threat
+threat-detection statistics access-list
+!
+class-map inspection_default
+ match default-inspection-traffic
+!
+!
+policy-map type inspect dns preset_dns_map
+ parameters
+  message-length maximum 512
+policy-map global_policy
+ class inspection_default
+  inspect dns preset_dns_map 
+  inspect ftp 
+  inspect h323 h225 
+  inspect h323 ras 
+  inspect netbios 
+  inspect rsh 
+  inspect rtsp 
+  inspect skinny  
+  inspect esmtp 
+  inspect sqlnet 
+  inspect sunrpc 
+  inspect tftp 
+  inspect sip  
+  inspect xdmcp 
+!
+service-policy global_policy global
+tftp-server mgmt 192.168.208.10 /
+username kbaluyot password veUjjfuhoN5j6Rty encrypted privilege 15
+prompt hostname context 
+Cryptochecksum:8ddccd69852ef5593991d48ba55c81e9
+: end

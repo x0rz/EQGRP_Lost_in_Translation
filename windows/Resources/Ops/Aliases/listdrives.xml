@@ -1,0 +1,14 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>listdrives</Name>
+		<Location>Remote</Location>
+		<ReplaceBeforeArgs>python Lib/ops/survey/diskinfo.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>Usage:
+listdrives
+Executes: python Lib/ops/survey/diskinfo.py -project Ops
+Queries disk drives and renders the output in a more condensed format.
+See also commands 'drives' and 'diskspace'.</Help>
+	</Alias>
+</Aliases>

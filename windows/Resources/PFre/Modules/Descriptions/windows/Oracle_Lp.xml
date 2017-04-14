@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="Oracle_Lp" id="493">
+
+    <Interfaces>
+        <Interface provider="0x0101005d" id="0x01c10032"/>
+    </Interfaces>
+    
+    <Dependencies>
+		<Local>1493</Local>
+        <Remote>293</Remote>
+    </Dependencies>
+    
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+    
+    <Architecture type="i386">
+        <Platform family="windows_nt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">i386-winnt-vc9/release/Oracle_Lp.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+    
+</Module>

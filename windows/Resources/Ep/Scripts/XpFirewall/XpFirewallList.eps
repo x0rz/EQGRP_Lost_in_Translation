@@ -1,0 +1,68 @@
+#---------------------------------------------------------------------------
+# File: View.eps
+#
+# View ports currently listed in the registry keys.
+# Used via Firewall aliases.
+#
+# Modifications:
+#   10/12/04	Created.
+#---------------------------------------------------------------------------
+
+@echo off;
+
+string $subkey = "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy";
+string $fwPorts;
+echo "StandardProfile Open Ports";
+RunRegQuery($subkey, "StandardProfile\\GloballyOpenPorts\\List", $fwPorts);
+echo "DomainProfile Open Ports";
+RunRegQuery($subkey, "DomainProfile\\GloballyOpenPorts\\List", $fwPorts);
+
+return true;
+
+#---------------------------------------------------------------------------
+# bool RunRegQuery(IN string $query, OUT string $fwPorts)
+#
+# Return Value:
+#	(bool)			- True on successful query and display,
+#				  false otherwise
+# Input Arguments:
+#	$query			- Specific key to query
+#
+# Output Arguments:
+#	$fwPorts		- Array of ports retrieved from query
+#
+# Description:
+#	Queries a specific key for open ports.  Upon success (the key 
+#	exists), displays those ports to the user or a message stating that
+#	no ports are currently in the key.
+#---------------------------------------------------------------------------
+Sub RunRegQuery(IN string $subkey, IN string $query, OUT string $fwPorts) 
+{
+
+    @record on;
+
+    # Runs the query and reports on error
+    ifnot (`regquery -hive l -subkey $subkey\\$query`) {
+	echo "Error reading $query";
+	return false;
+
+    } else {
+	# On success, display results
+    	$fwPorts = GetCmdData("value");
+
+	int $size = 0;
+	if ($size != sizeof($fwPorts)) {
+	    while ($size < sizeof($fwPorts)) {
+		echo "\t($size). $fwPorts[$size]";
+		$size ++;
+	    }
+	} else {
+	    echo "No open ports listed in $query";
+	    return false;
+	}	
+    }
+
+    @record off;
+
+    return true;
+}

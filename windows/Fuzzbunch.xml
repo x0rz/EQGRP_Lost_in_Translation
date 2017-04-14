@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<t:config id="0"
+          name="Fuzzbunch"
+          version="3.5.1"
+          configversion="3.5.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+    <t:banner value="FuZZbuNch" />
+
+    <t:parameter name="NetworkTimeout"
+                 description="Network timeout (in seconds)"
+                 type="U16"
+                 default="60"/>
+
+    <t:parameter name="ResourcesDir"
+                 description="Absolute path of the Resources Directory"
+                 type="String"
+                 default="D:\DSZOPSDISK\Resources"/>
+
+    <t:parameter name="LogDir"
+                 description="Absolute path of an Initial Log Directory"
+                 type="String"
+                 default="D:\logs"/>
+
+    <t:parameter name="Color"
+                 description="Enable or disable color within Fuzzbunch"
+                 type="Boolean"
+                 default="True"/>
+
+    <t:parameter name="ShowHiddenParameters"
+                 description="Enable showing hidden XML parameters"
+                 type="Boolean"
+                 default="False"/>
+
+    <t:redirection value="on" />
+
+    <t:runmode value="interactive" />
+
+    <t:autorun value="on">
+        <t:category name="ImplantConfig">
+            <t:command value="prompt confirm"/>
+            <t:command value="execute"/>
+        </t:category>
+        <t:category name="Exploit">
+            <t:command value="apply"/>
+            <t:command value="touch all" msg="Running Exploit Touches"/>
+            <t:command value="prompt confirm"/>
+            <t:command value="execute"/>
+        </t:category>
+		<t:category name="Special">
+            <t:command value="apply"/>
+            <t:command value="touch all" msg="Running Exploit Touches"/>
+            <t:command value="prompt confirm"/>
+            <t:command value="execute"/>
+        </t:category>
+        <t:category name="Payload">
+            <t:command value="apply"/>
+            <t:command value="prompt confirm"/>
+            <t:command value="execute"/>
+        </t:category>
+    </t:autorun>
+</t:config>
+

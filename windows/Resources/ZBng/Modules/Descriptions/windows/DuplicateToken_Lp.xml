@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="DuplicateToken_Lp" id="472" script="Tasking/Mcl_Cmd_DuplicateToken_Tasking.pyo">
+
+	<Interfaces/>
+
+	<Dependencies>
+		<Remote>DuplicateToken_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"/>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

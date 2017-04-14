@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Users_Tasking.pyo' providerType='script'>
+	<Command id='0' name='Users'>
+		<Help>Returns the list of users for a given group and/or machine</Help>
+		
+		<Input>
+			<Option name="group" optional="true">
+				<Argument name="groupName" data="groupName" optional="false" />
+				<Help>Get users in a specified local (default) or network group</Help>
+			</Option>
+			
+			<Option name="network" optional="true" group="grouptype">
+				<Set data='type' value='2'/>
+				<Help>Get network users</Help>
+			</Option>
+			<Option name="local" optional="true" group="grouptype">
+				<Set data='type' value='1'/>
+				<Help>Get local users (default)</Help>
+			</Option>
+			
+			<Option name="target" optional="true">
+				<Argument name="serverName" data="serverName" optional="false"/>
+				<Help>Get users from specified, remote machine</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint32_t' default='1' />
+			<Data name='serverName' type='string'/>
+			<Data name='groupName' type='string'/>
+		</Output>
+		
+	</Command>
+</Plugin>

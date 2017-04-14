@@ -1,0 +1,2 @@
+filter:(tcp[13] & 0x3 !=0) and (tcp port 5631 or tcp port 3389 or port 161 or port 162)
+netmask:255.255.255.0

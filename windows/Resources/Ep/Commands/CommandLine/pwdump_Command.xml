@@ -1,0 +1,37 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31381'>
+
+  <Command id='16' name='pwdump'>
+
+    <Help>This function collects the user account and password hash information.</Help>
+    <Help>This function is based on Pwdump2 and thus provides the same results.  The</Help>
+    <Help>results are stored in a format that can be processed by most cracking</Help>
+    <Help>software.  e.g.</Help>
+    <Help>USERNAME:USERID:LANMANHASH:NTHASH</Help>
+    <Help> </Help>
+    <Help>If the function is able to obtain the USERNAME and USERID but fails to</Help>
+    <Help>obtain the hash information an entry will still be written with 0's for</Help>
+    <Help>the hashes.</Help>
+    <Help> </Help>
+    <Help>The XML output contains both the LanMan and NT hash ready for LophtCrack</Help>
+    <Help>The display will show some hashes as informational messages when possible</Help>
+    <Help>e.g.</Help>
+    <Help> </Help>
+    <Help>********** NO PASSWORD *********	- Null password</Help>
+    <Help>*** PASSWORD > 14 CHARACTERS ***	- Win2k password > 14 chars</Help>
+    <Help>********* ERROR BAD DATA *******	- Bad hash codes</Help>	
+    <Help> </Help>
+    <Help>This function works with or without Active Directory.</Help>
+   
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>
+
+

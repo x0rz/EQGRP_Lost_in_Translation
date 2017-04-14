@@ -1,0 +1,30 @@
+string $docsandsettings = GetEnv("SYSTEMROOT");
+$docsandsettings = "$docsandsettings\\..\\Documents and Settings";
+
+@record on;
+`dir * -path "$docsandsettings"`;
+@record off;
+
+string $subkeys = GetCmdData('name');
+string $subkey;
+
+foreach $subkey ($subkeys)
+{
+	if ($subkey == ".")
+	{
+		continue;
+	}
+
+	if ($subkey == "..")
+	{
+		continue;
+	}
+
+	if (`script dirwrapper.eps "$docsandsettings\\$subkey\\Application Data\\winver32.exe"`)
+	{
+		return true;
+	}
+
+}
+
+return false;

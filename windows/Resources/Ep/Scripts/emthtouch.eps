@@ -1,0 +1,59 @@
+if ($argc < 3) {
+	echo "Usage: $argv[0] <IP to scan> <port> (either 139 or 445)";
+	echo "You provided $argc arguments";
+	return false;
+}
+
+string $scriptsdir = GetEnv("_LPDIR_SCRIPTS");
+string $username = "";
+string $password = "";
+
+# D:\OPSDisk\Resources\EP\Scripts\
+echo $scriptsdir;
+string $emthexe = "\\\"$scriptsdir..\\..\\..\\Exploits\\EMTH2.1.0.1\\emth.exe\\\"";
+
+string $doNB = "";
+
+if ($argv[2] == "139") {
+	$doNB = " -b 1 ";
+}
+
+@record on;
+if (`background redirect -tcp -lplisten 5555 -target $argv[1] $argv[2] -nodes 40`) {
+	echo "This touch can take a while, so you can background this if you'd like (if you do, you'll have to look at the output file yourself, and don't close the redirector!).";	
+	@record off;
+
+	int $redirectID = GetCmdData("LastCommandId");
+
+if (prompt "Scan target using only guest/anonymous access: ")
+{
+	@echo on;
+	`local run -command "cmd /C $emthexe $doNB -r 2 -i 127.0.0.1 -p 5555" -redirect`;
+	sleep (500);
+
+}
+else
+{
+	@echo on;	
+	$username = GetInput("Enter username");
+	$password = GetInput("Enter password");
+	$username = "$username";
+	$password = "$password";
+	`local run -command "cmd /C $emthexe $doNB -r 2 -i 127.0.0.1 -p 5555 -U $username -P $password" -redirect`;
+	sleep (500);
+}
+	
+	
+#	@record on;
+#	`local grep -mask "$scriptsdir\\emthtouch.txt" -pattern "IS vulnerable"`;
+#	@record off;
+
+	if (prompt "Close the redirect now?") {
+		`stop $redirectID`;
+
+	}
+	
+	
+}
+@record off;
+

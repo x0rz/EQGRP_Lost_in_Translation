@@ -1,0 +1,230 @@
+###########################
+# Name: docsurvey2.eps
+# Changelog:
+#  7/02/08 - Created
+###########################
+@echo off;
+@record on;
+
+string $date = "MM/DD/YYYY";
+if ($argc == 2) {
+		$date = $argv[1];
+} else if ($argc > 2) {
+	usage();
+	return false;
+}
+# Safety Checks
+if(`memory`) {
+	int $load = GetCmdData("memPhysLoad");
+
+	if ($load > 85) {
+		if(prompt "Physical load is at $load percent. Are you sure you want to continue?") {
+			# Do nothing: Continue
+		} else {
+			return false;
+		}
+	}
+} else {
+	echo "Couldn't determine physical load. Proceed with caution.";
+}
+
+if (`listdrives`) {
+	string $drive_letters = GetCmdData("drive");
+	bool $is_fixed = GetCmdData("is_drive_fixed");
+	int $i = 0;
+	while ($i < sizeof($drive_letters)) {
+		string $current_drive = $drive_letters[$i];
+		if ($is_fixed[$i] == true) {
+			`diskspace $current_drive`;
+			string $diskspace = GetCmdData("available");
+			if (<int>$diskspace > 100000000000) {
+				if (prompt "Large drive detected. Are you sure you want to continue?") {
+					# Do nothing: Continue
+				} else {
+					return false;
+				}
+			}
+		}
+		$i++;
+	}
+}
+
+# Standard default survey
+string $standard;
+$standard[0] = ".doc";
+$standard[1] = ".xls";
+$standard[2] = ".ppt";
+$standard[3] = ".vsd";
+
+# Extension lists
+# Office Docs
+string $office;
+$office[0] = ".docx";
+$office[1] = ".docm";
+$office[2] = ".dotx";
+$office[3] = ".dotm";
+$office[4] = ".eml";
+$office[5] = ".xlsx";
+$office[6] = ".xlsm";
+$office[7] = ".xltx";
+$office[8] = ".xltm";
+$office[9] = ".pptx";
+$office[10] = ".pptm";
+$office[11] = ".potx";
+$office[12] = ".ppsx";
+$office[13] = ".ppsm";
+$office[14] = ".CSV";
+$office[15] = ".MDB";
+$office[16] = ".PPS";
+$office[17] = ".RTF";
+$office[18] = ".WPS";
+$office[19] = ".PLN";
+$office[20] = ".PDF";
+$office[21] = ".ODT";
+$office[22] = ".ODS";
+$office[23] = ".ODP";
+$office[24] = ".ODG";
+$office[25] = ".ODF";
+$office[26] = ".NSF";
+$office[27] = ".NTF";
+$office[28] = ".MPP";
+$office[29] = ".MSP";
+$office[30] = ".TXT";
+
+# Archive extensions
+string $archives;
+$archives[0] = ".ZIP";
+$archives[1] = ".RAR";
+$archives[2] = ".TGZ";
+$archives[3] = ".GZ";
+$archives[4] = ".BZ2";
+
+# Design documents
+string $design;
+$design[0] = ".CDR";
+$design[1] = ".dwg";
+$design[2] = ".dxf";
+$design[3] = ".dak";
+$design[4] = ".dxx";
+$design[5] = ".ipt";
+$design[6] = ".iam";
+$design[7] = ".rvt";
+$design[8] = ".rte";
+$design[9] = ".3ds";
+$design[10] = ".max";
+$design[11] = ".dwf";
+$design[12] = ".dgn";
+$design[13] = ".dae";
+$design[14] = ".fbx";
+$design[15] = ".ofl";
+$design[16] = ".flt";
+$design[17] = ".cgr";
+$design[18] = ".stl";
+
+# Image/Video Files
+string $imageVideo;
+$imageVideo[0] = ".psd";
+$imageVideo[1] = ".png";
+$imageVideo[2] = ".dat";
+$imageVideo[3] = ".gpg";
+$imageVideo[4] = ".bak";
+$imageVideo[5] = ".bmp";
+$imageVideo[6] = ".jpg";
+$imageVideo[7] = ".jpeg";
+$imageVideo[8] = ".mpg";
+$imageVideo[9] = ".mpeg";
+$imageVideo[10] = ".avi";
+$imageVideo[11] = ".wmv";
+
+
+# Mapping/Modeling files
+string $mapModel;
+$mapModel[0] = ".shp";
+$mapModel[1] = ".kmz";
+$mapModel[2] = ".kml";
+$mapModel[3] = ".MDL";
+$mapModel[4] = ".MA";
+$mapModel[5] = ".M";
+$mapModel[6] = ".MAT";
+
+# Misc files
+string $misc;
+$misc[0] = ".mbx";
+$misc[1] = ".pdf";
+$misc[2] = ".ini";
+$misc[3] = ".mdf";
+$misc[4] = ".cfg";
+$misc[5] = ".wab";
+$misc[6] = ".tif";
+$misc[7] = ".dbx";
+$misc[8] = ".ost";
+$misc[9] = ".pst";
+$misc[10] = ".net";
+$misc[11] = ".skr";
+$misc[12] = ".msg";
+$misc[13] = ".tbb";
+$misc[14] = ".log";
+$misc[15] = ".cry";
+
+int $menuOption = 1;
+while ($menuOption != 0) {
+	echo "***********************";
+	echo "* DocSurvey Version 2 *";
+	echo "***********************";
+	echo " (0). Exit";
+	echo " (1). Standard";
+	echo " (2). Office";
+	echo " (3). Archives";
+	echo " (4). Design";
+	echo " (5). Image/Video";
+	echo " (6). Map/Model";
+	echo " (7). Misc.";
+	echo " (8). Usage";
+	echo " (9). Set Date";
+	echo " Current Date: $date";
+	echo "***********************";
+	$menuOption = GetInput("Enter a menu option");
+
+	if ($menuOption == 0) {
+		return true;
+	} else if ($menuOption == 1) {
+		docsurvey($standard, $date);
+	} else if ($menuOption == 2) {
+		docsurvey($office, $date);
+	} else if ($menuOption == 3) {
+		docsurvey($archives, $date);
+	} else if ($menuOption == 4) {
+		docsurvey($design, $date);
+	} else if ($menuOption == 5) {
+		docsurvey($imageVideo, $date);
+	} else if ($menuOption == 6) {
+		docsurvey($mapModel, $date);
+	} else if ($menuOption == 7) {
+		docsurvey($misc, $date);
+	} else if ($menuOption == 8) {
+		usage();
+	} else if ($menuOption == 9) {
+		$date = GetInput("Enter a date (MM/DD/YYYY)");
+	}
+}
+
+return true;
+
+Sub docsurvey(IN string $array, IN string $dateFrom) {
+	int $i = 0;
+
+	while ( $i < sizeof($array) ) {
+		if ($dateFrom == "MM/DD/YYYY") {
+			`background dir *$array[$i] -path * -recursive -max 0`;
+		} else {
+			`background dir *$array[$i] -path * -recursive -max 0 -after $dateFrom`;
+		}
+		$i++;
+	}
+
+}
+
+Sub usage() {
+	echo "docsurvey2.eps [date]";
+	echo "date (optional) - MM/DD/YYYY";
+}

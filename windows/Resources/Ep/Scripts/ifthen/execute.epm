@@ -1,0 +1,6 @@
+sub execute(IN string $command)
+{
+	@echo on;
+	`$command`;
+	@echo off;
+}

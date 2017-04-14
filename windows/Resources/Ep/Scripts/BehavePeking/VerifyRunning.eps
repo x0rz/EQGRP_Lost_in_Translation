@@ -1,0 +1,33 @@
+#--------------------------------------------------------
+# File: VerifyRunning.eps
+#
+# Wrapper script to verify BehavePeking tools are running
+#
+# Modifications:
+#  29 Aug 2005	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+bool $valid = true;
+
+# check for driver
+ifnot (_DriverVerifyRunning($driver)) {
+    $valid = false;
+}
+
+# check for exe
+ifnot (`dp_running`) {
+    $valid = false;
+}
+
+return $valid;
+

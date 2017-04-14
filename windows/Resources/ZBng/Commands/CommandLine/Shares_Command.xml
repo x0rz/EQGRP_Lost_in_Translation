@@ -1,0 +1,76 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName="Tasking/Mcl_Cmd_Shares_Tasking.pyo" providerType='script'>
+
+	<Command id='0' name='Shares'>
+
+		<Help>Provides the ability to map a share, release a mapped share,</Help>
+		<Help>list the current shares, and query the available shares</Help>
+	
+		<Input>
+			<Option name="target" optional="true">
+				<Help>The target of the operation.  If not specified, the local information.</Help>
+				<Help>Does not work with -list</Help>
+				<Argument name="IP_OR_HOST" data="target"/>
+			</Option>
+			<Option name="map"   optional="false" group="Command">
+				<Help>Map a resource.</Help>
+				<Help>If a path is provided, the resource will be mapped to the path.</Help>
+				<Help>Otherwise, it will be connected to only.</Help>
+				<Help>Requires the use of -target.</Help>
+				<Set data='command' value='1'/>
+				<Argument name="resource" data="resource"/>
+				<Argument name="path" data="drive" optional="true" />
+			</Option>
+			
+			<Option name="list"  optional="false" group="Command">
+				<Help>List the currently mapped resources</Help>
+				<Set data='command' value='2'/>
+			</Option>
+			
+			<Option name="query" optional="false" group="Command">
+				<Help>Query the available resources of the target.</Help>
+				<Help>If a target is not provided, query LocalHost</Help>
+				<Help>If -credentials is provided, an initial connection will be made,</Help>
+				<Help>   to help authorize the query.</Help>
+				<Set data='command' value='3'/>
+			</Option>
+			
+			<Option name="credentials" optional='true'>
+				<Help>The credentials that will be used to authenticate the communication.</Help>
+				<Help>Do not use with -list</Help>
+				<Help>To provide a null value, use an empty string</Help>
+				<Argument name="username"	data="username"/>
+				<Argument name="password"	data="password"/>
+				<Argument name="domain"		data="domain"/>
+			</Option>
+
+			<Option name="method" optional='true'>
+				<Help>The method used to retrieve the share information</Help>
+				<Help>WMI uses COM functionality, which doesn't always work</Help>
+				<Argument name="type">
+					<Value string='netuse'>
+						<Set data='method' value='1'/>
+					</Value>
+					<Value string='wmi'>
+						<Set data='method' value='2'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+		</Input>
+		
+		<Output>
+			<Data name='command'	type='uint8_t'	/>
+			<Data name='target'		type='string'	/>
+			<Data name='resource'	type='string'	/>
+			<Data name='drive'		type='string'	/>
+			<Data name='username'	type='string'	/>
+			<Data name='password'	type='string'	/>
+			<Data name='domain'		type='string'	/>
+			<Data name='method'		type='uint8_t'	default='2'	/>
+		</Output>
+		
+	</Command>
+	
+</Plugin>

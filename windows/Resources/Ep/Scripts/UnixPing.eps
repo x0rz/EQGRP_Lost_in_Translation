@@ -1,0 +1,105 @@
+string $broadcast=$argv[1];
+
+bool $ok;
+int $i = 0;
+@echo off;
+@record on;
+string $cmd = "ping -broadcast $broadcast";
+$ok = `$cmd`;
+@record off;
+@echo on;
+if ( $ok ) {
+	string $dst_addrs = GetCmdData("dstAddr");
+	int $ttls = GetCmdData("ttl");
+	int $errors = GetCmdData("pingErr");
+
+	string $arp_ips;
+	string $arp_macs;
+	string $arp_types;
+	@echo off;
+	@record on;
+	string $arpcmd = "arp2k -print";
+	bool $ok=`$arpcmd`;
+	ifnot($ok) {
+		$arpcmd = "arp";
+		$ok=`$arpcmd`;
+	}
+	if ($ok) {
+		$arp_ips = GetCmdData("ip_addr");
+		$arp_macs = GetCmdData("phys_addr");
+		$arp_types = GetCmdData("type");
+	} else {
+		echo "Could not check arp table!";
+	}
+	@record off;
+	@echo on;
+	
+	$i = 0;
+	while ($i < sizeof($dst_addrs)) {
+		string $cur_addr = $dst_addrs[$i];
+		if ($errors[$i]==0) {
+			echo "UNIX exploration; Broadcast response $dst_addrs[$i] with TTL $ttls[$i]";
+#			echo "UNIX exploration;\t\tError 00: No Error";
+		} else {
+			echo "UNIX exploration; Broadcast response $dst_addrs[$i] with TTL $ttls[$i] and error $errors[$i]";
+		}
+		if ($errors[$i]==1) {
+			echo "UNIX exploration;\t\tError 01: Ping Completed";
+		}
+		if ($errors[$i]==2) {
+			echo "UNIX exploration;\t\tError 02: No more addresses responded to broadcast ping";
+		}
+		if ($errors[$i]==3) {
+			echo "UNIX exploration;\t\tError 03: Invalid parameter(s)";
+		}
+		if ($errors[$i]==4) {
+			echo "UNIX exploration;\t\tError 04: Unknown ping type";
+		}
+		if ($errors[$i]==5) {
+			echo "UNIX exploration;\t\tError 05: Error creating the socket";
+		}
+		if ($errors[$i]==6) {
+			echo "UNIX exploration;\t\tError 06: Error binding the socket";
+		}
+		if ($errors[$i]==7) {
+			echo "UNIX exploration;\t\tError 07: Error setting socket to broadcast mode";
+		}
+		if ($errors[$i]==8) {
+			echo "UNIX exploration;\t\tError 08: Unable to resolve given address";
+		}
+		if ($errors[$i]==9) {
+			echo "UNIX exploration;\t\tError 09: Unspecified error occured while attempting to send the ping";
+		}
+		if ($errors[$i]==10) {
+			echo "UNIX exploration;\t\tError 10: Send of the ping timed out";
+		}
+		if ($errors[$i]==11) {
+			echo "UNIX exploration;\t\tError 11: Timed out while waiting for a response to our ping";
+		}
+		if ($errors[$i]==12) {
+			echo "UNIX exploration;\t\tError 12: Unspecified error occured while attempting to receive the ping response";
+		}
+		if ($errors[$i]==13) {
+			echo "UNIX exploration;\t\tError 13: An error occured while attempting to send back the ping response";
+		}
+		if ($errors[$i]==14) {
+			echo "UNIX exploration;\t\tError 14: An unknown error occured";
+		}
+		int $j = 0;
+		while ($j < sizeof($arp_ips)) {
+			if ($arp_ips[$j]==$dst_addrs[$i]) {
+				echo "UNIX exploration;\t\tMAC addr for $arp_ips[$j]: $arp_macs[$j]";
+				echo "UNIX exploration;\t\tType for $arp_ips[$j]: $arp_types[$j]";
+			}
+			$j++;
+		}
+		@echo off;
+		`script UnixExplore.eps $dst_addrs[$i]`;
+		@echo on;
+		$i++;
+	}
+} else {
+	echo "unable to ping";
+	return false;
+}
+return true;

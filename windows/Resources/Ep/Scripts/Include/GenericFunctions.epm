@@ -1,0 +1,55 @@
+@include "_GetDirectory.epm";
+
+#this function will return the project name and set an environment variable to speed up future calls 
+sub getProjName(OUT string $projName){
+	$projName = "unknown";
+	@record on;
+	if(`lpgetenv -option PROJECTNAME`){
+		#variable already set. that was easy
+		$projName = GetCmdData("value");
+		return true;
+	}	
+	string $resourceDir;
+	_GetLpResourcesDirectory($resourceDir);
+	string $toParse = split("\\",$resourceDir);
+	string $prepsDir = "$toParse[0]\\$toParse[1]\\Preps";
+	
+	`local dir $prepsDir\\*`;
+	string $folderList = GetCmdData("name");
+	bool $folderProperty = GetCmdData("isDir");
+	@record off;
+	@echo on;
+	string $foo;
+	int $i = 0;
+	int $x = 0;
+	while($x<sizeof($folderList)){
+		#ignore non-folders and the . and .. files
+		ifnot($folderList[$x] == "." || $folderList[$x] == ".."){ 
+			if($folderProperty[$x]){
+				$projName[$i] = $folderList[$x];
+				$i++;
+			}
+		}
+		$x++;
+	}
+	#they might have more than one folder in the preps directory. catch that here
+	if(sizeof($projName)>1){ 
+		#not sure why they have 2, but we'll accomodate
+		string $msg = "Select project name:"; 
+		$i=0;
+		while($i<sizeof($projName)){
+			$msg = "$msg [$i] $projName[$i]";
+			$i++;
+		}
+		$i = GetInput("$msg");
+		$foo = $projName[$i];
+		undef($projName);
+		$projName = $foo;
+	}
+	if($projName == "unknown"){
+		#we have to ask
+		$projName = GetInput("Please enter the project name now. Prep4op to avoid this");
+	}
+	`lpsetenv -option PROJECTNAME -value $projName`;
+	return true;
+}

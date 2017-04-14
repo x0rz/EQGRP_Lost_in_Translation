@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<t:config id="8f04b3348956b0ac62326e735eb33fae9106ff43"
+          name="Explodingcantouch"
+          version="1.2.1"
+          configversion="1.2.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+<!-- All plugins that accept a callback must have the Callback* parameters
+     listed below, or their equivalents. -->
+    <t:parameter name="hostString"
+                 description="String to use in HTTP request"
+                 type="String"
+                 default="localhost"/>
+    <t:parameter name="maxSizeToCheck"
+                 description="Use 130 to ensure path size determination, less to send fewer requests.  70 will cover all exploitable sizes."
+                 type="U32"
+                 default="70"/>
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                 type="S16"
+                 default="60"/>
+    <t:parameter name="EnableSSL"         
+				 description="Enable SSL for HTTPS targets"        
+				 type="Boolean" default="false"/>
+    <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by the HTTP service"
+                 type="TcpPort"/>
+    <t:parameter name="Delay"
+				 description="Number of seconds to wait between each request"
+				 type="U32"
+				 default="0"/>
+  </t:inputparameters>
+  <t:outputparameters>
+	<t:parameter name="IISPathSize"
+				 description="Length of IIS path"
+                 type="U32" />
+    <t:parameter name="hostString"
+				 description="String to use in HTTP requests"
+                 type="String" />
+  <!--
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="StagedUpload"/>
+  -->
+  </t:outputparameters>
+  
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="TargetPort"
+              closeoncompletion="true"/>
+  </t:redirection>
+  
+  <t:logic>
+      <t:or>
+        <t:service name="http">
+          <t:and>
+            <t:product name="Microsoft IIS" version="6.0"/>
+            <t:service name="http-option-propfind">
+              <t:bindtovalue name="EnableSSL" value="false"/>
+              <t:bindtopath name="TargetPort"
+                            path="//service[name='http']/port"/>
+            </t:service>
+          </t:and>
+        </t:service>
+
+        <t:service name="https">
+          <t:and>
+            <t:product name="Microsoft IIS" version="6.0"/>
+            <t:service name="http-option-propfind">
+              <t:bindtovalue name="EnableSSL" value="true"/>
+              <t:bindtopath name="TargetPort"
+                            path="//service[name='https']/port"/>
+            </t:service>
+          </t:and>
+        </t:service>
+      </t:or>
+  </t:logic>
+  
+</t:config>

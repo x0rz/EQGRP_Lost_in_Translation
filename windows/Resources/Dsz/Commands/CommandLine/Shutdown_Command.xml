@@ -1,0 +1,35 @@
+<?xml version='1.0' ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Shutdown_Tasking.pyo' providerType='script'>
+
+  <Command id='0' name='Shutdown'>
+
+    <Help>Performs logoff, reboot, shutdown or poweroff of the target computer.</Help>
+
+	<Input>
+
+		<Option name='logoff' optional='false' group='exittype'>
+			<Set data='exitVal' value='1'/>
+		</Option>
+
+		<Option name='poweroff' optional='false' group='exittype'>
+			<Set data='exitVal' value='2'/>
+		</Option>
+
+		<Option name='reboot' optional='false' group='exittype'>
+			<Set data='exitVal' value='3'/>
+		</Option>
+
+		<Option name='shutdown' optional='false' group='exittype'>
+			<Set data='exitVal' value='4'/>
+		</Option>
+
+	</Input>
+
+	<Output>
+		<Data name='exitVal' type='uint8_t'/>
+	</Output>
+
+  </Command>
+
+</Plugin>

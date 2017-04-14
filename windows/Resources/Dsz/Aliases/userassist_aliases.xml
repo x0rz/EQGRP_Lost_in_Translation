@@ -1,0 +1,18 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>history</Name>
+		<ReplaceBeforeArgs>python History/_UserAssist.pyo -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Dsz</ReplaceAfterArgs>
+
+		<Help>history &lt;-type &lt;current|all|user&gt;&gt; [-user name] [-verbose]</Help>
+		<Help>    Displays user history</Help>
+		
+		<Options>
+			<Option>type</Option>
+			<Option>user</Option>
+			<Option>verbose</Option>
+		</Options>
+	</Alias>
+</Aliases>

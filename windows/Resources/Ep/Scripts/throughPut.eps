@@ -1,0 +1,128 @@
+@include "_GenericFunctions.epm";
+@include "_DateFunctions.epm";
+@include "_StringFunctions.epm";
+
+@echo off;
+
+#--------------------------------------------------------
+# Parse the command line options
+#--------------------------------------------------------
+string $commandLineOption;
+string $temp;
+int $counter = 0;
+string $fileToGet;
+while (defined($argv[$counter])) {
+	$temp = split("-", $argv[$counter]);
+	$counter += 1;
+
+	if (defined($temp[1])) {
+		$commandLineOption = $temp[1];
+
+		if (($commandLineOption == "h") || ($commandLineOption == "help") || ($commandLineOption == "?")) {
+			echo "\nUsage: script throughput.eps _Options_";
+			echo "  Calculates the throughput for a download";
+			echo "\nOptions:";
+			echo "  [-path]";
+			echo "     Filename to download";
+			return true;
+		} else {
+			if (defined($argv[$counter])) {
+				if ($commandLineOption == "path") {
+					$fileToGet = $argv[$counter];
+				}
+
+				$counter++;
+			} else {
+				echo "OPTION $temp[1] requires data (-h for help)";
+				return true;
+			}
+		}
+	}
+}
+
+ifnot (defined($fileToGet)) {
+	$fileToGet = GetInput("Enter file to download:");
+}
+
+_FixDirectoryInput($fileToGet);
+
+#--------------------------------------------------------
+# Get before date/time
+#--------------------------------------------------------
+echo "Getting Time before the download";
+@record on;
+`remotelocaltime`;
+@record off;
+string $Date = GetCmdData("remotedate");
+string $Time = GetCmdData("remotetime");
+string $beforeDateTime = "$Date $Time";
+
+#--------------------------------------------------------
+# Get the filesize to output to the user
+#--------------------------------------------------------
+@record on;
+`dir "$fileToGet"`;
+@record off;
+int $fileSize = GetCmdData("size");
+string $fileName = GetCmdData("name");
+
+#--------------------------------------------------------
+# Get the compressed size that is actually transfered (estimated)
+#--------------------------------------------------------
+#int $compressedSize = $fileSize;
+#$compressedSize *= 50;
+#$compressedSize /= 100;
+#echo "";
+#echo "Downloading $fileToGet - $fileSize bytes ($compressedSize compressed)";
+
+
+#--------------------------------------------------------
+# Download the file
+#--------------------------------------------------------
+echo "";
+echo "Downloading $fileName - $fileSize bytes";
+@record on;
+`get "$fileToGet" -foreground`;
+@record off;
+
+#--------------------------------------------------------
+# Moving File to NOSEND Directory
+#--------------------------------------------------------
+#string $localName = GetCmdData("LocalName");
+#echo "";
+#echo "Moving $localName to NOSEND directory";
+#echo "";
+#echo "Moving file to NOSEND directory...";
+#`local mkdir Get_Files\\NOSEND`;
+#`local move Get_Files\\$localName Get_Files\\NOSEND\\$localName`;
+
+
+#--------------------------------------------------------
+# Get after date/time
+#--------------------------------------------------------
+echo "";
+echo "Getting Time after the download";
+@record on;
+`remotelocaltime`;
+@record off;
+$Date = GetCmdData("remotedate");
+$Time = GetCmdData("remotetime");
+string $afterDateTime = "$Date $Time";
+
+int $result;
+_DateSubtract($afterDateTime, $beforeDateTime, $result);
+
+int $bytesPerSecond = $fileSize;
+$bytesPerSecond /= $result;
+int $kbps = $bytesPerSecond;
+$kbps /= 1000;
+
+echo "";
+echo "Downloaded $fileSize bytes in $result seconds";
+echo "";
+
+if ($kbps > 0) { echo "Throughput = $kbps KBps"; }
+else { echo "Throughput = $bytesPerSecond Bps"; }
+
+echo "";
+echo "This script doesn't take into account the compression that EP performs on the target before downloading files.  This is only a relative throughput!  It will give you an idea of the speed with which EP will download similar files.";

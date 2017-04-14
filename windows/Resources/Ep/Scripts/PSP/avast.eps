@@ -1,0 +1,50 @@
+#AVAST script. Built based on info from version 4.7 and 4.8 of the product
+#13-May-2008 - version .01
+#We can't get much data out of avast. This is somewhat sparce and will only detect version upgrades
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+#To reduce the number of function calls, we pass common data via a struct
+#The struct is defined in PSPHelpers.epm
+metaData @metaData;
+#initialize the struct
+init(@metaData);
+
+@metaData.$vendor = "Avast";
+@metaData.$product = "Antivirus";
+@record on;
+@echo off;
+# Since eventlogedit may crash boxes we'll make sure we don't do process injection
+SetEnv("NOINJECT", "TRUE");
+
+ifnot(`regquery -hive L -subkey "SOFTWARE\\ALWIL Software\\Avast\\4.0" -value version`){
+	@echo on;
+	echo "I'm sorry. I don't know how to handle this version of AVAST";
+	@metaData.$information = "Unknown Version! Can not check settings";
+	writeMetaData(@metaData);
+	return FALSE;
+}else{
+	@metaData.$version = GetCmdData("value_data");
+
+}
+
+`regquery -hive L -subkey "SOFTWARE\\ALWIL Software\\Avast\\4.0" -value Avast4DataFolder`;
+@metaData.$logFile = GetCmdData("value_data");
+
+@echo on;
+echo "They are running Avast version @metaData.$version\r";
+
+string $runningConfig = "avast:@metaData.$version-@metaData.$logFile";
+if(@metaData.$history){
+	if(checkConfig($runningConfig,@metaData)){
+		echo "\r\rNo change in PSP configs.\r\r";
+	}else{
+		echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+	}
+}else{
+	createConfig($runningConfig,@metaData);
+}
+
+#write the human readable file
+writeMetaData(@metaData);
+

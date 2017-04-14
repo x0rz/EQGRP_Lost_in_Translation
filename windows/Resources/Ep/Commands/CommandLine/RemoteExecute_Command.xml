@@ -1,0 +1,69 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31390'>
+
+  <Command id='16' name='remoteexecute'>
+
+    <Help>Runs a given command on a target machine</Help>
+
+    <Input>
+	<Option name='target' optional='false'>
+	    <Argument name='name' data='target'/>
+	    <Help>The target name in the form "\\server_name" or "\\server_ip"</Help>
+	</Option>
+
+	<Option name='user' optional='true'>
+	    <Argument name='sid' data='user'/>
+	    <Help>The sid for a domain or local administrator</Help>
+	    <Help>If you do not provide a user, the current TOKEN is used for authentication</Help>
+	    <Help>If you provide user, you must provide password and domain</Help>
+	</Option>
+
+	<Option name='password' optional='true'>
+	    <Argument name='value' data='password'/>
+	    <Help>The password for the given user</Help>
+	</Option>
+
+	<Option name='domain' optional='true'>
+	    <Argument name='name' data='domain'/>
+	    <Help>The domain for the given user (Use "" or machine name for local users)</Help>
+	</Option>
+
+	<Option name='type' optional='false'>
+	    <Argument name='value'>
+		<Value string='nt4'>
+		    <Set data='type' value='1'/>
+		</Value>
+		<Value string='2000'>
+		    <Set data='type' value='2'/>
+		</Value>
+		<Value string='xp'>
+		    <Set data='type' value='3'/>
+		</Value>
+		<Value string='2003'>
+		    <Set data='type' value='4'/>
+		</Value>
+		<Value string='scheduler'>
+		    <Set data='type' value='5'/>
+		</Value>
+	    </Argument>
+	</Option>
+
+	<Option name='command' optional='false'>
+	    <Argument name='cmd' data='cmd'/>
+	    <Help>The command to be run</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='type' type='uint8_t'/>
+	<Data name='target' type='string'/>
+	<Data name='user' type='string'/>
+	<Data name='password' type='string'/>
+	<Data name='cmd' type='string'/>
+	<Data name='domain' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

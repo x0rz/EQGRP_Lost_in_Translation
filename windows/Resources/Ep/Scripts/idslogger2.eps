@@ -1,0 +1,90 @@
+#--------------------------------------------------------
+# File: idslogger.eps 
+#
+#  Start State:	
+#  End State:
+#  Errors:	
+#  Comments:	
+#
+# Modifications:
+#  01/06/03 Created
+#  04/28/03 Edited to restrict data dragged back for
+#  04/28/03 edited to take out things that are done in simple.eps
+#  05/08/03 changed comments to be more friendly
+#--------------------------------------------------------
+
+bool $success = true;
+@echo off;
+
+
+
+echo "Starting dir list:";if(`log dir -path "\\Program Files\\ISS" -max 0 -recursive`)
+{
+	echo "    LOGGING ISS!";
+	pause;
+} else if(`log dir -path "\\Program Files\\Network ICE" -max 0 -recursive`)
+{
+	echo "    LOGGING Black Ice!";
+	pause;
+} else if(`log dir -path "\\Program Files\\NFR" -max 0 -recursive`)
+{
+	echo "    LOGGING";
+	pause;
+} else if(`log dir -path "\\Program Files\\Axent" -max 0 -recursive`)
+{
+	echo "    LOGGING";
+	pause;
+} else {
+	echo "    Found no standard IDS directories";
+}
+
+
+
+## This chunk of code drags back too much data
+
+##echo "Starting tree list:";
+#if (`log tree -path * -max 0`) 
+#{#	echo "    LOGGING";
+#} else {
+#	echo "    FAILED";
+#	$success = false;
+#}
+
+echo "Starting port list:";
+if (`log netstat`) {
+    echo "    Examining netstat";
+} else {
+    echo "    FAILED";
+    $success = false;
+}
+
+echo "getting registry (software):";
+if(`log regquery -hive L -subkey software`) {
+	echo "    Examining software in registry";
+} else {
+	echo "     FAILED";
+	$success = false;
+}
+
+echo "getting registry (controlset/services):";
+if(`log regquery -hive L -subkey system\\currentcontrolset\\services`) {
+	echo "    Examining services in registry";
+} else {
+	echo "     FAILED";
+	$success = false;
+}
+
+@echo on;
+
+if ($success == false) {
+   echo "Unable to log some information";
+   pause;
+} else {
+   echo "All information has been logged";
+  if (`local run -command "perl E:/tools/bootdepth/bootdepth.pl -x E:/tools/bootdepth -d ." -redirect bootdepth`) {
+	`confirmbootdepth.eps
+}
+
+
+
+return $success;

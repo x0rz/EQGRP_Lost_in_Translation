@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="Policy_Lp" id="512" script="Policy/_Policy.pyo">
+
+	<Interfaces/>
+
+	<Dependencies/>
+
+	<Lp>Yes</Lp>
+	<Implant>No</Implant>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"/>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

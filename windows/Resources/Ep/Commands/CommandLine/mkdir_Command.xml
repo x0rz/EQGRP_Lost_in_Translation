@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31301'>
+
+  <Command id='16' name='mkdir'>
+
+    <Help>Creates a directory.</Help>
+
+    <Input>
+      <Argument name='new_directory' data='directory'>
+	 <Help>Target directory to create.</Help>
+      </Argument>
+    </Input>
+
+    <Output>
+      <Data name='directory' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

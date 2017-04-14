@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName='Tasking/Mcl_Cmd_EventLogQuery_Tasking.pyo' providerType='script'>
+
+	<Command name="eventlogquery" id="0">
+		<Help>Retrieves some basic information about the event logs</Help>
+		
+		<Input>
+			<Option name="log" optional='true'>
+				<Argument name='log_name' data='log'/>
+					<Help>The name of the log to query.</Help>
+					<Help>If no log is provided, the default is to run a basic query on System, Application, and Security.</Help>
+
+			</Option>
+			
+			<Option name='record' optional='true'>
+				<Argument name='start_num' data='startnum'/>
+				<Argument name='end_num' data='endnum' optional='true'/>
+				<Help>Pull particular log entries.</Help>
+			</Option>
+			
+			<Option name='target' optional='true'>
+				<Argument name='machine' data='remote' />
+			</Option>
+
+			<Option name='classic' optional='true'>
+				<Set data='classic' value='true'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='log' type='string' />
+			<Data name='startnum' type='uint64_t' default='0' />
+			<Data name='endnum' type='uint64_t' default='0' />
+			<Data name='remote' type='string' />
+			<Data name='classic' type='bool' />
+		</Output>
+	</Command>
+</Plugin>

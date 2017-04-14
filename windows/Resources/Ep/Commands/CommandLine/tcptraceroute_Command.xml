@@ -1,0 +1,78 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31370'>
+
+	<Command id='16' name='tcptraceroute'>
+
+		<Help>Performs a traceroute to the given target using TCP packets</Help>
+
+		<Input>
+			<Option name="ip" optional="false" group="type">
+				<Help>Traceroute to a set address</Help>
+				<Argument name="addr" data="ip"   optional="false" />
+			</Option>
+			
+			<Option name="host" optional="false" group="type">
+				<Help>Perform a DNS query and if it succeeds, traceroute to the returned address</Help>
+				<Argument name="name" data="host"   optional="false" />
+			</Option>
+			
+			<Option name="flags" optional="true">
+				<Help>Flags for communication</Help>
+				<Argument name="option" data="flags"   optional="false" />
+			</Option>
+			
+			<Option name="hops" optional="true">
+				<Argument name="num" data="hops"   optional="false" />
+				<Help>Limit the maximum number of hops (default of 30)</Help>
+			</Option>
+			
+			<Option name="pings" optional="true">
+				<Argument name="num" data="pings"   optional="false" />
+				<Help>Number of pings to send out per hop (default of 1)</Help>
+			</Option>
+			
+			<Option name="timeout" optional="true">
+				<Argument name="seconds" data="timeout"   optional="false" />
+				<Help>Number of seconds to wait for each ping response (default of 5)</Help>
+			</Option>
+			
+			<Option name="resolve" optional="true">
+				<Set data="resolve" value="true" />
+				<Help>Attempt to resolve the names for ICMP responses</Help>
+			</Option>
+     
+			<Option name="interval" optional="true">
+				<Argument name="seconds" data="interval"   optional="false" />
+				<Help>Time delay between pings</Help>
+			</Option>
+			
+			<Option name="port" optional="false">
+				<Argument name="portnumber" data="port"   optional="false" />
+				<Help>The destination port to ping</Help>
+			</Option>
+			
+			<Option name='usedriver' optional='true'>
+				<Help>If set, the packet will be sent out with a driver</Help>
+				<Argument name='drivername' optional='true' data='driverName'/>
+				<Set data='useDriver' value='true'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="ip"       type="string"                 />
+			<Data name="host"     type="string"                 />
+			<Data name="flags"    type="string"   default="S"   />
+			<Data name="hops"     type="uint32_t" default="30"  />
+			<Data name="pings"    type="uint32_t" default="1"   />
+			<Data name="timeout"  type="uint32_t" default="5"   />
+			<Data name="interval" type="uint32_t" default="5"   />
+			<Data name="port"     type="uint32_t"               />
+			<Data name="resolve"  type="bool"                   />
+			<Data name='driverName' type='string' default='ethip6'/>
+			<Data name='useDriver' type='bool' default='false'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

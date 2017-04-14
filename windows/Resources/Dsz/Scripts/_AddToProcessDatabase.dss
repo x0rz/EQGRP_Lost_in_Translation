@@ -1,0 +1,145 @@
+/*
+ *  Adds data to the process database
+ */
+ 
+@include "_LpHelperFunctions.dsi";
+@include "windows/_VersionChecksWindows.dsi";
+@include "_DatabaseIncludes.dsi";
+@include "_Mutex.dsi";
+@echo off;
+
+if( sizeof( $argv ) != 4 ) {
+	return doHelp();
+}
+
+string $name, $comment, $type;
+$name    = $argv[1];
+$comment = $argv[2];
+
+if( $argv[3] == "None" ) {
+	$type = "NONE";
+} else if( $argv[3] == "Safe" ) {
+	$type = "SAFE";
+} else if( $argv[3] == "Security" ) {
+	$type = "SECURITY_PRODUCT";
+} else if( $argv[3] == "Core" ) {
+	$type = "CORE_OS";
+} else if( $argv[3] == "Malicious" ) {
+	$type = "MALICIOUS_SOFTWARE";
+} else {
+	return doHelp();
+}
+
+string $filename = "Databases/SimpleProcesses.db";
+string $resources;
+
+if( !_GetLpResourcesDirectory( $resources ) ) {
+	echo( "Unable to find resource directory", ERROR );
+	return false;
+}
+
+string $input = "$resources/Dsz/$filename";
+string $output = "$resources/Ops/$filename";
+string $dbDirectory = "$resources/Ops/Databases";
+
+_NormalizePath( $input,  _IsWindowsLocal() );
+_NormalizePath( $output, _IsWindowsLocal() );
+_NormalizePath( $dbDirectory, _IsWindowsLocal() );
+
+if (!_AcquireMutex("AddToProcessDatabase")) {
+	echo ("Unable to acquire mutex for process database", ERROR);
+	return false;
+}
+
+bool $retVal = DoWork($dbDirectory, $resources, $filename, $input, $output, $name, $type, $comment);
+
+_ReleaseMutex("AddToProcessDatabase");
+
+@echo on;
+return $retVal;
+
+#-------------------------------------------------------------------
+sub DoWork(IN string $dbDirectory, IN string $resources, IN string $filename, IN string $input, IN String $output, IN string $name, IN string $type, IN string $comment) {
+
+	if( !FileCheck( "$resources/Ops/$filename" ) ) {
+		FileMkdir($dbDirectory);
+		`local copy "$input" "$output"`;
+	}
+
+	if( !FileCheck( "$resources/Ops/$filename" ) ) {
+		echo( "Unable to create Ops copy of SimpleProcess database", ERROR );
+		return false;
+	}
+
+	# now, open the database with database command
+	int $handle;
+	if( !_sqlOpen( $output, $handle ) ) {
+		echo( "Unable to open Ops copy of SimpleProcess database", ERROR );
+		return false;
+	}
+
+	bool $retVal = true;
+	# ignored
+	string %tableResult;
+
+	string $transName = "TASK_%_sgEnv{'script_command_id'}";
+
+	echo " [ Database ] Begin Transaction";
+	if( !_sqlExec( $handle, "BEGIN IMMEDIATE TRANSACTION $transName", %tableResult ) ) {
+		$retVal = false;
+	} else {
+
+		echo " [ Database ] Adding process definition into the database";
+		if( !_sqlExec( $handle, "INSERT OR IGNORE INTO ProcessInformation (name) VALUES(\\\"$name\\\")", %tableResult) ) {
+			echo( "Adding the process to the database failed", ERROR );
+			$retVal = false;
+		} else {
+
+			if( strlen( $comment ) > 0 ) {
+				echo " [ Database ] Updating the process comment";
+				if( !_sqlExec( $handle, "UPDATE ProcessInformation set comment=\\\"$comment\\\" where name=\\\"$name\\\"", %tableResult ) ) {
+					echo( "Storing process comment failed", ERROR );
+					$retVal = false;
+				}
+			}
+
+			if( strlen( $type ) > 0 ) {
+				echo " [ Database ] Updating the process type";
+				if( !_sqlExec( $handle, "UPDATE ProcessInformation set type=\\\"$type\\\" where name=\\\"$name\\\"", %tableResult ) ) {
+					echo( "Storing process type failed", ERROR );
+					$retVal = false;
+				}
+			}
+		}
+
+		if( $retVal ) {
+			echo " [ Database ] Commit Transaction";
+			if( !_sqlExec( $handle, "COMMIT TRANSACTION $transName", %tableResult ) ) {
+				$retVal = false;
+				_sqlExec( $handle, "ROLLBACK TRANSACTION $transName", %tableResult );
+			}
+			
+		} else {
+			echo " [ Database ] Rollback Transaction";
+			if( !_sqlExec( $handle, "ROLLBACK TRANSACTION $transName", %tableResult ) ) {
+				$retVal = false;
+			}
+		}
+	}
+	echo " [ Database ] Closing the database";
+	if( !_sqlClose( $handle ) ) {
+		echo( "Failed to properly close the SimpleProcess database" );
+		$retVal = false;
+	}
+
+	return $retVal;
+}
+
+#-------------------------------------------------------------------
+sub DoHelp() {
+	echo "Usage:  _AddToProcessDatabase.dss <procName> <procDescription> <procType>";
+	echo "    <procName>:  The name of the process";
+	echo "    <procDescription>: A single line description of the process";
+	echo "    <procType>:  One of \"None\", \"Safe\", \"Security\", \"Core\", \"Malicious\"";
+	return false;
+}

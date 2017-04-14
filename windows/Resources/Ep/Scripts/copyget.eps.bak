@@ -1,0 +1,133 @@
+#-------------------------------------------------------------------------------
+# File: copyget.eps
+# Description: Copies a file to a temporary location and then pulls it back
+#
+#-------------------------------------------------------------------------------
+@include "_FileExists.epm";
+
+string $fileToGet = "";
+string $temppath = "";
+string $tempfile= "";
+bool $badParams = false;
+
+if ($argc == 1) {
+    $badParams = true;
+} else if ($argc > 4) {
+    $badParams = true;
+} else {
+	$fileToGet=$argv[1];
+	if ($argv[1] == "?") {
+		$badParams=true;
+	}
+	
+	if ($argc >= 3) {
+		$temppath=$argv[2];
+	} else {
+		### Get temp path
+		@record on;
+		ifnot(`lpgetenv -option temppath`) {
+			`script temppath.eps`;
+			ifnot (`lpgetenv -option temppath`) {
+				echo "Could not get temp path.";
+				$badParams=true;
+			} else {
+				$temppath=GetCmdData("value");
+			}
+		} else {
+			$temppath=GetCmdData("value");
+		}
+		@record off;
+	}
+
+	if ($argc >= 4) {
+		$tempfile=$argv[3];
+	} else {
+		$tempfile="~at0.tmp";
+	}
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] <file to get> [<temp dir to use> <temp filename to use>]";
+    echo "    Does a copy/get, copying the file to the temporary directory and deleting it afterwards";
+
+    if ($argc > 1) {
+	if ($argv[1] == "?") {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+
+int $tempnum=0;
+
+# get existing tempnum, if it exists
+#@record on;
+#if (`lpgetenv -option tempnum`) {
+#	int $prevtempnum=GetCmdData("value");
+#	# EP doesn't have addition, so loop to add the two values
+#	int $i=0;
+#	while ($i<$prevtempnum) {
+#		$tempnum++;
+#		$i++;
+#	}
+#}
+#@record off;
+
+
+int $attempts=0;
+int $maxattempts=10;
+bool $success=false;
+
+$attempts=0;
+$success=false;
+while ($attempts < $maxattempts) {
+	if (_FileExists ($tempfile, "$temppath")) {
+		$tempnum++;
+		$tempfile="~at$tempnum.tmp";
+	} else {
+		# found a good temp filename
+		$attempts=$maxattempts;
+	}
+	$attempts++;
+}
+if ($attempts == $maxattempts) {
+	echo "!! $tempfile exists.  Get $fileToGet manually.";
+	$tempnum++;
+} else {
+	if (`copy "$fileToGet" "$temppath\\$tempfile"`) {
+####			if (`get "$tempfile" -path "$temppath" -name $fileToGet`) {
+		@record on;
+		if (`get "$tempfile" -path "$temppath"`) {
+			string $localname=GetCmdData("LocalName");
+			$success=true;
+			string $curpath;
+			# get current working directory
+			@record on;
+			ifnot (`pwd`) {
+				echo "Could not get current path using pwd.  Continuing, but you may end up in the temp directory.";
+			} else {
+				$curpath=GetCmdData("string_val");
+			}
+			@record off;
+			echo "Successful CopyGet (currently in \"$curpath\"): \"$fileToGet\" => \"$temppath\\$tempfile\" (local \"$localname\")";
+			`local run -command "perl E:\\tools\\renameCopy.pl" -redirect renamecopy`;
+		}
+		@record off;
+		ifnot (`del "$tempfile" -path "$temppath"`) {
+			echo "!! Could not delete file !!";
+			pause;
+		}
+		$tempnum++;
+	} else {
+		echo "Could not copy $fileToGet to $temppath\\$tempfile";
+	}
+}
+
+# store new tempnum if you succeeded
+#if ($success) {
+#	`lpsetenv -option tempnum -value $tempnum`;
+#}
+
+return $success;

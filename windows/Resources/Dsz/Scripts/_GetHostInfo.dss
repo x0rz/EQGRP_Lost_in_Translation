@@ -1,0 +1,261 @@
+
+@include "_Arrays.dsi";
+@include "_Versions.dsi";
+
+@echo off;
+
+bool $rtn=true;
+	
+string $hostname;
+string $domain;
+string %ips;
+string %macs;
+
+GetEnv("_HOSTNAME", $hostname);
+	
+echo "Getting host information";
+@record on;
+if (!`ifconfig`)
+{
+	echo("    FAILED (ifconfig failed)", ERROR);
+	$rtn = false;
+}
+else
+{
+	echo("    RETRIEVED", GOOD);
+	
+	GetCmdData("FixedDataItem::DomainName", $domain);
+	
+	Object $ifaces;
+	if (GetCmdData("InterfaceItem", $ifaces))
+	{
+		for (int $i=0; $i < sizeof($ifaces); $i++)
+		{
+			bool $goodMac=false;
+			string $address;
+			if (GetObjectData($ifaces[$i], "Address", $address) && defined($address))
+			{
+				if (RegExMatch("^([0-9a-fA-F]{2}-){5}[0-9a-fA-F]{2}\$", $address) &&
+					$address != "00-00-00-00-00-00")
+				{
+					%macs{$address} = $address;
+					$goodMac = true;
+				}
+			}
+			
+			string $ifaceIps;
+			if (GetObjectData($ifaces[$i], "IpAddress::Ip", $ifaceIps) && defined($ifaceIps))
+			{
+				for (int $j=0; $j < sizeof($ifaceIps); $j++)
+				{
+					if ((StrLen($ifaceIps[$j]) > 0) &&
+						($ifaceIps[$j] != "127.0.0.1") &&
+						($ifaceIps[$j] != "0.0.0.0") &&
+						($ifaceIps[$j] != "::") &&
+						($ifaceIps[$j] != "::1"))
+					{
+						%ips{$ifaceIps[$j]} = $ifaceIps[$j];
+						if ($goodMac)
+						{
+							_AppendString(%macs{$address}, $ifaceIps[$j]);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+string %osGuids;
+echo "Getting OS GUID information";
+string %guidKeys;
+%guidKeys{'Cryptography'}[0] = "Software\\Microsoft\\Cryptography";
+%guidKeys{'Cryptography'}[1] = "MachineGuid";
+string $hashKeys;
+if (!GetKeys(%guidKeys, $hashKeys))
+{
+	echo("    FAILED (get of GUID keys failed)", ERROR);
+	$rtn = false;
+}
+else
+{
+	string $suffix="";
+	if (_IsOs64Bit())
+	{
+		$suffix = " -wow64";
+	}
+	for (int $i=0; $i < sizeof($hashKeys); $i++)
+	{
+		if (`registryquery -hive L -key "%guidKeys{$hashKeys[$i]}[0]" -value "%guidKeys{$hashKeys[$i]}[1]"$suffix`)
+		{
+			string $value;
+			if (GetCmdData("Key::Value::Value", $value))
+			{
+				%osGuids{$hashKeys[$i]} = $value;
+			}
+		}
+	}
+	
+	if (sizeof(%osGuids) > 0)
+	{
+		echo("    RETRIEVED", GOOD);
+	}
+	else
+	{
+		echo("    FAILED (no GUID queries succeeded)", ERROR);
+		$rtn = false;
+	}
+}
+@record off;
+
+if (_IsWindowsNt4())
+{
+	# the ifconfig command can't get MACs -- pull them a different way
+	GetNt4Macs(%macs);
+}
+
+echo "Storing host information";
+
+string $timestamp;
+GetTimestamp($timestamp);
+string $filename, $filenameXml;
+if (IsLocal())
+{
+	$filename = "%_sgEnv{'log_path'}/local_hostinfo_$timestamp.txt";
+	$filenameXml = "%_sgEnv{'log_path'}/local_hostinfo_$timestamp.xml";
+}
+else
+{
+	$filename = "%_sgEnv{'log_path'}/hostinfo_$timestamp.txt";
+	$filenameXml = "%_sgEnv{'log_path'}/hostinfo_$timestamp.xml";
+}
+
+WriteFile($filenameXml, true, "<?xml version='1.0' encoding='UTF-8' ?>\n<HostInformation>\n");
+if (defined($hostname))
+{
+	WriteFile($filename, true, "hostname=$hostname\n");
+
+	string $xmlHost = $hostname;
+	RegExSub("&", "&amp;", $xmlHost);
+	RegExSub("<", "&lt;", $xmlHost);
+	RegExSub(">", "&gt;", $xmlHost);
+	WriteFile($filenameXml, true, "  <HostName>$xmlHost</HostName>\n");
+}
+
+if (defined($domain))
+{
+	WriteFile($filename, true, "domain=$domain\n");
+
+	string $xmlDomain = $domain;
+	RegExSub("&", "&amp;", $xmlDomain);
+	RegExSub("<", "&lt;", $xmlDomain);
+	RegExSub(">", "&gt;", $xmlDomain);
+	WriteFile($filenameXml, true, "  <Domain>$xmlDomain</Domain>\n");
+}
+
+string $keys;
+GetKeys(%macs, $keys);
+for (int $i=0; $i < sizeof($keys); $i++)
+{
+	WriteFile($filename, true, "MAC=$keys[$i]\n");
+	WriteFile($filenameXml, true, "  <Interface>\n");
+	WriteFile($filenameXml, true, "    <Mac>$keys[$i]</Mac>\n");
+	for (int $j=1; $j < sizeof(%macs{$keys[$i]}); $j++)
+	{
+		WriteFile($filenameXml, true, "    <Ip>%macs{$keys[$i]}[$j]</Ip>\n");
+	}
+	WriteFile($filenameXml, true, "  </Interface>\n");
+
+	SetEnv("_MAC_$i", $keys[$i]);
+}
+
+GetKeys(%ips, $keys);
+WriteFile($filenameXml, true, "  <Ips>\n");
+for (int $i=0; $i < sizeof($keys); $i++)
+{
+	WriteFile($filename, true, "ip=$keys[$i]\n");
+	WriteFile($filenameXml, true, "    <Ip>$keys[$i]</Ip>\n");
+	SetEnv("_IP_$i", $keys[$i]);
+}
+WriteFile($filenameXml, true, "  </Ips>\n");
+
+WriteFile($filenameXml, true, "  <Guids>\n");
+GetKeys(%osGuids, $keys);
+for (int $i=0; $i < sizeof($keys); $i++)
+{
+	WriteFile($filename, true, "GUID_$keys[$i]=%osGuids{$keys[$i]}\n");
+	
+	string $xmlGuid = %osGuids{$keys[$i]};
+	RegExSub("&", "&amp;", $xmlGuid);
+	RegExSub("<", "&lt;", $xmlGuid);
+	RegExSub(">", "&gt;", $xmlGuid);
+	WriteFile($filenameXml, true, "    <Guid_$keys[$i]>$xmlGuid</Guid_$keys[$i]>\n");
+}
+WriteFile($filenameXml, true, "  </Guids>\n");
+
+WriteFile($filenameXml, true, "</HostInformation>\n");
+
+if ($rtn)
+{
+	echo("    STORED", GOOD);
+}
+else
+{
+	echo("    FAILED", ERROR);
+}
+return $rtn;
+
+#----------------------------------------------------------------------------------
+Sub GetNt4Macs(REF string %macs)
+{
+
+	@record on;
+	if (!`run -command "ipconfig /all" -redirect`)
+	{
+		return false;
+	}
+	@record off;
+
+	string $output;
+	if (!GetCmdData("ProcessOutput::Output", $output) || !defined($output))
+	{
+		return false;	
+	}
+	
+	# combine the output lines
+	string $fullOutput="";
+	for (int $i=0; $i < sizeof($output); $i++)
+	{
+		StrCat($fullOutput, $output[$i]);
+	}
+
+	# break the output into lines
+	string $lines;
+	string $matches;
+	while (RegExMatch("([^\n]*)\n(.*)", $fullOutput, $matches) && defined($matches))
+	{
+		_AppendString($lines, $matches);
+		$fullOutput = $matches[1];
+	}
+	if (StrLen($fullOutput) > 0)
+	{
+		_AppendString($lines, $fullOutput);
+	}
+
+	# search each line for a MAC	
+	for (int $i=0; $i < sizeof($lines); $i++)
+	{
+		string $addresses;
+		if (RegExMatch("([0-9a-fA-F]{2}-[0-9a-fA-F]{2}-[0-9a-fA-F]{2}-[0-9a-fA-F]{2}-[0-9a-fA-F]{2}-[0-9a-fA-F]{2})", $lines[$i], $addresses) && defined($addresses))
+		{
+			if (($addresses != "00-00-00-00-00-00") && ($addresses != "FF-FF-FF-FF-FF-FF"))
+			{
+				%macs{$addresses} = $addresses;
+			}
+		}
+	}
+
+	return true;
+		
+}	/* END: GetNt4Macs */
+

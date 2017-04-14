@@ -1,0 +1,52 @@
+﻿<?xml version='1.0' ?>
+
+<Plugin id='31325'>
+
+ <Command id='16' name='modifyprivilege'>
+
+  <Help>Changes an existing privilege within a process to another privilege.</Help>
+  <Help>Optionally changes the attributes for that privilege as well.</Help>
+
+  <Input>
+   <Option name='orig' optional='false'>
+    <Argument name='name' data='orig' />
+    <Help>The privilege to be changed</Help>
+   </Option>
+
+   <Option name='new' optional='false'>
+    <Argument name='name' data='new' />
+    <Help>The privilege to take the place of the old privilege</Help>
+   </Option>
+
+   <Option name='id' optional='true'>
+    <Argument name='#' data='id' />
+    <Help>The id of the process to update.  If none is specified,</Help>
+    <Help>the current process id of the implant is used.</Help>
+   </Option>
+
+   <Option name='attributes' optional='true'>
+     <Set data='change' value='true' />
+     <Argument optional='false' name='attrib'>
+      <Value string='disabled'>
+       <Set data='att' value='0'/>
+      </Value>
+      <Value string='enabled'>
+       <Set data='att' value='1'/>
+      </Value>
+      <Value string='enabled_by_default'>
+       <Set data='att' value='2'/>
+      </Value>
+     </Argument>
+    <Help>If specified, the attributes for the given process are updated.</Help>
+   </Option>
+
+  </Input>
+  <Output>
+   <Data name='orig' type='string'/>
+   <Data name='new'  type='string'/>
+   <Data name='id'   type='uint32_t'/>
+   <Data name='att'  type='uint32_t'/>
+   <Data name='change' type='bool' default='false' />
+  </Output>
+ </Command>
+</Plugin>

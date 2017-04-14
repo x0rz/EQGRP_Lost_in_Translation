@@ -1,0 +1,78 @@
+bool $ok = true;
+string $cmd = "";
+string $sdt = "";
+string $box = "";
+
+if($argv[1] == "0.0.0.0") {return false;}
+if($argv[1] == " ") {return true;}
+
+@echo off;
+#######################################################################
+$cmd = "ping -ip $argv[1]";
+#echo "\n---------- PingBox : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+echo "\n\t$cmd";
+
+ifnot($ok) {echo "\t\t$cmd, failed"; return false;} 
+else
+{
+	string $srcAddr = GetCmdData("srcAddr");
+	string $dstAddr = GetCmdData("dstAddr");
+	int $ttl = GetCmdData("ttl");
+	int $pingErr = GetCmdData("pingErr");
+
+	if (defined($srcAddr[0]) == false)
+	{
+		echo "$cmd, script variables were not defined.";
+		return false;
+	}
+	else
+	{
+		$sdt = "$srcAddr => $dstAddr\t$ttl";
+		if ($ttl < 100) { $box = "Mac";}
+		else {
+			 if($ttl > 128) { $box = "Unix";}
+		     else { $box = "Windows";}
+		}
+		if($pingErr == 0)
+		{	
+			echo "\t\t$sdt\t$box";
+			return true;
+			@echo off;
+			$ok = `script "D:\\ET_Development\\Work Area\\Touches\\TraceRouteBox.eps" "$argv[1]"`;
+			@echo on;
+
+			@echo off;
+			$ok = `script "D:\\ET_Development\\Work Area\\Touches\\InternetServices.eps" "$argv[1]"`;
+			@echo on;
+
+			if ($box == "Windows")
+			{
+				@echo off;
+				$ok = `script "D:\\ET_Development\\Work Area\\Touches\\WindowsExplore.eps" "$argv[1]"`;
+				@echo on;
+			}
+			else {
+				if ($box == "Unix")
+				{
+					@echo off;
+					$ok = `script "D:\\ET_Development\\Work Area\\Touches\\UnixExplore.eps" "$argv[1]"`;
+					@echo on;
+				}
+			}
+		}
+		else {echo "\t\t$sdt\t$box\t$pingErr";}
+	}
+}
+return true;
+
+
+
+
+
+
+

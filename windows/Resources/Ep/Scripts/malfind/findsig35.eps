@@ -1,0 +1,27 @@
+@echo off;
+
+string $system32 = GetEnv("SYSPATH");
+
+@record on;
+`dir $system32\\drivers\\*.sys`;
+@record off;
+
+string $names = GetCmdData('name');
+int $sizes = GetCmdData('size');
+
+int $i=0;
+int $s;
+foreach $s ($sizes)
+{
+	if ($s == 9472)
+	{
+		if (`grep -path "$system32\\drivers" -mask "$names[$i]" -pattern 9N`)
+		{
+			echo "SIG35: $s == $names[$i]";
+			return true;
+		}
+	}
+	$i++;
+}
+
+return false;

@@ -1,0 +1,16 @@
+<Plugin id="4">
+	<Name>Files</Name>
+	<Class>ddb.dsz.plugin.filemanager.ver3.FileManager</Class>
+	<Description>Displays file system information in an Explorer-style window</Description>
+	<Logo>images/file-manager.png</Logo>
+	<Live>true</Live>
+	<Replay>true</Replay>
+	<UserStartable>true</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>true</UserClose>
+	<CanClose>true</CanClose>
+	<VerifyClose>true</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

@@ -1,0 +1,48 @@
+#--------------------------------------------------------
+# File: VerifyRunning.eps
+#
+# Wrapper script to verify DarkSkyline tools are running
+#
+# Modifications:
+#  12/03/2002	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+@record on;
+
+echo "Getting driver list";
+if (`driverlist`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED (query of running drivers failed)";
+    return false;
+}
+
+string $names = GetCmdData("name");
+
+echo "Checking for $driver";
+int $i=0;
+while ($i < sizeof($names)) {
+    string $namePieces = Split("\\", $names[$i]);
+    int $lastIndex = sizeof($namePieces);
+    $lastIndex--;
+    if ($namePieces[$lastIndex] == $driver) {
+	echo "    PASSED";
+	return true;
+    } else if ($namePieces[$lastIndex] == "$driver.sys") {
+	echo "    PASSED";
+	return true;
+    }
+    $i++;
+}
+
+echo "    FAILED (driver not running)";
+return false;

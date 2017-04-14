@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Groups_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='Groups'>
+		<Help>Returns the list of groups for a given user or machine (default is local groups on the local machine)</Help>
+		
+		<Input>
+			<Option name="user" optional="true">
+				<Argument name="userName" data="userName" optional="false" />
+				<Help>Get groups for specified user</Help>
+			</Option>
+   
+			
+			<Option name="network" optional="true" group="grouptype">
+				<Set data='type' value='2'/>
+				<Help>Get network groups</Help>
+			</Option>
+
+			<Option name="local" optional="true" group="grouptype">
+				<Set data='type' value='1'/>
+				<Help>Get local groups</Help>
+			</Option>
+			
+			<Option name="target" optional="true">
+				<Argument name="serverName" data="serverName" optional="false"/>
+				<Help>Get groups from specified, remote machine (The machine name must being with \\ for Windows NT)</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint8_t' default='1' />
+			<Data name='serverName' type='string'/>
+			<Data name='userName' type='string'/>
+		</Output>
+	</Command>
+</Plugin>

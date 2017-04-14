@@ -1,0 +1,24 @@
+<?xml version='1.1' encoding="utf8"?>
+<Aliases>
+	<Alias>
+		<Name>emkg_plist</Name>
+		<ReplaceBeforeArgs>python windows/remoteprocesslist.py -args "--wmi --target </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>	emkg_plist &lt;target&gt;
+	Performs a remote process list using WMI. Only works if you can utilize WMI in your current
+	process and the target allows WMI access. If 127.0.0.1 provided, uses the normal process list.
+	See also "processes -target"</Help>
+	</Alias>
+	<Alias>
+		<Name>pulist</Name>
+		<ReplaceBeforeArgs>python windows/remoteprocesslist.py -args "--reg --target </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>	pulist &lt;target&gt;
+	Performs a remote process list using remote registry access. Only works if the target allows
+	remote registry queries. Queries the performance hive of the registry for process data.
+	Assumptions about the name of the process (e.g. .exe extension) are made for best-guess
+	matching against the elist. If 127.0.0.1 provided, a local registry query is made instead
+	of using the remote API.
+	See also "performance -target"</Help>
+	</Alias>
+</Aliases>

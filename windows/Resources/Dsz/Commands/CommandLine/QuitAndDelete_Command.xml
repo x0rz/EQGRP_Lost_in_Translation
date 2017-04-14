@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+  <Command id='17' name='QuitAndDelete'>
+
+    <Help>Closes the current instance of DSZ and tells the target implant to delete itself</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

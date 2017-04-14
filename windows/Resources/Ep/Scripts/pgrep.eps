@@ -1,0 +1,71 @@
+#-----------------------------------------------------------------------------
+# File: pgrep.eps
+#
+#  Given a file of strings to grep, a remote path and file mask,
+#    search all the files matching that mask for each string in the input file
+#
+#  20080908 - Initial version
+#
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+string	$names;
+string	$name;
+string	$path;
+string	$mask;
+string	$lines;
+string	$line;
+string	$file;
+int	$i = 0;
+
+##-----------------------------------------------
+#-
+#- Populate Names from tasking file
+#- Also get Path and mask to grep
+#-
+##-----------------------------------------------
+
+$file = GetInput("Please enter local tasking file");
+$path = GetInput("Please enter the Path to grep");
+$mask = GetInput("Please enter the Mask to grep");
+
+if(ReadFile($file, $lines)){
+	foreach $line ($lines){
+		$names[$i] = $line;
+		$i++;
+	}
+} else {
+	echo "file doesn't exist";
+	return FALSE;
+}
+
+##-----------------------------------------------
+#-
+#- Echo out names that will be
+#- Grepped out
+#-
+##-----------------------------------------------
+
+echo "looking for the following names:";
+foreach $name ($names){
+	echo "$name";
+}
+
+
+##-----------------------------------------------
+#-
+#- echo out grep that will be executed
+#- grep followed by prompt to continue
+#-
+##-----------------------------------------------
+
+if (prompt "Do you want to proceed with greps? "){
+	foreach $name ($names){
+		echo "background log grep -path $path -mask $mask -pattern $name";
+		`background log grep -path $path -mask $mask -pattern $name`;
+		prompt "Please wait until current grep finishes to continue. Would you like to continue?";
+	}
+}
+
+return TRUE;

@@ -1,0 +1,218 @@
+<ContextMenu>
+
+	<!--
+		acceptable substitutes are:
+		{id},
+		{parent},
+		{user},
+		{name}
+	-->
+	<Entry>
+		<Icon>images/processkill.png</Icon>
+		<Verify>true</Verify>
+		<Label>Kill {id}</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>kill</Line>
+			<Line>id={id}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Icon>images/processkill.png</Icon>
+		<Verify>true</Verify>
+		<Label>Kill {id} (Force)</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>kill</Line>
+			<Line>id={id}</Line>
+			<Line>force</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Icon>images/processinfo.png</Icon>
+		<Verify>false</Verify>
+		<Label>Get Process Info</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>processinfo</Line>
+			<Line>id={id}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Icon>images/processinfo.png</Icon>
+		<Verify>false</Verify>
+		<Label>Get Process Info (Elevate)</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>processinfo</Line>
+			<Line>id={id}</Line>
+			<Line>elevate</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Icon>images/processinfo.png</Icon>
+		<Verify>false</Verify>
+		<Label>Get Process Options</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>processoptions</Line>
+			<Line>id={id}</Line>
+			<Line>elevate</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Icon>images/xmag.png</Icon>
+		<Verify>false</Verify>
+		<Label>View process details</Label>
+		<Action>
+			<Line>ProcessDetail</Line>
+			<Line>id={id}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Submenu name="Mark As">
+		<Entry>
+			<Icon>images/button_ok.png</Icon>
+			<Verify>false</Verify>
+			<Label>Safe</Label>
+			<Action>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Safe</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Icon>images/error.png</Icon>
+			<Verify>false</Verify>
+			<Label>Malicious Software</Label>
+			<Action>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Malicious</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Icon>images/gkrellm2.png</Icon>
+			<Verify>false</Verify>
+			<Label>Core OS</Label>
+			<Action>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Core</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Icon>images/important.png</Icon>
+			<Verify>false</Verify>
+			<Label>Security Product</Label>
+			<Action>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Security</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Verify>false</Verify>
+			<Label>Unknown</Label>
+			<Action>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=None</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+	</Submenu>
+	<Submenu name="Mark As (W/Comment)">
+		<Entry>
+			<Icon>images/button_ok.png</Icon>
+			<Verify>false</Verify>
+			<Label>Safe</Label>
+			<Action>
+				<Line>GetComment</Line>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Safe</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Icon>images/error.png</Icon>
+			<Verify>false</Verify>
+			<Label>Malicious Software</Label>
+			<Action>
+				<Line>GetComment</Line>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Malicious</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Icon>images/gkrellm2.png</Icon>
+			<Verify>false</Verify>
+			<Label>Core OS</Label>
+			<Action>
+				<Line>GetComment</Line>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Core</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Icon>images/important.png</Icon>
+			<Verify>false</Verify>
+			<Label>Security Product</Label>
+			<Action>
+				<Line>GetComment</Line>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=Security</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+		<Entry>
+			<Verify>false</Verify>
+			<Label>Unknown</Label>
+			<Action>
+				<Line>GetComment</Line>
+				<Line>request</Line>
+				<Line>markProcess</Line>
+				<Line>name={name}</Line>
+				<Line>type=None</Line>
+			</Action>
+			<Result>false</Result>
+		</Entry>
+	</Submenu>
+	
+	<Entry live="true" replay="false">
+		<Icon>images/gnome-logout.png</Icon>
+		<Verify>true</Verify>
+		<Label>Duplicate Token</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>duplicatetoken</Line>
+			<Line>id={id}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+
+</ContextMenu>

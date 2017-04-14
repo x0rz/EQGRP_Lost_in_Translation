@@ -1,0 +1,15 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='27' name='RemoteChannels'>
+
+    <Help>Lists the remote side channels and bytes sent/received.</Help>
+    <Help>These should generally match the local side.</Help>
+
+    <Input/>
+    <Output/>
+
+  </Command>
+
+</Plugin>

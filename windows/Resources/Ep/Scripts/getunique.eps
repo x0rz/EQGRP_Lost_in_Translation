@@ -1,0 +1,30 @@
+@record on;
+@echo on;
+
+string $dircommand = GetInput("What's the dir command you want to use to get unique things?");
+
+`$dircommand`;
+
+string $names = GetCmdData("name");
+string $paths = GetCmdData("path");
+int $sizes = GetCmdData("size");
+
+
+int $j = 0;
+
+string %hashes;
+
+while ($j < sizeof($sizes)) {
+	if ($sizes[$j] == 0) {$j++; continue;}
+	%hashes{"$sizes[$j]"} = "$paths[$j]\\$names[$j]";
+	$j++;
+}
+
+string $key;
+int $totalSize = 0;
+
+foreach $key (keys %hashes) {
+	`get "%hashes{$key}"`;	
+}
+
+return true;

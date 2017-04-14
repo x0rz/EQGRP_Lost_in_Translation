@@ -1,0 +1,16 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>tasking</Name>
+		<ReplaceBeforeArgs>python _tasking.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>tasking &lt;-tasking &lt;directory&gt;&gt; [-auto] [-verbose] [-max &lt;item&gt;]</Help>
+		<Help>    Runs tasking on a target</Help>
+		<Options>
+			<Option>auto</Option>
+			<Option>verbose</Option>
+			<Option>tasking</Option>
+			<Option>max</Option>
+		</Options>
+	</Alias>
+</Aliases>

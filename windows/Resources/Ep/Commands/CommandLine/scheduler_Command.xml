@@ -1,0 +1,69 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31357'>
+
+  <Command id='16' name='scheduler'>
+
+    <Help>Lists, adds or removes queued jobs on the local or remote machine</Help>
+
+    <Input>
+      <!-- where to run the command -->
+      <Option name='local' optional='true' group='location'>
+        <Help>deal with the local machine</Help>
+        <Set data='local' value='true' />
+      </Option>
+
+      <Option name='remote' optional='true' group='location'>
+        <Help>deal with a remote server</Help>
+	<Set data='local' value='false' />
+	<Argument name='servername' data='machinename'/>
+      </Option>
+
+      <!-- what type of command -->
+      <Option name='query' optional='false' group='type'>
+        <Help>Query for jobs.</Help>
+	<Argument name='type'>
+	    <Help>The job type to query.</Help>
+	    <Value string='at'>
+		<Set data='cmdType' value='1'/>
+	    </Value>
+	    <Value string='gui'>
+		<Set data='cmdType' value='2'/>
+	    </Value>
+	</Argument>
+      </Option>
+
+      <Option name='add' optional='false' group='type'>
+        <Help>Adding a new job via the Network Management API.</Help>
+        <Help>Only on NT+ systems.</Help>
+        <Set data="cmdType" value="3" />
+	<Argument name='when' data='time'>
+	    <Help>Number of minutes from now to run the job</Help>
+	</Argument>
+	<Argument name='cmd' data='cmd'>
+	    <Help>Command to run, including parameters</Help>
+	</Argument>
+      </Option>
+
+      <Option name='delete' optional='false' group='type'>
+        <Help>Removes a job via the Network Management API.</Help>
+        <Help>Only on NT+ systems.</Help>
+        <Set data="cmdType" value="4" />
+	<Argument name='job' data='jobnum'>
+	    <Help>The job to delete.</Help>
+	</Argument>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='local'       type='bool' default='true'/>
+      <Data name='cmdType'     type='uint8_t' default='1'/>
+      <Data name='machinename' type='string'/>
+      <Data name='jobnum'      type='uint32_t' default='0' />
+      <Data name='time'        type='uint32_t'/>
+      <Data name='cmd'         type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

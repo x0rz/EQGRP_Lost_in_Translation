@@ -1,0 +1,38 @@
+bool $showUsage = false;
+bool $success = true;
+
+string $localport="1509";
+string $tgtport="1509";
+string $tgt="127.0.0.1";
+
+if ($argv[1] == "?") {
+    $showUsage = true;
+} else if ($argc > 4) {
+    $showUsage = true;
+    $success = false;
+} else if ($argc < 1) {
+    $showUsage = true;
+    $success = false;
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <tgt IP> [<localport(default: $localport)>] [<dst port(default: $tgtport)>]";
+    return $success;
+}
+
+#assume 1509 => 1509
+if ($argc >= 1) {
+	$tgt=$argv[1];
+}
+if ($argc >= 3) {
+	$localport=$argv[2];
+}
+if ($argc >= 4) {
+	$tgtport=$argv[3];
+}
+
+ifnot(`background redirect -nodes 40 -tcp -implantlisten $localport -target $tgt $tgtport`) {
+	echo "Error in redirection!";
+	$success=false;
+}
+return $success;

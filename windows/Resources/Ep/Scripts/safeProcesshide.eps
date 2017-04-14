@@ -1,0 +1,64 @@
+#---------------------------------------------------------------------
+# Name: safeProcesshide.eps
+# Changelog
+# 6/11/2008 - Created
+#
+# Wraps processhide to check for the nohide environment variable
+# prior to executing.
+#---------------------------------------------------------------------
+if ($argc < 4) {
+	return (usage());
+}
+@echo off;
+bool $noHide = GetEnv("NOHIDE");
+`addalias -alias actualProcesshide -replace processhide`;
+
+if ($noHide) {
+	echo "!!! Warning !!!";
+	echo "Something on the system may be able to detect process hiding.";
+	if (prompt "Do you want to stop what you're doing?") {
+		`removealias -alias actualProcesshide`;
+		return false;
+	} else {
+		echo "Continuing at your own risk. Check to make sure you didn't cause a pop-up.";
+		if ($argc == 4) {
+			@echo on;
+			`actualProcesshide $argv[1] $argv[2] $argv[3]`;
+			@echo off;
+		} else if ($argc == 6) {
+			@echo on;
+			`actualProcesshide $argv[1] $argv[2] $argv[3] $argv[4] $argv[5]`;
+			@echo off;
+		} else {
+			usage();
+		}
+	}
+} else {
+	if ($argc == 4) {
+		@echo on;
+		`actualProcesshide $argv[1] $argv[2] $argv[3]`;
+		@echo off;
+	} else if ($argc == 6) {
+		@echo on;
+		`actualProcesshide $argv[1] $argv[2] $argv[3] $argv[4] $argv[5]`;
+		@echo off;
+	} else {
+		usage();
+	}
+}
+
+`removealias -alias actualProcesshide`;
+
+# Usage statement
+sub usage() {
+	echo "Usage: processhide _Options_";
+	echo"    Hide/Unhide a process";
+	echo "";
+	echo "	Options:";
+	echo "    <-hide> (group=doWhat)";
+	echo "    <-unhide> (group=doWhat)";
+	echo "    <-id <#>>";
+	echo "        Process to show or hide";
+	echo "    [-location <hex>]";
+	echo "        Return value from a processhide.  Required for unhiding.";
+}

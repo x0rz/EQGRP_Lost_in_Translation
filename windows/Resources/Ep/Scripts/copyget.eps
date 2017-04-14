@@ -1,0 +1,239 @@
+#-------------------------------------------------------------------------------
+# File: copyget.eps
+# Description: Copies a file to a temporary location and then pulls it back
+#
+#-------------------------------------------------------------------------------
+@include "_FileExists.epm";
+@include "_GenericFunctions.epm";
+
+int $MAXATTEMPTS = 10;
+
+@echo off;
+
+string $ScriptsDir;
+bool $verboseFlag = false;
+string $fileToGet = "";
+string $temppath = "";
+string $tempfile= "at";
+string $tempextension = "";
+string $curpath= "";
+string $bytes = "";
+
+bool $success = true;
+
+### Get the scripts Dir and Temp Dir
+_GetEPScriptsPath($ScriptsDir);
+_GetTempPath($tempPath);
+
+############################################################
+# Parse the command line options
+############################################################
+if ($argc == 1) {
+	$argv[1] = "-help";
+} else {
+	$fileToGet = $argv[1];
+	if ($fileToGet == "?") {
+		$argv[1] = "-help";
+	}
+}
+
+int $counter = 1;
+string $temp;
+string $commandLineOption;
+while (defined($argv[$counter])) {
+	$temp = split("-", $argv[$counter]);
+	$counter += 1;
+
+	if (defined($temp[1])) {
+		$commandLineOption = $temp[1];
+
+		if (($commandLineOption == "h") || ($commandLineOption == "help") || ($commandLineOption == "?")) {
+			echo "\nUsage: $argv[0] <file to get> _Options_";
+			echo "  Does a copy/get, copying the file to the temporary directory";
+			echo "  and deleting it afterwards";
+			echo "\nOptions:";
+			echo "  [-temppath <pathname>]";
+			echo "     Temporary directory to copy file into.  Default = $temppath";
+			echo "  [-tempfile <filename>]";
+			echo "     Temporary file name.  Default = $tempfile";
+			echo "  [-tail <bytes>]";
+			echo "     The number of bytes specified will be read from the file starting at bytes offset from the END of the file.";
+			#echo "  [-verbose or -v]";
+			return true;
+		} else if (($commandLineOption == "v") || ($commandLineOption == "verbose")) {
+			$verboseFlag = true;			
+		} else {
+			if (defined($argv[$counter])) {
+				if ($commandLineOption == "temppath") {
+					$temppath = "$argv[$counter]";
+				} else if ($commandLineOption == "tempfile") {
+					$tempfile = $argv[$counter];
+				} else if ($commandLineOption == "tail") {
+					$bytes = $argv[$counter];
+				}
+				$counter++;
+			} else {
+				echo "OPTION $temp[1] requires data (-h for help)";
+				return true;
+			}
+		}
+	}
+}
+
+if ($verboseFlag) {
+	@echo on;
+}
+
+############################################################
+# Get the direcory of the file to use in the -realpath option of the get command
+############################################################
+string $origFilename = splitpath($fileToGet);
+if ($origFilename[0] == "") {
+	@record on;
+	if (`pwd`) {
+		$curpath=GetCmdData("string_val");
+	} else {
+		echo "Error getting current working directory...";
+		return false;
+	}
+	@record off;
+} else {
+	$curpath = $origFilename[0];
+}
+
+############################################################
+# Break off the file extension if the filename has one
+############################################################
+string $tempFileName = split(".", $tempfile);
+$counter = sizeOf($tempFileName);
+$counter--;
+ifnot ($counter == 0) {
+	$tempextension = $tempFileName[$counter];
+} else {
+	$tempextension = "tmp";
+}
+$tempfile = $tempfilename;
+
+############################################################
+# get existing tempnum, if it exists
+############################################################
+#@record on;
+#if (`lpgetenv -option tempnum`) {
+#	int $prevtempnum=GetCmdData("value");
+#	# EP doesn't have addition, so loop to add the two values
+#	int $i=0;
+#	while ($i<$prevtempnum) {
+#		$tempnum++;
+#		$i++;
+#	}
+#}
+#@record off;
+
+############################################################
+# Ensure that the $tempfile doesn't exist and increment the name if it does
+############################################################
+int $tempnum=0;
+while (_FileExists ("$tempfile$tempnum.$tempextension", $temppath)) {
+	$tempnum++;
+}
+$tempfile="$tempfile$tempnum.$tempextension";
+
+############################################################
+# Copy the file to the temporary directory and then get it
+############################################################
+echo "Copying $fileToGet -> $temppath\\$tempfile";
+if (`copy "$fileToGet" "$temppath\\$tempfile"`) {
+	############################################################
+	# Get the filesize to output to the user
+	############################################################
+	@record on;
+	`dir "$fileToGet"`;
+	@record off;
+	int $fileSize = GetCmdData("size");
+	############################################################
+	# Need to add a -foreground because variables are no longer
+	# captured if commands are run in the background
+	############################################################
+	if ($bytes == "") {
+		echo "";
+		echo "Downloading $temppath\\$tempfile .. $fileSize bytes";
+		@record on;
+		if (`get "$tempfile" -path "$temppath" -foreground -realpath "$curpath\\$origFilename[1]"`) {
+			string $localname=GetCmdData("LocalName");
+
+			############################################################
+			# Change the local name from ~at0.tmp
+			############################################################
+			string $newFilename = split($tempfile,$localname);
+			string $origFilename = splitpath($fileToGet);
+	
+			$newFilename = "$origFilename[1]$newFilename[1]";
+			echo "";
+			echo "Renaming Get_Files\\$localname -> Get_Files\\$newFileName";
+			`local move "Get_Files\\$localname" "Get_Files\\$newFileName"`;
+
+			############################################################
+			# Set a variable for the local filename so other scripts can access the data
+			############################################################
+			SetCmdData(string,"LOCALNAME",$newFileName);
+	
+			$success=true;
+			echo "";
+			#echo "\nSuccessful CopyGet (currently in \"$curpath\"): \"$fileToGet\" => \"$temppath\\$tempfile\" (local \"$newFileName\")";
+			echo "Successful CopyGet of $fileToGet";
+
+			# Doesn't work
+			#`local run -command "perl $ScriptsDir\\..\\..\\..\\tools\\renameCopy.pl" -redirect renamecopy`;
+		}
+		@record off;
+	###### end copy of whole file ######
+	}else {
+		echo "";
+		echo "Downloading $temppath\\$tempfile .. $bytes bytes";
+		@record on;
+		if (`get "$tempfile" -path "$temppath" -tail "$bytes" -foreground -realpath "$curpath\\$origFilename[1]"`) {
+			string $localname=GetCmdData("LocalName");
+
+			############################################################
+			# Change the local name from ~at0.tmp
+			############################################################
+			string $newFilename = split($tempfile,$localname);
+			string $origFilename = splitpath($fileToGet);
+	
+			$newFilename = "$origFilename[1]$newFilename[1]";
+			echo "";
+			echo "Renaming Get_Files\\$localname -> Get_Files\\$newFileName";
+			`local move "Get_Files\\$localname" "Get_Files\\$newFileName"`;
+
+			############################################################
+			# Set a variable for the local filename so other scripts can access the data
+			############################################################
+			SetCmdData(string,"LOCALNAME",$newFileName);
+
+			$success=true;
+			echo "";
+			#echo "\nSuccessful CopyGet (currently in \"$curpath\"): \"$fileToGet\" => \"$temppath\\$tempfile\" (local \"$newFileName\")";
+			echo "Successful CopyGet of $fileToGet";
+
+			# Doesn't work
+			#`local run -command "perl $ScriptsDir\\..\\..\\..\\tools\\renameCopy.pl" -redirect renamecopy`;
+		}
+		@record off;
+	###### end copy for tail option ######
+	}
+
+	ifnot (`del "$tempfile" -path "$temppath"`) {
+		echo "!! Could not delete file !!";
+		pause;
+	}
+} else {
+	echo "Could not copy $fileToGet to $temppath\\$tempfile";
+	return false;
+}
+
+# store new tempnum if you succeeded
+#if ($success) {
+#	`lpsetenv -option tempnum -value $tempnum`;
+#}
+
+return $success;

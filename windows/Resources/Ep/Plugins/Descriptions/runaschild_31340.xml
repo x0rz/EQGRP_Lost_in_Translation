@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31340'>
+
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='*' minor='*'>
+		<File>RunAsChild_LP.dll</File>
+	    </Version>
+	</Platform>
+
+    </Windows>
+
+</Plugin>

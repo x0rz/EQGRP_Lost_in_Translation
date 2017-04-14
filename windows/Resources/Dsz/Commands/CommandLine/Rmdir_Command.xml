@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Rmdir_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='Rmdir'>
+
+		<Help>Deletes a directory</Help>
+
+		<Input>
+			<Argument name='directory' optional='false' data='dir'/>
+		</Input>
+
+		<Output>
+			<Data name='dir' type='string'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

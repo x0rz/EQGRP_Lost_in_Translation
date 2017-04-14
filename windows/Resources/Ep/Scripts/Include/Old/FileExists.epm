@@ -1,0 +1,30 @@
+#-------------------------------------------------------------------------------
+# FileExists
+#    Determines if a file exists, or if any files match a mask
+# Params:
+#    file - the file or mask to look for
+#       path - where to look (can be "")
+#-------------------------------------------------------------------------------
+Sub FileExists(IN STRING $file, IN STRING $path)
+{
+    @echo off;
+    @record on;
+    bool $ok;
+    if(StrLen($path) == 0)
+    {    $ok = `dir $file`;    }
+    else
+    {    $ok = `dir $file -path $path`;    }
+    
+    @record off;
+    ifnot($ok)
+    {    return false;    }
+
+    string $name = GetCmdData("name");
+    ifnot(defined($name))
+    {    return false;    }
+    if(sizeof($name) < 1)
+    {    return false;    }
+    
+    @echo on;
+    return true;
+}

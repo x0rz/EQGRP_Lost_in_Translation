@@ -1,0 +1,78 @@
+#--------------------------------------------------------
+# File: dateSummary.eps
+# Note: Will miss leap years
+#--------------------------------------------------------
+@include "_DateFunctions.epm";
+
+@echo off;
+@case-sensitive off;
+
+#--------------------------------------------------------
+# GMT Time
+#--------------------------------------------------------
+@record on;
+`remotelocaltime`;
+@record off;
+
+string $Date = GetCmdData("remotedate");
+string $Time = GetCmdData("remotetime");
+string $targetDateTime = "$Date $Time";
+
+#--------------------------------------------------------
+# Targets current local time
+#--------------------------------------------------------
+string $targetGMTDateTime = $targetDateTime;
+int $Bias = GetCmdData("remoteBias");
+bool $targetDSTFlag = GetCmdData("DaylightSavings");
+string $targetDSTName = GetCmdData("DaylightSavingsName");
+int $totalBias = $Bias;
+
+_DateAdd($targetGMTDateTime, "mi", $totalBias);
+
+if ($targetDSTFlag) {
+	int $DSTBias = GetCmdData("DaylightSavingsBias");
+	int $DSTStartDay = GetCmdData("DaylightSavingsStartDay");
+	int $DSTStartMonth = GetCmdData("DaylightSavingsStartMonth");
+	int $DSTEndDay = GetCmdData("DaylightSavingsEndDay");
+	int $DSTEndMonth = GetCmdData("DaylightSavingsEndMonth");
+
+	_DateAddDST($targetGMTDateTime, $DSTStartDay, $DSTStartMonth, $DSTEndDay, $DSTEndMonth, $DSTBias, $targetDSTFlag); 
+}
+
+#--------------------------------------------------------
+# Local OPS box time
+#--------------------------------------------------------
+@record on;
+`local remotelocaltime`;
+@record off;
+
+$Date = GetCmdData("remotedate");
+$Time = GetCmdData("remotetime");
+string $localDateTime = "$Date $Time";
+
+#--------------------------------------------------------
+# Eastern Standard Time based off OPS box GMT and target GMT
+#--------------------------------------------------------
+string $ESTDateTime = $localDateTime;
+_DateAdd($ESTDateTime, "mi", -300);
+string $ESTDateTime2 = $targetDateTime;
+_DateAdd($ESTDateTime2, "mi", -300);
+
+#--------------------------------------------------------
+# Print Out Results
+#--------------------------------------------------------
+echo "";
+echo "    GMT TIME: $localDateTime (based off ops Box - Correct)";
+echo "    GMT TIME: $targetGMTDateTime (based off target)";
+echo "";
+
+ifnot (defined($targetDSTName)) {
+	$targetDSTName = "Undefined";
+}
+if ($targetDSTFlag) {
+	echo " TARGET TIME: $targetDateTime $targetDSTName (IN DST)";
+} else {
+	echo "TARGET TIME: $targetDateTime $targetDSTName";
+}
+
+return true;

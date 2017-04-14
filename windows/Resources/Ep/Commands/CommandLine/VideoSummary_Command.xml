@@ -1,0 +1,52 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31411'>
+
+  <Command id='16' name='videosummary'>
+
+    <Help>Distills video (MPEG1 or MPEG2) files to essential data for easy retrieval. Full files can later be retrieved if analysis of this data determines that they are important.  </Help>
+
+    <Input>
+      <Option name='mpegFile' optional='false'>
+        <Argument name='mpegfilename' data='mpegFile'/>
+        <Help>File name of MPEG 1/2 file that will be processed for key frames
+      </Help>
+      </Option>
+
+      <Option name='maxFrames' optional='false'>
+	  <Argument name='maxFrames' data='maxFrames'/>
+	  <Help>Maximum number of frames to process. The minimum value for
+	this option is 33 and the maximum is the number of frames
+	in the video. NOTE: 0 means process all frames.
+        </Help>
+      </Option>
+
+      <Option name='maxSize' optional='false'>
+	  <Argument name='maxFileSize' data='maxSize'/>
+	  <Help>Maximum approximate file size, in kilobytes, of each
+	individual JPEG image file created. The range of acceptable values
+	is 21-126. NOTE: 0 means use the maximum number of 42 thumbnail
+        frames resulting in approximately 126KB.
+        </Help>
+      </Option>
+
+      <Option name='throttle' optional='false'>
+        <Argument name='throttle' data='throttle'/>
+	  <Help>Value of throttle to control CPU usage
+        (Range is integer from 0 to 3 with 0=no throttle and 3=maximum throttle)
+        </Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='mpegFile' type='string'/>
+      <Data name='maxFrames' type='uint32_t'/>
+      <Data name='maxSize' type='uint32_t'/>
+      <Data name='throttle' type='uint16_t'/>
+    </Output>
+
+  </Command>
+
+</Plugin>
+

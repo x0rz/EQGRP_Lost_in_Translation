@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31335'>
+
+ <Command id='16' name='arp'>
+
+  <Help>Displays the IP-to-Physical address translation tables used by</Help>  
+  <Help>the address resolution protocol (ARP)</Help>
+
+  <Input>
+   <Option name='print' optional='false' group='instruction'>
+    <Set data='instruction' value='1' />
+    <Help>Print the table</Help>
+   </Option>
+  </Input>
+
+  <Output>
+   <Data name='instruction' type='uint8_t' default='0'/>
+  </Output>
+
+ </Command>
+
+</Plugin>

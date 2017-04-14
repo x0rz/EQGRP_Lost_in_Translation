@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName='Tasking/Mcl_Cmd_Delete_Tasking.pyo'  providerType='script'>
+	
+	<Command id='0' name='delete'>
+		<Help>Deletes the given file.  By default the file is zero'd before deletion.</Help>
+		
+		<Input>
+			<Argument name='path_and_mask' optional='true' data='path_and_mask'/>
+
+			<Option name='file' optional='true'>
+				<Help>The full path to a single file to be deleted</Help>
+				<Argument name='filemask' data='single_file' />
+			</Option>
+			
+			<Option name='mask' optional='true'>
+				<Help>The mask for the files to be deleted</Help>
+				<Argument name='filemask' data='mask'/>
+			</Option>
+
+			<Option name='max' optional='true'>
+				<Help>Continue to delete files up to the number specified.  If zero,</Help>
+				<Help>delete all files. You must specify -max if you are deleting wildcard.</Help>
+					<Argument name='number' data='max'/>
+			</Option>
+			
+			<Option name='path' optional='true'>
+				<Help>The path to the files to be deleted</Help>
+				<Argument name='path' data='path'/>
+			</Option>
+			
+			<Option name='afterReboot' optional='true'>
+				<Help>Perform the deletion following reboot</Help>
+				<Set data='afterReboot' value='true'/>
+			</Option>
+			
+			<Option name='noshred' optional='true'>
+				<Help>Do not zero out the file before deleting it</Help>
+				<Set data='shred' value='false'/>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='single_file' type='string'/>
+			<Data name='path_and_mask' type='string'/>
+			<Data name='mask' type='string'/>
+			<Data name='path' type='string'/>
+			<Data name='afterReboot' type='bool' default='false'/>
+			<Data name='shred' type='bool' default='true'/>
+			<Data name='method'    type='string'/>
+			<Data name='max' type='int32_t'  default='-1' />
+		</Output>
+		
+	</Command>
+</Plugin>

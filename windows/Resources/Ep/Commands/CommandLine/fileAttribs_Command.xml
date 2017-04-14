@@ -1,0 +1,123 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31338'>
+
+ <Command id='16' name='getfileattribs'>
+  <Help>Retrieves a set of extended attributes that is a</Help>
+  <Help>superset of the FAT-style attribute information.</Help>
+
+  <Input>
+   <Option name='file' optional='false'>
+    <Argument name='file_or_directory' data='file'/>
+    <Help>The file to check</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='file' type='string'   />
+  </Output>
+ </Command>
+
+ <Command id='17' name='setfileattribs'>
+  <Help>Sets attributes for a specified file or directory.</Help>
+
+  <Input>
+   <Option name='file' optional='false'>
+    <Argument name='file_or_directory' data='file'/>
+    <Help>The file on which to set the attributes</Help>
+   </Option>
+   <Option name='attributes' optional='false'>
+    <Argument name='0' data='attrib0'/>
+    <Argument name='1' data='attrib1' optional='true'/>
+    <Argument name='2' data='attrib2' optional='true'/>
+    <Argument name='3' data='attrib3' optional='true'/>
+    <Argument name='4' data='attrib4' optional='true'/>
+    <Argument name='5' data='attrib5' optional='true'/>
+    <Argument name='6' data='attrib6' optional='true'/>
+    <Argument name='7' data='attrib7' optional='true'/>
+    <Help>An attribute (or eight) to set</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='file'    type='string'   />
+   <Data name='attrib0' type='string'   />
+   <Data name='attrib1' type='string'   />
+   <Data name='attrib2' type='string'   />
+   <Data name='attrib3' type='string'   />
+   <Data name='attrib4' type='string'   />
+   <Data name='attrib5' type='string'   />
+   <Data name='attrib6' type='string'   />
+   <Data name='attrib7' type='string'   />
+  </Output>
+ </Command>
+
+ <Command id='18' name='setfileattribsex'>
+  <Help>Sets compression and encryption for a</Help>
+  <Help>specified file or directory.</Help>
+  <Input>
+   <Option name='file' optional='false'>
+    <Argument name='file_or_directory' data='file'/>
+    <Help>The file/directory to modify</Help>
+   </Option>
+   <Option name='encrypt' optional='false' group='type'>
+    <Set data='type' value='1' />
+   </Option>
+   <Option name='decrypt' optional='false' group='type'>
+    <Set data='type' value='2' />
+   </Option>
+   <Option name='compress' optional='false' group='type'>
+    <Set data='type' value='3' />
+   </Option>
+   <Option name='decompress' optional='false' group='type'>
+    <Set data='type' value='4' />
+   </Option>
+  </Input>
+  <Output>
+   <Data name='file' type='string'   />
+   <Data name='type' type='uint8_t'   />
+  </Output>
+ </Command>
+
+ <Command id='19' name='setfiletime'>
+  <Help>Sets the date and time that a file was created, last accessed,</Help>
+  <Help>and/or last modified.</Help>
+
+  <Input>
+   <Option name='file' optional='false'>
+    <Argument name='file_or_directory' data='file'/>
+    <Help>The file/directory to modify</Help>
+   </Option>
+   <Option name='accessed' optional='true'>
+    <Argument name='time' data='accessed'/>
+    <Help>When the file was last accessed</Help>
+   </Option>
+   <Option name='created' optional='true'>
+    <Argument name='time' data='created'/>
+    <Help>When the file was created</Help>
+   </Option>
+   <Option name='modified' optional='true'>
+    <Argument name='time' data='modified'/>
+    <Help>When the file was modified last</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='file'     type='string'   />
+   <Data name='accessed' type='string'   />
+   <Data name='created'  type='string'   />
+   <Data name='modified' type='string'   />
+  </Output>
+ </Command>
+
+ <Command id='20' name='volumeinfo'>
+  <Help>Retrieves information about a volume</Help>
+
+  <Input>
+   <Option name='drive' optional='false'>
+    <Argument name='path' data='path'/>
+    <Help>The drive to query</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='path' type='string'   />
+  </Output>
+ </Command>
+</Plugin>

@@ -1,0 +1,9 @@
+<Software value="PSP">
+	<Vendor value="Panda Software" regkey="hklm\software\Panda Software">
+		<Product value="%regdata%" regkey="hklm\Software\Panda Software\SETUP" regvalue="LPRODUCTNAME">
+			<Version value="%regdata%" regkey="hklm\Software\Panda Software\SETUP" regvalue="CLIENT" />
+			<Quarantine value="%regdata%" regkey="hklm\Software\Panda Software\Panda Virus Hospital" regvalue="Quarantine" />
+			<InstallDate value="%regdata%" regkey="hklm\Software\Panda Software\Panda Antivirus Platinum" regvalue="FECHAINSTALACION" />
+		</Product>
+	</Vendor>
+</Software>

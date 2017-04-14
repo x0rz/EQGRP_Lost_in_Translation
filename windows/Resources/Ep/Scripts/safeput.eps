@@ -1,0 +1,209 @@
+### do a safe/clean put based on filename and checksum
+
+### usage stuff
+@echo off;
+
+	if ($argv[1] == "?")
+	{
+		echo "Safely move a file from the local machine to the target after ensuring the file\ndoes not already exist\n";
+		echo "It also performs a check to ensure the file was copied intact\n";
+		echo "If no target path\\name is provided the file will be assigned a temp name and \nplaced in the system's temp dir\n";
+		echo "The temp name will be \"~a0001[number gen'd from the clock].tmp\" (ex: ~a0001062.tmp)\n";
+		echo "The file will be marked for deletion on reboot unless the -permanent flag is used\n";
+		echo "Usage: ";
+		echo "$argv[0] [local path\\local name] <target path\\target name> <-permanent>\n";
+		echo "Examples:";
+		echo "$argv[0] c:\\test.txt c:\\somedir\\newFile.txt -permanent";
+		echo "$argv[0] c:\\temp.exe -permanent\n\n";
+		echo "$argv[0] c:\\test.txt c:\\somedir\\newFile.txt";
+		echo "$argv[0] c:\\temp.exe\n\n";
+		return true;
+	}
+
+### declarations
+
+	string $localfile 	= $argv[1];
+	bool $gentempname	= true;
+	string $targetfile	= "";
+	string $temppath	= "";
+	string $targetname 	= "";
+	string $localname	= "";
+	string $targetpath	= "";
+	string $localpath	= "";
+	bool $perm		= false;
+	int $i;
+	int $x;
+	
+	
+### build stuff needed for l8r
+
+	if($argc > 2)
+	{
+		$i = sizeof($argv);
+		$x = 0;
+
+		while($x < $i)
+		{
+			string $search = "$argv[$x]";
+			string $check = "-permanent";
+		
+			if($search == $check)
+			{
+				$perm = true;
+			}
+	
+			$x++;
+		}
+		
+		if($perm == false && $argc > 2)
+		{	
+			$targetfile  = "$argv[2]";
+			$gentempname = false;
+	
+			string $targettmp = split("\\",$targetfile);
+			$i = sizeof($targettmp);
+			$x = 0;	
+			$i--;
+			$targetname = "$targettmp[$i]";
+			$targetpath = "$targettmp[$x]";
+			$x++;
+		
+			while($x < $i)
+			{
+				$targetpath = "$targetpath\\$targettmp[$x]";
+				$x++;
+			}
+		}
+		else if($perm == true && $argc > 3)
+		{
+			$targetfile  = "$argv[2]";
+			$gentempname = false;
+	
+			string $targettmp = split("\\",$targetfile);
+			$i = sizeof($targettmp);
+			$x = 0;	
+			$i--;
+			$targetname = "$targettmp[$i]";
+			$targetpath = "$targettmp[$x]";
+			$x++;
+		
+			while($x < $i)
+			{
+				$targetpath = "$targetpath\\$targettmp[$x]";
+				$x++;
+			}
+		}
+	}
+
+	string $tmp = split("\\",$localfile);
+	$i = sizeof($tmp);
+	$x = 0;	
+	$i--;
+	$localname = "$tmp[$i]";
+	$localpath = "$tmp[$x]";
+	$x++;
+	while($x < $i)
+	{
+		$localpath = "$localpath\\$tmp[$x]";
+		$x++;
+	}
+
+### generates tmp filename if one is not provided
+
+	if ($gentempname) 
+	{
+		echo "Generating temporary filename!!\n";
+		
+		@record on;
+		ifnot(`lpgetenv -option temppath`) 
+		{
+			`script temppath.eps`;
+			ifnot (`lpgetenv -option temppath`) 
+			{
+				echo "Could not get temp path.";
+				return false;
+			}
+			else
+			{
+				$temppath=GetCmdData("value");
+			}
+		}
+		else
+		{
+			$temppath=GetCmdData("value");
+		}
+		@record off;
+		
+		$targetpath = "$temppath";
+
+		@record on;
+		`remotelocaltime`;
+		string $time = GetCmdData("remotetime");
+		string $timesplit = split(".", $time);
+		@record off;
+		$targetname = "~a0001$timesplit[1].tmp";
+		$targetfile = "$targetpath\\$targetname";
+		echo "Target filename is: $targetfile\n";
+	}
+
+### check to see if file already exists and put it
+
+	echo "Checking if $targetname already exists in $targetpath...\n";
+
+	ifnot (`dir "$targetname" -path "$targetpath"`)
+	{
+		echo "$targetname does not exist ... moving $targetname to target!!\n";
+		if($perm)
+		{
+			echo "File -WILL NOT- be deleted at reboot\n";
+
+			ifnot(`put "$localfile" -name "$targetfile" -permanent`)
+			{
+				echo "Could not transfer $targetname to $targetpath!!!\n";
+				return false;
+			}
+		}
+		else
+		{
+			echo "File -WILL BE- deleted at reboot\n";
+
+			ifnot(`put "$localfile" -name "$targetfile"`)
+			{
+				echo "Could not transfer $targetname to $targetpath!!!\n";
+				return false;
+			}
+		}	
+	}
+	else
+	{
+		echo "$targetname already exists in $targetpath\n";
+		echo "Choose another name!!!\n\n";
+		return false;
+	}
+
+### make sure file was transferred intact
+
+	echo "Now performing integrity check ...\n";
+
+	@record on;
+	`checksum -mask "$targetname" -path "$targetpath"`;
+	string $targetChecksum=GetCmdData("checksum_value");
+	`local checksum -mask "$localname" -path "$localpath"`;
+	string $localChecksum=GetCmdData("checksum_value");
+	@record off;
+
+	if ($targetChecksum != $localChecksum) 
+	{
+		echo "Checksums do not match!";
+		echo "  Local  - $localname:\t\t\t$localChecksum";
+		echo "  Remote - $targetname:\t\t$targetchecksum";
+		return false;
+	} 
+	else 
+	{
+		echo "Checksums have been automatically verified.";
+		echo "  Local  - $localname:\t\t\t$localChecksum";
+		echo "  Remote - $targetname:\t\t$targetchecksum";
+		return true;
+	}
+	@echo on;

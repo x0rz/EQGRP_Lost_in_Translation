@@ -1,0 +1,16 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>kisu_useBH</Name>
+		<ReplaceBeforeArgs>python _KiSu_BH_enable.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>kisu_useBH &lt;-enable &lt;on|off&gt;&gt;</Help>
+		<Help>    Changes whether KISU uses BH or not</Help>
+		<Options>
+			<Option>enable</Option>
+		</Options>
+	</Alias>
+</Aliases>	
+		

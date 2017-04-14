@@ -1,0 +1,76 @@
+<Software value="PSP">
+ <Vendor value="McAfee" directory="%ProgramFiles%\McAfee">
+  <Product value="VirusScan Enterprise" regkey="HKLM\software\mcafee\ePolicy Orchestrator\application plugins">
+   <Version value="8.5" regkey="HKLM\software\mcafee\ePolicy Orchestrator\application plugins" regsubkey="VIRUSCAN8600" />
+   <Version value="8.7" regkey="HKLM\software\mcafee\ePolicy Orchestrator\application plugins" regsubkey="VIRUSCAN8700" />
+   <Version value="8.8" regkey="HKLM\software\mcafee\ePolicy Orchestrator\application plugins" regsubkey="VIRUSCAN8800">
+    <BehaviorBlocking value="%regdata%" regkey="HKLM\Software\McAfee\SystemCore\VSCore\On Access Scanner\BehaviourBlocking" regvalue="AccessProtectionUserRules" config="True" />
+   </Version>
+   <InstallDate value="%regdata%" regkey="HKLM\Software\mcafee\desktopprotection" regvalue="szInstallDateTime" />
+   <Quarantine value="%regdata%" regkey="HKLM\Software\mcafee\desktopprotection" regvalue="quarantinedirectory" /> 
+   <BehaviorBlocking value="%regdata%" regkey="HKLM\Software\McAfee\VSCore\On Access Scanner\BehaviourBlocking" regvalue="AccessProtectionUserRules" config="True" />
+   <DefUpdates value="%regdata%" regkey="HKLM\Software\mcafee\avengine" regvalue="AVDatDate" />
+   <LogFile value="%regdata%" regkey="HKLM\Software\McAfee\VSCore\On Access Scanner\BehaviourBlocking" regvalue="szLogFileName" />
+   <BOLogFile value="%regdata%" regkey="HKLM\Software\McAfee\VSCore\On Access Scanner\BehaviourBlocking" regvalue="szLogFileName_Ent" />
+  </Product>
+  <Product value="Internet Security/Total Protection" regkey="HKLM\SOFTWARE\McAfee\MSC\AppInfo\Substitute">
+   <Version value="v10" regkey="HKLM\SOFTWARE\McAfee\MSC\AppInfo\Substitute" regvalue="build" regcompare="regex" regdata="^10\..+" />
+   <Version value="v11" regkey="HKLM\SOFTWARE\McAfee\MSC\AppInfo\Substitute" regvalue="build" regcompare="regex" regdata="^11\..+" />
+   <Version value="v12" regkey="HKLM\SOFTWARE\McAfee\MSC\AppInfo\Substitute" regvalue="build" regcompare="regex" regdata="^12\..+" />
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\McAfee\MSC" regvalue="InstallTStmp" config="True" />
+   <Quarantine value="%regdata%" regkey="HKLM\SOFTWARE\McAfee\VSCore\Quarantine" regvalue="szMoveFolder" />
+   <DefUpdates value="%regdata%" regkey="HKLM\SOFTWARE\McAfee\avengine" regvalue="AVDatDate" />
+   <GTIEnabled value="%regdata%" regkey="HKLM\SOFTWARE\McAfee\VirusScan\Artemis" regvalue="ArtemisEnabled" config="True" />
+   <BOPEnabled value="%regdata%" display="Buffer Overflow Prot" regkey="HKLM\SOFTWARE\McAfee\SystemCore\VSCore\On Access Scanner\BehaviourBlocking" regvalue="BOPEnabled" config="True" />
+   <HeuristicsEnabled value="%regdata%" display="Heuristic Scanning" regkey="HKLM\SOFTWARE\McAfee\SystemCore\VSCore\On Access Scanner\McShield\Configuration\Default" regvalue="dwProgramHeuristicsLevel" config="True" />
+  </Product>
+  <Product value="HIPS" regkey="HKLM\software\McAfee\HIP">
+   <Version value="7" regkey="HKLM\Software\McAfee\HIP" regvalue="VERSION" regcompare="regex" regdata="^7\..+">
+    <HostIPSStatus display="Host IPS Status" value="Enabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateHips" regdata="1" config="True" />
+    <HostIPSStatus display="Host IPS Status" value="Disabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateHips" regdata="0" config="True" />
+    <NetworkIPSStatus display="Network IPS Status" value="Enabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateNips" regdata="1" config="True" />
+    <NetworkIPSStatus display="Network IPS Status" value="Disabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateNips" regdata="0" config="True" />
+    <FirewallStatus display="Firewall Status" value="Enabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateFirewall" regdata="1" config="True" />
+    <FirewallStatus display="Firewall Status" value="Disabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateFirewall" regdata="0" config="True" />
+    <PatchVersion display="Patch Version" value="%regdata%" regkey="HKLM\software\McAfee\HIP" regvalue="Patch" config="True" />
+    <AppCreate display="App Creation Protection" value="Enabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateAppCreate" regdata="1" config="True" />
+    <AppCreate display="App Creation Protection" value="Disabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateAppCreate" regdata="0" config="True" />
+    <AppHook display="App Hooking Protection" value="Enabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateAppHook" regdata="1" config="True" />
+    <AppHook display="App Hooking Protection" value="Disabled" regkey="HKLM\software\McAfee\HIP" regvalue="LastEnabledStateAppHook" regdata="0" config="True" />
+    <PreventHigh display="Prevent High" value="Enabled" regkey="HKLM\software\McAfee\HIP\CounterMeasures" regvalue="PreventHigh" regdata="1" config="True" />
+    <PreventHigh display="Prevent High" value="Disabled" regkey="HKLM\software\McAfee\HIP\CounterMeasures" regvalue="PreventHigh" regdata="0" config="True" />
+    <PreventMedium display="Prevent Medium" value="Enabled" regkey="HKLM\software\McAfee\HIP\CounterMeasures" regvalue="PreventMedium" regdata="1" config="True" />
+    <PreventMedium display="Prevent Medium" value="Disabled" regkey="HKLM\software\McAfee\HIP\CounterMeasures" regvalue="PreventMedium" regdata="0" config="True" />
+    <PreventLow display="Prevent Low" value="Enabled" regkey="HKLM\software\McAfee\HIP\CounterMeasures" regvalue="PreventLow" regdata="1" config="True" />
+    <PreventLow display="Prevent Low" value="Disabled" regkey="HKLM\software\McAfee\HIP\CounterMeasures" regvalue="PreventLow" regdata="0" config="True" />
+   </Version>
+   <Version value="8" regkey="HKLM\Software\McAfee\HIP" regvalue="VERSION" regcompare="regex" regdata="^8\..+">
+   	<DefUpdates value="%regdata%" regkey="HKLM\software\McAfee\HIP" regvalue="ContentVersion" />
+    <HostIPSStatus display="Host IPS Status" value="Enabled" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_HipsEnabled" regdata="1" config="True" />
+    <HostIPSStatus display="Host IPS Status" value="Disabled" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_HipsEnabled" regdata="0" config="True" />
+    <NetworkIPSStatus display="Network IPS Status" value="Enabled" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_NipsEnabled" regdata="1" config="True" />
+    <NetworkIPSStatus display="Network IPS Status" value="Disabled" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_NipsEnabled" regdata="0" config="True" />
+    <FirewallStatus display="Firewall Status" value="Enabled" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="FW_Enabled" regdata="1" config="True" />
+    <FirewallStatus display="Firewall Status" value="Disabled" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="FW_Enabled" regdata="0" config="True" />
+    <ReactionHigh display="Reaction High" value="Prevent" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForHigh" regdata="3" config="True" />
+    <ReactionHigh display="Reaction High" value="Log" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForHigh" regdata="2" config="True" />
+    <ReactionHigh display="Reaction High" value="Ignore" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForHigh" regdata="1" config="True" />
+    <ReactionMedium display="Reaction Medium" value="Prevent" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForMedium" regdata="3" config="True" />
+    <ReactionMedium display="Reaction Medium" value="Log" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForMedium" regdata="2" config="True" />
+    <ReactionMedium display="Reaction Medium" value="Ignore" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForMedium" regdata="1" config="True" />
+    <ReactionLow display="Reaction Low" value="Prevent" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForLow" regdata="3" config="True" />
+    <ReactionLow display="Reaction Low" value="Log" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForLow" regdata="2" config="True" />
+    <ReactionLow display="Reaction Low" value="Ignore" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForLow" regdata="1" config="True" />
+    <ReactionInfo display="Reaction Info" value="Log" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForInfo" regdata="2" config="True" />
+    <ReactionInfo display="Reaction Info" value="Ignore" regkey="HKLM\software\McAfee\HIP\Config\Settings" regvalue="IPS_ReactionForInfo" regdata="1" config="True" />
+   </Version>
+  </Product>
+  <Product value="Agent" regkey="HKLM\Software\Network Associates\ePolicy Orchestrator\Application Plugins\EPOAGENT3000">
+   <Version value="%regdata%" regkey="HKLM\Software\Network Associates\ePolicy Orchestrator\Application Plugins\EPOAGENT3000" regvalue="Version">
+   <ePOServerList display="ePO Server List" value="%regdata%" regkey="HKLM\Software\network associates\epolicy orchestrator\agent" regvalue="ePOServerList" config="True" />   
+   <agentGUID display="Agent GUID" value="%regdata%" regkey="HKLM\Software\network associates\epolicy orchestrator\agent" regvalue="AgentGUID" config="True" />
+   <logLevel display="Logging Level" value="%regdata%" regkey="HKLM\Software\network associates\epolicy orchestrator" regvalue="LogLevel" config="True" />
+   </Version>
+  </Product>
+ </Vendor>
+</Software>

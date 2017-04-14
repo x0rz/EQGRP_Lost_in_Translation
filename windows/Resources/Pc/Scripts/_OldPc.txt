@@ -1,0 +1,9 @@
+# any line that begins with a '#' is discarded as a comment
+
+# pc_old commandline
+[-cpaddr <address>]
+	Use a particular CP address when connecting.
+[-run <egg|exe|filelib|memlib>]
+	Specifies the run type for the payload.
+[-payload <payload_name>]
+	The payload name

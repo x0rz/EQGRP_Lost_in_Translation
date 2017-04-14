@@ -1,0 +1,16 @@
+
+@include "_CommandModification.dsi";
+@include "_Versions.dsi";
+@echo off;
+
+bool $rtn = true;
+
+string $arch, $compiledArch;
+_GetArch($arch);
+_GetCompiledArch($compiledArch);
+if (($arch != $compiledArch) && !_IsWindowsVistaOrGreater())
+{
+	_DisableCommand("Handles");
+}
+
+return $rtn;

@@ -1,0 +1,16 @@
+<Plugin id="22">
+	<Name>Log Verifier</Name>
+	<Class>ddb.dsz.plugin.verifier.Verifier</Class>
+	<Description>Compares an XML document against its schema</Description>
+	<Logo>images/gkrellm2.png</Logo>
+	<Live>true</Live>
+	<Replay>true</Replay>
+	<UserStartable>false</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>true</UserClose>
+	<CanClose>true</CanClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

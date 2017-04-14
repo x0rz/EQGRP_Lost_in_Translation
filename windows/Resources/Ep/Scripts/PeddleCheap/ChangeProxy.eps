@@ -1,0 +1,104 @@
+#-----------------------------------------------------------------------------
+# File: ChangeProxy.eps
+#
+#  Changes the proxy configuration
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+	echo "Usage: $argv[0] <original_file>";
+	return false;
+}
+
+string $file = $argv[1];
+
+string $proxy;
+string $user;
+string $pass;
+
+$proxy = GetInput("Enter proxy address, including port. EX <1.2.3.4:8080> ");
+
+if( prompt "Does you wish to provide a username and password?" ) {
+	$user = GetInput("Enter Username");
+	$pass = GetInput("Enter Password");
+}
+
+
+@record on;
+
+# get full path to original file
+ifnot (`getdirectory -resources`) {
+	echo "* ChangeProxy: Unable to get resources directory";
+	return false;
+}
+
+string $resDir = GetCmdData("dir");
+ifnot (defined($resDir[0])) {
+	echo "* ChangeProxy: Unable to retrieve resources directory";
+	return false;
+}
+
+# see if it's already a full path
+string $fullPath;
+string $parts = Split(":", $file);
+if (sizeof($parts) > 1) {
+	# path is a full path
+	$fullPath = $file;
+} else {
+	$fullPath = "$resDir\\$file";
+}
+
+# get logs directory
+ifnot (`getdirectory -logs`) {
+	echo "* ChangeProxy: Unable to get logs directory";
+	return false;
+}
+
+string $currentDir = GetCmdData("dir");
+ifnot (defined($currentDir[0])) {
+	echo "* ChangeProxy: Unable to retrieve logs directory";
+	return false;
+}
+
+# get filename
+string $fileParts = Split("\\", $file);
+int $lastPart = sizeof($fileParts);
+$lastPart--;
+string $fileName = $fileParts[$lastPart];
+ifnot (defined($fileName[0])) {
+	echo "* ChangeProxy: Unable to determine file name";
+	return false;
+}
+
+$fileName = "$currentDir\\$fileName-Proxy";
+# set the time
+ifnot (`local run -command "$resDir\\PC\\Tools\\PCConfig.exe -proxy -inFile \\"$fullPath\\" -outFile \\"$fileName\\" -proxyAddress \\"$proxy\\""`) {
+	echo "* ChangeProxy: Setting address failed";
+	return false;
+}
+
+string $fullName = $fileName;
+# $fileParts = Split("\\", $file);
+$fileParts = Split("\\", $fileName);
+$lastPart = sizeof($fileParts);
+$lastPart--;
+$fileName = $fileParts[$lastPart];
+ifnot (defined($fileName[0])) {
+	echo "* ChangeProxy: Unable to determine file name";
+	return false;
+}
+
+if( defined( $user ) && defined( $pass ) ) {
+	$fullPath = $fileName;
+	$fileName = "$currentDir\\$fileName-Auth";
+	$fullName = $fileName;
+	ifnot (`local run -command "$resDir\\PC\\Tools\\PCConfig.exe -proxy -inFile \\"$fullPath\\" -outFile \\"$fileName\\" -proxyAuth \\"$user\\" \\"$pass\\""`) {
+		echo "* ChangeProxy: Setting authentication credentials failed";
+		return false;
+	}
+}
+$fileName = $fullName;
+
+echo "Proxy configuration set for $fileName";
+return SetCmdData(STRING, "file", $fileName);

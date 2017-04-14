@@ -1,0 +1,97 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x0101200b'>
+
+	<Command id='1' name='FrzLinks'>
+
+		<Help>Manipulates FRZ links</Help>
+
+		<Input>
+			<Option name='list' optional='false' group='action'>
+				<Help>Display links</Help>
+				<Set data='action' value='0'/>
+			</Option>
+
+			<Option name='state' optional='false' group='action'>
+				<Help>Gets or sets a link's status</Help>
+				<Set data='action' value='1'/>
+
+				<Argument name='link_id' data='linkId'/>
+				<Argument name='action' optional='true'>
+					<Value string='query'>
+						<Set data='state' value='0'/>
+					</Value>
+					<Value string='on'>
+						<Set data='state' value='1'/>
+					</Value>
+					<Value string='off'>
+						<Set data='state' value='2'/>
+					</Value>
+					<Value string='start'>
+						<Set data='state' value='3'/>
+					</Value>
+					<Value string='stop'>
+						<Set data='state' value='4'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='add' optional='false' group='action'>
+				<Help>Adds a link</Help>
+				<Set data='action' value='2'/>
+				
+				<Argument name='link_id' data='linkId'/>
+				<Argument name='provider' data='linkProvider'/>
+			</Option>
+
+			<Option name='delete' optional='false' group='action'>
+				<Help>Deletes a link</Help>
+				<Set data='action' value='3'/>
+
+				<Argument name='link_id' data='linkId'/>
+			</Option>
+
+			<Option name='query' optional='false' group='action'>
+				<Help>Gets a link configuration</Help>
+				<Set data='action' value='4'/>
+
+				<Argument name='link_id' data='linkId'/>
+			</Option>
+			
+			<Option name='parameter' optional='false' group='action'>
+				<Help>Gets or sets (if linkParamData is given) a link parameter</Help>
+				<Set data='action' value='5'/>
+
+				<Argument name='link_id' data='linkId'/>
+				<Argument name='param_id' data='linkParam'/>
+				<Argument name='linkParamData' data='linkParamData' optional='true'/>
+			</Option>
+
+			<Option name='configure' optional='false' group='action'>
+				<Help>Sets the link configuration</Help>
+				<Set data='action' value='6'/>
+
+				<Argument name='link_id' data='linkId'/>
+				<Argument name='cryptProvider' data='cryptProvider'/>
+				<Argument name='cryptKey' data='cryptKey'/>
+				<Argument name='conMgrProvider' data='conMgrProvider'/>
+				<Argument name='linkParamData' data='linkParamData'/>
+			</Option>
+
+		</Input>
+
+		<Output>
+			<Data name='action' type='uint8_t' default='0'/>
+			<Data name='linkId' type='uint16_t' default='0'/>
+			<Data name='state' type='uint8_t' default='0'/>
+			<Data name='linkProvider' type='uint32_t' default='0'/>
+			<Data name='linkParam' type='uint16_t' default='0'/>
+			<Data name='linkParamData' type='bytearray'/>
+			<Data name='cryptProvider' type='uint32_t' default='0'/>
+			<Data name='cryptKey' type='bytearray'/>
+			<Data name='conMgrProvider' type='uint32_t' default='0'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

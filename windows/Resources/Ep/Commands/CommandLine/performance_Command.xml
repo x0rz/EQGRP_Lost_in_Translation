@@ -1,0 +1,132 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31409'>
+ <Command id='16' name='performance'>
+  <Help>Queries the Performance Hive of the registry</Help>
+  <Input>
+			<Option name="local" optional="false" group="type">
+				<Set data='local' value='true' />
+				<Help>Get local performance data</Help>
+			</Option>
+			<Option name="remote" optional="false" group="type">
+				<Set data='local' value='false' />
+				<Argument name="remote_server" data="servername" optional="false" />
+				<Help>Get remote performance data</Help>
+			</Option>
+			<Option name="max" optional="true">
+				<Argument name="bufferSize" data="maxbuffer" optional="false"/>
+				<Help>Sets the maximum buffer size (Default:  10240)</Help>
+			</Option>
+			<Option name="ObjectNum" optional="true" group="dataGroup">
+				<Help>Retrieves a specific number (does not save bandwidth)</Help>
+				<Argument name="number" data="dataset"/>
+				<Set data="restricted" value="true"/>
+			</Option>
+			<Option name="data" optional="true" group="dataGroup">
+				<Help>Sets the data set that you desire to retrieve</Help>
+				<Argument name="set" optional="false">
+					<Value string="All">
+						<Set data="dataset" value="Global"/>
+						<Set data="restricted" value="false"/>
+					</Value>
+					<Value string="Expensive">
+						<Set data="dataset" value="Costly"/>
+						<Set data="restricted" value="false"/>
+					</Value>
+					<Value string="LogicalDisk">
+						<Set data="dataset" value="236"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="PhysicalDisk">
+						<Set data="dataset" value="234"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Browser">
+						<Set data="dataset" value="52"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Cache">
+						<Set data="dataset" value="86"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Processor">
+						<Set data="dataset" value="238"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Memory">
+						<Set data="dataset" value="4"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Objects">
+						<Set data="dataset" value="260"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="PagingFile">
+						<Set data="dataset" value="700"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="System">
+						<Set data="dataset" value="2"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Process">
+						<Set data="dataset" value="230"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Thread">
+						<Set data="dataset" value="232"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="JobObject">
+						<Set data="dataset" value="1500"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="JobObjectDetails">
+						<Set data="dataset" value="1548"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="Telephony">
+						<Set data="dataset" value="1150"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="NetworkInterface">
+						<Set data="dataset" value="510"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="IP">
+						<Set data="dataset" value="546"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="ICMP">
+						<Set data="dataset" value="582"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="UDP">
+						<Set data="dataset" value="658"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="TCP">
+						<Set data="dataset" value="638"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+					<Value string="TerminalServices">
+						<Set data="dataset" value="2176"/>
+						<Set data="restricted" value="true"/>
+					</Value>
+				</Argument>	
+			</Option>
+			<Option name="bare" optional="true" >
+				<Set data='bare' value='true' />
+				<Help>Do not get strings</Help>
+			</Option>
+  </Input>
+  <Output>
+   <Data name='local' type='bool' default='true'/>
+   <Data name='servername' type='string'/>
+   <Data name='maxbuffer' type='uint32_t' default="10240" />
+   <Data name='dataset' type='string' default="Global"/>
+   <Data name='restricted' type='bool' default='false'/>
+   <Data name='bare' type='bool' default='false'/>
+  </Output>
+ </Command>
+</Plugin>

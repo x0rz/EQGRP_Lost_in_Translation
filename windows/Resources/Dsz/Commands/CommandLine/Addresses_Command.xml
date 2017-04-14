@@ -1,0 +1,95 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='0' name='Addresses'>
+
+		<Help>Controls the addressable CP addresses</Help>
+
+		<Input>
+			<Option name='list' optional='true' group='type'>
+				<Help>List current CP addresses</Help>
+				<Set data='action' value='0'/>
+			</Option>
+			<!-- leave get as alias for -list for backwards compatibility -->
+			<Option name='get' optional='true' group='type'>
+				<Help>Same as -list</Help>
+				<Set data='action' value='0'/>
+			</Option>
+
+			<Option name='add' optional='true' group='type'>
+				<Help>Add a new CP addresses</Help>
+				<Set data='action' value='1'/>
+				
+				<Argument name='address' data='address'/>
+				<Argument name='type' optional='true'>
+					<Value string='unknown'>
+						<Set data='type' value='0'/>
+					</Value>
+					<Value string='dsz'>
+						<Set data='type' value='1'/>
+					</Value>
+					<Value string='dsz_with_pc'>
+						<Set data='type' value='2'/>
+					</Value>
+					<Value string='sbz'>
+						<Set data='type' value='3'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='delete' optional='true' group='type'>
+				<Help>Delete an existing CP addresses</Help>
+				<Set data='action' value='2'/>
+				
+				<Argument name='address' data='address'/>
+			</Option>
+
+			<Option name='platform' optional='true'>
+				<Argument name='sys_platform' data='platform'/>
+				<Argument name='compiled_platform' optional='true' data='compiledPlatform'/>
+			</Option>
+			
+			<Option name='arch' optional='true'>
+				<Argument name='sys_arch' data='arch'/>
+				<Argument name='compiled_arch' optional='true' data='compiledArch'/>
+			</Option>
+
+			<Option name='osVersion' optional='true'>
+				<Argument name='major' data='osVersionMajor'/>
+				<Argument name='minor' data='osVersionMinor' optional='true'/>
+				<Argument name='revision' data='osVersionRevision' optional='true'/>
+				<Argument name='build' data='osVersionBuild' optional='true'/>
+			</Option>
+
+			<Option name='cLib' optional='true'>
+				<Argument name='major' data='cLibMajor'/>
+				<Argument name='minor' data='cLibMinor' optional='true'/>
+				<Argument name='revision' data='cLibRevision' optional='true'/>
+			</Option>
+
+			<Option name='hostname' optional='true'>
+				<Argument name='name' data='hostname'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='action' type='uint8_t' default='0'/>
+			<Data name='address' type='cpaddr'/>
+			<Data name='type' type='uint8_t'/>
+			<Data name='platform' type='string'/>
+			<Data name='compiledPlatform' type='string'/>
+			<Data name='arch' type='string'/>
+			<Data name='compiledArch' type='string'/>
+			<Data name='osVersionMajor' type='uint16_t' default='0'/>
+			<Data name='osVersionMinor' type='uint16_t' default='0'/>
+			<Data name='osVersionRevision' type='uint16_t' default='0'/>
+			<Data name='osVersionBuild' type='uint16_t' default='0'/>
+			<Data name='cLibMajor' type='uint16_t' default='0'/>
+			<Data name='cLibMinor' type='uint16_t' default='0'/>
+			<Data name='cLibRevision' type='uint16_t' default='0'/>
+			<Data name='hostname' type='string'/>
+		</Output>
+  </Command>
+
+</Plugin>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="GrDo_FileScanner_DataHandler" id="1513">
+    <Interfaces>
+        <Interface provider="0x01010071" id="0x01c10034">
+            <DataHandler>25154</DataHandler>
+        </Interface>
+    </Interfaces>
+    <Dependencies/>
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+    <Architecture type="i386">
+        <Platform family="windows_nt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">i386-winnt-vc9s/release/GrDo_FileScanner_LpData.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

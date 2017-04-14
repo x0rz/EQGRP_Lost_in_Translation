@@ -1,0 +1,16 @@
+<?xml version='1.0' ?>
+
+<Technique name='Mcl_NtElevation_ErNi_GrSa' id='124'>
+
+	<Implementation value='0'/>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+		    <Version major='5' minor='0' other='*'/>
+		</Platform>
+
+	</Architecture>
+	
+
+</Technique>

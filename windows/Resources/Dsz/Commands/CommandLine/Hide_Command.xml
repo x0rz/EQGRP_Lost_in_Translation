@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Hide_Tasking.pyo' providerType='script'>
+
+    <Command name="Hide" id="0">
+
+        <Input>
+			<Option name="process" group="type" optional="false">
+				<Help>Hides a given process</Help>
+				
+				<Set data="type" value="1"/>
+				<Argument name="id" data="intValue"/>
+			</Option>
+			
+			<Option name="unhide">
+				<Help>Unhide the given item</Help>
+				
+				<Set data="unhide" value="true"/>
+				<Argument name="metaData" data="metaData">
+					<Help>Any meta data required by the unhide</Help>
+				</Argument>
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name="type" type="uint8_t"/>
+			<Data name="intValue" type="uint32_t"/>
+			<Data name="unhide" type="bool" default="false"/>
+			<Data name="metaData" type="string"/>
+        </Output>
+    </Command>
+</Plugin>

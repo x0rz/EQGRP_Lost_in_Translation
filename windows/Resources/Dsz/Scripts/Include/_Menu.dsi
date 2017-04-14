@@ -1,0 +1,691 @@
+#--------------------------------------------------------------------------#
+# All delegate functions (for SetHeader and AddOption) should be of the
+# format:
+#   sub Function( REF string %menu, REF string %params, IN string $key, REF bool $cont );
+# These delegate functions should -always- return true, using false only
+# for menu-ending errors.
+# If the consequence of the function is a desire to exit the menu, set
+# $cont to false (but still return true).  This will cause a clean exit
+#--------------------------------------------------------------------------#
+@include "_Arrays.dsi";
+
+#--------------------------------------------------------------------------#
+# CreateMenu - creates the menu
+# 	menu - the hash that will hold the details of the menu
+#	title - the title of the menu
+#	menuHandle - the handle necessary for later uses of the menu
+#--------------------------------------------------------------------------#
+sub _CreateMenu(REF string %menu, IN string $title, OUT string $menuHandle) {
+	if( !defined( $title ) ) {
+		echo "Invalid input into CreateMenu";
+		return false;
+	}
+	
+	string $secretword;
+	__GetSecretWord( $secretWord );
+	
+	int $index = 0;
+	if( defined( %menu{'$secretword'} ) ) {
+		$index = sizeof( %menu{'$secretword'} );
+	}
+	%menu{'$secretword'}[$index] = $secretword;
+	%menu{'__menu$index\_title'} = $title;
+	%menu{'__menu$index\_default'} = "";
+	return __FormHandle( $menuHandle, $index );
+}
+
+sub _SetDefault( REF string %menu, IN string $menuHandle, IN string $optionHandle ) {
+	int $hMenu;
+	if( !( defined( $menuHandle ) && defined( $optionHandle ) && __ParseHandle( $menuHandle, $hMenu ) && defined( $hMenu ) ) ) {
+		echo "Invalid input into CreateMenu";
+		return false;
+	}
+	%menu{'__menu$hMenu\_default'} = $optionHandle;
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# SetHeader
+# 	menu - the hash that holds the details of the menu
+#	menuHandle - the handle to the particular menu
+#	headerFunction - the name of a function (see above for prototype)
+#--------------------------------------------------------------------------#
+sub _SetHeader(REF string %menu, IN string $menuHandle, IN string $headerFunction) {
+	int $hMenu;
+	if( !defined( $menuHandle ) || !__ParseHandle( $menuHandle, $hMenu ) || !defined( $hMenu ) ) {
+		echo "Invalid input into SetHeader";
+		return false;
+	}
+	%menu{'__menu$hMenu\_header'} = $headerFunction;
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# AddSection - adds a new menu section that is visible
+# 	menu - the hash that holds the details of the menu
+#	menuHandle - the handle to the particular menu
+#	title - the name of the menu
+#	sectionHandle - the handle to use when changing the name or visibility
+#		of this section, or for AddOption
+#--------------------------------------------------------------------------#
+sub _AddSection(REF string %menu, IN string $menuHandle, IN string $title, OUT string $sectionHandle) {
+	return _AddSection( %menu, $menuHandle, $title, true, $sectionHandle );
+} 
+
+#--------------------------------------------------------------------------#
+# AddSection
+# 	menu - the hash that holds the details of the menu
+#	menuHandle - the handle to the particular menu
+#	title - the name of the menu
+#	visible - whether or not this menu section should start visible
+#	sectionHandle - the handle to use when changing the name or visibility
+#		of this section, or for AddOption
+#--------------------------------------------------------------------------#
+sub _AddSection(REF string %menu, IN string $menuHandle, IN string $title, IN bool $visible, OUT string $sectionHandle) {
+	if( !defined( $title ) || !defined( $visible ) || !defined( $title ) ) {
+		echo "Invalid input into CreateSection";
+		return false;
+	}
+	
+	int $hMenu;
+	if( !__ParseHandle( $menuHandle, $hMenu ) || !defined( $hMenu ) ) {
+		echo "Invalid handle";
+		return false;
+	}
+	
+	int $index = 0;
+	if( defined( %menu{'__menu$hMenu\_sectionTitle'} ) ) {
+		$index = sizeof( %menu{'__menu$hMenu\_sectionTitle'} );
+	}
+	
+	%menu{'__menu$hMenu\_sectionTitle'}[$index] = $title;
+	%menu{'__menu$hMenu\_sectionVisible'}[$index] = "$visible";
+	
+	return __FormHandle( $sectionHandle, $hMenu, $index );
+}
+
+#--------------------------------------------------------------------------#
+# HideSection - hides the specified section
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the particular section
+#--------------------------------------------------------------------------#
+sub _HideSection( REF string %menu, IN string $sectionHandle ) {
+	return __SetSectionVisibility( %menu, $sectionHandle, false );
+}
+
+#--------------------------------------------------------------------------#
+# HideSection - shows the specified section
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the particular section
+#--------------------------------------------------------------------------#
+sub _ShowSection( REF string %menu, IN string $sectionHandle ) {
+	return __SetSectionVisibility( %menu, $sectionHandle, true );
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external calls
+# SetSectionVisibility - shows or hides the specified section
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the particular section
+#	visible - the new state
+#--------------------------------------------------------------------------#
+sub __SetSectionVisibility( REF string %menu, IN string $sectionHandle, IN bool $visible ) {
+	int $hMenu, $hSection;
+	if( !(
+			defined( $sectionHandle ) &&
+			__ParseHandle( $sectionHandle, $hMenu, $hSection )  &&
+			defined( $hMenu ) &&
+			defined( $hSection )
+	)) {
+		echo "Invalid input into SetSectionVisibility";
+		return false;
+	}
+	
+	%menu{'__menu$hMenu\_sectionVisible'}[$hSection] = "$visible";
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# RenameSection - shows or hides the specified section
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the particular section
+#	title - the new title for a section
+#--------------------------------------------------------------------------#
+sub _RenameSection( REF string %menu, IN string $sectionHandle, IN string $title ) {
+	int $hMenu, $hSection;
+	if( !(
+			defined( $sectionHandle ) &&
+			__ParseHandle( $sectionHandle, $hMenu, $hSection )  &&
+			defined( $hMenu ) &&
+			defined( $hSection )
+	)) {
+		echo "Invalid input into RenameSection";
+		return false;
+	}
+	
+	%menu{'__menu$hMenu\_sectionTitle'}[$hSection] = $title;
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# AddOption - adds an option into the menu
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the parent section
+#	name - the name of the particular option
+#	handler - the function (See prototype at the top of the file) that
+#		is invoked when this command is selected
+#--------------------------------------------------------------------------#
+sub _AddOption( REF string %menu, IN string $sectionHandle, IN string $name, IN string $handler ) {
+	return _AddOption( %menu, $sectionHandle, $name, $handler, true );
+}
+
+#--------------------------------------------------------------------------#
+# AddOption - adds an option into the menu with the specified visibility
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the parent section
+#	name - the name of the particular option
+#	handler - the function (See prototype at the top of the file) that
+#		is invoked when this command is selected
+#	visible - the visibility of the option
+#--------------------------------------------------------------------------#
+sub _AddOption( REF string %menu, IN string $sectionHandle, IN string $name, IN string $handler, IN bool $visible ) {
+	string $handle;
+	return _AddOption( %menu, $sectionHandle, $name, $handler, $visible, $handle );
+}
+
+#--------------------------------------------------------------------------#
+# AddOption - adds an option into the menu with the specified visibility
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the parent section
+#	name - the name of the particular option
+#	handler - the function (See prototype at the top of the file) that
+#		is invoked when this command is selected
+#	visible - the visibility of the option
+#	optionHandle - the outgoing option handle
+#--------------------------------------------------------------------------#
+sub _AddOption( REF string %menu, IN string $sectionHandle, IN string $name, IN string $handler, IN bool $visible, OUT string $handle ) {
+	return _AddOption( %menu, $sectionHandle, $name, $handler, $visible, "", $handle );
+}
+
+#--------------------------------------------------------------------------#
+# AddOption - adds an option into the menu with the specified visibility
+# 	menu - the hash that holds the details of the menu
+#	sectionHandle - the handle to the parent section
+#	name - the name of the particular option
+#	handler - the function (See prototype at the top of the file) that
+#		is invoked when this command is selected
+#	visible - the visibility of the option
+#	key - a key that will can be passed into the function
+#	optionHandle - the handle for the option, in case the tool needs
+#		to modify it
+#--------------------------------------------------------------------------#
+sub _AddOption( REF string %menu, IN string $sectionHandle, IN string $name, IN string $handler, IN bool $visible, IN string $key, OUT string $optionHandle ) {
+	int $hMenu, $hSection;
+	if( !(
+			defined( $sectionHandle ) &&
+			__ParseHandle( $sectionHandle, $hMenu, $hSection )  &&
+			defined( $hMenu ) &&
+			defined( $hSection ) &&
+			defined( $name ) &&
+			defined( $handler ) &&
+			defined( $visible )
+	)) {
+		echo "Invalid input into AddOption";
+		return false;
+	}
+	
+	int $index = 0;
+	if( defined( %menu{'__menu$hMenu\_$hSection\_optionTitle'} ) ) {
+		$index = sizeof( %menu{'__menu$hMenu\_$hSection\_optionTitle'} );
+	}
+	
+	%menu{'__menu$hMenu\_$hSection\_optionTitle'}[$index] = $name;
+	%menu{'__menu$hMenu\_$hSection\_optionHandler'}[$index] = $handler;
+	%menu{'__menu$hMenu\_$hSection\_optionVisible'}[$index] = "$visible";
+	%menu{'__menu$hMenu\_$hSection\_optionKey'}[$index] = $key;
+	
+	return __FormHandle( $optionHandle, $hMenu, $hSection, $index );
+}
+
+#--------------------------------------------------------------------------#
+# HideOption - hides the specified option
+# 	menu - the hash that holds the details of the menu
+#	optionhandle - the handle to the particular option
+#--------------------------------------------------------------------------#
+sub _HideOption( REF string %menu, IN string $optionHandle ) {
+	return __SetOptionVisibility( %menu, $optionHandle, false );
+}
+
+#--------------------------------------------------------------------------#
+# ShowOption - shows the specified option
+# 	menu - the hash that holds the details of the menu
+#	optionhandle - the handle to the particular option
+#--------------------------------------------------------------------------#
+sub _ShowOption( REF string %menu, IN string $optionHandle ) {
+	return __SetOptionVisibility( %menu, $optionHandle, true );
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external use
+# SetOptionVisibility - shows or hides the specified option
+# 	menu - the hash that holds the details of the menu
+#	optionhandle - the handle to the particular option
+#	visible - the new state of the option
+#--------------------------------------------------------------------------#
+sub __SetOptionVisibility( REF string %menu, IN string $optionHandle, IN bool $visible ) {
+	int $hMenu, $hSection, $hOption;
+	if( !(
+			defined( $optionHandle ) &&
+			__ParseHandle( $optionHandle, $hMenu, $hSection, $hOption )  &&
+			defined( $hMenu ) &&
+			defined( $hSection ) &&
+			defined( $hOption ) && 
+			defined( $visible )
+	)) {
+		echo "Invalid input into SetOptionVisibility";
+		return false;
+	}
+
+	%menu{'__menu$hMenu\_$hSection\_optionVisible'}[$hOption] = "$visible";
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# RenameOption - Changes the text of the option
+# 	menu - the hash that holds the details of the menu
+#	optionhandle - the handle to the particular option
+#	title - the new text to display
+#--------------------------------------------------------------------------#
+sub _RenameOption( REF string %menu, IN string $optionHandle, IN string $title ) {
+	int $hMenu, $hSection, $hOption;
+	if( !(
+			defined( $optionHandle ) &&
+			__ParseHandle( $optionHandle, $hMenu, $hSection, $hOption )  &&
+			defined( $hMenu ) &&
+			defined( $hSection ) &&
+			defined( $hOption ) &&
+			defined( $title )
+	)) {
+		echo "Invalid input into RenameOption";
+		return false;
+	}
+	
+	%menu{'__menu$hMenu\_$hSection\_optionTitle'}[$hOption] = $title;
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# SetOptionHandler - Changes the text of the option
+# 	menu - the hash that holds the details of the menu
+#	optionhandle - the handle to the particular option
+#	handler - the new function to invoke
+#--------------------------------------------------------------------------#
+sub _SetOptionHandler( REF string %menu, IN string $optionHandle, IN string $handler ) {
+	int $hMenu, $hSection, $hOption;
+	if( !(
+			defined( $optionHandle ) &&
+			__ParseHandle( $optionHandle, $hMenu, $hSection, $hOption )  &&
+			defined( $hMenu ) &&
+			defined( $hSection ) &&
+			defined( $hOption ) &&
+			defined( $handler )
+	)) {
+		echo "Invalid input into SetOptionHandler";
+		return false;
+	}
+	
+	%menu{'__menu$hMenu\_$hSection\_optionHandler'}[$hOption] = $handler;
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# SetOptionKey - Changes the key value
+# 	menu - the hash that holds the details of the menu
+#	optionhandle - the handle to the particular option
+#	key - the new key for hte option
+#--------------------------------------------------------------------------#
+sub _SetOptionKey( REF string %menu, IN string $optionHandle, IN string $key ) {
+	int $hMenu, $hSection, $hOption;
+	if( !(
+			defined( $optionHandle ) &&
+			__ParseHandle( $optionHandle, $hMenu, $hSection, $hOption )  &&
+			defined( $hMenu ) &&
+			defined( $hSection ) &&
+			defined( $hOption ) &&
+			defined( $key )
+	)) {
+		echo "Invalid input into SetOptionHandler";
+		return false;
+	}
+	
+	%menu{'__menu$hMenu\_$hSection\_optionKey'}[$hOption] = $key;
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# InvokeOption - Invokes the function of an option
+# 	menu - the hash that holds the details of the menu
+#	optionHandle - the handle to the option
+#	params - a hash of user information
+#	cont - if cont should be returned flagged
+#--------------------------------------------------------------------------#
+sub _InvokeOption( REF string %menu, IN string $optionHandle, REF string %params, REF bool $cont ) {
+	int $hMenu, $hSection, $hOption;
+	
+	if( !(
+			__ParseHandle( $optionHandle, $hMenu, $hSection, $hOption ) && 
+			defined( $hMenu ) && defined( $hSection ) && defined( $hOption )
+	)) {
+		return false;
+	}
+
+	return CallSub( 
+			%menu{'__menu$hMenu\_$hSection\_optionHandler'}[$hOption], 
+			%menu, 
+			%params, 
+			%menu{'__menu$hMenu\_$hSection\_optionKey'}[$hOption], 
+			$cont );
+}
+
+#--------------------------------------------------------------------------#
+# _ExecuteMenu - Starts the menu
+# 	menu - the hash that holds the details of the menu
+#	menuHandle - the handle to the menu
+#	params - a hash of user information
+#--------------------------------------------------------------------------#
+sub _ExecuteMenu( REF string %menu, IN string $menuHandle, REF string %params ) {
+	int $hMenu;
+	if( !defined( $menuHandle ) || !__ParseHandle( $menuHandle, $hMenu ) || !defined( $hMenu ) ) {
+		echo "Invalid menu (01)";
+		return false;
+	}
+	
+	
+	while( true ) {
+		if( !defined( %menu{'__menu$hMenu\_title'} ) ) {
+			echo "Invalid menu (02)";
+			return false;
+		}
+		echo "";
+		echo "";
+		echo "%menu{'__menu$hMenu\_title'}";
+		if( defined( %menu{'__menu$hMenu\_header'} ) && %menu{'__menu$hMenu\_header'} != "" ) {
+			bool $cont;
+			echo "";
+			if( !CallSub( %menu{'__menu$hMenu\_header'}, %menu, %params, "", $cont ) ) {
+				echo "Invalid menu (03)";
+				return false;
+			}
+			echo "";
+		}
+		# for handling up to 99 commands in a right-justified column
+		string $buffer = " ";
+		int $index = 0;
+
+		string $lines;
+		
+		_AppendString( $lines, "$buffer$index) Exit" );
+		$index++;
+		string $subroutines;
+		string $singleDescription;
+		
+		int $defMenu, $defSection, $defOption;
+		string $defaultOption;
+		if( !( 
+				__ParseHandle( %menu{'__menu$hMenu\_default'}, $defMenu, $defSection, $defOption ) &&
+				defined( $defMenu ) && defined( $defSection ) && defined( $defOption )
+		)) {
+			# invalid values
+			$defMenu = -1;
+			$defSection = -1;
+			$defOption = -1;
+		}
+		
+		
+		for( int $i = 0; $i < sizeof( %menu{'__menu$hMenu\_sectionTitle'} ); $i++ ) {
+			if( !<bool>%menu{'__menu$hMenu\_sectionVisible'}[$i] ) {
+				continue;
+			}
+			
+			if( %menu{'__menu$hMenu\_sectionTitle'}[$i] != "" ) {
+				_AppendString( $lines, "" );
+				_AppendString( $lines, "%menu{'__menu$hMenu\_sectionTitle'}[$i]" );
+			}
+			for( int $j = 0; $j < sizeof( %menu{'__menu$hMenu\_$i\_optionTitle'} ); $j++ ) {
+				if( !<bool>%menu{'__menu$hMenu\_$i\_optionVisible'}[$j] ) {
+					continue;
+				}
+				if( $index >= 10 ) {
+					$buffer = "";
+				}
+				$singleDescription = "%menu{'__menu$hMenu\_$i\_optionTitle'}[$j]";
+				_AppendString( $lines, "$buffer$index) $singleDescription" );
+				string $temp;
+				__FormHandle( $temp, $hMenu, $i, $j );
+				$subroutines[$index] = $temp;
+				
+				if( $hMenu == $defMenu && $i == $defSection && $j == $defOption ) {
+					$defaultOption = "$index";
+				}
+				
+				$index++;
+			}	
+		}
+		
+		bool $cont = true;
+		if( $index == 2 ) {
+			# only one choice
+			if( prompt( "$singleDescription?" ) ) {
+				if( !_InvokeOption( %menu, $subroutines[1], %params, $cont ) ) {
+					echo "Subroutine $subroutines[1] errored";
+					return false;
+				}
+			} else {
+				$cont = false;
+			}
+		} else {
+			for( int $i=0; $i < sizeof($lines); $i++ ) {
+				echo "$lines[$i]";
+			}
+			# many choices
+			int $choice = -1;
+			bool $selected;
+			if( defined( $defaultOption ) ) {
+				$selected = GetInput( "Enter the desired option", $choice, $defaultOption );
+			} else {
+				$selected = GetInput( "Enter the desired option", $choice );
+			}
+			if( !$selected ) {
+				echo "Invalid input into ExecuteMenu";
+				return false;
+			}
+			
+			if( $choice < 0 ) {
+				continue;
+			}
+			if( $choice == 0 ) {
+				return true;
+			}
+			if( $choice >= sizeof( $subroutines ) ) {
+				continue;
+			}
+			if( !_InvokeOption( %menu, $subroutines[$choice], %params, $cont ) ) {
+				echo "Subroutine $subroutines[$choice] errored";
+				return false;
+			}
+		}
+		
+		if( !$cont ) {
+			return true;
+		}
+		
+		if( !defined(%params{'nopause'}) ) {
+			pause;
+		}
+		echo "\n\n";
+	}
+}
+
+#--------------------------------------------------------------------------#
+# _ExecuteSimpleMenu
+#--------------------------------------------------------------------------#
+sub _ExecuteSimpleMenu( IN string $comment, IN string $menuItems, OUT string $selected ) {
+	int $chosenIndex;
+	return _ExecuteSimpleMenu($comment, $menuItems, $selected, $chosenIndex);
+}
+sub _ExecuteSimpleMenu( IN string $comment, IN string $menuItems, OUT string $selected, OUT int $chosenIndex ) {
+
+	echo "$comment";
+
+	echo " 0) Exit";
+	for (int $i=0; $i < sizeof($menuItems); $i++)
+	{
+		int $count = $i;
+		$count++;
+		if ($count < 10)
+		{
+			echo " $count) $menuItems[$i]";
+		}
+		else
+		{
+			echo "$count) $menuItems[$i]";
+		}
+	}
+	
+	while( true ) {
+		int $choice = -1;
+		if( !GetInput("Enter the desired option", $choice) ) {
+			echo("* Failed to get choice", ERROR);
+			return false;
+		}
+		
+		if( $choice < 0 ) {
+			continue;
+		}
+		if( $choice == 0 ) {
+			return true;
+		}
+		if( $choice > sizeof( $menuItems ) ) {
+			continue;
+		}
+			
+		$chosenIndex = $choice;
+		$chosenIndex--;
+		$selected = $menuItems[$chosenIndex];
+		return true;
+	}
+
+	# shouldn't get here
+	return false;
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external use
+# ParseHandle - Retrieve the component parts of a handle
+# 	handles - the handle to parse
+#	menu - the value of the menu part of the handle
+#--------------------------------------------------------------------------#
+sub __ParseHandle( IN string $handles, OUT int $menu ) {
+	int $section;
+	return __ParseHandle( $handles, $menu, $section );
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external use
+# ParseHandle - Retrieve the component parts of a handle
+# 	handles - the handle to parse
+#	menu - the value of the menu part of the handle
+#	section - the value of the section part of the handle
+#--------------------------------------------------------------------------#
+sub __ParseHandle( IN string $handles, OUT int $menu, OUT int $section ) {
+	int $option;
+	return __ParseHandle( $handles, $menu, $section, $option );
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external use
+# ParseHandle - Retrieve the component parts of a handle
+# 	handles - the handle to parse
+#	menu - the value of the menu part of the handle
+#	section - the value of the section part of the handle
+#	option - the value of the option part of the handle
+#--------------------------------------------------------------------------#
+sub __ParseHandle( IN string $handle, OUT int $menu, OUT int $section, OUT int $option ) {
+	if( !defined( $handle ) ) {
+		echo "Invalid Handle";
+		return false;
+	}
+	string $parts;
+	
+	if( RegexMatch( "^[0-9]+\$", $handle, $parts ) ) {
+		$menu		= <int>$handle;
+	} else if( RegexMatch( "^([0-9]+)\\|([0-9]+)\$", $handle, $parts ) && defined( $parts ) && sizeof( $parts ) == 2 ) {
+		$menu		= <int> $parts[0];
+		$section	= <int> $parts[1];
+	} else if( RegexMatch( "^([0-9]+)\\|([0-9]+)\\|([0-9]+)\$", $handle, $parts ) ) {
+		$menu		= <int> $parts[0];
+		$section	= <int> $parts[1];
+		$option		= <int> $parts[2];
+	} else {
+		return false;
+	}
+	return true;
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external use
+# FormHandle - Create a handle from the relevant values
+# 	handles - the output handle
+#	menu - the value of the menu part of the handle
+#--------------------------------------------------------------------------#
+sub __FormHandle( OUT string $handle, IN int $menu ) {
+	int $section;
+	return __FormHandle( $handle, $menu, $section );
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external use
+# FormHandle - Create a handle from the relevant values
+# 	handles - the output handle
+#	menu - the value of the menu part of the handle
+#	section - the value of the section part of the handle
+#--------------------------------------------------------------------------#
+sub __FormHandle( OUT string $handle, IN int $menu, IN int $section ) {
+	int $option;
+	return __FormHandle( $handle, $menu, $section, $option );
+}
+
+#--------------------------------------------------------------------------#
+# not intended for external use
+# FormHandle - Create a handle from the relevant values
+# 	handles - the output handle
+#	menu - the value of the menu part of the handle
+#	section - the value of the section part of the handle
+#	option - the value of the option part of the handle
+#--------------------------------------------------------------------------#
+sub __FormHandle( OUT string $handle, IN int $menu, IN int $section, IN int $option ) {
+	if( defined( $menu ) && defined( $section ) && defined( $option ) ) {
+		$handle = "$menu|$section|$option";
+		return true;
+	} else if( defined( $menu ) && defined( $section ) ) {
+		$handle = "$menu|$section";
+		return true;
+	} else if( defined( $menu ) ) {
+		$handle = "$menu";
+		return true;
+	}
+	return false;
+}
+
+#--------------------------------------------------------------------------#
+# not designed to be called outside of the _Menu.dsi file
+# GetSecretWord - returns the key used for starting the menu
+#--------------------------------------------------------------------------#
+sub __GetSecretWord( OUT string $secret ) {
+	$secret = "zyxwvutsrqponmlkjihgfedcba";
+}
+
+
+
+
+

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin interface='0x01c10032'  provider='0x0101001a' >
+	<Command id="0" name="FileType">
+
+		<Input>
+
+			<Option name="file" optional="false">
+				<Help>The file to check</Help>
+				
+				<Argument name='name' data='file'/>
+			</Option>
+			
+			<Option name="magic" optional="true">
+				<Help>The magic file to use as source (default=FileType.magic)</Help>
+				
+				<Argument name='file' data='magicFile'/>
+			</Option>
+			
+		</Input>
+
+		<Output>
+			<Data name="file"		type="string"/>
+			<Data name="magicFile"	type="string" default="FileType.magic"/>
+		</Output>
+	</Command>
+</Plugin>

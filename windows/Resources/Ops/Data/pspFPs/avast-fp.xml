@@ -1,0 +1,8 @@
+<Software value="PSP">
+	<Vendor value="Avast" regkey="hklm\software\alwil software\avast">
+		<Product value="Antivirus">
+			<Version value="%regdata%" regkey="hklm\software\alwil software\avast\4.0" regvalue="version" />
+			<LogDir value="%regdata%" regkey="hklm\software\alwil software\avast\4.0" regvalue="Avast4DataFolder" />
+		</Product>
+	</Vendor>
+</Software>

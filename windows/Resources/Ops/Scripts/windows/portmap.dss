@@ -1,0 +1,15 @@
+@include "Ops_GenericFunctions.dsi";
+
+if (prompt("Do you want to run portmap?")) {
+	string $sSysPath;
+	Ops_GetSystemPath($sSysPath);
+
+	#do these checksums first so that we have data if it bounces
+	`dir -path $sSysPath -mask win32k.sys -hash sha1`; 
+	`dir -path $sSysPath -mask user32.dll -hash sha1`;
+
+	if (`portmap -max 750 -memory 2048000`) {
+		
+	}
+		
+}

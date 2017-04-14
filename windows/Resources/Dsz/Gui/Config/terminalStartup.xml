@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<!--
+	the -max=X in terminal provides the ability to specify how many characters
+	the terminal will show, at maximum.  The default is 200,000 characters.
+	Additional characters are trimmed from the front - although in the interests
+	of efficiency, when it is trimmed, the window is reduced to ~70%-80% X
+	characters
+	-->
+	<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Term">
+		<InitArgs>-cmd=script _LpSetup.dss -project Dsz</InitArgs>
+		<InitArgs>-max=200000</InitArgs>
+		<InitArgs>-special=pc</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Term">
+		<InitArgs>-special=pc</InitArgs>
+		<InitArgs>-max=200000</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Term">
+		<InitArgs>-special=pc</InitArgs>
+		<InitArgs>-max=200000</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Term">
+		<InitArgs>-special=pc</InitArgs>
+		<InitArgs>-max=200000</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Term">
+		<InitArgs>-special=pc</InitArgs>
+		<InitArgs>-max=200000</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Term">
+		<InitArgs>-special=pc</InitArgs>
+		<InitArgs>-max=200000</InitArgs>
+	</Plugin>
+
+</StartupConfig>

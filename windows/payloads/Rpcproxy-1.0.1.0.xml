@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<t:config id="f7472d0e4697b56e13e1f4baf438d50675d860e0"
+          name="Rpcproxy"
+          version="1.0.1"
+          configversion="1.0.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+<!-- All plugins that accept a callback must have the Callback* parameters
+     listed below, or their equivalents. -->
+    <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by the SMB or NBT service"
+                 type="TcpPort" />
+    <t:parameter name="UUID" 
+                 description="" 
+                 type="String" 
+                 value="E032060A-5057-11D2-B60E-00104B703EFD" 
+                 hidden="true"/>
+    <t:parameter name="VersionMajor" 
+                 description="" 
+                 type="U8" 
+                 value="0" 
+                 hidden="true"/>
+    <t:parameter name="VersionMinor" 
+                 description="" 
+                 type="U8" 
+                 value="0" 
+                 hidden="true"/>
+    <t:paramchoice name="Protocol" description="Protocol to connect to target with">
+        <t:paramgroup name="NBT" description="Netbios over TCP"/>
+        <t:paramgroup name="SMB" description="SMB over TCP"/>
+        <!-- <t:paramgroup name="TCP" description="TCP"/> -->
+    </t:paramchoice>
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                 type="S16"
+                 default="60"/>
+    <t:parameter name="PollingInterval"
+                 description="Timeout for blocking network proxy calls (in seconds)."
+                 type="S16"
+                 default="1"/>
+    <t:parameter name="ImplantFilename"
+        description="Full path to implant payload dll"
+        type="LocalFile"/>
+    <t:parameter name="LPFilename"
+        description="Full path to LP"
+        type="LocalFile"/>
+    <t:parameter name="LPEntryPoint"
+        description="LP Entry Function Name"
+        type="String"
+        value="ServiceEntry"/>      
+  </t:inputparameters>
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="TargetPort"
+              closeoncompletion="true"/>
+  </t:redirection>
+  <t:logic>
+    <t:and>
+      <t:or>
+          <t:service name="smb">
+              <t:bindtovalue name="Protocol" value="SMB"/>
+              <t:bindtopath name="TargetPort" path="//service[name='smb']/port"/>
+          </t:service>
+          <t:service name="nbt">
+              <t:bindtovalue name="Protocol" value="NBT"/>
+              <t:bindtopath name="TargetPort" path="//service[name='nbt']/port"/>
+          </t:service>
+      </t:or> 
+      <t:contract value="StagedUpload"/>
+      <t:contract value="ConfiguredPayload"/>
+      <t:os family="windows"/>
+    </t:and>
+  </t:logic>
+</t:config>

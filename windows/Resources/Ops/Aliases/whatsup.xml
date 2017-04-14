@@ -1,0 +1,11 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>whatsup</Name>
+		<ReplaceBeforeArgs>python whatsup.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>  whatsup: pulls target arp table and shows what's up based on project.db</Help>
+		<Options>
+		</Options>
+	</Alias>
+</Aliases>

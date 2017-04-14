@@ -1,0 +1,12 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>kisu_enable</Name>
+		<ReplaceBeforeArgs>lpsetenv -name _DEMI_KISU_ENABLED -value </ReplaceBeforeArgs>
+		<ReplaceAfterArgs></ReplaceAfterArgs>
+		<Help>kisu_enable on|off</Help>
+		<Help>    Tells certain scripts to use KISU or not by default.</Help>
+	</Alias>
+</Aliases>	
+		

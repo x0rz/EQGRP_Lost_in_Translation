@@ -1,0 +1,25 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+<-hive <C|G|L|R|U>>
+      Which hive to use
+[-key <name>]
+    The key to query. If no key is given, the root of the hive given.
+[-value <name>]
+    A specific registry value to query.
+[-recursive]
+[-target <machine>]
+[-wow64]
+    On 64-bit Windows, work on the 64-bit Software keys
+[-wow32]
+    On 64-bit Windows, work on the 32-bit Software keys
+[-chunksize <bytes>]
+    How many bytes to queue before returning data.
+[-after <date>]
+    Date to filter after. Must be in YYYY-MM-DD
+[-before <date>]
+    Date to filter before. Must be in YYYY-MM-DD
+[-aftertime <time>]
+    Time to filter after. Must be in HH:MM:SS
+[-beforetime <time>]
+    Time to filter before. Must be in HH:MM:SS

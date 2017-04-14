@@ -1,0 +1,50 @@
+#--------------------------------------------------------
+# File: DoormanGauze.dss
+#
+# Wrapper script for DoormanGauze tools
+#
+# Modifications:
+#  07/13/2005	Created.
+#  09/21/2011	Gutted, redirecting to python script
+#--------------------------------------------------------
+@include "_LpHelperFunctions.dsi";
+@include "_Menu.dsi";
+@include "windows/_DriverIncludes.dsi";
+@include "_CommandLine.dsi";
+@include "_DoormanGauzeFunctions.dsi";
+@include "_Xml.dsi";
+
+@echo off;
+
+string %params;
+if (!_ParseCommandLine($argc, $argv, %params))
+{
+	return false;
+}
+
+string $cmd;
+$cmd = "python _DmGz.py -args \"";
+
+if (defined(%params{'name'}))
+{
+	$cmd = "$cmd -driver %params{'name'}";
+}
+
+if (defined(%params{'action'}))
+{
+	$cmd = "$cmd -action %params{'action'}";
+}
+
+if (defined(%params{'silent'}))
+{
+	$cmd = "$cmd -silent";
+}
+
+if (defined(%params{'quiet'}))
+{
+	$cmd = "$cmd -quiet";
+}
+
+$cmd = "$cmd\"";
+
+return `$cmd`;

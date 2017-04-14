@@ -1,0 +1,62 @@
+# Do a grep on all mail files in this directory matching the pattern, possibly recursive
+
+bool $success=false;
+bool $showUsage=false;
+
+if ($argc < 4) {
+    $showUsage = true;
+}
+if ($argc > 5) {
+    $showUsage = true;
+}
+if ($argv[1] == "?") {
+    $showUsage = true;
+}
+
+if ($showUsage) {
+    echo "Do a grep on all files in a given path, of a certain pattern, since a given date";
+    echo "Usage: $argv[0] <path> <pattern> <date to get after> [<recursive>]";
+	echo "Example: $argv[0] \"C:\\winnt\\badmail\\terrordude\" *.tbb 01/01/2003 R";
+	echo "  use 'all' as the date to check all files";
+    return $success;
+}
+
+string $path=$argv[1];
+string $pattern=$argv[2];
+string $datefrom=$argv[3];
+bool $recursive=false;
+if ($argc > 4) {
+	$recursive=true;
+}
+
+string $headers;
+
+# If pattern == "*", then each mail message is an individual file; get all the new ones
+if ($pattern == "*") {
+	# TODO: incorporate badmail.eps ; if it returns true, don't get that file
+	string $dirstring="script dirget.eps \"$path\" \"$pattern\"";
+	ifnot ($datefrom == "all") {
+		$dirstring = "$dirstring -after $datefrom";
+	}
+	if ($recursive) {
+		$dirstring = "$dirstring -recursive";
+	}
+	return `$dirstring`;
+}
+else if ($pattern == "*.tbb") {
+	$headers="X-POP3-Rcpt:|Return-Path:|Received|Date:";
+} 
+else {
+	$headers="From |Received: from |Subject: |From: |To: |Date: |Content-|name=|filename=";
+}
+string $grepstring="grep -mask \"$pattern\" -pattern \"$headers\" -path \"$path\"";
+
+
+ifnot ($datefrom == "all") {
+	$grepstring = "$grepstring -after $datefrom";
+}
+if ($recursive) {
+	$grepstring = "$grepstring -recursive";
+}
+
+return `$grepstring`;

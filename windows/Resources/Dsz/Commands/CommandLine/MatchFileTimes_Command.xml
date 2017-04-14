@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_MatchFileTimes_Tasking.pyo' providerType='script'>
+
+	<Command name='MatchFileTimes' id='0'>
+		<Input>
+			<Option name='src' optional='false'>
+				<Help>The file to use as a source.</Help>
+				<Argument name='src_file' data='src'/>
+			</Option>
+
+			<Option name='dst' optional='false'>
+				<Help>The file to update.</Help>
+				<Argument name='dst_file' data='dst'/>
+			</Option>
+
+			<Option name="accessed" optional="true">
+				<Help>Change the accessed time (default=true)</Help>
+				<Set data="visibletimes" value="false" />
+				<Set data="accessed" value="true" />
+			</Option>
+			<Option name="created" optional="true">
+				<Help>Change the created time (default=true)</Help>
+				<Set data="visibletimes" value="false" />
+				<Set data="created" value="true" />
+			</Option>
+			<Option name="modified" optional="true">
+				<Help>Change the modified time (default=true)</Help>
+				<Set data="visibletimes" value="false" />
+				<Set data="modified" value="true" />
+			</Option>
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='src' type='string' />
+			<Data name='dst' type='string' />
+			<Data name="visibletimes" type="bool" default="true" />
+			<Data name="modified" type="bool" default="false"/>
+			<Data name="created" type="bool" default="false"/>
+			<Data name="accessed" type="bool" default="false"/>
+			<Data name='method'    type='string'/>
+		</Output>
+	</Command>
+</Plugin>

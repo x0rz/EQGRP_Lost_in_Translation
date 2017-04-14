@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25039' script='DataHandlers/Mcl_Cmd_Ping_DataHandler.pyo'>
+</DataHandler>

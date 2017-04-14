@@ -1,0 +1,39 @@
+#--------------------------------------------------------
+# File: Scheduler.eps
+#
+#  Start State:	Assumes SYSTEM/ADMIN privs 
+#  End State:	Scheduler information is returned 
+#  Errors:	
+#  Comments:	 
+#
+# Modifications:
+#  05/18/01	Created  
+#--------------------------------------------------------
+
+ifnot (prompt "Do you wish to perform a Scheduler survey of the target?") {
+    echo "Aborting script...";
+    return false;
+}
+
+# check for any tasks that are scheduled in the near-term
+echo "---------------------------------------------";
+echo "AT added Jobs";
+echo "---------------------------------------------";
+`scheduler -query at -local`;
+echo "---------------------------------------------";
+echo "GUI added Jobs";
+echo "---------------------------------------------";
+`scheduler -query gui -local`;
+echo "";
+echo "Check if anything set to run during the next hour...";
+echo "";
+pause;
+
+ifnot(`dir *.job -path c:\\winnt\\tasks`) {
+ echo "run dir on the following TasksFolder directory to obtain a complete task list";	
+ `regquery -hive l -subkey "Software\\Microsoft\\SchedulingAgent" -value TasksFolder`;
+}
+
+echo "scheduler-Survey is complete";
+pause;
+return true;

@@ -1,0 +1,7 @@
+#`traceroute -ip $ARGV[1]`;
+bool $success=`background redirect -tcp -lplisten 1350 -target $ARGV[1] 135`;
+if ($success) {
+	echo "!!!Don't forget to do a traceroute!!!";
+} else {
+	echo "!! ERROR: Could not set up redirector!";
+}

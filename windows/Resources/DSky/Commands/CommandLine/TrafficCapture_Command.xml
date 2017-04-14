@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_TrafficCapture_Tasking.pyo" providerType="script">
+    <Command name="TrafficCapture" id="0">
+        
+		<Help>Controls the DSKY driver</Help>
+
+		<Input>
+			<Option name='status' optional='false' group='action'>
+				<Set data='action' value='0'/>
+				<Help>Retrieve the current status</Help>
+			</Option>
+
+			<Option name='get' optional='false' group='action'>
+				<Set data='action' value='1'/>
+				<Help>Retrieve the current packet filter</Help>
+			</Option>
+
+			<Option name='validate' optional='false' group='action'>
+				<Argument name='filter' data='filter'/>
+				<Set data='action' value='2'/>
+				<Help>Validates the given packet filter</Help>
+			</Option>
+
+			<Option name='control' optional='false' group='action'>
+				<Argument name='signal'>
+					<Value string='start'>
+						<Set data='control' value='1'/>
+					</Value>
+					<Value string='stop'>
+						<Set data='control' value='2'/>
+					</Value>
+				</Argument>
+				<Set data='action' value='3'/>
+				<Help>Send a control signal to the driver</Help>
+			</Option>
+
+			<Option name='promiscuous' optional='true'>
+				<Set data='promiscuous' value='true'/>
+			</Option>
+			
+			<Option name='name' optional='true'>
+				<Argument name='driver_name' data='driver'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='driver' type='string' default='tdi6'/>
+			<Data name='action' type='uint8_t'/>
+			<Data name='control' type='uint8_t'/>
+			<Data name='filter' type='string'/>
+			<Data name='promiscuous' type='bool' default='false'/>
+		</Output>
+        
+    </Command>
+</Plugin>

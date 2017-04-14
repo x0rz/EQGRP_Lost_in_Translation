@@ -1,0 +1,60 @@
+
+
+int $parentId=0;
+
+@echo off;
+@record on;
+if (`commands`)
+{
+	int $ids;
+	if (GetCmdData("Command::Id", $ids) && defined($ids))
+	{
+		for (int $i=0; $i < sizeof($ids); $i++)
+		{
+			if ($ids[$i] != <int>%_sgEnv{'script_command_id'})
+			{
+				int $childIds;
+				if (GetCmdData("CommandMetaData::Child::Id", $childIds, $ids[$i]) && defined($childIds))
+				{
+					for (int $j=0; $j < sizeof($childIds); $j++)
+					{
+						if ($childIds[$j] == <int>%_sgEnv{'script_command_id'})
+						{
+							$parentId = $ids[$i];
+							break;
+						}
+					}
+				}
+				
+				if ($parentId != 0)
+				{
+					break;
+				}
+			}
+		}	
+	}
+}
+@echo on;
+
+if ($parentId != 0)
+{
+	string $cmd = "delete";
+	for (int $i=1; $i < $argc; $i++)
+	{
+		if (RegExMatch(" ", $argv[$i]))
+		{
+			StrCat($cmd, ' "$argv[$i]"');
+		}
+		else
+		{
+			StrCat($cmd, ' $argv[$i]');
+		}
+	}
+	
+	return `$cmd`;
+}
+else
+{
+	echo('Command may only be called from a script.  Use "delete" instead');
+	return false;
+}

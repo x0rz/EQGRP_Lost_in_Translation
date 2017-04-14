@@ -1,0 +1,2 @@
+connect / as sysdba
+@dc02.tmp

@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>cp</Name>
+		<ReplaceBeforeArgs>copy</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+</Aliases>	
+		

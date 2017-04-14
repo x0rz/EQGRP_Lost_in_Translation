@@ -1,0 +1,58 @@
+<?xml version='1.0' ?>
+<Aliases>
+    <Alias>
+		<Name>commands</Name>
+		<ReplaceBeforeArgs>python Lib/ops/override/commands.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>usage: commands [-all] [-any] [-local | -remote] [-astyped]
+                   [-verbose] [-echo]
+NOTE: This is an over-aliased command. If for some reason you need to run the
+base command, use 'stopaliasing'.                   
+optional arguments:
+  -echo      Echo out the raw DSZ commands output in addition to pretty
+              printing. This is unique to the over-aliased version.
+commands options:
+  -all       Also display finished commands
+  -any       Display commands from any address
+  -local     List local commands (default)
+  -remote    List remote commands
+  -astyped   Show commands as typed (rather than displaying expanded aliases)
+  -verbose   Show additional command information</Help>
+		<Options>
+			<Option>all</Option>
+			<Option>any</Option>
+			<Option>local</Option>
+			<Option>remote</Option>
+			<Option>astyped</Option>
+			<Option>verbose</Option>
+            <Option>echo</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>prettych</Name>
+		<ReplaceBeforeArgs>python Lib/ops/override/commands.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>usage: prettych [-all] [-any] [-local | -remote] [-astyped]
+                   [-verbose] [-echo]
+Pretty-prints the running commands output. Takes any normal 'commands' options.
+optional arguments:
+  -echo      Echo out the raw DSZ commands output in addition to pretty
+              printing.
+commands options:
+  -all       Also display finished commands
+  -any       Display commands from any address
+  -local     List local commands (default)
+  -remote    List remote commands
+  -astyped   Show commands as typed (rather than displaying expanded aliases)
+  -verbose   Show additional command information</Help>
+		<Options>
+			<Option>all</Option>
+			<Option>any</Option>
+			<Option>local</Option>
+			<Option>remote</Option>
+			<Option>astyped</Option>
+			<Option>verbose</Option>
+            <Option>echo</Option>
+		</Options>
+	</Alias>
+</Aliases>

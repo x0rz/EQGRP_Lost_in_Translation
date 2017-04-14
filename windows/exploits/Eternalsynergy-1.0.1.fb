@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<t:config id="665a77d7870f1e8dc34048203dc820525c09bd23"
+          name="Eternalsynergy"
+          version="1.0.1"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:touchlist>
+    <t:plugin name="Smbtouch"
+              displayname="ETSY Vulnerability Touch"
+              description="Check if Target is vulnerable to ETSY">
+      <t:oparam name="Target" value="Target"/>
+      <t:oparam name="TargetOsArchitecture" value="TargetOsArchitecture"/>
+      <t:oparam name="PipeName" value="PipeName"/>
+      <t:oparam name="ShareName" value="ShareName"/>
+      <t:oparam name="Credentials" value="Credentials"/>
+      <t:oparam name="Username" value="Username"/>
+      <t:oparam name="Password" value="Password"/>
+      <t:oparam name="NtlmHash" value="NtlmHash"/>
+    </t:plugin>
+  </t:touchlist>
+</t:config>

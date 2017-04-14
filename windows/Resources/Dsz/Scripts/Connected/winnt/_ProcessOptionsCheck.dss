@@ -1,0 +1,135 @@
+
+@include "_VersionChecks.dsi";
+
+@echo off;
+@quiet off;
+
+bool $rtn = true;
+
+# Vista sets a "permanent" bit in some processes 
+# that keep PC from fixing the process options
+if (_IsWindowsVistaOrGreater())
+{
+	# 64-bit OSes don't use execution options
+	if (!_IsOs64Bit())
+	{
+		bool $needElevate;
+		int $origValue;
+		if (!GetProcessOptions($needElevate, $origValue))
+		{
+			if (prompt("Do you want to modify the process options?"))
+			{
+				if ($needElevate)
+				{
+					# in this case we should verify that a "get" results in the expected
+					# value before we attempt to set the value
+					@hex on;
+					@record on;
+					echo("Verifying elevated 'query' results in $origValue");
+					if (!`processoptions -query -elevate`)
+					{
+						echo("    FAILED - Unable to get options", ERROR);
+						$rtn = false;
+					}
+					else
+					{
+						int $value;
+						if (!GetCmdData("Options::Value", $value) || !defined($value))
+						{
+							echo("    FAILED - Failed to query options value", ERROR);
+							$rtn = false;
+						}
+						else if ($value != $origValue)
+						{
+							echo("    FAILED - Retrieved value ($value) doesn't match original ($origValue)", ERROR);
+							$rtn = false;
+						}
+						else
+						{
+							echo("    PASSED", GOOD);
+							echo("Modifying process options");
+							$rtn = `processoptions -set 0x72 -elevate`;
+						}
+					}
+				}
+				else
+				{
+					echo("Modifying process options");
+					$rtn = `processoptions -set`;
+				}
+				if (!$rtn)
+				{
+					echo("* Failed to modify process options.  Certain commands may result in a process termination!", ERROR);
+					pause;
+				}
+				else
+				{
+					echo("    Process options modified", GOOD);
+				}
+			}
+		}
+	}
+}
+
+return $rtn;
+	
+#---------------------------------------------------------------------
+sub GetProcessOptions(OUT bool $needElevate, OUT int $origValue)
+{
+
+	# assume elevation is needed
+	$needElevate = true;
+	
+	@echo off;
+	@record on;
+	if (!`processoptions -query`)
+	{
+		return false;
+	}
+	
+	@case-sensitive on;
+	bool %values;
+	int $value;
+	if (!GetCmdData("Options::Value", $value) || !defined($value) ||
+		!GetCmdData("Options::ExecutionDisabled", %values{'ExecutionDisabled'}) || !defined(%values{'ExecutionDisabled'}) ||
+		!GetCmdData("Options::ExecutionEnabled", %values{'ExecutionEnabled'}) || !defined(%values{'ExecutionEnabled'}) ||
+		!GetCmdData("Options::ExecuteDispatchEnabled", %values{'ExecuteDispatchEnabled'}) || !defined(%values{'ExecuteDispatchEnabled'}) ||
+		!GetCmdData("Options::Permanent", %values{'Permanent'}) || !defined(%values{'Permanent'}) ||
+		!GetCmdData("Options::DisableThunkEmulation", %values{'DisableThunkEmulation'}) || !defined(%values{'DisableThunkEmulation'}) ||
+		!GetCmdData("Options::DisableExceptionChainValidation", %values{'DisableExceptionChainValidation'}) || !defined(%values{'DisableExceptionChainValidation'}) ||
+		!GetCmdData("Options::ImageDispatchEnabled", %values{'ImageDispatchEnabled'}) || !defined(%values{'ImageDispatchEnabled'}))
+	{
+		return false;
+	}
+
+	$origValue = $value;
+	
+	# if the perm flag set, we'll need to elevate
+	$needElevate = %values{'Permanent'};
+	
+	string $keys;
+	if (!GetKeys(%values, $keys))
+	{
+		return false;
+	}
+		
+	@hex on;
+	echo("Current process options ($value)");
+	for (int $i=0; $i < sizeof($keys); $i++)
+	{
+		if (%values{$keys[$i]} == true)
+		{
+			echo("    $keys[$i]");
+		}	
+	}
+	
+	if (($value == 0x32) || ($value == 0x72))
+	{
+		# these are good values
+		return true;
+	}
+
+	# user will likely need to change the values	
+	return false;
+	
+}	/* end GetProcessOptions */

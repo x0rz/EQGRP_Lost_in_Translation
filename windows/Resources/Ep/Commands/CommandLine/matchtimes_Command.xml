@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31320'>
+ <Command id='16' name='matchtimes'>
+  <Help>This function matches the file times for the second file specified</Help>
+  <Help>to the file times of the first file.</Help>
+
+  <Input>
+   <Argument name='from_file' optional='false' data='from_file' />
+   <Argument name='to_file' optional='false' data='to_file' />
+  </Input>
+
+  <Output>
+   <Data name='from_file' type='string'/>
+   <Data name='to_file'   type='string'/>
+  </Output>
+
+ </Command>
+</Plugin>

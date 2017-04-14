@@ -1,0 +1,139 @@
+<?xml version='1.1' ?> 
+<Aliases>
+	<Alias>
+		<Name>rpc</Name>
+		<ReplaceBeforeArgs>python windows/rpctouch.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>rpc</Help>
+		<Help>Usage: windows/rpctouch.py (IP to scan) [probeType] [portTypes] [(localtargetip) (localtargetport)]</Help>
+		<Help>-  probeType: </Help>
+		<Help> 	1=General</Help>
+		<Help>	2=RegProbe</Help>
+		<Help>	3=XP Home/Pro</Help>
+		<Help>	4=Atsvc port req.</Help>
+		<Help>	5=W2K SP4 Atsvc</Help>
+		<Help>  7=probe for DCOM patches</Help>
+		<Help>	8=W2K3</Help>
+		<Help>	9=MGMT Probe</Help>
+		<Help>	10=EPMP Probe</Help>
+		<Help>  13=W2K3 SP0</Help>
+		<Help>	14=64-BIT</Help>
+		<Help>	15=ELV probe</Help>
+		<Help>-  portTypes: 135, 139, 445, 80, or a high port (for atsvc, etc.)</Help>
+		<Options>
+		</Options>
+	</Alias>
+		<Alias>
+		<Name>scan</Name>
+		<ReplaceBeforeArgs>python windows/scanner.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>scan</Help>
+		<Help>Usage: windows/scanner.py &lt;type of scan&gt; &lt;IP to scan&gt;</Help>
+		<Help> </Help>
+		<Help>
+			|   Type    |      Description       | Protocol | Port  | Broadcast |
+			+-----------+------------------------+----------+-------+-----------+
+			| winl      | Scan for windows boxes | UDP      | 137   | True      |
+			| winn      | Scan for windows names | UDP      | 137   | False     |
+			| xwin      | Scan for Xwin folks    | UDP      | 177   | False     |
+			| time      | Scan for NTP  folks    | UDP      | 123   | False     |
+			| rpc       | Scan for RPC  folks    | UDP      | 111   | False     |
+			| snmp1     | Scan for SNMP version  | UDP      | 161   | False     |
+			| snmp2     | Scan for Sol  version  | UDP      | 161   | False     |
+			| echo      | Scan for echo hosts    | UDP      | 7     | False     |
+			| time2     | Scan for daytime hosts | UDP      | 13    | False     |
+			| tftp      | Scan for tftp hosts    | UDP      | 69    | False     |
+			| tday      | Scan for daytime hosts | TCP      | 13    | False     |
+			| ident     | Scan ident             | TCP      | 113   | False     |
+			| mail      | Scan mail              | TCP      | 25    | False     |
+			| ftp       | Scan ftp               | TCP      | 21    | False     |
+			| t_basic   | Scan TCP port          | TCP      | 0     | False     |
+			| http      | Scan web               | TCP      | 80    | False     |
+			| netbios   | Does not work          | UDP      | 138   | False     |
+			| dns       | Scan for DNS           | UDP      | 53    | False     |
+			| ripv1     | Scan for RIP v1        | UDP      | 520   | False     |
+			| ripv2     | Scan for RIP v2        | UDP      | 520   | False     |
+			| lpr       | Scan for lpr           | TCP      | 515   | False     |
+			| miniserv  | Scan for Redflag Web   | UDP      | 10000 | False     |
+			| win_scan  | Get windows version    | TCP      | 139   | False     |
+			| telnet    | Banner Telnet          | TCP      | 23    | False     |
+			| finger    | Banner finger          | TCP      | 79    | False     |
+			| ssl       | Scan for SSL stuff     | TCP      | 443   | False     |
+			| ssh       | Scan for SSH version   | TCP      | 22    | False     |
+			| snmp3     | Finnish Test Case SNMP | UDP      | 161   | False     |
+			| dtuname   | DT uname test          | TCP      | 6112  | False     |
+			| answer    | Answerbook test        | TCP      | 8888  | False     |
+			| brpc      | Larger RPC dump        | UDP      | 111   | False     |
+			| x11       | X11 test               | TCP      | 6000  | False     |
+			| xfont     | X font server test     | TCP      | 7100  | False     |
+			| printer   | Printer Test           | TCP      | 9100  | False     |
+			| printerid |                        | TCP      | 9100  | False     |
+		</Help>
+		<Options>
+		</Options>
+	</Alias>
+  <Alias>
+		<Name>scansweep</Name>
+		<ReplaceBeforeArgs>python scansweep\scansweep.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>scansweep (scansweep.py)</Help>
+		<Help> </Help>
+		<Help>scansweep allows the scanning of large blocks of IPs more safely then via manual scanning</Help>
+		<Help> </Help>
+		<Help>scansweep [OPTIONS]</Help>
+		<Help>
+	TYPE FLAGS:
+		[-type [scan] [type] [port]]
+			Type of scan to conduct, or a queue file containing line seperated (job ip,ip,ip,...) entries
+		[-escalate (rule)]
+			Escalate when a arp/ping is found, [rule] replaces this and can be a list of rules or a file
+        [-monitor (monitor_type [monitor_type])]
+            Type of monitors to parse, then apply escalation rules, if there are any defined.
+	TARGET FLAGS:
+		[-target (ip,ip-ip,ip/net,ip/netmask,file,host)]
+			Specification of targets to scan
+        [-exclude (ip,ip-ip,ip/net,ip/netmask,file,host)]
+            Specification of targets NOT to scan
+		[-cidroverride]
+			Override the safety restriction of maximum of 255 hosts
+		[-internaloverride]
+			Override the safety restriction for monitor tasking, which by default disallows escalating outside our current subnet
+	MODIFIER FLAGS:
+		[-period (range)]
+			Period at which to run the command (ex. 30s 10-20m) (default: 15s-45s)
+		[-maxtime (time)]
+			Maximum time for the command to run (ex. 30s 10-20m) (default: 4h)
+		[-nowait]
+			Toggles counting since beginning of last scan rather then the end of last scan
+        [-timeout (timeout)]
+            Sets the timeout in seconds to pass to a command (used in ping, banner, rpctouch, smbtouch, rpc2)
+		[-override]
+			Override the safety restriction of 15s minimum scan range on ping and netbios
+    DATABASE FLAGS:
+		[-database (operation)]
+			Allows dumping of database info. (sessions, jobs, results, dump, reset, kill, rules, excludes, create, reescalate)
+		[-session (session_var)]
+			Allows you to re-use an old incomplete scan or to "join" another scan
+		[-update (file)]
+			Allows updating a currently running session by adding/removing jobs and rules
+	MISC FLAGS:
+		[-verbose]
+			Enables output of the commands run to the screen
+</Help>
+<Options>
+    <Option>type</Option>
+    <Option>target</Option>
+    <Option>exclude</Option>
+    <Option>period</Option>
+    <Option>override</Option>
+    <Option>cidroverride</Option>
+	<Option>escalate</Option>
+	<Option>verbose</Option>
+	<Option>session</Option>
+	<Option>nowait</Option>
+	<Option>database</Option>
+    <Option>timeout</Option>
+	<Option>update</Option>
+</Options>
+	</Alias>
+	</Aliases>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="PeddleCheap_Lp" providerType="module">
+
+    <Command name="Pc_connect" id="0">
+
+		<Help>Connects to a chosen host with PeddleCheap</Help>
+		
+        <Input>
+			<Option name='key' optional='true'>
+				<Argument name='name' data='keyName'/>
+			</Option>
+			
+			<Option name='payload' optional='true'>
+				<Argument name='name' data='payloadName'/>
+			</Option>
+			
+			<Option name='run' optional='true'>
+				<Argument name='type'>
+					<Value string='egg'>
+						<Set data='runType' value='1'/>
+					</Value>
+					<Value string='memlib'>
+						<Set data='runType' value='2'/>
+					</Value>
+					<Value string='filelib'>
+						<Set data='runType' value='3'/>
+					</Value>
+					<Value string='exe'>
+						<Set data='runType' value='4'/>
+					</Value>
+				</Argument>
+				<Argument name='run_param' data='runParam' optional='true'/>
+			</Option>
+
+			<Option name='target' optional='false'>
+    			<Argument name='addr' data='targetAddr'/>
+    			<Argument name='dstPort' data='targetDstPort'/>
+    			<Argument name='srcPort' data='targetSrcPort' optional='true'/>
+				<Help>The address and ports for the connection</Help>
+			</Option>
+			
+			<Option name='cpaddr' optional='true'>
+    			<Argument name='addr' data='cpAddr'/>
+				<Help>The CP address</Help>
+			</Option>
+			
+			<Option name='wait' optional='true'>
+    			<Argument name='seconds' data='wait'/>
+				<Help>Seconds to wait before connecting. Connect immediately if this parameter is absent.</Help>
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name='keyName' type='string'/>
+			<Data name='payloadName' type='string'/>
+			<Data name='runType' type='uint8_t' default='0'/>
+			<Data name='runParam' type='string'/>
+			<Data name='targetAddr' type='ipaddr'/>
+			<Data name='targetDstPort' type='uint16_t'/>
+			<Data name='targetSrcPort' type='uint16_t' default='0'/>
+			<Data name='cpAddr' type='cpaddr'/>
+			<Data name='wait' type='uint32_t' default='0'/>
+        </Output>
+    </Command>
+
+</Plugin>

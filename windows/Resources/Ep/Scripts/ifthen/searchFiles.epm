@@ -1,0 +1,179 @@
+# needs _sortListString in _StringFunctions.epm, not there by default
+# needs also to be run AFTER setenv.eps
+@echo off;
+@case-sensitive off;
+
+
+@include "_NormalizePath.epm";
+@include "ifthen\\execute.epm";
+
+Sub isInArray(IN string $findMe, IN string $items) {
+	string $item;
+	foreach $item ($items) {
+		if ($findMe == $item) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+Sub findFilesInDir(IN string $directory, IN string $fileNames, REF string %sigMatches) {
+	@record on;
+	echo "dir * -path \"$directory\"";
+	`dir * -path "$directory"`;
+	@record off;
+
+	string $names = GetCmdData('name');
+
+	string $findMe;
+	foreach $findMe ($fileNames) {
+		string $splits = Split("|", $findMe);
+		string $file = $splits[0];
+		string $sig = $splits[1];
+		echo "For dir $directory finding $file";
+
+		if (isInArray($file, $names)) {
+			#add this match to the sigMatches hash
+			%sigMatches{'$directory\\$file'} = "$sig";
+		}
+	}
+
+	return true;
+}
+
+
+Sub sortListString(REF string $list) {
+	int $totalSize = sizeOf($list);
+	int $loopEnd = $totalSize;
+	int $loop2End;
+	int $counter = 0;
+	int $counter2;
+	int $nextCounter2;
+	string $temp;
+
+	$loopEnd--;
+	while ($counter < $loopEnd) {
+		$counter2 = 0;
+		$loop2End = $loopEnd;
+		$loop2End -= $counter;
+		while ($counter2 < $loop2End) {
+			$nextCounter2 = $counter2;
+			$nextCounter2++;
+			if ($list[$nextCounter2] == $list[$counter2]) {
+				echo "Duplicate entries in list...please re-enter values";
+				return false;
+			} else if ($list[$nextCounter2] < $list[$counter2]) {
+				$temp = $list[$counter2];
+				$list[$counter2] = $list[$nextCounter2];
+				$list[$nextCounter2] = $temp;
+			}
+			$counter2++;
+		}
+		$counter++;						
+	}
+	
+	return true;
+}
+
+Sub expandPath(IN string $path, OUT string $expanded)
+{
+	string $path_parts = Split("\\", $path);
+	string $envPath = GetEnv($path_parts[0]);
+	if ($envPath != "") {
+		$path_parts[0] = $envPath;
+	}
+
+	#put the parts back together
+	$expanded = "$path_parts[0]";
+	int $i = 1;
+	
+	while (defined($path_parts[$i])) {
+		$expanded = "$expanded\\$path_parts[$i]";
+		$i++;
+	}
+
+}
+
+sub searchFiles(IN string $lines)
+{
+
+	string %pathHash;
+	string $sortablePaths;
+	int $i = 0;
+	string $line;
+	foreach $line ($lines) {
+		string $split = SplitPath($line);
+		%pathHash{"$split[0]|$i"} = $line;
+		push($sortablePaths, "$split[0]|$i");
+		$i++;
+	}
+
+
+	sortListString($sortablePaths);
+
+	undef $lines;
+
+	foreach $line ($sortablePaths) {
+		push($lines, %pathHash{$line});
+	}
+
+	string %sigMatches;
+
+	string $parsed = Split("|", $lines);
+
+	string $tmp1 = SplitPath($parsed[0]);
+
+	string $expandedPath;
+	expandPath($tmp1[0], $expandedPath);
+	string $currPath = $expandedPath;
+
+	
+	string $filesForCurrPath;
+		
+	foreach $line ($lines) {
+		
+		#echo "$line";
+		$parsed = Split("|", $line);
+		string $path = SplitPath($parsed[0]);
+		string $base = $path[0];
+		string $file = "$path[1]|$parsed[1]";
+		#echo "base: $base , file: $file";
+
+		expandPath($base, $base);
+		
+		#notice that we're on the same path right now
+		if ($currPath == $base) {
+			echo "On the same path.";
+			$filesForCurrPath[Sizeof($filesForCurrPath)] = $file;
+			
+		} else {
+			#echo "For path $currPath:";
+			#string $hello;
+			#foreach $hello ($filesForCurrPath) {
+				#echo "  $hello";
+			#}
+
+			findFilesInDir($currPath, $filesForCurrPath, %sigMatches);
+
+			#now start over with the next path
+			$currPath = $base;
+			undef($filesForCurrPath);
+			#make sure to grab this new file
+			$filesForCurrPath[0] = "$file";
+		} 
+		
+	}
+
+	findFilesInDir($currPath, $filesForCurrPath, %sigMatches);
+		
+	#WriteFile("unknownDrivers.txt", TRUE, $unknowns);
+
+	string $match;
+	foreach $match (keys %sigMatches) {
+		execute(%sigMatches{'$match'});
+		echo "Key $match -> Value %sigMatches{'$match'}";
+	}
+
+}
+

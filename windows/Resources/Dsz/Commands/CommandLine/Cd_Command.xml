@@ -1,0 +1,29 @@
+<?xml version='1.0' ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Cd_Tasking.pyo' providerType='script'>
+	<Command id='0' name='Cd'>
+
+		<Help>Queries or changes the current (virtual or real) working directory</Help>
+
+		<Input>
+			<Argument name='directory' optional='true' data='dir'/>
+
+			<Option name="real" optional="true">
+				<Set data='type' value='0'/>
+				<Help>Targets the real working directory (as opposed to the virtual directory)</Help>
+			</Option>
+
+			<Option name="force" optional="true">
+				<Set data='force' value='true'/>
+				<Help>Force the directory change even if verification fails</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint8_t' default ='1'/>
+			<Data name='dir' type='string'/>
+			<Data name='force' type='bool' default='false'/>
+		</Output>
+
+	</Command>
+</Plugin>

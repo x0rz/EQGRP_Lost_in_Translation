@@ -1,0 +1,50 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='14' name='Commands'>
+
+		<Help>List the running commands</Help>
+
+		<Input>
+			<Option name='all' optional='true'>
+				<Help>Also display finished commands</Help>
+				<Set param='all' value='true'/>
+				<Set data='all' value='true'/>
+			</Option>
+			
+			<Option name='any' optional='true'>
+				<Help>Display commands from any address</Help>
+				<Set data='any' value='true'/>
+			</Option>
+			
+			<Option name='local' optional='true' group='location'>
+				<Help>List local commands (default)</Help>
+				<Set data='remote' value='false'/>
+			</Option>
+			
+			<Option name='remote' optional='true' group='location'>
+				<Help>List remote commands</Help>
+				<Set data='remote' value='true'/>
+			</Option>
+			
+			<Option name='astyped' optional='true'>
+				<Help>Show commands as typed (rather than displaying expanded aliases)</Help>
+				<Set param='astyped' value='true'/>
+			</Option>
+			
+			<Option name='verbose' optional='true'>
+				<Help>Show additional command information</Help>
+				<Set param='verbose' value='true'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='remote' type='bool' default='false'/>
+			<Data name='all' type='bool' default='false'/>
+			<Data name='any' type='bool' default='false'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

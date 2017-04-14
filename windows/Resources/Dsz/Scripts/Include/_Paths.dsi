@@ -1,0 +1,138 @@
+
+@include "windows/_PathsWindows.dsi";
+
+#-------------------------------------------------------------------------------
+# _IsFullPath
+#    Returns whether a given path is a full path
+# Params:
+#    path - The path to check
+#-------------------------------------------------------------------------------
+sub _IsFullPath(REF string $path)
+{
+
+    return (RegExMatch("^[A-Za-z]:.*\$", $path) ||
+		    RegExMatch("^/.*\$", $path));
+
+}
+# END _IsFullPath
+
+#-------------------------------------------------------------------------------
+# _NormalizePath
+#    Removes any trailing slashes, ., or .. from a given path
+# Params:
+#    path - The path to modify
+#-------------------------------------------------------------------------------
+sub _NormalizePath(REF string $path)
+{
+	return _NormalizePath($path, false);
+}
+
+sub _NormalizePath(REF string $path, IN bool $windows)
+{
+	string $delimiter;
+	if ($windows)
+	{
+		$delimiter = "\\";
+	}
+	else
+	{
+		$delimiter = "/";
+	}
+	
+	string $start, $rest;
+	if (RegExMatch("^/(.*)\$", $path, $rest))
+	{
+		$start = "$delimiter";
+		$path = $rest;
+	}
+	else if (RegExMatch("^([A-Za-z]:)(.*)\$", $path, $rest))
+	{
+		$start = "$rest[0]$delimiter";
+		$path = $rest[1];
+	}
+
+	@regex-global on;
+	string $parts;
+	if (!RegExSplit("[\\\\/]", $path, 0, $parts))
+	{
+		return false;
+	}
+	
+	
+    string $fixedPaths;
+    int $onIndex = 0;
+    for (int $i=0; $i < sizeof($parts); $i++)
+    {
+		if (($parts[$i] == ".") || ($parts[$i] == ""))
+		{
+			# ignore this
+			continue;
+		}
+		else if (($parts[$i] == "..") && ($onIndex > 0))
+		{
+			# remove previous path component
+			$onIndex--;
+			if ($fixedPaths[$onIndex] == "..")
+			{
+				# previous path entry is also ..
+				$onIndex++;
+				$fixedPaths[$onIndex] = $parts[$i];
+				$onIndex++;
+			}
+			else
+			{
+				# remove previous path entry
+				undef($fixedPaths[$onIndex]);
+			}
+		}
+		else
+		{
+			$fixedPaths[$onIndex] = $parts[$i];
+			$onIndex++;
+		}
+	}
+	
+	string $newPath;
+    for (int $i=0; $i < sizeof($fixedPaths); $i++)
+	{
+		if (defined($newPath))
+		{
+			if (Strlen($fixedPaths[$i]) > 0)
+			{
+				$newPath = "$newPath$delimiter$fixedPaths[$i]";
+			}
+		}
+		else
+		{
+			if (defined($start))
+			{
+				if (Strlen($fixedPaths[$i]) > 0)
+				{
+					$newPath = "$start$fixedPaths[$i]";
+				}
+				else
+				{
+					$newPath = $start;
+				}
+			}
+			else
+			{
+				$newPath = $fixedPaths[$i];
+			}
+		}
+	}
+
+	if (!defined($newPath))
+	{
+		$path = $start;
+	}
+	else
+	{
+		$path = $newPath;
+	}
+	return true;
+
+}
+# END _NormalizePath
+
+

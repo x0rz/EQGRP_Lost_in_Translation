@@ -1,0 +1,321 @@
+#------------------------------------------------------------------------------
+# File: goodget.dss
+# Description: Gets files.  Tries get first, followed by copyget.
+# 	Will invoke rarget if needed for really big files.
+# Todo: 
+# 	- Prompt for confirmation once we have the full size of all files to get.
+# 	- Get all big files together, ask about them individually, and rarget them in one fell swoop.
+#------------------------------------------------------------------------------
+@include "Ops_GenericFunctions.dsi";
+@include "_File.dsi";
+
+###############################################################################
+# Configuration options
+###############################################################################
+# How big is too big before we should warn the user. (~10M)
+int $bigFileSize = 10000000;
+###############################################################################
+# !!!!! No Configuration below this line !!!!!
+###############################################################################
+
+# See if the user gave a mask as the first argument without specifying the -mask option
+# This is only a valid option in the first position.
+int $i = 1;
+int $iPlus1 = 2;
+string $nsMask = "";
+if (!RegExMatch("^-", $argv[1])) {
+	$nsMask = $argv[1];
+	$i = 2;
+	$iPlus1 = 3;
+}
+
+string $mask = "";
+string $path = "";
+string $after = "";
+string $before = "";
+string $max = "";
+string $time = "";
+string $age = "";
+#string $recursive = "";
+# Now parse the rest of the arguments
+while ($i < sizeOf($argv)) {
+	if ($argv[$i] == "-recursive") {
+		echo "Hold on there cowboy, I don't support recursive goodget's!  Bailing...\n";
+		return false;
+	} else if ($argv[$i] == "-mask") {
+		getOption($argv, $iPlus1, $mask);
+	} else if ($argv[$i] == "-path") {
+		getOption($argv, $iPlus1, $path);
+	} else if ($argv[$i] == "-after") {
+		getOption($argv, $iPlus1, $after);
+	} else if ($argv[$i] == "-before") {
+		getOption($argv, $iPlus1, $before);
+	} else if ($argv[$i] == "-max") {
+		getOption($argv, $iPlus1, $max);
+	} else if ($argv[$i] == "-time") {
+		getOption($argv, $iPlus1, $time);
+	} else if ($argv[$i] == "-age") {
+		getOption($argv, $iPlus1, $age);
+	} else if ($argv[$i] == "-help") {
+		usage();
+		return true;
+	} else {
+		echo("Invalid option: \"$argv[$i]\"\n", ERROR);
+		usage();
+		return false;
+	}
+	#$i++;
+	$i += 2;
+	#$iPlus1++;
+	$iPlus1 += 2;
+}
+# Now normalize path and mask for the possibility that non-specified path/mask were given as first param.
+if ($nsMask != "") {
+	if (_IsFullPath($nsMask)) {
+		if ($path != "") {
+			echo "\n!!!!! Danger Will Robinson, you gave an absolute path/mask AND specified a path !!!!!\n!!!!! These are mutually exclusive options !!!!!\n";
+			return false;
+		}
+		string $parts;
+		if ( ! SplitPath($nsMask, $parts) ) {
+			echo "SplitPath failed to split your non-specified path/mask \"$nsMask\".  Stop breaking it!\n";
+			return false;
+		}
+		$path = $parts[0];
+		$mask = $parts[1];
+	} else {
+		$mask = $nsMask;
+		if ($path == "") {
+			@echo off;
+			@record on;
+			if (!`pwd`) {
+				echo "pwd failed to get path ??????\n";
+				return false;
+			}
+			if (!GetCmdData("CurrentDirectory::path", $path)) {
+				echo "Couldn't get pwd (but command succeeded) ????\n";
+				return false;
+			}
+			@record off;
+			@echo on;
+		}
+	}
+}
+# Now normalize the path so it doesn't have a trailing \\ as this will screw up quotes.
+while (RegExMatch("\\\\\$", $path)) {
+	RegExSub("\\\\\$", "", $path);
+}
+
+if ($mask == "" || $path == "") {
+	echo "Couldn't put together a path and a mask for some reason.  Check your command line params.\n";
+	return false;
+}
+# At this point we should have a path and a mask no matter what was entered.
+
+# Build the dir string to see how many files we're bringing back.
+string $dirstring = "dir -mask \"$mask\" -path \"$path\" ";
+if ($after != "") {
+	$dirstring = "$dirstring -after $after ";
+} 
+if ($before != "") {
+	$dirstring = "$dirstring -before $before ";
+}
+if ($max != "") {
+	$dirstring = "$dirstring -max $max ";
+}
+if ($time != "") {
+	$dirstring = "$dirstring -time $time ";
+}
+if ($age != "") {
+	$dirstring = "$dirstring -age $age ";
+}
+
+
+# Now execute the dir
+@record on;
+object $fileItem;
+int $numFileItem = 0;
+bool $dirSuc = false;
+@echo off;
+$dirSuc = `$dirstring`;
+@echo on;
+GetCmdData("DirItem[0]::FileItem", $fileItem);
+$numFileItem = sizeOf($fileItem);
+if ($dirSuc == false) {
+# Our logic needs to be complicated here since if the max number of entries is exceeded dir returns false.
+	int $passedMax = 0;
+	GetCmdData("TaskingInfo::SearchMaxMatches::value", $passedMax);
+	if ($numFileItem != $passedMax || $passedMax == 0) {
+		echo "!!!!! Error executing the following command: \n $dirstring\n!!!!!\n";
+		return false;
+	} 
+} 
+@record off;
+
+# We should be creating an array of structs here, but we can't support that.
+# Instead we'll use identically indexed arrays
+string $dFile, $tempStr;
+int $dSize, $tempInt, $totalSize;
+bool $dIsDir, $tempBool;
+$i = 0;
+while ($i < $numFileItem) {
+	if (! GetObjectData($fileItem[$i], "name", $tempStr)) {
+		echo("Can't finish parsing dir outputs.", ERROR);
+		return false;
+	} else {
+		$dFile[$i] = $tempStr;
+	}
+	if (! GetObjectData($fileItem[$i], "size", $tempInt)) {
+		echo("Can't finish parsing dir outputs (index $i, size).\n", ERROR);
+		return false;
+	} else {
+		$dSize[$i] = $tempInt;
+	}
+	if (! GetObjectData($fileItem[$i], "Attributes::directory", $tempBool)) {
+		echo("Can't finish parsing dir outputs (index $i, isDir).\n", ERROR);
+		return false;
+	} else {
+		$dIsDir[$i] = $tempBool;
+	}
+	$i++;
+}
+if ($numFileItem == 1 && $dIsDir[0]) {
+	echo "Looks like you gave a directory to pull.\n";
+	echo "Fix your path, set your mask to *, and run this command again.\n";
+	# Maybe add a pastable here for the command that should be re-run (or prompt for re-run?)
+	return false;
+}
+
+# Process the files.
+bool $globalSuccess = true;
+$i = 0;
+while ($i < $numFileItem) {
+	if ($dIsDir[$i]) {
+		echo "We don't do directories, skipping $path\\$dFile[$i]\n";
+		$i++;
+		continue;
+	}
+	if ($dSize[$i] >= $bigFileSize) {
+		if (prompt("$path\\$dFile[$i] is pretty darn big ($dSize[$i] bytes).  Do you want to rarget it instead?")) {
+			if (! `script windows/rarget.dss -project Ops -args "auto auto auto \\"$path\\$dFile[$i]\\""`) {
+				echo("Couldn't rarget $path\\$dFile[$i]\n", ERROR);
+				$globalSuccess = false;
+			}
+		} else if (prompt("Okay, do you want to do a regular get on this file (think about this one...)?\n", false)) {
+			if (!tryToGetFile($dFile[$i], $path)) {
+				$globalSuccess = false;
+			}
+		} 
+		$i++;
+		continue;
+	} else {
+		if (! tryToGetFile($dFile[$i], $path)) {
+			$globalSuccess = false;
+		} 
+	}
+	$i++;
+}
+if ($globalSuccess) {
+	echo("All files retrieved.\n");
+} else {
+	echo("There were problem retrieving one or more requested files (this script will still return true)\n");
+}
+return true;
+
+# Cause a sane error warning with bad command line params.
+Sub getOption(IN string $argv, IN int $i, OUT string $option) {
+	bool $success = true;
+	if ($i == sizeOf($argv)) {
+		int $j = $i;
+		$j -= 1;
+		echo "\n!!!!! You specified \"$argv[$j]\" with no corresponding parameter !!!!!\n!!!!! This is probably an error !!!!!\n";
+		$success =  false;
+		$option = "";
+	} else if ($argv[$i] == "" || RegExMatch("^-", $argv[$i])) {
+		$option = "";
+		int $j = $i;
+		$j -= 1;
+		echo "\n!!!!! You specified \"$argv[$j]\" with no corresponding parameter !!!!!\n!!!!! This is probably an error !!!!!\n";
+		$success =  false;
+	} else {
+		$option = $argv[$i];
+	}
+	return true;
+}
+
+Sub tryToGetFile(IN string $file, IN string $path) {
+	bool $success = true;
+	@echo off;
+	if (! _FileExists($file, $path)) {
+		echo "The file \"$path\\$file\" doesn't exist on the target (from tryToGetFile()).\n";
+		return false;
+	}
+	if (`get -mask "$file" -path "$path"`) {
+		echo "$path\\$file - Got file successfully.\n";
+		return true;
+	} else {
+		echo "$path\\$file - Couldn't get file, trying a copyget.\n";
+	}
+	@echo on;
+	string $temppath = "";
+	string $tempfile= "at";
+	Ops_GetTempPath($tempPath);
+	int $tempnum = 0;
+	while (_FileExists("$tempfile$tempnum.tmp", $temppath)) {
+		$tempnum++;
+	}
+	$tempfile = "$tempfile$tempnum.tmp";
+	string $fullpath = "$temppath\\$tempfile";
+	string $fullfile, $realpath;
+	if ($path != "") {
+		$fullfile = "$path\\$file";
+		$realpath = $fullfile;
+	} else {
+		$fullfile = $file;
+		@echo off;
+		@record on;
+		`pwd`;
+		GetCmdData("CurrentDirectory::path", $realpath);
+		@record off;
+		@echo on;
+		$realpath = "$realpath\\$file";
+	}
+	@echo off;
+	if (`copy "$fullfile" "$temppath\\$tempfile"`) {
+		echo "Copied $fullfile to $tempfile\n";
+		if (`get "$temppath\\$tempfile" -realpath "$realpath"`) {
+			echo "Got file copy.\n";
+			if ( ! `del "$temppath\\$tempfile"`) {
+				echo "!!!!!!!! Couldn't delete $tempfile !!!!!!!!!\n";
+				$success = false;
+			} else {
+				echo "Deleted $tempfile on target.\n";
+			}
+		} else {
+			echo "Error getting $tempfile on target.\n";
+			if ( ! `del "$temppath\\$tempfile"`) {
+				echo "!!!!!!!! Couldn't delete $tempfile !!!!!!!!!\n";
+				$success = false;
+			} else {
+				echo "Deleted $tempfile on target.\n";
+			}
+		}
+	} else {
+		echo "Couldn't copy file.  Bailing...\n";
+		return false;
+	}
+	@echo on;
+	return $success;
+}
+
+Sub usage() {
+	echo "goodget.dss - USAGE:\n";
+	echo "\t[pathAndMask]\n\tThe path and mask (or filename) to the file to retrieve.\n";
+	echo "\t[-mask <filemask>]\n\tThe mask (or filename) of the file to be retrieved.\n";
+   	echo "\t[-path <path>]\n\tPerform get operation from a directory other than the current remote directory.\n\tNot valid if 'pathAndMask' argument is used\n";
+	echo "\t[-after <YYYY-MM-DD>]\n\tOnly get files with timestamps after the given date\n";
+	echo "\t[-before <YYYY-MM-DD>]\n\tOnly get files with timestamps before the given date\n";
+	echo "\t[-age <hours>]\n\tRetrieves files that are at most a certain age\n";
+	echo "\t[-time <accessed|created|modified>]\n\tTime type to use in after/before/age\n\t(defaults to modified)\n\n";
+	return true;
+}

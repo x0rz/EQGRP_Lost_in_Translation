@@ -1,0 +1,23 @@
+#script to get any recurring data from targets.
+
+#these are just here so that there is SOME syntax for the script engine to find.
+@echo off;
+
+string $systemRoot = GetEnv("SYSTEMROOT");
+
+`log tree -path "$systemRoot\\..\\Program Files"`;
+`log regquery -hive L -subkey system\\currentcontrolset\\control\\timezoneinformation`;
+`regquery -hive L -subkey "SYSTEM\\CurrentControlSet\\Enum\\USBSTOR" -recursive`;
+`background script installedPrograms.eps -nopopup`;
+
+`background eventlogfilter -log system -id 1001 -num 10000`;
+`background eventlogfilter -log system -id 1003 -num 10000`;
+
+#`background script grabTS.eps`;
+
+`log regquery -hive L -subkey "Software\\Policies\\Microsoft\\Windows\\WindowsUpdate" -recursive`;
+`log regquery -hive L -subkey "Software\\Microsoft\\Windows\\CurrentVersion\\WindowsUpdate" -recursive`;
+`log regquery -hive L -subkey "SYSTEM\\CurrentControlSet\\Services\\Dhcp\\Parameters" -recursive`;
+`log regquery -hive L -subkey "SYSTEM\\CurrentControlSet\\Services\\wuauserv" -recursive`;
+`log regquery -hive L -subkey "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Connection\\WinHttpSettings" -recursive`;
+@echo on;

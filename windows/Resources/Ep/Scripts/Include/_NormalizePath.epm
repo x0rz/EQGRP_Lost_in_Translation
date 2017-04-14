@@ -1,0 +1,21 @@
+#-------------------------------------------------------------------------------
+# _NormalizePath
+#    Removes any trailing slashes from a given path
+# Params:
+#    path - The path to modify
+#-------------------------------------------------------------------------------
+sub _NormalizePath(REF string $path)
+{
+
+    string $parts = SplitPath($path);
+    while ((strlen($parts[0]) > 0) && (strlen($parts[1]) == 0)) {
+	$path = $parts[0];
+	$parts = SplitPath($path);
+    }
+
+    $path = "$parts[0]\\$parts[1]";
+    return true;
+
+}	/* end _NormalizePath */
+
+

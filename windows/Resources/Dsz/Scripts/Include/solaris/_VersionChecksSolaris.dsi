@@ -1,0 +1,26 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsSolaris
+#	Returns whether the current target is Solaris
+#----------------------------------------------------
+sub _IsSolaris()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os))
+	{
+		if ($os == "solaris")
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsSolaris
+
+

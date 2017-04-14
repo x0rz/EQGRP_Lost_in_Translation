@@ -1,0 +1,41 @@
+@echo off;
+string $path;
+string $sourceip;
+int $local_port;
+@record on;
+`local pwd`;
+$path=GetCmdData("string_val");
+`getdirectory  -resources`;
+string $scripts=GetCmdData("dir");
+@record off;
+`local cd "$scripts\\jscanner"`;
+
+string $args="";
+int $i=1;
+int $size = sizeof($argv);
+while ($i < $size) {
+	$args="$args $argv[$i]";
+	$i++;
+}
+ifnot (`lpgetenv -option localIP` && `lpgetenv -option localPORT`) {
+ 	@record on;
+	`getnetaddr`;
+	$local_port = GetCmdData("remote_port");
+	$sourceip = GetCmdData("remote_address");
+	@record off;
+    	`lpsetenv -option localIP -value "$sourceip"`;
+	`lpsetenv -option localPORT -value $local_port`;
+
+} else {
+	$sourceip=GetEnv("localIP");
+	$local_port=GetEnv("localPORT");
+}
+
+
+@echo on;
+`background remotecommand -tcp $local_port`;
+sleep 1000;
+`background local run -command "perl.exe jscan.pl -p $path\\Scans -rc $local_port -ri 127.0.0.1 -rs $sourceip -re $args" -redirect`;
+@echo off;
+`local cd $path`;
+return true;

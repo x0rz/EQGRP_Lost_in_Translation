@@ -1,0 +1,94 @@
+##################################################
+#checkpsp.eps
+#version 0.2 - 04/18/2008
+#Version 0.1 - 04/10/2008
+#Used to try and identify running known PSP's
+#Will also try to compare current running config to previous config's if known
+#If we see a running PSP that we know how to investigate, we run the appropriate script
+##################################################
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+#struct defined in PSPHelpers.epm
+metaData @metaData;
+init(@metaData);
+
+#have we already run this script on a target before?
+@echo off;
+if(`local fileperms -file "@metaData.$logdir\\pspConfig.txt"` || 
+	`local fileperms -file "@metaData.$logdir\\pspInformation.txt"`){
+	if(prompt "It appears that you've already run this script here. Should I exit?"){ return TRUE;}
+}
+@echo on;
+
+openMetaData(@metaData);
+
+#Variables
+string %canRun;
+#string $shouldCreate;
+string %shouldCreate;
+string $PSPHistory;
+string $line;
+
+echo "Checking for any running known PSP's...\r";
+#checkProcList(%canRun,$shouldCreate,@metaData.$driveLetter);
+checkProcList(%canRun,%shouldCreate,@metaData.$driveLetter);
+echo "Checking for target PSP history...\r";
+
+@echo off;
+ifnot(@metaData.$history){
+	@echo on;
+	echo "No target history found. Checked @metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt\r";
+	#if(sizeof($shouldCreate)==0 && sizeof(%canRun)==0){
+	if(sizeof(%shouldCreate)==0 && sizeof(%canRun)==0){
+		echo "I don't see any known PSP's running.";
+		WriteFile("@metaData.$logdir\\noPSP.txt",TRUE,"No known PSP running");
+		closeMetaData(@metaData);
+		return FALSE;
+	}
+	if(sizeof(%canRun)>0){
+		echo "Saw PSP's we can act on. Grabbing configs for what we can";
+		runList(%canRun);
+	}
+	#if(sizeof($shouldCreate)>0){
+	if(sizeof(%shouldCreate)>0){
+		createList(%shouldCreate,@metaData);
+	}
+	closeMetaData(@metaData);
+	return TRUE;
+}else{
+	ifnot(ReadFile("@metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt",$PSPHistory)){
+		echo "\r\rSorry, can't read @metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt";
+		echo "File exists, but permissions might be wrong.\rFix and run this again\r";
+		return FALSE;
+	}
+}
+
+#we've made it this far. They have previous config info for us.
+@echo on;
+string $run;
+string $key;
+foreach $line($PSPHistory){
+	$run = split(":",$line);
+	foreach $key(keys %canRun) {
+		if ($key == $run[0]) {
+			echo "Found configuration history for $run[0]. Running script\r";
+			`script PSP\\$run[0].eps`;
+			#remove from the list of options to run. don't want to run twice
+			undef(%canRun{'$run[0]'});
+		}
+	}
+}
+
+if(sizeof(%canRun)>0){
+	echo "Now grabbing configs for PSP's with no history";	
+	runList(%canRun);
+}
+
+#if(sizeof($shouldCreate)>0){
+if(sizeof(%shouldCreate)>0){
+	createList(%shouldCreate,@metaData);
+}
+
+closeMetaData(@metaData);
+return TRUE;

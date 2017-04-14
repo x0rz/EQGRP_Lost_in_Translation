@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+<Aliases>
+	<Alias>
+		<Name>strangeland</Name>
+		<ReplaceBeforeArgs>python strangeland.py -project StLa -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>strangeland</Help>
+		<Help>    Menu driven script for installation, collection, and removal of strangeland.</Help>
+	</Alias>
+</Aliases>	

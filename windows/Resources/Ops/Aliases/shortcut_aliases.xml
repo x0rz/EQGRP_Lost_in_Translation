@@ -1,0 +1,18 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>ipconfig</Name>
+		<ReplaceBeforeArgs>ifconfig</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+	<Alias>
+		<Name>netgetdcname</Name>
+		<ReplaceBeforeArgs>domaincontroller -primary</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+	<Alias>
+		<Name>nslookup</Name>
+		<ReplaceBeforeArgs>nameserverlookup</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+</Aliases>

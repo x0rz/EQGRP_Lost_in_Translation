@@ -1,0 +1,45 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31407'>
+
+ <Command id='16' name='sr_dns'>
+
+  <Help>Performs several types of DNS operations.</Help>
+  <Help>Uses the StingRay driver if it is available.</Help>
+
+  <Input>
+   <Option name="query" optional="false" group="type">
+    <Set data='type' value='0' />
+    <Argument name="hostname" data="target" optional="false" />
+    <Help>Query the DNS server for the information about the given hostname</Help>
+   </Option>
+
+   <Option name="reverse" optional="false" group="type">
+    <Set data='type' value='1' />
+    <Argument name="hostname" data="target" optional="false" />
+    <Help>Query the DNS server for the information about the given IP</Help>
+   </Option>
+
+   <Option name="zone" optional="false" group="type">
+    <Set data='type' value='2' />
+    <Argument name="domain" data="target" optional="false" />
+    <Help>Attempt to perform a zone transfer (ie, get all DNS information) for</Help>
+    <Help>the given domain.</Help>
+   </Option>
+
+   <Option name="dns" optional="false">
+    <Argument name="serverIp" data="dnsServer" optional="false" />
+    <Help>DNS server to query</Help>
+   </Option>
+
+  </Input>
+
+  <Output>
+   <Data name='type' type='uint8_t'/>
+   <Data name='dnsServer' type='string'/>
+   <Data name='target' type='string'/>
+  </Output>
+
+ </Command>
+
+</Plugin>

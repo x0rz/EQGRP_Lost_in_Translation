@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31302'>
+ <Command id='16' name='copy'>
+  <Help>Copies a given file to the specified name</Help>
+  <Input>
+   <Argument name='source' optional='false' data='source'>
+    <Help>This file will be copied.</Help>
+   </Argument>
+   <Argument name='destination' optional='false' data='destination'>
+    <Help>This is the destination file name.</Help>
+   </Argument>
+  </Input>
+  <Output>
+   <Data name='source' type='string'/>
+   <Data name='destination' type='string'/>
+  </Output>
+ </Command>
+</Plugin>

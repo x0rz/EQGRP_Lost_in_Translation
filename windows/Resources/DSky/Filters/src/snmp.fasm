@@ -1,0 +1,2 @@
+filter:port 161 or port 162
+netmask:255.255.255.0

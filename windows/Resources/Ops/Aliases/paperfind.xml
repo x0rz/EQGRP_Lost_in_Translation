@@ -1,0 +1,43 @@
+﻿<?xml version='1.1' encoding='utf-8'?>
+<Aliases>
+	<Alias>
+		<Name>paperfind</Name>
+		<ReplaceBeforeArgs>python paperfind.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>usage: paperfind [-help] -pattern PATTERN [-regex] [-id ID] [-all] [-any]
+                 [-memory MEMORY] [-data AGE]
+Provides grep-like functionality for the 'handles' command.
+Relative paths will (probably) never match. Use absolute or partial
+paths as though you are grepping. For full featured pattern matching,
+consider the --regex option.
+If the pattern you're searching for starts with a &quot;-&quot; character, place
+a &quot;-&quot; by itself before beginning the pattern.
+ e.g. paperfind -any - -filethatstartswithadash
+  or  paperfind - -filethatstartswithdash -any
+positional arguments:
+  pattern          Pattern or regular expression.
+optional arguments:
+  -help              show this help message and exit
+  -regex             Treat the input pattern as a user-supplied regular
+                     expression instead of a simple string pattern.
+  -any               Search all handle types instead of only file handles.
+  -data AGE          How old cached data can be before re-querying target.
+                     (Default 10m).
+handles arguments:
+  Options that control how the handles command is run.
+  -id ID             Limit returned handle search to a particular process ID.
+  -all               Search all available handle information. (Not recommended
+                     with this script; provides no benefit)
+  -memory MEMORY     Number of bytes to use for open handle list (defaults to
+                     handles default).</Help>
+		<Options>
+			<Option>help</Option>
+            <Option>regex</Option>
+			<Option>id</Option>
+			<Option>all</Option>
+            <Option>any</Option>
+			<Option>memory</Option>
+            <Option>data</Option>
+		</Options>
+	</Alias>
+</Aliases>

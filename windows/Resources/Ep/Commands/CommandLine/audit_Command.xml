@@ -1,0 +1,39 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31333'>
+
+  <Command id='16' name='audit'>
+
+    <Help>Get files from a remote host.</Help>
+
+    <Input>
+      <Option name='status' optional='false' group='main'>
+	<Set data='type' value='1' />
+	<Help>Display current auditing status</Help>
+      </Option>
+
+      <Option name='on' optional='false' group='main'>
+	<Set data='type' value='2' />
+	<Help>Turn auditing on (DEPRECATED)</Help>
+      </Option>
+
+      <Option name='off' optional='false' group='main'>
+	<Set data='type' value='3' />
+	<Help>Turn auditing off</Help>
+      </Option>
+
+      <Option name='force' optional='true'>
+	<Set data='force' value='true' />
+	<Help>Even if policy changes are audited, force on/off</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='type' type='uint8_t' default='0'/>
+      <Data name='force' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

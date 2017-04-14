@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_AppCompat_Tasking.pyo" providerType="script">
+
+    <Command name="appcompat" id="0">
+    
+		<Help>Register a dll via Application Compatibility method.</Help>
+
+		<Input>
+			<Option name='procname' optional='false'>
+				<Argument name='value' data='procname'/>
+			</Option>
+
+			<Option name='remotelibname' optional='false'>
+				<Argument name='value' data='remotelibname'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='procname' type='string'/>
+			<Data name='remotelibname' type='string'/>
+		</Output>
+    </Command>
+</Plugin>

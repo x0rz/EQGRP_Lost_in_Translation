@@ -1,0 +1,128 @@
+#------------------------------------------------------
+# File:	uptime.eps
+#
+# Returns the uptime of the system
+#
+# Modifications:
+#	03/25/06	Created.
+#------------------------------------------------------
+
+@echo off;
+
+if ($argc > 2)	{
+	echo "Usage: $argv[0] [targetMachine]\r\n";
+	return false;
+}
+if($argc == 2) {
+	if ($argv[1]	== "?")	{
+		echo "Usage: $argv[0] [targetMachine]\r\n";
+		return false;
+	}
+}
+
+
+string $locale = "-local";
+
+string $target;
+if($argc == 2) {
+	# add \\ to	the	target name	if none	specified
+	$target = Split("\\\\", $argv[1]);
+	if (sizeof($target)	> 1) {
+		$target	= "\\\\$target[1]";
+	} else {
+		$target	= "\\\\$target[0]";
+	}
+	if ($target	== "\\\\") {
+		echo "Invalid target ($target)";
+		return false;
+	}
+	$locale = "-remote $target";
+} else {
+	$target = "local";
+}
+
+echo "Getting uptime for $target";
+@record on;
+bool $res = `xml performance $locale -data System -bare`;
+@record off;
+
+ifnot($res) {
+	echo "Unable to get performance data\n";
+	return false;
+}
+
+string $systemName = GetCmdData("systemName");
+string $uptime     = GetCmdData("2_674_calc");
+
+string $splitted = split(".", $uptime);
+int $uptimeInt   = <int>$splitted[0];
+
+SetCmdData(INT, "uptime", $uptimeInt);
+
+string $uptimeStr = "";
+
+int $seconds;
+int $minutes;
+int $hours;
+int $days;
+int $temp;
+
+# number of days
+$days = $uptimeInt;
+$days /= 86400;
+
+# number of hours
+$hours = $uptimeInt;
+$hours /= 3600;
+$hours %= 24;
+
+# number of minutes
+$minutes = $uptimeInt;
+$minutes /= 60;
+$minutes %= 60;
+
+# number of seconds
+$seconds = $uptimeInt;
+$seconds %= 60;
+
+string $D;
+if ($days == 1) {
+    $D = "day";
+} else {
+    $D = "days";
+}
+string $H;
+if ($hours == 1) {
+    $H = "hour";
+} else {
+    $H = "hours";
+}
+string $M;
+if ($minutes == 1) {
+    $M = "minute";
+} else {
+    $M = "minutes";
+}
+string $S;
+if ($seconds == 1) {
+    $S = "second";
+} else {
+    $S = "seconds";
+}
+if($days > 0) {
+	$uptimeStr = "$uptimeStr $days $D,";
+}
+if($hours > 0 || strlen($uptimeStr) > 0) {
+	$uptimeStr = "$uptimeStr $hours $H,";
+}
+if($minutes > 0 || strlen($uptimeStr) > 0) {
+	$uptimeStr = "$uptimeStr $minutes $M,";
+}
+if($seconds > 0 || strlen($uptimeStr) > 0) {
+	$uptimeStr = "$uptimeStr and $seconds $S";
+}
+
+echo "Uptime for $systemName";
+echo "$uptimeStr";
+
+return true;

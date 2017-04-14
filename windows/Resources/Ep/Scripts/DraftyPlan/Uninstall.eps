@@ -1,0 +1,54 @@
+#--------------------------------------------------------
+# File: Uninstall.eps
+#
+# Wrapper script for Uninstall of DraftyPlan tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use module calls
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_FileExists.epm";
+@include "_GetSystemPaths.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = "memss.exe";
+
+# get the system directory
+string $root;
+string $sys;
+ifnot (_GetSystemPaths($root, $sys)) {
+    echo "Unable to determine root directory\n";
+    return false;
+}
+string $sysDir = "$root\\$sys";
+
+bool $success = true;
+
+echo "Terminating exe";
+if (`dp_terminateprocess -name $driver`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED (not running? -- continuing)";
+}
+
+ifnot (_DriverUninstall($driver)) {
+    $success = false;
+}
+
+echo "Removing $exeName";
+if (`del $exeName -path "$sysDir"`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $success = false;
+}
+
+return $success;

@@ -1,0 +1,143 @@
+<?xml version='1.0' ?>
+
+<Plugin providerName="Get_Lp" providerType='module'>
+
+	<Command id='0' name='get'>
+
+		<Help>Get files from a remote host.</Help>
+
+		<Input>
+			<Argument name='pathAndMask' optional='true' data='pathAndMask'>
+				<Help>The path and mask (or filename) to the file to retrieve.</Help>
+				<Help>   NOTE: If you use a file mask, -range and -tail are illegal.</Help>
+			</Argument>
+
+			<Option name='mask' optional='true'>
+				<Argument name='filemask' data='mask'/>
+				<Help>The mask (or filename) of the file to be retrieved.</Help>
+				<Help>   NOTE: If you use a file mask, -range and -tail are illegal.</Help>
+			</Option>
+			
+			<Option name='path' optional='true'>
+				<Argument name='path' data='path'/>
+				<Help>Perform get operation from a directory other than the current remote directory.</Help>
+				<Help>Not valid if 'pathAndMask' argument is used</Help>
+			</Option>
+
+			<Option name='after' optional='true'>
+				<Help>Only get files with timestamps after the given date</Help>
+				<Argument name='YYYY-MM-DD' data='after'/>
+			</Option>
+
+			<Option name='before' optional='true'>
+				<Help>Only get files with timestamps before the given date</Help>
+				<Argument name='YYYY-MM-DD' data='before'/>
+			</Option>
+
+			<Option name='age' optional='true'>
+				<Help>Retrieves files that are at most a certain age</Help>
+				<Argument name='hours' data='age'/>
+			</Option>
+
+			<Option name='time' optional='true'>
+				<Help>Time type to use in after/before/age</Help>
+				<Help>(defaults to modified)</Help>
+
+				<Argument name='type'>
+					<Value string='accessed'>
+						<Set data='timetype' value='1'/>
+					</Value>
+					<Value string='modified'>
+						<Set data='timetype' value='2'/>
+					</Value>
+					<Value string='created'>
+						<Set data='timetype' value='3'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='recursive' optional='true'>
+				<Set data='recursive' value='true'/>
+			</Option>
+
+			<Option name='name' optional='true'>
+				<Argument name='localPrefix' data='prefix'/>
+				<Help>The prefix for any local files.</Help>
+			</Option>
+
+			<Option name='range' optional='true' group='location'>
+				<Help>The range of bytes to read from the file. If end is not specified,</Help>
+				<Help>the file will be read from the start until end of file.</Help>
+				<Argument name='start' data='start'/>
+				<Argument name='end' data='end' optional='true' />
+			</Option>
+
+			<Option name='tail' optional='true' group='location'>
+				<Help>The number of bytes specified will be read from the file starting at</Help>
+				<Help> "bytes" offset from the END of the file. </Help>
+				<Argument name='bytes' data='tail'/>
+			</Option>
+
+			<Option name='max' optional='true'>
+				<Argument name='number' data='max'/>
+				<Help>Retrieves up to this number of files.  If 0, </Help>
+				<Help>return all files.  (default=25)</Help>
+			</Option>
+
+			<Option name='realpath' optional='true'>
+				<Argument name='path' data='realpath'/>
+				<Help>The original path of the file to be retrieved.</Help>
+			</Option>
+			
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many bytes to read from the file at a time.</Help>
+			</Option>
+			
+			<Option name='filetype' optional='true'>
+				<Argument name='type' data='filetype'/>
+				<Help>Used to label data for additional processing.</Help>
+			</Option>
+			
+			<Option name='minsize' optional='true'>
+				<Argument name='number' data ='minsize'/>
+				<Help>Retrieve files whose size is at least minsize</Help>
+			</Option>
+			
+			<Option name='maxsize' optional='true'>
+				<Argument name='number' data='maxsize'/>
+				<Help>Retrieve files whose size is at most maxsize</Help>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+
+		</Input>
+
+		<Output>
+			<Data name='pathAndMask' type='string'/>
+			<Data name='mask' type='string'/>
+			<Data name='path' type='string'/>
+			<Data name='after' type='datetime'/>
+			<Data name='before' type='datetime'/>
+			<Data name='age' type='time'/>
+			<Data name='timetype' type='uint8_t' default='2'/>
+			<Data name='recursive' type='bool' default='false'/>
+			<Data name='prefix' type='string'/>
+			<Data name='start' type='uint64_t' default='0'/>
+			<Data name='end' type='uint64_t' default='0'/>
+			<Data name='tail' type='uint64_t' default='0'/>
+			<Data name='max' type='uint32_t' default='25'/>
+			<Data name='realpath' type='string'/>
+			<Data name='chunksize' type='uint32_t' default='131070'/>
+			<Data name='filetype' type='string'/>
+			<Data name='minsize' type='uint64_t' default='0'/>
+			<Data name='maxsize' type='uint64_t' default='0'/>
+			<Data name='method'    type='string'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

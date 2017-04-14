@@ -1,0 +1,289 @@
+ENSBPSW1#show run
+Building configuration...
+
+Current configuration : 2541 bytes
+!
+version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log uptime
+service password-encryption
+!
+hostname ENSBPSW1
+!
+enable secret 5 $1$f0Nw$swJhU3TQLB8qAvSJ5PZ9t/
+!
+no aaa new-model
+udld enable
+
+ip subnet-zero
+!
+no ip domain-lookup
+!
+!
+!
+no file verify auto
+!
+spanning-tree mode pvst
+spanning-tree loopguard default
+spanning-tree extend system-id
+spanning-tree vlan 1-10 priority 4096
+!
+vlan internal allocation policy ascending
+!
+interface GigabitEthernet0/1
+ switchport mode access
+!
+interface GigabitEthernet0/2
+ switchport mode access
+!
+interface GigabitEthernet0/3
+ switchport mode access
+!
+interface GigabitEthernet0/4
+ switchport access vlan 4
+ switchport mode access
+!
+interface GigabitEthernet0/5
+ switchport access vlan 4
+ switchport mode access
+!
+interface GigabitEthernet0/6
+ switchport access vlan 4
+ switchport mode access
+!
+interface GigabitEthernet0/7
+ switchport access vlan 4
+ switchport mode access
+!
+interface GigabitEthernet0/8
+ switchport access vlan 2
+ switchport mode access
+!
+interface GigabitEthernet0/9
+ switchport access vlan 2
+ switchport mode access
+!
+interface GigabitEthernet0/10
+ switchport access vlan 2
+ switchport mode access
+!
+interface GigabitEthernet0/11
+ switchport access vlan 7
+ switchport mode access
+!
+interface GigabitEthernet0/12
+ switchport access vlan 7
+ switchport mode access
+!
+interface GigabitEthernet0/13
+ switchport access vlan 7
+ switchport mode access
+!
+interface GigabitEthernet0/14
+ switchport access vlan 7
+ switchport mode access
+!
+interface GigabitEthernet0/15
+ switchport access vlan 5
+ switchport mode access
+!
+interface GigabitEthernet0/16
+ switchport access vlan 5
+ switchport mode access
+!
+interface GigabitEthernet0/17
+ switchport access vlan 5
+ switchport mode access
+!
+interface GigabitEthernet0/18
+ switchport access vlan 5
+ switchport mode access
+!
+interface GigabitEthernet0/19
+ switchport access vlan 5
+ switchport mode access
+!
+interface GigabitEthernet0/20
+ switchport access vlan 5
+ switchport mode access
+!
+interface GigabitEthernet0/21
+!
+interface GigabitEthernet0/22
+!
+interface GigabitEthernet0/23
+ switchport mode trunk
+!
+interface GigabitEthernet0/24
+ switchport mode trunk
+!
+interface Vlan1
+ ip address 192.168.202.241 255.255.255.0
+ no ip route-cache
+!
+ip default-gateway 192.168.202.1
+ip http server
+!
+control-plane
+!
+!
+line con 0
+ password 7 123954121C453F26042E303F3C27294227
+ login
+line vty 0 4
+ password 7 047B5A03016F7F6C271C11001D1907550A
+ login
+line vty 5 15
+ password 7 06265E2442003A3B2B12061C0316217A04
+ no login
+!
+end
+
+ENSBPSW1#
+
+
+
+ENSBPSW1#show vtp status
+VTP Version                     : 2
+Configuration Revision          : 6
+Maximum VLANs supported locally : 255
+Number of existing VLANs        : 11
+VTP Operating Mode              : Server
+VTP Domain Name                 : ENSBP
+VTP Pruning Mode                : Disabled
+VTP V2 Mode                     : Disabled
+VTP Traps Generation            : Disabled
+MD5 digest                      : 0x61 0xC7 0x6F 0x53 0xF6 0x7B 0x43 0x6B
+Configuration last modified by 192.168.202.241 at 7-10-93 19:00:20
+Local updater ID is 192.168.202.241 on interface Vl1 (lowest numbered VLAN inter
+face found)
+ENSBPSW1#
+
+
+ENSBPSW1#show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi0/1, Gi0/2, Gi0/3, Gi0/21
+                                                Gi0/22
+2    swift                            active    Gi0/8, Gi0/9, Gi0/10
+3    sag                              active
+4    vpinin                           active    Gi0/4, Gi0/5, Gi0/6, Gi0/7
+5    outside                          active    Gi0/15, Gi0/16, Gi0/17, Gi0/18
+                                                Gi0/19, Gi0/20
+7    dialin                           active    Gi0/11, Gi0/12, Gi0/13, Gi0/14
+219  DMZ                              active
+1002 fddi-default                     act/unsup
+1003 token-ring-default               act/unsup
+1004 fddinet-default                  act/unsup
+1005 trnet-default                    act/unsup
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        0      0
+2    enet  100002     1500  -      -      -        -    -        0      0
+3    enet  100003     1500  -      -      -        -    -        0      0
+4    enet  100004     1500  -      -      -        -    -        0      0
+5    enet  100005     1500  -      -      -        -    -        0      0
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+7    enet  100007     1500  -      -      -        -    -        0      0
+219  enet  100219     1500  -      -      -        -    -        0      0
+1002 fddi  101002     1500  -      -      -        -    -        0      0
+1003 tr    101003     1500  -      -      -        -    -        0      0
+1004 fdnet 101004     1500  -      -      -        ieee -        0      0
+1005 trnet 101005     1500  -      -      -        ibm  -        0      0
+
+Remote SPAN VLANs
+------------------------------------------------------------------------------
+
+
+Primary Secondary Type              Ports
+------- --------- ----------------- ------------------------------------------
+
+ENSBPSW1#
+
+
+ENSBPSW1#show int trunk
+
+Port        Mode         Encapsulation  Status        Native vlan
+Gi0/23      on           802.1q         trunking      1
+Gi0/24      on           802.1q         trunking      1
+
+Port        Vlans allowed on trunk
+Gi0/23      1-4094
+Gi0/24      1-4094
+
+Port        Vlans allowed and active in management domain
+Gi0/23      1-5,7,219
+Gi0/24      1-5,7,219
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Gi0/23      1-5,7,219
+Gi0/24      1-5,7,219
+
+
+
+
+
+ENSBPSW1#show int status
+
+Port      Name               Status       Vlan       Duplex  Speed Type
+Gi0/1                        connected    1          a-full a-1000 10/100/1000Ba
+seTX
+Gi0/2                        connected    1          a-full  a-100 10/100/1000Ba
+seTX
+Gi0/3                        connected    1          a-full  a-100 10/100/1000Ba
+seTX
+Gi0/4                        connected    4          a-full a-1000 10/100/1000Ba
+seTX
+Gi0/5                        notconnect   4            auto   auto 10/100/1000Ba
+seTX
+Gi0/6                        connected    4          a-full  a-100 10/100/1000Ba
+seTX
+Gi0/7                        notconnect   4            auto   auto 10/100/1000Ba
+seTX
+Gi0/8                        connected    2          a-full  a-100 10/100/1000Ba
+seTX
+Gi0/9                        connected    2          a-full  a-100 10/100/1000Ba
+seTX
+Gi0/10                       notconnect   2            auto   auto 10/100/1000Ba
+seTX
+Gi0/11                       connected    7          a-full a-1000 10/100/1000Ba
+seTX
+
+Port      Name               Status       Vlan       Duplex  Speed Type
+Gi0/12                       notconnect   7            auto   auto 10/100/1000Ba
+seTX
+Gi0/13                       notconnect   7            auto   auto 10/100/1000Ba
+seTX
+Gi0/14                       notconnect   7            auto   auto 10/100/1000Ba
+seTX
+Gi0/15                       connected    5          a-full a-1000 10/100/1000Ba
+seTX
+Gi0/16                       notconnect   5            auto   auto 10/100/1000Ba
+seTX
+Gi0/17                       notconnect   5            auto   auto 10/100/1000Ba
+seTX
+Gi0/18                       notconnect   5            auto   auto 10/100/1000Ba
+seTX
+Gi0/19                       notconnect   5            auto   auto 10/100/1000Ba
+seTX
+Gi0/20                       connected    5          a-full a-1000 10/100/1000Ba
+seTX
+Gi0/21                       connected    1          a-full a-1000 10/100/1000Ba
+seTX
+Gi0/22                       notconnect   1            auto   auto Not Present
+Gi0/23                       connected    trunk      a-full a-1000 10/100/1000Ba
+seTX
+Gi0/24                       connected    trunk      a-full a-1000 10/100/1000Ba
+seTX
+ENSBPSW1#
+
+
+
+
+
+

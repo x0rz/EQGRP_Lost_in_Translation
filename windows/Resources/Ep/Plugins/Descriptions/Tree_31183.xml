@@ -1,0 +1,26 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31183'>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='*' minor='*'>
+		<File>Tree_Implant.dll</File>
+	    </Version>
+	</Platform>
+
+	<!-- 9x family -->
+        <Platform id='1'>
+	    <Version major='4' minor='*'>
+		<File>Tree_Implant9x.dll</File>
+	    </Version>
+	</Platform>
+
+    </Windows>
+
+</Plugin>

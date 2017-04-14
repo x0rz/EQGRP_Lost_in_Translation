@@ -1,0 +1,622 @@
+unset key protection enable
+set clock dst-off
+set clock timezone 4
+set clock dst recurring start-weekday 2 0 3 02:00 end-weekday 1 0 11 02:00
+set vrouter trust-vr sharable
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+unset auto-route-export
+exit
+set service "SQL" protocol tcp src-port 0-65535 dst-port 1433-1433 
+set service "MPARK WEB" protocol tcp src-port 0-65535 dst-port 8081-8081 
+set service "Comtrust" protocol tcp src-port 0-65535 dst-port 2443-2443 
+set service "CVS-WEB" protocol tcp src-port 0-65535 dst-port 8082-8082 
+set service "TCP8083" protocol tcp src-port 0-65535 dst-port 8083-8083 
+set service "TCP_8095" protocol tcp src-port 0-65535 dst-port 8095-8095 
+set service "HP-OA-1443" protocol tcp src-port 0-65535 dst-port 1443-1443 
+set service "HTTP-8080" protocol tcp src-port 0-65535 dst-port 8080-8080 
+set service "SW-TCP-8401" protocol tcp src-port 0-65535 dst-port 8401-8401 
+set service "SW-UDP-8400" protocol udp src-port 0-65535 dst-port 8400-8400 
+set service "RDP" protocol tcp src-port 0-65535 dst-port 3389-3389 
+set alg appleichat enable
+unset alg appleichat re-assembly enable
+set alg sctp enable
+set auth-server "Local" id 0
+set auth-server "Local" server-name "Local"
+set auth default auth server "Local"
+set auth radius accounting port 1646
+set admin name "ENSBadmin"
+set admin password "nBd5PIrLLusBciHPhs0PBnMtk5Dm5n"
+set admin user "kbaluyot" password "nMSQP4rHLyxHcWqBmsqP9pMtnMGPYn" privilege "all"
+set admin user "msaeed" password "nF3dKrrkHDHCckxALsfARkBtenLoAn" privilege "all"
+set admin user "juy" password "nGB6DqrpKxQAc4pI/sxHVLIt1aEskn" privilege "all"
+set admin user "adesear" password "nLtbNIrRDSPEcrMDFs7MT5Htz8Cifn" privilege "all"
+set admin port 8080
+set admin ssh port 2194
+set admin http redirect
+set admin auth web timeout 10
+set admin auth server "Local"
+set admin format dos
+set zone "Trust" vrouter "trust-vr"
+set zone "Untrust" vrouter "trust-vr"
+set zone "DMZ" vrouter "trust-vr"
+set zone "VLAN" vrouter "trust-vr"
+set zone id 100 "MPLS"
+set zone id 101 "APN"
+set zone id 102 "MGMT"
+set zone "Untrust-Tun" vrouter "trust-vr"
+set zone "Trust" tcp-rst 
+set zone "Untrust" block 
+unset zone "Untrust" tcp-rst 
+set zone "MGT" block 
+unset zone "V1-Trust" tcp-rst 
+unset zone "V1-Untrust" tcp-rst 
+set zone "DMZ" tcp-rst 
+unset zone "V1-DMZ" tcp-rst 
+unset zone "VLAN" tcp-rst 
+set zone "MPLS" tcp-rst 
+set zone "APN" tcp-rst 
+set zone "MGMT" tcp-rst 
+set zone "Untrust" screen tear-drop
+set zone "Untrust" screen syn-flood
+set zone "Untrust" screen ping-death
+set zone "Untrust" screen ip-filter-src
+set zone "Untrust" screen land
+set zone "V1-Untrust" screen tear-drop
+set zone "V1-Untrust" screen syn-flood
+set zone "V1-Untrust" screen ping-death
+set zone "V1-Untrust" screen ip-filter-src
+set zone "V1-Untrust" screen land
+set interface "ethernet0/0" zone "Trust"
+set interface "ethernet0/1" zone "Untrust"
+set interface "ethernet0/2" zone "MGMT"
+set interface "ethernet3/0" zone "Untrust"
+set interface "tunnel.18" zone "Untrust"
+set interface ethernet0/0 ip 192.168.120.4/24
+set interface ethernet0/0 nat
+unset interface vlan1 ip
+set interface ethernet0/1 ip 80.227.254.228/27
+set interface ethernet0/1 route
+set interface ethernet0/2 ip 192.168.153.1/24
+set interface ethernet0/2 route
+set interface ethernet3/0 ip 80.227.254.196/27
+set interface ethernet3/0 route
+set interface tunnel.18 ip unnumbered interface ethernet0/1
+set interface tunnel.18 mtu 1500
+unset interface vlan1 bypass-others-ipsec
+unset interface vlan1 bypass-non-ip
+set interface ethernet0/0 manage-ip 192.168.120.5
+set interface ethernet0/1 manage-ip 80.227.254.229
+set interface ethernet3/0 manage-ip 80.227.254.197
+unset interface ethernet0/0 ip manageable
+unset interface ethernet0/1 ip manageable
+set interface ethernet0/2 ip manageable
+unset interface ethernet3/0 ip manageable
+set interface ethernet0/1 manage ping
+set interface ethernet0/1 manage ssh
+set interface ethernet0/1 manage ssl
+set interface ethernet0/2 manage ping
+set interface ethernet0/2 manage ssh
+set interface ethernet0/2 manage telnet
+set interface ethernet0/2 manage snmp
+set interface ethernet0/2 manage ssl
+set interface ethernet0/2 manage web
+set interface ethernet3/0 manage ping
+set interface ethernet3/0 manage ssh
+set interface ethernet3/0 manage ssl
+set interface ethernet0/1 vip 80.227.254.232 1443 "HTTPS" 192.168.153.10 manual
+set interface ethernet0/1 vip 80.227.254.232 + 443 "HTTPS" 192.168.120.51 manual
+unset flow no-tcp-seq-check
+set flow tcp-syn-check
+unset flow tcp-syn-bit-check
+set flow reverse-route clear-text prefer
+set flow reverse-route tunnel always
+set console page 10
+set hostname ENSBDVPNSW1
+set pki authority default scep mode "auto"
+set pki x509 default cert-path partial
+set nsrp cluster id 1
+set nsrp rto-mirror sync
+set nsrp rto-mirror route
+set nsrp rto-mirror session ageout-ack
+set nsrp rto-mirror session non-vsi
+set nsrp vsd-group id 0 priority 50
+set nsrp vsd-group id 0 preempt
+set nsrp monitor interface ethernet0/0
+set nsrp monitor interface ethernet0/1
+set nsrp monitor interface ethernet3/0
+set dns host dns1 80.227.2.4 src-interface ethernet0/1
+set dns host dns2 80.227.2.3 src-interface ethernet0/1
+set dns host dns3 0.0.0.0
+set address "Trust" "ENSBDSW-NW" 192.168.120.0 255.255.255.0
+set address "Trust" "ENSBDSW1" 192.168.120.51 255.255.255.255
+set address "Trust" "ENSBDSW2" 192.168.120.52 255.255.255.255
+set address "Trust" "ENSWDUAT-SRV1" 192.168.120.200 255.255.255.255
+set address "Untrust" "213.132.40.96/29" 213.132.40.96 255.255.255.248
+set address "Untrust" "80.227.152.131/32" 80.227.152.131 255.255.255.255
+set address "Untrust" "ENIT-Server01" 192.168.3.101 255.255.255.255
+set address "Untrust" "TELEPIN-FTP" 202.40.237.153 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV1" 202.40.237.146 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV2" 202.40.237.147 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV3" 202.40.237.148 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV4" 202.40.237.145 255.255.255.255
+set address "MPLS" "CARP1" 10.160.6.0 255.255.255.0
+set address "MPLS" "CLLC1" 10.160.14.0 255.255.255.0
+set address "MPLS" "CTRC1" 10.160.15.0 255.255.255.0
+set address "MPLS" "DOT1" 10.160.1.0 255.255.255.0
+set address "MPLS" "DPLY1" 10.160.2.0 255.255.255.0
+set address "MPLS" "DPLY2" 10.160.3.0 255.255.255.0
+set address "MPLS" "DPLY3" 10.160.4.0 255.255.255.0
+set address "MPLS" "DPLY4" 10.160.5.0 255.255.255.0
+set address "MPLS" "MPARK1" 10.160.14.0 255.255.255.0
+set address "MPLS" "PDM1" 10.160.13.0 255.255.255.0
+set address "MPLS" "PDM2" 10.160.14.0 255.255.255.0
+set address "MPLS" "POF1" 10.160.12.0 255.255.255.0
+set address "MPLS" "PSHP1" 10.160.7.0 255.255.255.0
+set address "MPLS" "PSHP2" 10.160.8.0 255.255.255.0
+set address "MPLS" "PSHP3" 10.160.9.0 255.255.255.0
+set address "MPLS" "PSHP4" 10.160.10.0 255.255.255.0
+set address "MPLS" "PSHP5" 10.160.11.0 255.255.255.0
+set address "MGMT" "HP-OA" 192.168.153.10 255.255.255.255
+set address "MGMT" "MGMT-NW" 192.168.153.0 255.255.255.0
+set group address "Trust" "ENSBDSW-SRV-GRP"
+set group address "Trust" "ENSBDSW-SRV-GRP" add "ENSBDSW1"
+set group address "Trust" "ENSBDSW-SRV-GRP" add "ENSBDSW2"
+set group address "Untrust" "TELEPIN-SRVS"
+set group address "Untrust" "TELEPIN-SRVS" add "TELEPIN-FTP"
+set group address "Untrust" "TELEPIN-SRVS" add "TELEPIN-SINGTEL-SRV1"
+set group address "Untrust" "TELEPIN-SRVS" add "TELEPIN-SINGTEL-SRV2"
+set group address "Untrust" "TELEPIN-SRVS" add "TELEPIN-SINGTEL-SRV3"
+set group address "Untrust" "TELEPIN-SRVS" add "TELEPIN-SINGTEL-SRV4"
+set group service "SINGTEL-USER-PORTS"
+set group service "SINGTEL-USER-PORTS" add "HTTP-8080"
+set group service "SINGTEL-USER-PORTS" add "HTTPS"
+set group service "SINGTEL-USER-PORTS" add "ICMP-ANY"
+set group service "SINGTEL-USER-PORTS" add "SSH"
+set group service "SINGTEL-USER-PORTS" add "SW-TCP-8401"
+set group service "SINGTEL-USER-PORTS" add "SW-UDP-8400"
+set group service "SWAAS-SUPPORT-PORTS"
+set group service "SWAAS-SUPPORT-PORTS" add "RDP"
+set group service "SWAAS-SUPPORT-PORTS" add "SW-TCP-8401"
+set group service "SWAAS-SUPPORT-PORTS" add "SW-UDP-8400"
+set group service "SWAAS-SUPPORT-PORTS" add "SINGTEL-USER-PORTS"
+set group service "TEST"
+set group service "TEST" add "HTTPS"
+set group service "TEST" add "SMTP"
+set group service "TEST" add "SSH"
+set ippool "MGMT-Pool" 10.161.0.1 10.161.0.20
+set ippool "APP-POOL" 10.162.0.1 10.162.0.20
+set ippool "Singtel-Users" 10.159.9.130 10.159.9.135
+set ippool "Singtel-Support" 10.159.9.136 10.159.9.140
+set ippool "Singtel-Users1" 10.159.9.141 10.159.9.150
+set ippool "DEV-POOL" 10.162.0.21 10.162.0.40
+set user "AAbuhijleh" uid 45
+set user "AAbuhijleh" ike-id u-fqdn "AAbuhijleh@eastnets.com" share-limit 1
+set user "AAbuhijleh" type ike xauth
+set user "AAbuhijleh" remote ippool "Singtel-Support"
+set user "AAbuhijleh" password "MrItc2baN/Kwpnsx8PCxM+cfVjncCo3k6A=="
+unset user "AAbuhijleh" type auth
+set user "AAbuhijleh" "enable"
+set user "ABader" uid 28
+set user "ABader" ike-id u-fqdn "ABader@eastnets.com" share-limit 1
+set user "ABader" type ike xauth
+set user "ABader" remote ippool "DEV-POOL"
+set user "ABader" password "zWmfh2+sNNS3sNst+2CZj7CSr3nI7GspqQ=="
+unset user "ABader" type auth
+set user "ABader" "enable"
+set user "AHiari" uid 31
+set user "AHiari" ike-id u-fqdn "AHiari@eastnets.com" share-limit 1
+set user "AHiari" type ike xauth
+set user "AHiari" remote ippool "DEV-POOL"
+set user "AHiari" password "1VzpEt9gNlQnkksKbtCeXbJmJenLu+imgg=="
+unset user "AHiari" type auth
+set user "AHiari" "enable"
+set user "EYounes" uid 30
+set user "EYounes" ike-id u-fqdn "EYounes@eastnets.com" share-limit 1
+set user "EYounes" type ike xauth
+set user "EYounes" remote ippool "DEV-POOL"
+set user "EYounes" password "aA/osaPtNdn6OXscYwCUW2CRLhnjy4atwA=="
+unset user "EYounes" type auth
+set user "EYounes" "enable"
+set user "FTawaha" uid 48
+set user "FTawaha" ike-id u-fqdn "FTawaha@eastnets.com" share-limit 1
+set user "FTawaha" type ike xauth
+set user "FTawaha" remote ippool "Singtel-Support"
+set user "FTawaha" password "q1vUxrL3N50sJGsg1bCAHnYzp8nKSNfsgw=="
+unset user "FTawaha" type auth
+set user "FTawaha" "enable"
+set user "MAQatanany" uid 47
+set user "MAQatanany" ike-id u-fqdn "MAQatanany@eastnets.com" share-limit 1
+set user "MAQatanany" type ike xauth
+set user "MAQatanany" remote ippool "Singtel-Support"
+set user "MAQatanany" password "53iey8k1NoHdYnsbYlC0Mtj4VenQ8LXspg=="
+unset user "MAQatanany" type auth
+set user "MAQatanany" "enable"
+set user "SJaber" uid 29
+set user "SJaber" ike-id u-fqdn "SJaber@eastnets.com" share-limit 1
+set user "SJaber" type ike xauth
+set user "SJaber" remote ippool "DEV-POOL"
+set user "SJaber" password "N4S9rNhQNJgVxJsj30CVJqyjBzn8rpFN1Q=="
+unset user "SJaber" type auth
+set user "SJaber" "enable"
+set user "SQasim" uid 46
+set user "SQasim" ike-id u-fqdn "SQasim@eastnets.com" share-limit 1
+set user "SQasim" type ike xauth
+set user "SQasim" remote ippool "Singtel-Support"
+set user "SQasim" password "rle870YUNIHHJrsJwbCV2kDh+VnHE64TXw=="
+unset user "SQasim" type auth
+set user "SQasim" "enable"
+set user "SW-AEdwan" uid 49
+set user "SW-AEdwan" ike-id u-fqdn "SW-AEdwan@eastnets.com" share-limit 1
+set user "SW-AEdwan" type ike xauth
+set user "SW-AEdwan" remote ippool "Singtel-Support"
+set user "SW-AEdwan" password "AuaXPsV7NihRntsLURCD1saUPCnkTJShbQ=="
+unset user "SW-AEdwan" type auth
+set user "SW-AEdwan" "enable"
+set user "Singtel1" uid 40
+set user "Singtel1" ike-id u-fqdn "Singtel1@eastnets.com" share-limit 1
+set user "Singtel1" type ike xauth
+set user "Singtel1" remote ippool "Singtel-Users"
+set user "Singtel1" password "GCZKD2qSNxYECwsVawCqPEAkpInN9pWh2w=="
+unset user "Singtel1" type auth
+set user "Singtel1" "enable"
+set user "Singtel11" uid 51
+set user "Singtel11" ike-id u-fqdn "Singtel11@eastnets.com" share-limit 1
+set user "Singtel11" type ike xauth
+set user "Singtel11" remote ippool "Singtel-Users1"
+set user "Singtel11" password "F87E/Du2NcNjMCsIVCC+l6YJcEnR2PmmsQ=="
+unset user "Singtel11" type auth
+set user "Singtel11" "enable"
+set user "Singtel12" uid 52
+set user "Singtel12" ike-id u-fqdn "Singtel12@eastnets.com" share-limit 1
+set user "Singtel12" type ike xauth
+set user "Singtel12" remote ippool "Singtel-Users1"
+set user "Singtel12" password "kEXo5+/VNJaSz5s0SyC8afP5Spn9KMiTcg=="
+unset user "Singtel12" type auth
+set user "Singtel12" "enable"
+set user "Singtel13" uid 53
+set user "Singtel13" ike-id u-fqdn "Singtel13@eastnets.com" share-limit 1
+set user "Singtel13" type ike xauth
+set user "Singtel13" remote ippool "Singtel-Users1"
+set user "Singtel13" password "RbXNRHfhNsEkkKsrLQCimfSeP3nfLjg9hA=="
+unset user "Singtel13" type auth
+set user "Singtel13" "enable"
+set user "Singtel14" uid 54
+set user "Singtel14" ike-id u-fqdn "Singtel14@eastnets.com" share-limit 1
+set user "Singtel14" type ike xauth
+set user "Singtel14" remote ippool "Singtel-Users1"
+set user "Singtel14" password "fELIIrMfNlj103s+0cCidhbDiFnRkX4x0Q=="
+unset user "Singtel14" type auth
+set user "Singtel14" "enable"
+set user "Singtel15" uid 55
+set user "Singtel15" ike-id u-fqdn "Singtel15@eastnets.com" share-limit 1
+set user "Singtel15" type ike xauth
+set user "Singtel15" remote ippool "Singtel-Users1"
+set user "Singtel15" password "sjEWUX1zNM9daossRNCvkjfcU1nVXNj42A=="
+unset user "Singtel15" type auth
+set user "Singtel15" "enable"
+set user "Singtel16" uid 56
+set user "Singtel16" ike-id u-fqdn "Singtel16@eastnets.com" share-limit 1
+set user "Singtel16" type ike xauth
+set user "Singtel16" remote ippool "Singtel-Users1"
+set user "Singtel16" password "iwE8ZznrNOaGxdsuGoCyW1w4F6noaMHyVA=="
+unset user "Singtel16" type auth
+set user "Singtel16" "enable"
+set user "Singtel17" uid 57
+set user "Singtel17" ike-id u-fqdn "Singtel17@eastnets.com" share-limit 1
+set user "Singtel17" type ike xauth
+set user "Singtel17" remote ippool "Singtel-Users1"
+set user "Singtel17" password "Cs7DN2iqNqr5SVs23SCM8I57LOnNTeeQ4A=="
+unset user "Singtel17" type auth
+set user "Singtel17" "enable"
+set user "Singtel2" uid 41
+set user "Singtel2" ike-id u-fqdn "Singtel2@eastnets.com" share-limit 1
+set user "Singtel2" type ike xauth
+set user "Singtel2" remote ippool "Singtel-Users"
+set user "Singtel2" password "U4HXRk2ONPTaNSszLlCSrK78Zon+NBgu2Q=="
+unset user "Singtel2" type auth
+set user "Singtel2" "enable"
+set user "Singtel3" uid 42
+set user "Singtel3" ike-id u-fqdn "Singtel3@eastnets.com" share-limit 1
+set user "Singtel3" type ike xauth
+set user "Singtel3" remote ippool "Singtel-Users"
+set user "Singtel3" password "0rAzjVglN4/52ssHJSCaCPHsUHn71QpZJA=="
+unset user "Singtel3" type auth
+set user "Singtel3" "enable"
+set user "Singtel4" uid 43
+set user "Singtel4" ike-id u-fqdn "Singtel4@eastnets.com" share-limit 1
+set user "Singtel4" type ike xauth
+set user "Singtel4" remote ippool "Singtel-Users"
+set user "Singtel4" password "A2QlRqtMNzTFmSs87zCnhEIxAQnvKlGegA=="
+unset user "Singtel4" type auth
+set user "Singtel4" "enable"
+set user "Singtel5" uid 44
+set user "Singtel5" ike-id u-fqdn "Singtel5@eastnets.com" share-limit 1
+set user "Singtel5" type ike xauth
+set user "Singtel5" remote ippool "Singtel-Users"
+set user "Singtel5" password "6mztaDz8Nifn+dsX9GCVq19nHHnnmZazJQ=="
+unset user "Singtel5" type auth
+set user "Singtel5" "enable"
+set user "adesear" uid 9
+set user "adesear" ike-id u-fqdn "adesear@eastnets.com" share-limit 1
+set user "adesear" type ike xauth
+set user "adesear" remote ippool "MGMT-Pool"
+set user "adesear" password "Rw4kEbtQNM801Qsn/OCqLj5ysYn6oX10Tg=="
+unset user "adesear" type auth
+set user "adesear" "enable"
+set user "aedwan" uid 133
+set user "aedwan" ike-id u-fqdn "aedwan@eastnets.com" share-limit 1
+set user "aedwan" type ike xauth
+set user "aedwan" remote ippool "APP-POOL"
+set user "aedwan" password "cpmVyDSkNilN4nsUpSCTe+iJ/UnY/ErbNw=="
+unset user "aedwan" type auth
+set user "aedwan" "enable"
+set user "ahamsa" uid 22
+set user "ahamsa" ike-id u-fqdn "ahamsa@eastnets.com" share-limit 1
+set user "ahamsa" type ike xauth
+set user "ahamsa" remote ippool "MGMT-Pool"
+set user "ahamsa" password "e5ahpYssNxE5cfsgVqCdCeAAxQnjZm1ZuA=="
+unset user "ahamsa" type auth
+set user "ahamsa" "enable"
+set user "juy" uid 8
+set user "juy" ike-id u-fqdn "juy@eastnets.com" share-limit 1
+set user "juy" type ike xauth
+set user "juy" remote ippool "MGMT-Pool"
+set user "juy" password "sSf6pikENM7pSdspNHC8oogQNunZjMe6Fg=="
+unset user "juy" type auth
+set user "juy" "enable"
+set user "kbaluyot" uid 1
+set user "kbaluyot" ike-id u-fqdn "kbaluyot@eastnets.com" share-limit 1
+set user "kbaluyot" type ike xauth
+set user "kbaluyot" remote ippool "MGMT-Pool"
+set user "kbaluyot" password "KIh0kFJANx9C01sHOYC5qOwrMInqxp6XFg=="
+unset user "kbaluyot" type auth
+set user "kbaluyot" "enable"
+set user "mqasas" uid 136
+set user "mqasas" ike-id u-fqdn "mqasas@eastnets.com" share-limit 1
+set user "mqasas" type ike xauth
+set user "mqasas" remote ippool "APP-POOL"
+set user "mqasas" password "R3dJjIEqN3+HjaseWmCGzqmRrSnDqJ+ueA=="
+unset user "mqasas" type auth
+set user "mqasas" "enable"
+set user "msaeed" uid 7
+set user "msaeed" ike-id u-fqdn "msaeed@eastnets.com" share-limit 1
+set user "msaeed" type ike xauth
+set user "msaeed" remote ippool "MGMT-Pool"
+set user "msaeed" password "kJTa0uZBN7hcHAs5xsCbNzHLosncJxOFoA=="
+unset user "msaeed" type auth
+set user "msaeed" "enable"
+set user "msalameh" uid 135
+set user "msalameh" ike-id u-fqdn "msalameh@eastnets.com" share-limit 1
+set user "msalameh" type ike xauth
+set user "msalameh" remote ippool "APP-POOL"
+set user "msalameh" password "+bNOw9gUNOFc/Csgk4CpRW2Dv8nzzRMYhA=="
+unset user "msalameh" type auth
+set user "msalameh" "enable"
+set user "sqasim" uid 134
+set user "sqasim" ike-id u-fqdn "sqasim@eastnets.com" share-limit 1
+set user "sqasim" type ike xauth
+set user "sqasim" remote ippool "APP-POOL"
+set user "sqasim" password "pzwLLrRwNT6mtasSXiCqydGOyNn72MIM0g=="
+unset user "sqasim" type auth
+set user "sqasim" "enable"
+set user-group "APP-DIALIN" id 7
+set user-group "APP-DIALIN" user "aedwan"
+set user-group "APP-DIALIN" user "mqasas"
+set user-group "APP-DIALIN" user "msalameh"
+set user-group "APP-DIALIN" user "sqasim"
+set user-group "DEV-DIALIN" id 6
+set user-group "DEV-DIALIN" user "ABader"
+set user-group "DEV-DIALIN" user "AHiari"
+set user-group "DEV-DIALIN" user "EYounes"
+set user-group "DEV-DIALIN" user "SJaber"
+set user-group "MGMT-DIALIN" id 1
+set user-group "MGMT-DIALIN" user "adesear"
+set user-group "MGMT-DIALIN" user "ahamsa"
+set user-group "MGMT-DIALIN" user "juy"
+set user-group "MGMT-DIALIN" user "kbaluyot"
+set user-group "MGMT-DIALIN" user "msaeed"
+set user-group "Singtel-Support" id 17
+set user-group "Singtel-Support" user "AAbuhijleh"
+set user-group "Singtel-Support" user "FTawaha"
+set user-group "Singtel-Support" user "MAQatanany"
+set user-group "Singtel-Support" user "SQasim"
+set user-group "Singtel-Support" user "SW-AEdwan"
+set user-group "Singtel-Users" id 5
+set user-group "Singtel-Users" user "Singtel1"
+set user-group "Singtel-Users" user "Singtel11"
+set user-group "Singtel-Users" user "Singtel12"
+set user-group "Singtel-Users" user "Singtel13"
+set user-group "Singtel-Users" user "Singtel14"
+set user-group "Singtel-Users" user "Singtel15"
+set user-group "Singtel-Users" user "Singtel16"
+set user-group "Singtel-Users" user "Singtel17"
+set user-group "Singtel-Users" user "Singtel2"
+set user-group "Singtel-Users" user "Singtel3"
+set user-group "Singtel-Users" user "Singtel4"
+set user-group "Singtel-Users" user "Singtel5"
+set crypto-policy
+exit
+set ike gateway "MGMT-DIALIN" dialup "MGMT-DIALIN" Aggr outgoing-interface "ethernet0/1" preshare "ByXkE/bmN0eY0AsGJHC/EdzhArnVqWCbiA==" proposal "pre-g2-3des-sha"
+set ike gateway "MGMT-DIALIN" nat-traversal udp-checksum
+set ike gateway "MGMT-DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "MGMT-DIALIN" xauth
+unset ike gateway "MGMT-DIALIN" xauth do-edipi-auth
+set ike gateway "APP-DIALIN" dialup "APP-DIALIN" Aggr outgoing-interface "ethernet0/1" preshare "0PZy3hhmNAxQGBs4oACh5o1bk2nloDpcJg==" proposal "pre-g2-3des-sha"
+set ike gateway "APP-DIALIN" nat-traversal udp-checksum
+set ike gateway "APP-DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "APP-DIALIN" xauth
+unset ike gateway "APP-DIALIN" xauth do-edipi-auth
+set ike gateway "Singtel-Users-Dialup" dialup "Singtel-Users" Aggr outgoing-interface "ethernet0/1" preshare "p830vKV7NEafXes1JRCHZDAYDen2Kf7Z5AxIfkdwbkjYgRkQKjiheuI=" proposal "pre-g2-3des-sha"
+set ike gateway "Singtel-Users-Dialup" nat-traversal udp-checksum
+set ike gateway "Singtel-Users-Dialup" nat-traversal keepalive-frequency 0
+set ike gateway "Singtel-Users-Dialup" xauth
+unset ike gateway "Singtel-Users-Dialup" xauth do-edipi-auth
+set ike gateway "Singtel-Support-Dialup" dialup "Singtel-Support" Aggr outgoing-interface "ethernet0/1" preshare "//nOG9ajNcF2FgsMOGC7DyElpCn6nKe4uj46xqVxUZq3UDv8C92rb2g=" proposal "pre-g2-3des-sha"
+set ike gateway "Singtel-Support-Dialup" nat-traversal udp-checksum
+set ike gateway "Singtel-Support-Dialup" nat-traversal keepalive-frequency 5
+set ike gateway "Singtel-Support-Dialup" xauth
+unset ike gateway "Singtel-Support-Dialup" xauth do-edipi-auth
+set ike gateway "test" address 10.10.10.10 Main outgoing-interface "ethernet0/1" preshare "23USbi74NkLqdbs5sGCXgBJ9Cfnnx5z++Q==" proposal "pre-g2-3des-sha"
+set ike gateway "test" nat-traversal
+set ike gateway "test" nat-traversal udp-checksum
+set ike gateway "test" nat-traversal keepalive-frequency 5
+set ike gateway "ENSB-TELEPIN-UAT-LL" address 202.40.237.158 Main outgoing-interface "ethernet0/1" preshare "Xj3hVg+xNCWloQsP/GCxAcLZDhnvQiCOLKcM63cQa2+I1oiVMNo4mNc=" proposal "pre-g2-3des-sha"
+set ike gateway "ENSB-TELEPIN-UAT-LL" nat-traversal
+set ike gateway "ENSB-TELEPIN-UAT-LL" nat-traversal udp-checksum
+set ike gateway "ENSB-TELEPIN-UAT-LL" nat-traversal keepalive-frequency 5
+set ike gateway "DEV-DIALIN" dialup "DEV-DIALIN" Aggr outgoing-interface "ethernet0/1" preshare "j8mN+j0DNNG6jAs24YCdzg3uXpnl6nwrEwwKmiL9gPQC+pl6kNx4YV0=" proposal "pre-g2-3des-sha"
+set ike gateway "DEV-DIALIN" nat-traversal udp-checksum
+set ike gateway "DEV-DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "DEV-DIALIN" xauth
+unset ike gateway "DEV-DIALIN" xauth do-edipi-auth
+set ike gateway "ENIT_Tunnel" address 80.227.254.250 Main outgoing-interface "ethernet0/1" preshare "q9Wk+sA1N8yaOGs5u5CSY1ItaEni2Df3Tg==" proposal "pre-g2-3des-sha"
+set ike respond-bad-spi 1
+set ike ikev2 ike-sa-soft-lifetime 60
+unset ike ikeid-enumeration
+unset ike dos-protection
+unset ipsec access-session enable
+set ipsec access-session maximum 5000
+set ipsec access-session upper-threshold 0
+set ipsec access-session lower-threshold 0
+set ipsec access-session dead-p2-sa-timeout 0
+unset ipsec access-session log-error
+unset ipsec access-session info-exch-connected
+unset ipsec access-session use-error-log
+set vpn "MGMT-DIALIN" gateway "MGMT-DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "MGMT-DIALIN" monitor
+set vpn "APP-DIALIN" gateway "APP-DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "APP-DIALIN" monitor
+set vpn "Singtel-Users-Dialup" gateway "Singtel-Users-Dialup" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "Singtel-Support-Dialup" gateway "Singtel-Support-Dialup" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "ENSB-TELEPIN-UAT-LL" gateway "ENSB-TELEPIN-UAT-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "ENSB-TELEPIN-UAT-LL" monitor optimized rekey
+set vpn "ENSB-TELEPIN-UAT-LL" id 0xe bind interface tunnel.18
+set interface tunnel.18 nhtb 7.7.7.7 vpn "ENSB-TELEPIN-UAT-LL"
+set vpn "DEV-DIALIN" gateway "DEV-DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "ENIT_VPN" gateway "ENIT_Tunnel" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "ENIT_VPN" monitor optimized rekey
+set attack db server "https://services.netscreen.com/restricted/sigupdates"
+set attack db mode Update
+set attack db schedule daily 00:00
+set url protocol websense
+exit
+set vpn "ENSB-TELEPIN-UAT-LL" proxy-id check
+set vpn "ENSB-TELEPIN-UAT-LL" proxy-id local-ip 192.168.120.0/24 remote-ip 202.40.237.144/28 "ANY" 
+set policy id 46 from "Trust" to "Untrust"  "ENSWDUAT-SRV1" "TELEPIN-FTP" "ANY" permit log 
+set policy id 46
+set dst-address "TELEPIN-SINGTEL-SRV1"
+set dst-address "TELEPIN-SINGTEL-SRV2"
+set dst-address "TELEPIN-SINGTEL-SRV3"
+set dst-address "TELEPIN-SINGTEL-SRV4"
+set log session-init
+exit
+set policy id 35 from "Untrust" to "Trust"  "Any" "VIP(80.227.254.232)" "HTTPS" permit log 
+set policy id 35
+set log session-init
+exit
+set policy id 34 from "Trust" to "Untrust"  "ENSBDSW-NW" "Dial-Up VPN" "ANY" tunnel vpn "APP-DIALIN" id 0x4 pair-policy 33 log 
+set policy id 34
+set log session-init
+exit
+set policy id 33 from "Untrust" to "Trust"  "Dial-Up VPN" "ENSBDSW-NW" "ANY" tunnel vpn "APP-DIALIN" id 0x4 pair-policy 34 log 
+set policy id 33
+set log session-init
+exit
+set policy id 32 from "Trust" to "Untrust"  "ENSBDSW-NW" "Dial-Up VPN" "ANY" tunnel vpn "MGMT-DIALIN" id 0x3 pair-policy 31 log 
+set policy id 32
+set log session-init
+exit
+set policy id 41 from "Trust" to "Untrust"  "ENSWDUAT-SRV1" "Dial-Up VPN" "ANY" tunnel vpn "Singtel-Users-Dialup" id 0x9 pair-policy 39 log 
+set policy id 41
+set log session-init
+exit
+set policy id 49 from "Trust" to "Untrust"  "ENSWDUAT-SRV1" "ENIT-Server01" "ANY" tunnel vpn "ENIT_VPN" id 0x10 pair-policy 50 log 
+set policy id 49
+set log session-init
+exit
+set policy id 31 from "Untrust" to "Trust"  "Dial-Up VPN" "ENSBDSW-NW" "ANY" tunnel vpn "MGMT-DIALIN" id 0x3 pair-policy 32 log 
+set policy id 31
+set log session-init
+exit
+set policy id 30 from "Trust" to "Untrust"  "Any" "Any" "ANY" nat src permit log 
+set policy id 30
+set log session-init
+exit
+set policy id 36 from "Untrust" to "MGMT"  "Any" "VIP(80.227.254.232)" "HP-OA-1443" permit log 
+set policy id 36
+set log session-init
+exit
+set policy id 37 from "Untrust" to "MGMT"  "Dial-Up VPN" "MGMT-NW" "ANY" tunnel vpn "MGMT-DIALIN" id 0x6 pair-policy 38 log 
+set policy id 37
+set log session-init
+exit
+set policy id 38 from "MGMT" to "Untrust"  "MGMT-NW" "Dial-Up VPN" "ANY" tunnel vpn "MGMT-DIALIN" id 0x6 pair-policy 37 log 
+set policy id 38
+set log session-init
+exit
+set policy id 39 from "Untrust" to "Trust"  "Dial-Up VPN" "ENSWDUAT-SRV1" "SINGTEL-USER-PORTS" tunnel vpn "Singtel-Users-Dialup" id 0x9 pair-policy 41 log 
+set policy id 39
+set log session-init
+exit
+set policy id 44 from "Untrust" to "Trust"  "Dial-Up VPN" "ENSWDUAT-SRV1" "SWAAS-SUPPORT-PORTS" tunnel vpn "Singtel-Support-Dialup" id 0xd log 
+set policy id 44
+set log session-init
+exit
+set policy id 45 from "Untrust" to "Trust"  "TELEPIN-FTP" "ENSWDUAT-SRV1" "SINGTEL-USER-PORTS" permit log 
+set policy id 45
+set src-address "TELEPIN-SINGTEL-SRV1"
+set src-address "TELEPIN-SINGTEL-SRV2"
+set src-address "TELEPIN-SINGTEL-SRV3"
+set src-address "TELEPIN-SINGTEL-SRV4"
+set log session-init
+exit
+set policy id 47 from "Untrust" to "Trust"  "Dial-Up VPN" "ENSBDSW-NW" "ANY" tunnel vpn "DEV-DIALIN" id 0xf pair-policy 48 log 
+set policy id 47
+set log session-init
+exit
+set policy id 48 from "Trust" to "Untrust"  "ENSBDSW-NW" "Dial-Up VPN" "ANY" tunnel vpn "DEV-DIALIN" id 0xf pair-policy 47 log 
+set policy id 48
+set log session-init
+exit
+set policy id 50 from "Untrust" to "Trust"  "ENIT-Server01" "ENSWDUAT-SRV1" "ANY" tunnel vpn "ENIT_VPN" id 0x10 pair-policy 49 log 
+set policy id 50
+set log session-init
+exit
+set nsmgmt bulkcli reboot-timeout 60
+set ssh version v2
+set ssh enable
+set config lock timeout 5
+unset license-key auto-update
+set telnet client enable
+set ssl port 2443
+set snmp port listen 161
+set snmp port trap 162
+set snmpv3 local-engine id "JN118F8A1ADA"
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+set source-routing enable
+set max-ecmp-routes 2
+unset add-default-route
+set route 192.168.150.224/27 interface ethernet0/0 gateway 192.168.150.3 description "ROUTE - TEST & STAGING NW"
+set route 172.20.0.0/24 interface ethernet0/2 gateway 172.20.0.9 description "ROUTE TO SITE VPN THRU MPLS"
+set route 10.160.0.0/19 interface null metric 20 description "ROUTE TO NULL"
+set route 172.20.0.0/24 interface null metric 20 description "ROUTE TO NULL"
+set route 0.0.0.0/0 interface ethernet3/0 gateway 80.227.254.193 metric 2 description "DEFAULT ROUTE - INTERNET1 GW1"
+set route 0.0.0.0/0 interface ethernet0/1 gateway 80.227.254.225 metric 2 description "DEFAULT ROUTE - INTERNET2 GW1"
+set route 192.168.155.0/24 interface ethernet0/0 gateway 192.168.150.1 description "ROUTE TO iSCSIP-NW"
+set route 202.40.237.144/28 interface tunnel.18 gateway 7.7.7.7 description "TELEPIN-UAT-LL"
+set route 202.40.237.153/32 interface tunnel.18 gateway 7.7.7.7 description "TELEPIN-FTP"
+set match-group name Internet1
+set action-group name Internet1
+set action-group Internet1 next-interface ethernet3/0 action-entry 1
+set pbr policy name Internet1
+set pbr policy Internet1 match-group Internet1 action-group Internet1 1
+exit
+set interface ethernet0/0 pbr Internet1
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+exit

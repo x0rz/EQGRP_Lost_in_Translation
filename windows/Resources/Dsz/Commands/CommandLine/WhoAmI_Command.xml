@@ -1,0 +1,16 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='3' name='Whoami'>
+
+		<Help>Retrieves the current process or thread user.</Help>
+
+		<Input>
+		</Input>
+
+		<Output>
+		</Output>
+
+	</Command>
+</Plugin>

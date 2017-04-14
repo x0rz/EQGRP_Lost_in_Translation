@@ -1,0 +1,61 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31314'>
+
+  <Command id='16' name='RegQuery'>
+
+    <Help>Returns registry keys and/or values</Help>
+
+    <Input>
+      <Option name='recursive' optional='true'>
+	<Set data='recursive' value='true'/>
+      </Option>
+
+      <Option name='hive'>
+	<Help>U ... HKEY_USERS</Help>
+	<Help>L ... HKEY_LOCAL_MACHINE</Help>
+	<Help>R ... HKEY_CLASSES_ROOT</Help>
+	<Help>C ... HKEY_CURRENT_USER</Help>
+	<Help>G ... HKEY_CURRENT_CONFIG     (win 9x)</Help>
+
+	<Argument name='keycode'>
+	    <Value string='U'>
+		<Set data='hive' value='1'/>
+	    </Value>
+	    <Value string='L'>
+		<Set data='hive' value='2'/>
+	    </Value>
+	    <Value string='R'>
+		<Set data='hive' value='3'/>
+	    </Value>	
+	    <Value string='C'>
+		<Set data='hive' value='4'/>
+	    </Value>
+	    <Value string='G'>
+		<Set data='hive' value='5'/>
+	    </Value>
+	</Argument>
+      </Option>
+
+      <Option name='subkey' optional='true'>
+	<Help>The SubKey to query. If no SubKey is given, the root of the hive given.</Help>
+	<Argument name='name' data='key'/>
+      </Option>
+
+      <Option name='value' optional='true'>
+	<Help>A specific registry value to query.</Help>
+	<Argument name='name' data='value'/>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='hive' type='uint8_t'/>
+      <Data name='recursive' type='bool' default='false'/>
+      <Data name='key' type='string'/>
+      <Data name='value' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

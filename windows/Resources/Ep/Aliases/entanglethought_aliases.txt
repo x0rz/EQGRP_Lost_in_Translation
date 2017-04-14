@@ -1,0 +1,7 @@
+entt			script EntangleThought.eps
+entanglethought		script EntangleThought.eps
+entt_upload		script EntangleThought\upload.eps help32.exe
+entt_delete		script EntangleThought\delete.eps help32.exe
+entt_list		script EntangleThought\list.eps help32.exe
+entt_run		script EntangleThought\run.eps help32.exe
+entt_zippy		script EntangleThought\zippy.eps help32.exe

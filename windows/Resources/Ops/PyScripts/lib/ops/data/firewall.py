@@ -1,0 +1,9 @@
+
+from ops.data import OpsClass, OpsField, DszObject, DszCommandObject, cmd_definitions
+import dsz
+if ('firewall' not in cmd_definitions):
+    dszfirewallenabled = OpsClass('enabled', {'closepending': OpsField('closepending', dsz.TYPE_BOOL), 'port': OpsField('port', dsz.TYPE_INT), 'protocol': OpsField('protocol', dsz.TYPE_STRING)}, DszObject)
+    dszfwentry = OpsClass('entry', {'enabled': OpsField('enabled', dsz.TYPE_BOOL), 'active': OpsField('active', dsz.TYPE_BOOL), 'allowexceptions': OpsField('allowexceptions', dsz.TYPE_BOOL), 'inbound': OpsField('inbound', dsz.TYPE_STRING), 'outbound': OpsField('outbound', dsz.TYPE_STRING), 'port': OpsClass('port', {'port': OpsField('port', dsz.TYPE_STRING), 'protocol': OpsField('protocol', dsz.TYPE_STRING), 'scope': OpsField('scope', dsz.TYPE_STRING), 'status': OpsField('status', dsz.TYPE_STRING), 'direction': OpsField('direction', dsz.TYPE_STRING), 'rule': OpsField('rule', dsz.TYPE_STRING), 'action': OpsField('action', dsz.TYPE_STRING), 'portname': OpsField('portname', dsz.TYPE_STRING), 'group': OpsField('group', dsz.TYPE_STRING)}, DszObject, single=False), 'application': OpsClass('application', {'scope': OpsField('scope', dsz.TYPE_STRING), 'status': OpsField('status', dsz.TYPE_STRING), 'direction': OpsField('direction', dsz.TYPE_STRING), 'programpath': OpsField('programpath', dsz.TYPE_STRING), 'rule': OpsField('rule', dsz.TYPE_STRING), 'action': OpsField('action', dsz.TYPE_STRING), 'programname': OpsField('programname', dsz.TYPE_STRING), 'group': OpsField('group', dsz.TYPE_STRING)}, DszObject, single=False)}, DszObject)
+    dszfirewallstatus = OpsClass('status', {'domain': dszfwentry, 'public': dszfwentry, 'private': dszfwentry, 'local': dszfwentry}, DszObject)
+    firewallcommand = OpsClass('firewall', {'enabled': dszfirewallenabled, 'status': dszfirewallstatus}, DszCommandObject)
+    cmd_definitions['firewall'] = firewallcommand

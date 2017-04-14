@@ -1,0 +1,335 @@
+#--------------------------------------------------------
+# File: userquery.eps
+#
+# Performs a series of registry queries to show 
+# detailed forensic information about the system 
+# and users. Right now the users must be logged in.
+# If any of the queries fail, it dies gracefully, moving to the next.
+#
+# This script requires rot13.pl to be located in 
+# d:\\opsdisk\\tools\\rot13.pl
+#
+#   Version 1 - 2008, 22 Oct
+#--------------------------------------------------------
+
+if ($ARGC > 1) {
+	echo "queryuser.eps";
+	echo "--------------------------------";
+	echo "This program will query the registry for relevent files on users.";
+	echo " it relies on deriving the usernames from the GUIDs on the windows";
+	echo " hive, HKU. This shows the following information if available.";
+	echo " You will get a menu and select a user to get detailed info for ";
+	echo " tracking their activities.  This tool is tested on Windows XP";
+	echo " ";
+	echo "   * All users currently loaded in the hive, with GUID ";
+	echo "   * Last commands used (after decoding the entries ) ";
+	echo "   * Recent files accessed by Windows Media Player ";
+	echo "   * A list of URLs typed into Internet Explorer";
+	echo "   * Recent files accessed by the Windows Explorer";
+	echo "   * USB Devices used on system ";
+	echo " ";
+
+	return true;
+}
+
+string $rot13file = "D:\\opsdisk\\tools\\rot13.pl";
+string $subkeys;
+int $keyindex = 0;
+int $subkeyindex = 0;
+int $totalkeyindex = 0;
+string $totalkeys;
+string $temp = "blah";
+bool $continue_this_test = true;
+string $user_GUID = "";
+string $user_NAME = "";
+int $user_choice;
+int $usercount = 0;
+
+echo "Gathering information from the registry";
+echo " ";
+
+#============ Try to associate GUID with Username ==================================
+$continue_this_test = true;
+
+if ($continue_this_test == true) {
+
+	# So, in this key, there is a subkey called Username. should be possible to grab the GUID from the regquery.
+	echo " ";
+	echo "================== USER GUIDS CURRENTLY ON SYSTEM =======================";
+	
+	#This does a query of the root hive, USERS, so that we can see all the GUIDs on the system currently loaded
+	#@echo off;
+	@record on;
+	$continue_this_test = `regquery -hive U`;
+	@record off;
+	if ($continue_this_test == true) {
+		$subkeys = GetCmdData("subkey");
+	}
+
+	else {
+		echo "Query for userkeys failed";
+	}
+
+	# Next, we go thru the list of values, and cut out anything which is not 44chars long. This is how long a user GUID is.
+	# We store the GUID for each user in the array $user_GUID
+	$keyindex = 0;
+	int $guidlength = 43;
+	while ( $keyindex < sizeof($subkeys) ) {
+		$guidlength = StrLen($subkeys[$keyindex]);
+		if ( ($guidlength == 44) || ($guidlength == 43 ) || ($guidlength == 45) ) {
+			$user_GUID[$usercount] = $subkeys[$keyindex];
+			$usercount++;			
+		}
+		$keyindex++;
+	}
+
+	string $myquery = "Software\\Microsoft\\Active Setup\\Installed Components\\{44BBA840-CC51-11CF-AAFA-00AA00B6015C}";
+	@echo off;
+
+	# next, we start looking thru the registry at each GUID, in a specific location, to get the username
+	# We store teh username in the array $user_NAME
+
+	echo "Usercount = $usercount";
+	$keyindex = 0;
+	while ($keyindex < $usercount) {
+		
+		@record on;
+		$continue_this_test = `regquery -hive U -subkey "$user_GUID[$keyindex]\\$myquery" `;
+		@record off;
+
+		if ($continue_this_test == true) {
+			$subkeys = GetCmdData("value_data");
+			$user_NAME[$keyindex] = $subkeys[2];			
+		}
+
+		else {
+			echo "Query for GUID -> username failed";
+		}
+		$keyindex++;
+	}
+	
+	$keyindex = 0;
+	
+	while ( $keyindex < $usercount ) {
+		echo "($keyindex) USER: $user_NAME[$keyindex] \t GUID: $user_GUID[$keyindex]";
+		$keyindex++;
+	}
+}
+
+# Have you choose a user from the list, then the script will know which GUID to query from now on
+echo "Select a user number,  -1 to exit";
+$user_choice = GetInput("Which user?");
+
+while ($user_choice >= $usercount) {
+	echo "ERROR: Invalid choice";
+	$user_choice = GetInput("Which user?");
+}
+
+
+
+
+
+
+# ========= Last commands used ===================================================
+$continue_this_test = true;
+if ($continue_this_test == true) {
+
+	$temp = $user_GUID[$user_choice];
+	
+	# UEME_ & RUNPATH=absolute path, RUNCPL=Control Panel Applet, RUNPIDL=shortcut,link,start menu
+	# so, the subkey value is a binary blob. After looking at it, bytes 5 - 8 are a FILETIME stamp, for the time of execution
+	string $myquery = "$temp\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\UserAssist\\{75048700-EF1F-11D0-9888-006097DEACF9}\\Count";
+
+	# This is also a query to check, but I dont know how to read the results into something meaningful.
+	# It includes info about the toolbars and CTL Session...
+	$myquery[1] = "$temp\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\UserAssist\\{5E6AB780-7743-11CF-A12B-00AA004AE837}\\Count";
+
+	#IE 7 only
+	$myquery[2] = "$temp\\software\\microsoft\\windows\\currentversion\\explorer\\userassist\\{0D6D4F41-2994-4BA0-8FEF-620E43CD2812}\\Count";
+
+	echo " ";
+	echo "======== LAST USER COMMANDS USED (Decoded from ROT-13 in Registry) ========";
+	echo " *** UEME_ & RUNPATH= absolute path, RUNCPL= Control Panel Applet ***";
+        echo " *** RUNPIDL= shortcut, link, start menu ***" ;
+	echo " " ;
+	$keyindex = 0;
+	while ($keyindex < sizeof($myquery) ) {
+		if ($continue_this_test == true) {
+			@record on;
+			$continue_this_test = `regquery -recursive -hive U -subkey "$myquery[$keyindex]" `;
+			@record off;
+			$subkeys = GetCmdData("value");	
+
+			$subkeyindex = 0;
+			while ($subkeyindex < sizeof($subkeys) ) {
+				$totalkeys[$totalkeyindex] = $subkeys[$subkeyindex];
+				$totalkeyindex++;
+				$subkeyindex++;
+			}
+		}
+		$continue_this_test = true;
+		$keyindex++;
+	}
+
+
+	$totalkeyindex = 0;
+	while ($totalkeyindex < sizeof($totalkeys) ) {
+		if ($continue_this_test == true) {
+			@echo off;
+			@record on;	
+			# ------ This command takes all arguments, running ROT13 on each, and returning the results as a single line
+			# ------ It needs to use the perl script rot13.pl, located on D:\opsdisk\tools  ( $rot13file )
+			$continue_this_test = `local run -command "perl $rot13file $totalkeys[$totalkeyindex]" -redirect`;
+			@record off;
+
+			@echo on;
+			if ($continue_this_test == true) {
+				$temp = GetCmdData("output");
+				# show the results of each key after decoded
+				echo $temp;
+			}
+		}
+		$totalkeyindex++;
+	}
+
+
+}
+
+
+
+
+
+
+#============ Recent files accessed with Media Player ==================================
+$continue_this_test = true;
+if ($continue_this_test == true) {
+
+	$temp = $user_GUID[$user_choice];
+	string $myquery = "$temp\\Software\\Microsoft\\MediaPlayer\\Player\\RecentFileList";
+	
+	echo " ";
+	echo "========== RECENT FILES ACCESSED WITH WINDOWS MEDIA PLAYER =================";
+	@echo off;
+	@record on;
+	$continue_this_test = `regquery -hive U -subkey $myquery[0]`;
+	@record off;
+
+	if ($continue_this_test == true) {
+		$subkeys = GetCmdData("value_data");
+
+		$keyindex = 0;
+		while ( $keyindex < sizeof($subkeys) ) {
+			echo "$subkeys[$keyindex]";
+			$keyindex++;
+		}
+	}
+
+	else {
+		echo "Query for recent media files failed";
+	}
+	
+
+	
+}
+
+
+#============ List of typed URLS in Internet Explorer ========================
+$continue_this_test = true;
+if ($continue_this_test == true) {
+
+	$temp = $user_GUID[$user_choice];
+	string $myquery = "$temp\\Software\\Microsoft\\Internet Explorer\\TypedURLs";
+
+	echo " ";
+	echo "========== LIST OF TYPED URLs IN INTERNET EXPLORER =================";
+	@echo off;
+	@record on;
+	$continue_this_test = `regquery -hive U -subkey "$myquery" -recursive`;
+	@record off;
+
+	if ($continue_this_test == true) {
+		$subkeys = GetCmdData("value_data");
+		$keyindex = 0;
+		while ( $keyindex < sizeof($subkeys) ) {
+			echo "$subkeys[$keyindex]";
+			$keyindex++;
+		}
+	}
+
+	else {
+		echo "Query for IE URLs failed";
+	}
+	
+}
+
+
+#============ List of files accessed through Explorer dialog boxes ========================
+$continue_this_test = true;
+if ($continue_this_test == true) {
+
+	$temp = $user_GUID[$user_choice];
+	string $myquery = "$temp\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSaveMRU\\*";
+
+	echo " ";
+	echo "========== LIST OF FILES ACCESSED THROUGH EXPLORER DIALOG BOXES =============";
+	@echo off;
+	@record on;
+	$continue_this_test = `regquery -hive U -subkey "$myquery[0]"`;
+	@record off;
+
+	if ($continue_this_test == true) {
+		$subkeys = GetCmdData("value_data");
+
+		$keyindex = 0;
+		while ( $keyindex < sizeof($subkeys) ) {
+			echo "$subkeys[$keyindex]";
+			$keyindex++;
+		}
+	}
+
+	else {
+		echo "Query for recent files from dialog boxes failed";
+	}
+	
+}
+
+
+
+
+#============ RECENT USB DEVICES USED ON SYSTEM on System ==================================
+$continue_this_test = true;
+if ($continue_this_test == true) {
+
+	string $myquery = "System\\CurrentControlSet\\Control\\DeviceClasses\\{53f56307-b6bf-11d0-94f2-00a0c91efb8b}";
+	echo " ";
+	echo "========== RECENT USB DEVICES USED  ON SYSTEM ============================";
+	@echo off;
+	@record on;
+	$continue_this_test = `regquery -hive L -subkey $myquery[0]`;
+	@record off;
+
+	if ($continue_this_test == true) {
+		$subkeys = GetCmdData("subkey");
+
+	}
+
+	else {
+		echo "Query for userkeys failed";
+	}
+	
+	echo "$subkeys";
+
+	$keyindex = 0;
+	while ( $keyindex < sizeof($subkeys) ) {
+		echo "$subkeys[$keyindex]";
+		$keyindex++;
+	}	
+}
+
+
+
+@echo on;
+# all done. Return to EP.
+return true;
+
+

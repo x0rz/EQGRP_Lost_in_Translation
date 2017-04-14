@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+<Plugin id='31318'>
+ <Command id='16' name='checkkeyboard'>
+  <Help>Monitors a machine's keyboard.</Help>
+  <Input>
+  </Input>
+  <Output>
+  </Output>
+ </Command>
+</Plugin>

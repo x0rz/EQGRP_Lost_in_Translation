@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_FileAttributes_Tasking.pyo' providerType='script'>
+
+    <Command name='FileAttributes' id='0'>
+
+        <Help>Retrieves or sets file attributes</Help>
+        
+        <Input>
+			<Option name='file' optional='false'>
+				<Help>The file to check or modify</Help>
+				<Argument name='file_or_directory' data='file'/>
+			</Option>
+			
+			<Option name='get' optional='true' group='action'>
+				<Help>Retrieve the file attributes</Help>
+				<Set data='action' value='1'/>
+			</Option>
+			<Option name='set' optional='true' group='action'>
+				<Help>Use when only setting file times or Unix owner/group</Help>
+				<Set data='action' value='2'/>
+				<Set data='attributes' value=''/>
+			</Option>
+			<Option name='replace' optional='true' group='action'>
+				<Help>Replace file attributes with the given attributes</Help>
+				<Help>Valid attributes include:</Help>
+				<Help>Windows Attributes:</Help>
+				<Help>    Archive, Hidden, Normal, NotIndexed,</Help>
+				<Help>    Offline, ReadOnly, System, Temporary,</Help>
+				<Help>    Compressed, Encrypted</Help>
+				<Help>Unix Attributes:</Help>
+				<Help>    OwnerRead, OwnerWrite, OwnerExec,</Help>
+				<Help>    GroupRead, GroupWrite, GroupExec,</Help>
+				<Help>    WorldRead, WorldWrite, WorldExec,</Help>
+				<Help>    SetUid, SetGid, StickyBit</Help>
+				<Help></Help>
+				<Help>Multiple attributes can be set by combining them with a |.</Help>
+				<Help>For example, "Archive|Hidden|System"</Help>
+				<Argument name='attributes' data='attributes'/>
+				<Set data='action' value='3'/>
+			</Option>
+			<Option name='remove' optional='true' group='action'>
+				<Help>Remove particular file attributes</Help>
+				<Help>   See the -replace option for more help</Help>
+				<Argument name='attributes' data='attributes'/>
+				<Set data='action' value='4'/>
+			</Option>
+			<Option name='add' optional='true' group='action'>
+				<Help>Add particular file attributes</Help>
+				<Help>   See the -replace option for more help</Help>
+				<Argument name='attributes' data='attributes'/>
+				<Set data='action' value='5'/>
+			</Option>
+			
+			<Option name='owner' optional='true'>
+				<Argument name='owner' data='owner'/>
+				<Help>The name or uid of the owner of the file</Help>
+			</Option>
+			<Option name='group' optional='true'>
+				<Argument name='group' data='group'/>
+				<Help>The name or gid of the group of the file</Help>
+			</Option>
+
+			<!-- File Times -->
+			<Option name='accessed' optional='true'>
+				<Argument name='time' data='ftAccessed'/>
+				<Help>When the file was last accessed (format: yyyy-mm-dd [HH:MM:SS])</Help>
+			</Option>
+			<Option name='created' optional='true'>
+				<Argument name='time' data='ftCreated'/>
+				<Help>When the file was created (format: yyyy-mm-dd [HH:MM:SS])</Help>
+			</Option>
+			<Option name='modified' optional='true'>
+				<Argument name='time' data='ftModified'/>
+				<Help>When the file was modified last (format: yyyy-mm-dd [HH:MM:SS])</Help>
+			</Option>
+   
+		</Input>
+	
+		<Output>
+			<Data name='action' type='uint8_t' default='1'/>
+			<Data name='file' type='string'/>
+			<Data name='attributes' type='string'/>
+			<Data name='owner' type='string'/>
+			<Data name='group' type='string'/>
+			<Data name='ftAccessed' type='datetime'/>
+			<Data name='ftCreated' type='datetime'/>
+			<Data name='ftModified' type='datetime'/>
+		</Output>
+	</Command>
+
+</Plugin>

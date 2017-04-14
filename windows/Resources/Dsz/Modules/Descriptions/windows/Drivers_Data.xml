@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<Module id="1429" name="Drivers_DataHandler">
+
+	<Interfaces>
+		<Interface id='0x01c10034' provider="0x0101001d">
+			<DataHandler>25048</DataHandler>
+			<DataHandler>25049</DataHandler>
+			<DataHandler>25050</DataHandler>
+		</Interface>
+	</Interfaces>
+
+	<Dependencies>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Implant>No</Implant>
+
+	<Architecture type="i386">
+	
+		<Platform family="windows_nt">
+			<Version major="*" minor="*" other="*">
+				<File loadtype='file'>i386-winnt-vc9/release/Drivers_LpData.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

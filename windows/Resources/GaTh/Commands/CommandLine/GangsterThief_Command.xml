@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin provider="0x0101006e" interface="0x01c10032">
+    <Command name="GangsterThief" id="0">
+        <Help>Read the NTFS MFT to do analysis.</Help>
+		<Input>
+		
+			<Option name='list' optional='true' group='type'>
+				<Help>List files (default list timematched files)</Help>
+				<Help>timematched lists files with mismatched timestamps</Help>
+				<Help>timematched_includedeleted lists files with mismatched timestamps including deleted files</Help>
+				<Help>deleted lists all deleted files</Help>
+				<Argument name='listype' data='listtype'>
+					<Value string='timematched'>
+						<Set data='type' value='0'/>
+					</Value>
+					<Value string='timematched_includedeleted'>
+						<Set data='type' value='2'/>
+					</Value>
+					<Value string='deleted'>
+						<Set data='type' value='2'/>
+					</Value>
+				</Argument>
+			</Option>		
+			<Option name='info' optional='false' group='type'>
+			   <Help>Display information about a given file</Help>
+			   <Set data='type' value='1' />
+			   <Argument name='record id' data='recordIndex' optional='true' />
+			</Option>
+			<Option name='get' optional='false' group='type'>
+			   <Help>Get the specified file (by ID or using -path option) </Help>
+			   <Help>The file is read using raw disk access, no handle is opened to the file </Help>
+			   <Set data='type' value='3' />
+			   <Argument name='record id' data='recordIndex' optional='true' />
+			</Option>
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many bytes to read from the file at a time (used for getfile)</Help>
+			</Option>
+			<Option name='range' optional='true' group='location'>
+				<Help>The range of bytes to read from the file. If end is not specified,</Help>
+				<Help>the file will be read from the start until end of file (used for getfile)</Help>
+				<Argument name='start' data='start'/>
+				<Argument name='end' data='end' optional='true' />
+			</Option>
+			<Option name='tail' optional='true' group='location'>
+				<Help>The number of bytes specified will be read from the file starting at</Help>
+				<Help>"bytes" offset from the END of the file (used for getfile) </Help>
+				<Argument name='bytes' data='tail'/>
+			</Option>
+			<Option name='fullfilepath_disable' optional='true'>
+				<Help>Display the full path for the file (default=true, selecting this will not display the full path) </Help>
+				<Set data='fullfilepath_disable' value='true' />
+			</Option>
+			<Option name='throttle' optional='true'>
+				<Help>Throttle the operation to decrease disk access load </Help>
+				<Set data='throttle' value='true' />
+			</Option>
+			<Option name='partition' optional='true'>
+				<Help>Select the NTFS partition (default='c') </Help>
+				<Argument name='partition letter' data='partitionstring' optional='true' />
+			</Option>
+			<Option name='path' optional='true'>
+				<Help>Use a full path instead of giving a record index (overrides the record index selected and partition)</Help>
+				<Argument name='path' data='path' optional='true' />
+			</Option>
+			<Option name='after' optional='true'>
+				<Help>Only list files with timestamps after the given date</Help>
+				<Argument name='YYYY-MM-DD' data='after'/>
+			</Option>
+
+			<Option name='before' optional='true'>
+				<Help>Only list files with timestamps before the given date</Help>
+				<Argument name='YYYY-MM-DD' data='before'/>
+			</Option>
+			<Option name='max' optional='true'>
+				<Help>Maximum number of results to return in file listing (default 1024)</Help>
+				<Argument name='max results' data='maxresults'/>
+			</Option>
+			<Option name='bucketsize' optional='true'>
+				<Help>Size of bucket for list results (default 0)</Help>
+				<Help>When more bucketsize results are found in the same time bucket (hour), they are discarded</Help>
+				<Help>Setting to 0 will disable, returning all list results</Help>
+				<Argument name='bucketsize' data='bucketsize'/>
+			</Option>
+			<Option name='buckettype' optional='true'>
+				<Help>Type of bucket for list results (default hour)</Help>
+				<Argument name='type' data='buckettype'>
+					<Value string='minute'>
+						<Set data='buckettype' value='1'/>
+					</Value>
+					<Value string='hour'>
+						<Set data='buckettype' value='2'/>
+					</Value>
+					<Value string='day'>
+						<Set data='buckettype' value='3'/>
+					</Value>
+					<Value string='month'>
+						<Set data='buckettype' value='4'/>
+					</Value>
+					<Value string='year'>
+						<Set data='buckettype' value='5'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			
+		</Input>
+	<Output>
+		<Data name='type' type='uint8_t' default='255' />
+		<Data name='recordIndex' type='uint64_t' default='0xFFFFFFFFFFFFFFFF' />
+		<Data name='fullfilepath_disable' type='bool' default='false' />
+		<Data name='throttle' type='bool' default='false' />
+		<Data name='partitionstring' type='string' default='c' />
+		<Data name='path' type='string' default='' />
+		<Data name='chunksize' type='uint32_t' default='131072'/>
+		<Data name='start' type='uint64_t' default='0'/>
+		<Data name='end' type='uint64_t' default='0'/>
+		<Data name='tail' type='uint64_t' default='0'/>
+		<Data name='after' type='datetime'/>
+		<Data name='before' type='datetime'/>
+		<Data name='maxresults' type='uint32_t' default='1024'/>
+		<Data name='bucketsize' type='uint32_t' default='0'/>
+		<Data name='buckettype' type='uint32_t' default='2'/>
+		
+		
+		
+		
+	</Output>
+    </Command>
+</Plugin>

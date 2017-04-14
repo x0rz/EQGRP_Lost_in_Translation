@@ -1,0 +1,47 @@
+
+@include "_VersionChecks.dsi";
+@echo off;
+@quiet off;
+
+if (($argc != 2 && $argc != 3) || (($argv[1] != "-enable") && ($argv[1] != "-disable")))
+{
+    echo("Usage: $argv[0] <-enable|-disable> [-nofree]", ERROR);
+    echo("    Enables or disables FLAV use for Banner", ERROR);
+	echo("    Use -nofree if you do not want to free the old version", ERROR);
+	return false;
+}
+
+if (IsLocal())
+{
+	echo("You must be connected in order to run this script", ERROR);
+	return false;
+}
+
+bool $rtn=true;
+string $impl = "DEFAULT";
+string $nofree = "";
+string $action = "Removing";
+string $module = "BANNER";
+if ($argv[1] == "-enable")
+{
+	$impl = "FLAV";
+	$action = "Enabling";
+}
+
+if ($argc == 3 && $argv[2] == "-nofree")
+{
+	$nofree = "-nofree";
+}
+
+echo "$action $module FLAV change";
+if (`moduletoggle -system $module\_TARGET -set $impl $nofree `)
+{
+	echo ("    SUCCEEDED", GOOD);
+}
+else
+{
+	echo ("    FAILED", ERROR);
+	$rtn = false;
+}
+
+return $rtn;

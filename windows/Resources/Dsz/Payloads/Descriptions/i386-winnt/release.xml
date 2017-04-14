@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Payload name="Danderspritz">
+
+	<PC>
+		<Version major='2' minor='0'/>
+		<Version major='2' minor='1'/>
+		<Version major='2' minor='2'/>
+		<Version major='2' minor='3'/>
+	</PC>
+
+	<LogDir>Dsz</LogDir>
+	<Type>PayloadLibrary</Type>
+	<Export>#1</Export>
+	<Parameters>Default</Parameters>
+
+	<OsVersion major='*' minor='*' revision='*'>
+		<Directory>Dsz/Payloads/Files/i386-winnt-vc9s/release</Directory>
+		<Lp>None</Lp>
+		<Implant type="file">Dsz_Implant_Pc.dll</Implant>
+		<Implant type="memory">Dsz_Implant_Pc.dll</Implant>
+	</OsVersion>
+
+</Payload>

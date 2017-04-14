@@ -1,0 +1,349 @@
+MODE
+PS
+ups32.exe|lpsetenv -option SIG11FOUND -value 1
+utilman32.exe|lpsetenv -option SIG11FOUND -value 1
+taskbar.exe|lpsetenv -option SIG14FOUND -value 1
+MsgQueue.exe|lpsetenv -option SIG14FOUND -value 1
+SndTray.exe|lpsetenv -option SIG14FOUND -value 1
+msserv.exe|lpsetenv -option SIG14FOUND -value 1
+
+MODE
+DIR
+#|any number of dir's in the same directory adds zero overhead, which is why we're looking for the same file more than once
+SYSPATH\driver32|lpsetenv -option SIG3FOUND -value 1
+SYSTEMROOT\$NtUninstallQ817473$|lpsetenv -option SIG4FOUND -value 1
+SYSTEMROOT\..\Program Files\common files\microsoft shared\msaudio|lpsetenv -option SIG9FOUND -value 1
+SYSTEMROOT\..\Program Files\common files\microsoft shared\mssecuritymgr|lpsetenv -option SIG9FOUND -value 1
+SYSTEMROOT\..\Program Files\common files\micfosoft shared\MSAPackages|lpsetenv -option SIG9FOUND -value 1
+SYSPATH\s7otbxsx.dll|lpsetenv -option SIG8FOUND -value 1
+SYSTEMROOT\inf\mdmcpq3.pnf|lpsetenv -option SIG8FOUND -value 1
+SYSPATH\icsvnt32.dll|lpsetenv -option SIG10FOUND -value 1
+SYSPATH\ups32.exe|lpsetenv -option SIG11FOUND -value 1
+SYSPATH\utilman32.exe|lpsetenv -option SIG11FOUND -value 1
+SYSPATH\utliman32.exe|lpsetenv -option SIG11FOUND -value 1
+SYSPATH\drivers\ups.exe|lpsetenv -option SIG11FOUND -value 1
+SYSPATH\msvcp11.dll|lpsetenv -option SIG11FOUND -value 1
+SYSPATH\msxml10.dll|lpsetenv -option SIG11FOUND -value 1
+SYSTEMROOT\..\Documents and Settings\All Users\Application Data\Network|lpsetenv -option SIG12FOUND -value 1
+SYSPATH\winview.ocs|lpsetenv -option SIG13FOUND -value 1
+SYSPATH\Mfc42l00.pdb|lpsetenv -option SIG13FOUND -value 1
+SYSPATH\ISUninst.bin|lpsetenv -option SIG13FOUND -value 1
+SYSPATH\mswmpdat.tlb|lpsetenv -option SIG13FOUND -value 1
+SYSPATH\wmmini.swp|lpsetenv -option SIG13FOUND -value 1
+SYSPATH\wowmgr.exe|lpsetenv -option SIG13FOUND -value 1
+SYSTEMROOT\winstat.pdr|lpsetenv -option SIG13FOUND -value 1
+SYSPATH\taskbar.exe|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\MsgQueue.exe|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\SndTray.exe|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\msserv.exe|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\sed.exe|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\winip.drv|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\winext32.dll|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\rpclog.dll|lpsetenv -option SIG14FOUND -value 1
+SYSPATH\tlbcon32.exe|lpsetenv -option SIG15FOUND -value 1
+SYSPATH\con32.nls|lpsetenv -option SIG15FOUND -value 1
+SYSPATH\indsvc32.ocx|lpsetenv -option SIG16FOUND -vaue 1
+SYSTEMROOT\temp\indsvc32.ocx|lpsetenv -option SIG16FOUND -value 1
+SYSPATH\ADWM.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\ASFIPC.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\BROWUI.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\CAPESPN.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\CFGKRNL3.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\CRYPTKRN.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\DESKKRNE.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\DSKMGR.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\EXPLORED.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\FMEM.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\HDDBACK4.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\HWMAP.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\ipnetd.dll|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\IPNETD.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\KNRLADD.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\MAILAPIC.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\MSGRTHLP.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\MSIAXCPL.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\MSID32.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\MSRECV40.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\NCFG.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\PARALEUI.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\secur16.dll|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\SECUR16.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\SOUNDLOC.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\WINF.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSPATH\WMCRT.DLL|lpsetenv -option SIG17FOUND -value 1
+SYSTEMROOT\..\Documents and Settings\All Users\Application Data\msncp.exe|lpsetenv -option SIG18FOUND -value 1
+SYSTEMROOT\..\Documents and Settings\All Users\Application Data\netsvcs.exe|lpsetenv -option SIG18FOUND -value 1
+SYSPATH\msprnt.exe|lpsetenv -option SIG18FOUND -value 1
+SYSPATH\fmem.dll|lpsetenv -option SIG18FOUND -value 1
+SYSTEMROOT\..\Program Files\common files\microsoft shared\Triedit\htmlprsr.exe|lpsetenv -option SIG18FOUND -value 1
+SYSTEMROOT\..\Program Files\common files\microsoft shared\Triedit\dhtmled.dll|lpsetenv -option SIG18FOUND -value 1
+SYSTEMROOT\..\Program Files\common files\microsoft shared\Triedit\TRIEDIT.TLB|lpsetenv -option SIG18FOUND -value 1
+SYSPATH\nsecm.dll|lpsetenv -option SIG19FOUND -value 1
+SYSPATH\Microsoft\Windows Management Infrastructure|lpsetenv -option SIG20FOUND -value 1
+SYSTEMROOT\temp\temp56273.pdf|lpsetenv -option SIG21FOUND -value 1
+SYSPATH\drivers\etc\network.ics|lpsetenv -option SIG22FOUND -value 1
+SYSPATH\acelpvc.dll|lpsetenv -option SIG22FOUND -value 1
+SYSPATH\drivers\mfc64comm.sys|lpsetenv -option SIG24FOUND -value 1
+SYSPATH\drivers\adap64info.sys|lpsetenv -option SIG24FOUND -value 1
+SYSTEMROOT\winver32.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\webhelp.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\autocheck.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\xflash.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\inetcpl.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\activemov.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\xmlhelp.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\winspooler.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\xsocket.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.exe|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\webhelp.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\autocheck.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\xflash.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\inetcpl.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\activemov.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\xmlhelp.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\winspooler.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\xsocket.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.sys|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\DivXfix.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\dbdebug.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\countryfix.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\cdboot.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\bitcheck.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\biosfix.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actproxy.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\activems.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\dbdebug.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\countryfix.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\cdboot.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\bitcheck.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\DivXfix.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\biosfix.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actproxy.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\dsound4d.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\actmove.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\appned.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\boof.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\gflash.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\lnetcpl.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qernet.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\serves.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\secury.dll|lpsetenv -option SIG25FOUND -value 1
+SYSPATH\qtlib.sqt|lpsetenv -option SIG27FOUND -value 1
+SYSPATH\zl4vq.sqt|lpsetenv -option SIG27FOUND -value 1
+SYSPATH\dfrgntfs5.sqt|lpsetenv -option SIG27FOUND -value 1
+SYSPATH\msvcrt58.sqt|lpsetenv -option SIG27FOUND -value 1
+SYSPATH\ieloader.dll|lpsetenv -option SIG29FOUND -value 1
+SYSPATH\orepst.dll|lpsetenv -option SIG29FOUND -value 1
+SYSPATH\pstore.dll|lpsetenv -option SIG29FOUND -value 1
+SYSPATH\msdxofg.dll|lpsetenv -option SIG30FOUND -value 1
+SYSPATH\atllib.dll|lpsetenv -option SIG30FOUND -value 1
+SYSPATH\ocmsiecon.hlp|lpsetenv -option SIG30FOUND -value 1
+SYSTEMROOT\temp\~MS1E.tmp|lpsetenv -option SIG31FOUND -value 1
+SYSTEMROOT\temp\~FMIFEN.tmp|lpsetenv -option SIG31FOUND -value 1
+SYSPATH\wpa.dbl.bak|lpsetenv -option SIG31FOUND -value 1
+SYSPATH\sslkey.exe|lpsetenv -option SIG31FOUND -value 1
+SYSTEMROOT\WindowsUpdate.old|lpsetenv -option SIG31FOUND -value 1
+SYSPATH\INI|lpsetenv -option SIG33FOUND -value 1
+SYSPATH\godown.dll|lpsetenv -option SIG37FOUND -value 1
+SYSPATH\winns.exe|lpsetenv -option SIG38FOUND -value 1
+SYSPATH\kbdarpe.dll|lpsetenv -option SIG38FOUND -value 1
+
+MODE
+SERVICES
+systmgmt|lpsetenv -option SIG5FOUND -value 1
+mrxcls|lpsetenv -option SIG8FOUND -value 1
+WOWmanager|lpsetenv -option SIG13FOUND -value 1
+Recover|lpsetenv -option SIG14FOUND -value 1
+TlbControl|lpsetenv -option SIG15FOUND -value 1
+pnppci|lpsetenv -option SIG18FOUND -value 1
+ethio|lpsetenv -option SIG18FOUND -value 1
+ntdos505|lpsetenv -option SIG18FOUND -value 1
+ndisio|lpsetenv -option SIG18FOUND -value 1
+WinMI32|lpsetenv -option SIG20FOUND -value 1
+HP003044|lpsetenv -option SIG25FOUND -value 1
+NetBIOS2010|lpsetenv -option SIG25FOUND -value 1
+
+MODE
+RAW
+regquery -hive L -subkey "software\microsoft\windows\currentversion\StrtdCfg" -recursive|lpsetenv -option SIG1FOUND -value 1
+script malfind\sig1user.eps|lpsetenv -option SIG1FOUND -value 1
+regquery -hive L -subkey "System\CurrentControlSet\Control\CrashImage" -recursive|lpsetenv -option SIG2FOUND -value 1
+fileperms -file \\.\Hd1|lpsetenv -option SIG4FOUND -value 1
+fileperms -file \\.\Hd2|lpsetenv -option SIG4FOUND -value 1
+fileperms -file \\.\IdeDrive1|lpsetenv -option SIG4FOUND -value 1
+fileperms -file \\.\IdeDrive2|lpsetenv -option SIG4FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Windows\CurrentVersion\policies\Explorer\Run\ipmontr"|lpsetenv -option SIG6FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\WinKernel\Explorer\Run\ipmontr"|lpsetenv -option SIG6FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Windows\CurrentVersion\policies\Explorer\Run\Internet32"|lpsetenv -option SIG7FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\MSFix"|lpsetenv -option SIG12FOUND -value 1
+script malfind\sig12user.eps|lpsetenv -option SIG12FOUND -value 1
+regquery -hive L -subkey "Software\Postman"|lpsetenv -option SIG15FOUND -value 1
+regquery -hive R -subkey "Lnkfile\shellex\IconHandler" -value "OptionFlags"|lpsetenv -option SIG17FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\WinMI"|lpsetenv -option SIG20FOUND -value 1
+regquery -hive L -subkey "Software\Sun\1.1.2\AppleTlk"|lpsetenv -option SIG22FOUND -value 1
+regquery -hive L -subkey "Software\Sun\1.1.2" -value "AppleTlk"|lpsetenv -option SIG22FOUND -value 1
+regquery -hive L -subkey "Software\Sun\1.1.2\IsoTp"|lpsetenv -option SIG22FOUND -value 1
+regquery -hive L -subkey "Software\Sun\1.1.2" -value "IsoTp"|lpsetenv -option SIG22FOUND -value 1
+regquery -hive L -subkey "Software\Adobe\Fix"|lpsetenv -option SIG26FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Windows\CurrentVersion\Explorer\Streams\Desktop\Default Statusbar Sign"|lpsetenv -option SIG31FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Windows\CurrentVersion\Explorer\Streams\Desktop\Default MenuBars Sign"|lpsetenv -option SIG31FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Windows\CurrentVersion\Explorer\Streams\Desktop\Default Taskbar Sign"|lpsetenv -option SIG31FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Windows\CurrentVersion\Explorer\Streams\Desktop\Default Zone"|lpsetenv -option SIG31FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Active Setup\Installed Components\{FB083534-2709-3378-0000-F0FCD03BA387}"|lpsetenv -option SIG32FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\Active Setup\Installed Components\{FB083534-2709-3378-0001-F0FCD03BA387}"|lpsetenv -option SIG32FOUND -value 1
+regquery -hive L -subkey "System\CurrentControlSet\Services\Windows Installer Management"|lpsetenv -option SIG34FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\MS QAG\U11"|lpsetenv -option SIG39FOUND -value 1
+regquery -hive L -subkey "Software\Microsoft\MS QAG\U12"|lpsetenv -option SIG39FOUND -value 1
+script malfind\findsig10.eps|lpsetenv -option SIG10FOUND -value 1
+script malfind\findsig20.eps|lpsetenv -option SIG20FOUND -value 1
+script malfind\findsig21.eps|lpsetenv -option SIG21FOUND -value 1
+script malfind\sig23user.eps|lpsetenv -option SIG23FOUND -value 1
+script malfind\findsig25.eps|lpsetenv -option SIG25FOUND -value 1
+script malfind\findsig26.eps|lpsetenv -option SIG26FOUND -value 1
+script malfind\findsig28.eps|lpsetenv -option SIG28FOUND -value 1
+script malfind\findsig35.eps|lpsetenv -option SIG35FOUND -value 1
+script malfind\findsig36.eps|lpsetenv -option SIG36FOUND -value 1
+lpgetenv -option SIG1FOUND|local run -command "cmd /c echo SIG1 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG1FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG01 ItsHere
+lpgetenv -option SIG2FOUND|local run -command "cmd /c echo SIG2 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG2FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG02 ItsHere
+lpgetenv -option SIG3FOUND|local run -command "cmd /c echo SIG3 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG3FOUND|background script malfind\getsig3.eps
+lpgetenv -option SIG3FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG03 ItsHere
+lpgetenv -option SIG4FOUND|local run -command "cmd /c echo SIG4 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG4FOUND|background script malfind\getsig4.eps
+lpgetenv -option SIG4FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG04 ItsHere
+lpgetenv -option SIG5FOUND|local run -command "cmd /c echo SIG5 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG5FOUND|background script malfind\getsig5.eps
+lpgetenv -option SIG5FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG05 ItsHere
+lpgetenv -option SIG6FOUND|local run -command "cmd /c echo SIG6 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG6FOUND|background script malfind\getsig6.eps
+lpgetenv -option SIG6FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG06 ItsHere
+lpgetenv -option SIG7FOUND|local run -command "cmd /c echo SIG7 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG7FOUND|background script malfind\getsig7.eps
+lpgetenv -option SIG7FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG07 ItsHere
+lpgetenv -option SIG8FOUND|local run -command "cmd /c echo SIG8 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG8FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG08 ItsHere
+lpgetenv -option SIG9FOUND|local run -command "cmd /c echo SIG9 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG9FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG09 ItsHere
+lpgetenv -option SIG10FOUND|local run -command "cmd /c echo SIG10 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG10FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG10 ItsHere
+lpgetenv -option SIG11FOUND|local run -command "cmd /c echo SIG11 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG11FOUND|background script malfind\getsig11.eps
+lpgetenv -option SIG11FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG11 ItsHere
+lpgetenv -option SIG12FOUND|local run -command "cmd /c echo SIG12 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG12FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG12 ItsHere
+lpgetenv -option SIG13FOUND|local run -command "cmd /c echo SIG13 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG13FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG13 ItsHere
+lpgetenv -option SIG14FOUND|local run -command "cmd /c echo SIG14 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG14FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG14 ItsHere
+lpgetenv -option SIG15FOUND|local run -command "cmd /c echo SIG15 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG15FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG15 ItsHere
+lpgetenv -option SIG16FOUND|local run -command "cmd /c echo SIG16 FOUND (not always a bad thing) >> other_peeps.txt" -redirect
+lpgetenv -option SIG16FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG16 ItsHere
+lpgetenv -option SIG17FOUND|background script malfind\getsig17.eps
+lpgetenv -option SIG17FOUND|local run -command "cmd /c echo SIG17 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG17FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG17 ItsHere
+lpgetenv -option SIG18FOUND|regquery -hive L -subkey "System\CurrentControlSet\Services\pnppci" -recursive
+lpgetenv -option SIG18FOUND|regquery -hive L -subkey "System\CurrentControlSet\Services\ethio" -recursive
+lpgetenv -option SIG18FOUND|regquery -hive L -subkey "System\CurrentControlSet\Services\ntdos505" -recursive
+lpgetenv -option SIG18FOUND|regquery -hive L -subkey "System\CurrentControlSet\Services\ndisio" -recursive
+lpgetenv -option SIG18FOUND|local run -command "cmd /c echo SIG18 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG18FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG18 ItsHere
+lpgetenv -option SIG19FOUND|local run -command "cmd /c echo SIG19 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG19FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG19 ItsHere
+lpgetenv -option SIG20FOUND|local run -command "cmd /c echo SIG20 FOUND. This is only an expiremental signature right now. >> other_peeps.txt" -redirect
+lpgetenv -option SIG20FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG20 ItsHere
+lpgetenv -option SIG21FOUND|local run -command "cmd /c echo SIG21 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG21FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG21 ItsHere
+lpgetenv -option SIG22FOUND|local run -command "cmd /c echo SIG22 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG22FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG22" ItsHere
+lpgetenv -option SIG23FOUND|local run -command "cmd /c echo SIG23 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG23FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG23" ItsHere
+lpgetenv -option SIG24FOUND|local run -command "cmd /c echo SIG24 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG24FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG24 ItsHere
+lpgetenv -option SIG25FOUND|local run -command "cmd /c echo SIG25 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG25FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG25 ItsHere
+lpgetenv -option SIG26FOUND|local run -command "cmd /c echo SIG26 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG26FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG26 ItsHere
+lpgetenv -option SIG27FOUND|local run -command "cmd /c echo SIG27 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG27FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG27 ItsHere
+lpgetenv -option SIG28FOUND|local run -command "cmd /c echo SIG28 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG28FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG28 ItsHere
+lpgetenv -option SIG29FOUND|local run -command "cmd /c echo SIG29 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG29FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG29 ItsHere
+lpgetenv -option SIG30FOUND|local run -command "cmd /c echo SIG30 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG30FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG30 ItsHere
+lpgetenv -option SIG31FOUND|local run -command "cmd /c echo SIG31 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG31FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG31 ItsHere
+lpgetenv -option SIG32FOUND|local run -command "cmd /c echo SIG32 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG32FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG32 ItsHere
+lpgetenv -option SIG33FOUND|local run -command "cmd /c echo SIG33 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG33FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG33 ItsHere
+lpgetenv -option SIG34FOUND|local run -command "cmd /c echo SIG34 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG34FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG35 ItsHere
+lpgetenv -option SIG35FOUND|local run -command "cmd /c echo SIG35 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG35FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG35 ItsHere
+lpgetenv -option SIG36FOUND|local run -command "cmd /c echo SIG36 heuristic FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG36FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG36 ItsHere
+lpgetenv -option SIG37FOUND|local run -command "cmd /c echo SIG37 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG37FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG37 ItsHere
+lpgetenv -option SIG38FOUND|local run -command "cmd /c echo SIG38 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG38FOUND|script DropboxWrapper.eps AppendFileDefaultName SIG38 ItsHere
+lpgetenv -option SIG39FOUND|local run -command "cmd /c echo SIG39 FOUND! >> other_peeps.txt" -redirect
+lpgetenv -option SIG39FOUND|script DropboxWrapper.eps "AppendFileDefaultName" "SIG39" "It's here"
+local script dirwrapper.eps other_peeps.txt|local run -command "perl -e \"exec('notepad other_peeps.txt')\"" -redirect

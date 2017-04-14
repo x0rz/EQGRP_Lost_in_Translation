@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Ifconfig_Tasking.pyo' providerType='script'>
+
+	<Command id="0" name="Ifconfig">
+		<Help>Outputs interface configuration information</Help>
+
+		<Input>
+		</Input>
+
+		<Output>
+		</Output>
+	</Command>
+	
+</Plugin>

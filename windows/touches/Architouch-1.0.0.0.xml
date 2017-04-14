@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:trch"
+        id="5f75119c8cc493e28286b5315d05d79bfc50b039"
+        name="Architouch"
+        version="1.0.0"
+        configversion="1.0.0.0"
+        schemaversion="2.0.0">
+  <inputparameters>
+<!-- All plugins that perform blocking network calls must have a NetworkTimeout
+     parameter or its equivalent -->
+    <parameter name="NetworkTimeout"
+               description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+               type="S16">
+      <default>60</default>
+    </parameter>
+    <parameter name="TargetIp"
+               description="Target IP Address"
+               type="IPv4"/>
+    <parameter name="TargetPort"
+               description="Port used by a TCP RPC service"
+               type="TcpPort">
+      <default>49152</default>
+    </parameter>
+  </inputparameters>
+
+  <outputparameters>
+    <parameter name="TargetOsArchitecture" description="Target architecture" type="String" />
+  </outputparameters>
+
+  <errors>
+    <errorcode name="ARTO_NETWORK_ERROR" value="65"
+               description="A network error occured"/>
+  </errors>
+
+  <redirection>
+     <local protocol="TCP"
+            listenaddr="TargetIp"
+            listenport="TargetPort"
+            destaddr="TargetIp"
+            destport="TargetPort"
+            closeoncompletion="true"/>
+  </redirection>
+
+  <logic>
+  </logic>
+</config>

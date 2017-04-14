@@ -1,0 +1,605 @@
+#-----------------------------------------------------------------------------
+# File: kasstatus.eps
+# Description: Checks for presence of Kaspersky process and queries registry
+#	for Kaspersky behavior settings.
+#
+# Note: Values of regqueries must be supplied "in order" that they appear
+# in the actual registry.
+#
+# Currently no FW (Anti_Hacker) queries
+#
+# Versions of Kaspersky checked for:
+#	6.0
+#	7.0
+#	8.0 - very limited, only versioning.  no settings queried
+#
+# 2008-01-29 - First Release - handles v6, v7. v8 only versioning and logging dirs
+# 2008-02-21 - Recursive registry-dump for unknown Kaspersky versions
+#-----------------------------------------------------------------------------
+
+@include "_ProcessList.epm";
+@include "PSPHelpers.epm";
+
+# The struct is defined in PSPHelpers.epm
+metaData @metaData;
+string %envs;
+#initialize the struct
+init(@metaData, %envs);
+string $data = "";
+
+@echo off;
+@record on;
+
+string $kasp;
+$kasp[0] = "avp.exe";
+$kasp[1] = "avpcc.exe";
+$kasp[2] = "avpncc.exe";
+$kasp[3] = "avpm.exe";
+$kasp[4] = "avps.exe";
+$kasp[5] = "kav.exe";
+$kasp[6] = "kavisarv.exe";
+$kasp[7] = "kavmm.exe";
+$kasp[8] = "kavss.exe";
+$kasp[9] = "kavsvc.exe";
+$kasp[10] = "kis.exe";
+$kasp[11] = "klnagent.exe";
+$kasp[12] = "kwsprod.exe";
+
+string $auditing = GetEnv("AUDITOFF");
+if ($auditing == "TRUE"){
+		echo "Verified auditing was off/has been dorked. Moving on";
+}else{
+	echo "auditing still on!";
+}
+
+# Process IDs
+int $ids;
+
+# Process Names
+string $names;
+string $name;
+
+int $i = 0;
+
+# Is logging on or off
+bool $logging = false;
+
+# Dataroot Directory (e.g., installation directory)
+string $dataroot = "";
+
+# Report Directory where log files are stored
+string $report = "";
+
+# Quarantine Directory
+string $quarantine = "";
+
+int $version = 6;
+
+# Registry query value
+string $value;
+
+# registry query (sub)key
+string $key;
+
+# registry query base (used in conjuction with $key)
+string $reg_base = "";
+
+# return value
+string $ret;
+
+
+_GetProcessList($ids, $names);
+bool $found_kas_process = false;
+echo "";
+foreach $name ($names)
+{
+	string $k;
+	foreach $k ($kasp)
+	{
+		if($k == $name)
+		{
+			echo "Kaspersky process:$ids[$i]:$name";
+			$found_kas_process = true;
+		}
+	}
+	$i++;
+}
+
+echo "";
+
+
+# Check for Kaspersky processes and Version
+ifnot($found_kas_process)
+{
+	if(prompt "No Kaspersky Process found.  Exit?")
+	{
+		@metaData.$information = $data;
+		writeData(@metaData, %envs);		
+		return false;
+	}
+}
+
+@metaData.$vendor = "Kaspersky";
+
+if(`regquery -hive L -subkey "software\\kasperskylab\\AVP6"`)
+{
+	echo "Found registry keys for Kaspersky 6.0.";
+	$version = 6;
+	$reg_base = "software\\kasperskylab\\AVP6";
+	@metaData.$product = "Kaspersky 6.0";
+	@metaData.$version = "6";
+}
+else if(`regquery -hive L -subkey "software\\kasperskylab\\protected\\AVP7"`)
+{
+	echo "Found registry keys for Kaspersky 7.0.";
+	$version = 7;
+	$reg_base = "software\\kasperskylab\\protected\\AVP7";
+	
+	@metaData.$product = "Kaspersky 7.0";
+	@metaData.$version = "7";
+
+	@record on;
+	`getnetaddr`;
+	@record off;
+	int $remote_peer_port = GetCmdData("remote_peer_port");
+	int $remote_port = GetCmdData("remote_port");
+	echo "";
+	echo "NOTE: Kaspersky 7 *can* create popups for traffic over \"encrypted\" ports.";
+	echo "If you're using one of these ports (including 443)...";
+	echo "you may already be in trouble.";
+	echo "    Remote peer port: $remote_peer_port";
+	echo "Current implant port: $remote_port";
+}
+else if(`regquery -hive L -subkey "software\\kasperskylab\\protected\\AVP8"`)
+{
+	echo "Found registry keys for Kaspersky 8.0.";
+	$version = 8;
+	$reg_base = "software\\kasperskylab\\protected\\AVP8";	
+
+	@metaData.$product = "Kaspersky 8.0";
+	@metaData.$version = "8";
+
+	undef($ret);
+	undef($value);
+	$key = "$reg_base\\environment";
+	$value[0] = "DataRoot";
+	$value[1] = "ProductName";
+	$value[2] = "ProductType";
+	$value[3] = "ProductVersion";
+	$value[4] = "Report";
+	$value[5] = "Quarantine";
+	if(reg_query($key, $value, $ret, true))
+	{
+	echo "";
+	echo "$ret[1] (version $ret[3])";
+		echo "";
+		$dataroot = $ret[0];
+		$report = $ret[4];
+		$quarantine = $ret[5];
+		string $r = split("\%\\", $report);
+		$report = "$dataroot\\$r[1]";
+		$r = split("\%\\", $quarantine);
+		$quarantine = "$dataroot\\$r[1]";
+		
+		echo "Potential Logging Directory:";
+		echo "$report";
+		echo "Potential Quarantine Directory";
+		echo "$quarantine";
+
+		@echo on;
+		`log dir * -path "$report" -max 0 -age 3`;
+		@echo off;
+	}
+
+	echo "";
+	echo "No additional queries yet.  Q&D";
+	# `script kas8.eps`;
+
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+
+	return true;
+}
+else
+{
+	echo "Did not find a known Kaspersky installation.";
+	echo "";
+	if(prompt "Do you want to recursively dump HKLM\\Software\\KasperskyLab? (NOTE: this can produce a large result set)")
+	{
+		@echo on;
+		`background log regquery -recursive -hive L -subkey "software\\kasperskylab"`;
+		@echo off;
+	}
+
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+
+	return false;
+}
+
+
+# REGISTRY GUARD
+echo "";
+echo "+++++++++++++++++++";
+echo "Registry Guard";
+echo "+++++++++++++++++++";
+$key = "$reg_base\\profiles\\behavior_blocking\\profiles\\pdm\\settings";
+
+undef($ret);
+undef($value);
+$value[0] = "bRegMonitoring_Enabled";
+echo "Querying the Registry Guard subkey, this *may* take a while ...";
+if(reg_query($key, $value, $ret, true))
+{
+	int $rg = <int>$ret[0];
+	if($rg == 1)
+	{
+		echo "$ret:$value (Registry Guard: ON) !!!";
+		$data = "$data|RegistryGuard:ON";
+		%envs{'noRegistry'} = "TRUE";
+		ifnot(prompt "\nRegistry Monitoring Enabled. (This is default behavior)\nActivity *may* have been been detected, depending on which registry keys are being monitored (see Kaspersky documentation for more details).  \nContinuing *may* also be detected, depending on this status.\n\nContinue?")
+		{
+			@metaData.$information = $data;
+			writeData(@metaData, %envs);
+			return false;
+		}
+	}
+	else
+	{
+		echo "$ret:$value (Registry Guard: OFF)";
+		$data = "$data|RegistryGuard:OFF";
+		%envs{'noRegistry'} = "FALSE";
+	}
+}
+
+
+# Version
+undef($ret);
+undef($value);
+$key = "$reg_base\\environment";
+$value[0] = "DataRoot";
+$value[1] = "ProductName";
+$value[2] = "ProductType";
+$value[3] = "ProductVersion";
+$value[4] = "Quarantine";
+$value[5] = "Report";
+if(reg_query($key, $value, $ret, true))
+{
+	echo "";
+	echo "$ret[1] (version $ret[3])";
+	echo "";
+	$dataroot = $ret[0];
+
+	$report = $ret[5];
+	string $r = split("\%\\", $report);
+	$report = "$dataroot\\$r[1]";
+
+	$quarantine= $ret[4];
+	$r = split("\%\\", $quarantine);
+	$quarantine = "$dataroot\\$r[1]";
+
+	@metaData.$product = "$ret[1] ($ret[2])";
+	@metaData.$version = "$ret[3]";
+	@metaData.$logFile = "$report";
+	@metaData.$quarantine = "$quarantine";
+	$data = "$data|$ret[2]";
+
+}
+
+
+# KASPERSKY
+undef($ret);
+undef($value);
+$key = "$reg_base";
+$value[0] = "enabled";
+if(reg_query($key, $value, $ret, true))
+{
+	if($ret == "00000000")
+	{
+		echo "$ret:$value (Kaspersky Monitoring: OFF)";
+		if($ret == "00000000")
+		{
+			if(prompt "Kaspersky Monitoring is turned off.\nExit?")
+			{
+				@metaData.$information = $data;
+				writeData(@metaData, %envs);
+				return true;
+			}
+		}
+	}
+	if($ret == "00000001") { echo "$ret:$value (Kaspersky Monitoring: ON)"; }
+}
+
+
+# BEHAVIOR BLOCKING
+undef($ret);
+undef($value);
+echo "";
+echo "";
+echo "+++++++++++++++++++";
+echo "Behavior Blocking";
+echo "+++++++++++++++++++";
+$key = "$reg_base\\profiles\\behavior_blocking";
+$value[0] = "enabled";
+if(reg_query($key, $value, $ret, true))
+{
+	if($ret == "00000000")
+	{
+		echo "$ret:$value (Behavior Blocking: OFF)";
+		echo "made in the shade";
+		echo "Behavior Blocking: OFF";
+		$data = "$data|BehaviorBlocking:OFF";
+		%envs{'noDriver'} = "FALSE";
+		%envs{'noHide'} = "FALSE";
+		%envs{'noInject'} = "FALSE";
+		%envs{'noKeyboard'} = "FALSE";
+		%envs{'noRegistry'} = "FALSE";
+		@metaData.$information = $data;
+		writeData(@metaData, %envs);
+		return true;
+	}
+	if($ret == "00000001")
+	{
+		echo "$ret:$value (Behavior Blocking: ON)";
+		$data = "$data|BehaviorBlocking:ON";
+	}
+}
+
+# APPLICATION ACTIVITY ANALYSIS
+undef($ret);
+undef($value);
+echo "";
+echo "";
+echo "+++++++++++++++++++";
+echo "Application Activity Analysis";
+echo "+++++++++++++++++++";
+$key = "$reg_base\\profiles\\behavior_blocking\\profiles\\pdm\\settings";
+$value[0] = "bBehaviourEnabled";
+if(reg_query($key, $value, $ret, true))
+{
+	if($ret[0] == "00000000")
+	{
+		echo "$ret[0]:$value[0] (Application Activity Analyzer: OFF)";
+		echo "Exiting ... ";
+		$data = "$data|ApplicationActivityAnalyzer:OFF";
+		@metaData.$information = $data;
+		writeData(@metaData, %envs);
+		return true;
+	}
+	if($ret[0] == "00000001")
+	{
+		echo "$ret[0]:$value[0] (Application Activity Analyzer: ON)";
+		$data = "$data|ApplicationActivityAnalyzer:ON";
+	}
+}
+
+
+# PROCESS INJECTION
+undef($ret);
+undef($value);
+echo "";
+echo "";
+echo "+++++++++++++++++++";
+echo "Process Injection";
+echo "+++++++++++++++++++";
+$ret = "";
+$key = "$reg_base\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0002";
+$value[0] = "bEnabled";
+$value[1] = "action";
+$value[2] = "bLog";
+$value[3] = "bQuarantine";
+if(reg_query($key, $value, $ret, true))
+{
+	if($ret[0] == "00000000")
+	{
+		echo "$ret[0]:$value[0] (Process Injection Detection: OFF)";
+		$data = "$data|ProcessInjection:OFF";
+		%envs{'noInject'} = "FALSE";
+	}
+	else
+	{
+		$data = "$data|ProcessInjection:ON";
+		%envs{'noInject'} = "TRUE";
+
+		echo "$ret[0]:$value[0] (Process Injection Detection: ON)";
+		echo "";
+		echo "!!!    PROCESS INJECTION MAY BE DETECTED    !!!";
+		echo "!!!        DON'T RUN PWDUMP/LSADUMP         !!!";
+		echo "!!! Check the action key below for behavior !!!";
+		echo "";
+		pause;
+		
+		if($ret[1] == "00000000") { echo "$ret[1]:$value[1] (Process Injection Action: ALLOWED)"; }
+		if($ret[1] == "00000001") { echo "$ret[1]:$value[1] (Process Injection Action: ASK USER)"; }
+		if($ret[1] == "00000002") { echo "$ret[1]:$value[1] (Process Injection Action: AUTO-BLOCK)"; }
+		if($ret[2] == "00000000") { echo "$ret[2]:$value[2] (Injected Process Logging: OFF)"; }
+		if($ret[2] == "00000001")
+		{
+			echo "$ret[2]:$value[2] (Injected Process Logging: ON)";
+			$logging = true;
+		}
+		if($ret[3] == "00000000") { echo "$ret[3]:$value[3] (Quarantine Injected Process: OFF)"; }
+		if($ret[3] == "00000001") { echo "$ret[3]:$value[3] (Quarantine Injected Process: ON)"; }
+
+		$data = "$data|ProcessInjectionAction:$ret[1]";
+		$data = "$data|ProcessInjectionLogging:$ret[2]";
+		$data = "$data|ProcessInjectionQuarantine:$ret[3]";
+
+	}
+}
+
+
+# PROCESS HIDING
+undef($ret);
+undef($value);
+echo "";
+echo "";
+echo "+++++++++++++++++++";
+echo "Process Hiding";
+echo "+++++++++++++++++++";
+$key = "$reg_base\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0003";
+$value[0] = "bEnabled";
+$value[1] = "action";
+$value[2] = "bLog";
+$value[3] = "Timeout";
+#$value[4] = "";
+if(reg_query($key, $value, $ret, true))
+{
+	if($ret[0] == "00000000")
+	{
+		echo "$ret[0]:$value[0] (Process Hiding Detection: OFF)";
+		$data = "$data|ProcessHiding:OFF";
+		%envs{'noHide'} = "FALSE";
+	}
+	else
+	{
+		echo "$ret[0]:$value[0] (Process Hiding Detection: ON)";
+		echo "";
+		echo "!!!     PROCESS HIDING MAY BE DETECTED      !!!";
+		echo "!!!           DON'T PROCESS HIDE            !!!";
+		echo "!!! Check the action key below for behavior !!!";
+		echo "";
+		pause;
+
+		if($ret[1] == "00000000") { echo "$ret[1]:$value[1] (Process Hiding Action: ALLOWED)"; }
+		if($ret[1] == "00000001") { echo "$ret[1]:$value[1] (Process Hiding Action: ASK USER)"; }
+		if($ret[1] == "00000003") { echo "$ret[1]:$value[1] (Process Hiding Action: TERMINATE PROCESS)"; }
+		if($ret[2] == "00000000") { echo "$ret[2]:$value[2] (Process Hiding Logging: OFF)"; }
+		if($ret[2] == "00000001")
+		{
+			echo "$ret[2]:$value[2] (Process Hiding Logging: ON)";
+			$logging = true;
+		}
+		echo "$ret[3]:$value[3] - Minutes (in hex) between scans for hidden processes";
+		$data = "$data|ProcessHidingAction:$ret[1]";
+		$data = "$data|ProcessHidingLogging:$ret[2]";
+		$data = "$data|ProcessHidingQuarantine:$ret[3]";
+	}
+}
+
+
+# TRUSTED APPLICATIONS
+undef($ret);
+undef($value);
+echo "";
+echo "";
+echo "+++++++++++++++++++";
+echo "Trusted Applications";
+echo "+++++++++++++++++++";
+echo "Enabled  Triggers ImagePath";
+echo "-------- -------- ---------";
+$value[0] = "bEnabled";
+$value[1] = "sImagePath";
+$value[2] = "nHost";
+$value[3] = "nPort";
+ifnot($version == 7) { $value[4] = "nTriggers"; }
+$i = 0;
+$key = "$reg_base\\profiles\\procmon\\settings\\def\\aitems\\";
+zero_extend($i, $ret);
+int $trigger = 0x0;
+while(reg_query("$key$ret", $value, $ret, false))
+{
+	if($version == 7)  { echo "$ret[0]:xxxxxxxx:$ret[1]"; }
+	else
+	{
+		echo "$ret[0]:$ret[4]:$ret[1]";
+
+		@hex on;
+		int $trigger2 = <int>$ret[4];
+		$trigger = $trigger2;
+
+		# currently, thinks nTriggers is decimal.  luckily it doesn't make a difference.  need to write hex->dec converter
+		# 0x20
+		bool $trig_reg = false;
+		# 0x10
+		bool $trig_app = false;
+		# 0x02
+		bool $trig_net = false;
+		# 0x01
+		bool $trig_file = false;
+		if($trigger == 33) { $trig_reg=true; $trig_app=true; $trig_net=true; $trig_file=true; }
+		if($trigger == 32) { $trig_reg=true; $trig_app=true; $trig_net=true; }
+		if($trigger == 31) { $trig_reg=true; $trig_app=true; $trig_file=true; }
+		if($trigger == 30) { $trig_reg=true; $trig_app=true; }
+		if($trigger == 23) { $trig_reg=true; $trig_net=true; $trig_file=true; }
+		if($trigger == 22) { $trig_reg=true; $trig_net=true; }
+		if($trigger == 21) { $trig_reg=true; $trig_file=true; }
+		if($trigger == 20) { $trig_reg=true; }
+		if($trigger == 13) { $trig_app=true; $trig_net=true; $trig_file=true; }
+		if($trigger == 12) { $trig_app=true; $trig_net=true; }
+		if($trigger == 11) { $trig_app=true; $trig_file=true; }
+		if($trigger == 10) { $trig_app=true; }
+		if($trigger == 3) { $trig_net=true; $trig_file=true; }
+		if($trigger == 2) { $trig_net=true; }
+		if($trigger == 1) { $trig_file=true; }
+
+		if($trig_reg) { echo "\tTrigger:0x20:Do not control registry access"; }
+		if($trig_app) { echo "\tTrigger:0x10:Do not controll application activity !!!"; }
+		if($trig_net) { echo "\tTrigger:0x02:Do not scan network traffic"; }
+		if($trig_file) { echo "\tTrigger:0x01:Do not scan opened files"; }
+
+		@hex off;
+		#@hex off must come before zero_extend
+	}
+	$i++;
+	zero_extend($i, $ret);
+}
+
+if($logging)
+{
+	echo "";
+	echo "";
+	echo "+++++++++++++++++++";
+	echo "Logging";
+	echo "+++++++++++++++++++";
+	echo "Potential location of Kaspersky logging:";
+	
+	# split to get the part after "%dataroot%\"
+	#string $r = split("\%\\", $report);
+	#$dataroot = "$dataroot\\$r[1]";
+	#echo "\"$dataroot\"";
+	echo "\"$report\"";
+	#echo "";
+	@echo on;
+	#`dir * -path "$dataroot" -max 0 -age 3`;
+	`dir * -path "$report" -max 0 -age 3`;
+	@echo off;
+	
+	echo "";
+	echo "";
+	echo "+++++++++++++++++++";
+	echo "Quarantine";
+	echo "+++++++++++++++++++";
+	echo "Potential location of Kaspersky quarantine directory:";
+	
+	# split to get the part after "%dataroot%\"
+	#$r = split("\%\\", $quarantine);
+	#$dataroot = "$dataroot\\$r[1]";
+	#echo "\"$dataroot\"";
+	echo "\"$quarantine\"";
+	echo "";
+	@echo on;
+	#`dir * -path "$dataroot" -max 0 -age 3`;
+	`dir * -path "$quarantine" -max 0 -age 3`;
+	@echo off;
+}
+
+@metaData.$information = $data;
+writeData(@metaData, %envs);
+
+
+sub zero_extend(IN int $i, OUT string $ret)
+{
+	if($i < 10) { $ret = "000$i"; }
+	else { $ret = "00$i"; }
+}
+
+sub writeData(IN metaData @metaData, IN string %envs)
+{
+	if(writeMetaData(@metaData, %envs)){
+		echo "Wrote meta data to disk";
+	}else{
+		echo "ERROR. could not write meta data to disk. ERROR";
+	}
+	return true;
+}

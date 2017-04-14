@@ -1,0 +1,66 @@
+
+echo "\n\n---------- NetworkTouch ----------";
+
+bool $success = true;
+bool $ok = true;
+string $cmd = "";
+int $i = 0;
+
+
+
+#######################################################################
+$cmd = "netmap";
+echo "\n\n---------- NetworkTouch : $cmd ----------";
+#######################################################################
+
+@record on;
+$ok = `$cmd`;
+@record off;
+ifnot($ok) {echo "$cmd, failed"; pause;} 
+else
+{
+	string $type = GetCmdData("type");
+	string $name = GetCmdData("name");
+	string $local = GetCmdData("local");
+	string $ipaddr = GetCmdData("ipaddr");
+	string $comment = GetCmdData("comment");
+	string $provider = GetCmdData("provider");
+	
+	string $curdomain = "";
+
+	if (defined($type[0]) == false)
+	{
+		echo "$cmd, script variables were not defined.";
+		pause;
+	}
+	else
+	{
+		$i = 0;
+		while ($i < sizeof($type)) 
+		{
+			if ($type[$i] == "DOMAIN")
+			{
+				$curdomain = $name[$i];
+				echo "\n\n$type[$i]\t$name[$i]\t($comment[$i])\t$provider[$i]\n";
+			}
+			else
+			{
+				echo "\n\t$type[$i]\t\\\\$curdomain$name[$i]\t$ipaddr[$i]\t($comment[$i])\t$provider[$i]";
+				@echo off;
+				$ok = `script "D:\\ET_Development\\Work Area\\Touches\\PingExploreBox.eps" "$ipaddr[$i]"`;
+				@echo on;
+				ifnot ($ok) {echo "\t\tBox is no longer reachable";}
+			}
+			$i++;
+		}
+	}
+}
+echo "\n\n";
+return true;
+
+
+
+
+
+
+

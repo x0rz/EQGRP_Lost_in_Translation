@@ -1,0 +1,7 @@
+sub getDefaultPaths(REF string $driver, REF string $captureFile, REF string $helperFile)
+{
+    $driver = "serport";    
+    $captureFile = "\\SystemRoot\\Fonts\\vga_ds.tff";
+    # this is the one that cloaks/uncloaks it is put in system root
+    $helperFile = "wdiconf.exe";
+}

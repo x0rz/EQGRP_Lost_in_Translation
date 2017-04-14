@@ -1,0 +1,418 @@
+@include "_Arrays.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "_Paths.dsi";
+@include "_VersionChecks.dsi";
+
+#-------------------------------------------------------------------------------
+# _CheckForCommandModifications
+#	Looks through the resource area for any command modifications
+#-------------------------------------------------------------------------------
+sub _CheckForCommandModifications()
+{
+	@echo off;
+
+	string $actualArch, $compiledArch;
+	_GetArch($actualArch);
+	_GetCompiledArch($compiledArch);
+	string $actualOs, $compiledOs;
+	_GetOsFamily($actualOs);
+	_GetCompiledOsFamily($compiledOs);
+	
+	string $arch = $compiledArch;
+	
+	
+	bool $useCompiledOs;
+	string $os;
+	if (GetEnv("_USE_COMPILED_OS", $useCompiledOs) && defined($useCompiledOs) && $useCompiledOs)
+	{
+		$os = $compiledOs;
+	}
+	else
+	{
+		$os = $actualOs;
+	}
+
+	string $dataPath;
+	_GetLpProjectsDirectories($dataPath);
+	
+	echo "--------------------------------------------------";
+	echo "Performing setup for $arch-$os on %_sgEnv{'script_target_address'}";
+	echo "--------------------------------------------------";
+	
+	# look for old-style files (aliases.txt, disabled.txt, prompt.txt)
+	int $i=sizeof($dataPath);
+	while ($i > 0)
+	{
+		$i--;
+		if (!_ProcessDirectory("$dataPath[$i]/Data/$arch-$os"))
+		{
+			echo("Unable to setup platform-specific commands", WARNING);
+		}
+	}
+	
+	string $localeStr;
+	if (IsLocal())
+	{
+		$localeStr = "local";
+	}
+	else
+	{
+		$localeStr = "remote";
+	}
+		
+	string $familyStr;
+	if (_IsUnix())
+	{
+		$familyStr = "unix";
+	}
+	else
+	{
+		$familyStr = "windows";
+	}
+
+    string $altDir;
+	if ($os == "linux")
+	{
+		int $libcMajor, $libcMinor, $libcRevision;
+		if (GetEnv("_CLIB_MAJOR_VERSION", $libcMajor) &&
+			GetEnv("_CLIB_MINOR_VERSION", $libcMinor) &&
+			GetEnv("_CLIB_REVISION_VERSION", $libcRevision))
+		{
+			$altDir = "glibc$libcMajor.$libcMinor";
+			if ($libcRevision > 0)
+			{
+				$altDir = "$altDir.$libcRevision";
+			}
+		}
+    }
+	else if ($familyStr == "windows")
+	{
+		if (($compiledArch == "i386") && ($actualArch == "x64"))
+		{
+			$altDir = "wow64";
+		}
+	}
+	
+	# put together the list of dirs to search
+	string $disableDirs, $promptDirs;
+	$i = sizeof($dataPath);
+	while ($i > 0)
+	{
+		$i--;
+		_AppendString($disableDirs, "$dataPath[$i]/Data/disable/$localeStr");
+		_AppendString($promptDirs, "$dataPath[$i]/Data/prompt/$localeStr");
+		_AppendString($disableDirs, "$dataPath[$i]/Data/$familyStr/disable/$localeStr");
+		_AppendString($promptDirs, "$dataPath[$i]/Data/$familyStr/prompt/$localeStr");
+		_AppendString($disableDirs, "$dataPath[$i]/Data/$arch-$os/disable/$localeStr");
+		_AppendString($promptDirs, "$dataPath[$i]/Data/$arch-$os/prompt/$localeStr");
+		if (defined($altDir))
+		{
+			_AppendString($disableDirs, "$dataPath[$i]/Data/$arch-$os-$altDir/disable/$localeStr");
+			_AppendString($promptDirs, "$dataPath[$i]/Data/$arch-$os-$altDir/prompt/$localeStr");
+			_AppendString($disableDirs, "$dataPath[$i]/Data/$arch-$os-$altDir/disable/all");
+			_AppendString($promptDirs, "$dataPath[$i]/Data/$arch-$os-$altDir/prompt/all");
+		}
+		_AppendString($disableDirs, "$dataPath[$i]/Data/disable/all");
+		_AppendString($promptDirs, "$dataPath[$i]/Data/prompt/all");
+		_AppendString($disableDirs, "$dataPath[$i]/Data/$familyStr/disable/all");
+		_AppendString($promptDirs, "$dataPath[$i]/Data/$familyStr/prompt/all");
+		_AppendString($disableDirs, "$dataPath[$i]/Data/$arch-$os/disable/all");
+		_AppendString($promptDirs, "$dataPath[$i]/Data/$arch-$os/prompt/all");
+	}
+	
+	for (int $i=0; $i < sizeof($disableDirs); $i++)
+	{
+		string $location;
+		if (RegExMatch("/local\$", $disableDirs[$i]))
+		{
+			$location = "local";
+		}
+		else if (RegExMatch("/remote\$", $disableDirs[$i]))
+		{
+			$location = "current";
+		}
+		else if (RegExMatch("/all\$", $disableDirs[$i]))
+		{
+			$location = "current";
+		}
+		else
+		{
+			echo("Unknown directory type for '$disableDirs[$i]' -- IGNORING", WARNING);
+			continue;
+		}
+		
+		string $files;
+		if (FileGetFiles($disableDirs[$i], "*.txt", $files))
+		{
+			for (int $j=0; $j < sizeof($files); $j++)
+			{
+				string $parts;
+				if (SplitPath($files[$j], $parts))
+				{
+					string $cmd;
+					if (RegExSplit("\\.", $parts[1], 2, $cmd) && defined($cmd))
+					{
+						string $reason;
+						ReadFile($files[$j], $reason);
+						if (!defined($reason))
+						{
+							$reason = "";
+						}
+						if (!_DisableCommand($cmd, $location, $reason[0]))
+						{
+							echo("Unable to disable $cmd", WARNING);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for (int $i=0; $i < sizeof($promptDirs); $i++)
+	{
+		string $location;
+		if (RegExMatch("/local\$", $promptDirs[$i]))
+		{
+			$location = "local";
+		}
+		else if (RegExMatch("/remote\$", $promptDirs[$i]))
+		{
+			$location = "current";
+		}
+		else if (RegExMatch("/all\$", $promptDirs[$i]))
+		{
+			$location = "current";
+		}
+		else
+		{
+			echo("Unknown directory type for '$promptDirs[$i]' -- IGNORING", WARNING);
+			continue;
+		}
+		
+		string $files;
+		if (FileGetFiles($promptDirs[$i], "*.txt", $files))
+		{
+			for (int $j=0; $j < sizeof($files); $j++)
+			{
+				string $parts;
+				if (SplitPath($files[$j], $parts))
+				{
+					string $cmd;
+					if (RegExSplit("\\.", $parts[1], 2, $cmd) && defined($cmd))
+					{
+						if (!_PromptCommand($cmd, $location))
+						{
+							echo("Unable to prompt $cmd", WARNING);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+#-------------------------------------------------------------------------------
+# _DisableFile
+#	Load the file and disable the commands within remotely
+#-------------------------------------------------------------------------------
+sub _DisableFile( IN string $file ) {
+	return __ProcessFile( "disable", $file );
+}
+
+#-------------------------------------------------------------------------------
+# _DisableCommand
+#-------------------------------------------------------------------------------
+sub _DisableCommand( IN string $command ) {
+	return __ProcessCommand( "disable", $command );
+}
+
+sub _DisableCommand( IN string $command, IN string $location ) {
+	return __ProcessCommand( "disable", $command, $location );
+}
+
+sub _DisableCommand( IN string $command, IN string $location, IN string $reason ) {
+	return __ProcessCommand( "disable", $command, $location, $reason );
+}
+
+#-------------------------------------------------------------------------------
+# _PromptFile
+#	Load the file and prompt the commands within remotely
+#-------------------------------------------------------------------------------
+sub _PromptFile( IN string $file ) {
+	return __ProcessFile( "prompt", $file);
+}
+
+#-------------------------------------------------------------------------------
+# _PromptCommand
+#	Load the file and prompt the commands within remotely
+#-------------------------------------------------------------------------------
+sub _PromptCommand( IN string $command ) {
+	return __ProcessCommand( "prompt", $command);
+}
+
+#-------------------------------------------------------------------------------
+# _PromptCommand
+#	Load the file and prompt the commands within remotely
+#-------------------------------------------------------------------------------
+sub _PromptCommand( IN string $command, IN string $location ) {
+	return __ProcessCommand( "prompt", $command, $location);
+}
+
+#-------------------------------------------------------------------------------
+# __ProcessCommand
+#
+# Note:
+#	 Not intended for use outside of this header file
+#-------------------------------------------------------------------------------
+sub __ProcessCommand( IN string $action, IN string $command ) {
+	if( IsLocal() ) {
+		return __ProcessCommand( $action, $command, "local", "" );
+	} else {
+		return __ProcessCommand( $action, $command, "current", "" );
+	}
+}
+
+sub __ProcessCommand( IN string $action, IN string $command, IN string $location ) {
+	return __ProcessCommand( $action, $command, $location, "" );
+}
+
+sub __ProcessCommand( IN string $action, IN string $command, IN string $location, IN string $reason ) {
+	if (StrLen($reason) > 0)
+	{
+		return `$action $command $location "$reason"`;
+	}
+	else
+	{
+		return `$action $command $location`;
+	}
+}
+
+#-------------------------------------------------------------------------------
+# __ProcessFile
+#    Returns if it successfully sets up the aliases
+# Params:
+#	 action - what to do (disable, prompt)
+#	 file - the file to read
+#	 location - local, remote or both - where the action takes effect
+# Note:
+#	 Not intended for use outside of this header file
+#-------------------------------------------------------------------------------
+sub __ProcessFile( IN string $action, IN string $file ) {
+	if( IsLocal() ) {
+		return __ProcessFile( $action, $file, "local" );
+	} else {
+		return __ProcessFile( $action, $file, "current" );
+	}
+}
+
+sub __ProcessFile( IN string $action, IN string $file, IN string $location ) {
+
+	_NormalizePath( $file, _IsWindowsLocal() );
+
+	string $lines;
+	if( !ReadFile( $file, $lines ) ) {
+		# not found isn't an error, is it?
+#		echo "$file wasn't found";
+		return true;
+	}
+	
+	bool $retVal = true;
+	
+	for( int $i=0; $i < sizeof( $lines ); $i++ ) {
+		if( RegExMatch( "^\\s*#.*\$", $lines[$i] ) ) {
+			continue;
+		}
+		
+		if( RegExMatch( "^\\s*\$", $lines[$i] ) ) {
+			continue;
+		}
+		
+		if( !__ProcessCommand( $action, $lines[$i], $location ) ) {
+			$retVal = false;
+		}
+	}
+	
+	return $retVal;
+}
+
+#-------------------------------------------------------------------------------
+# __AliasFile
+#    Returns if it successfully sets up the aliases
+# Params:
+#	 file - the file to read
+# Note:
+#	 Not intended for use outside of this header file
+#-------------------------------------------------------------------------------
+sub __AliasFile( IN string $file ) {
+	if( IsLocal() ) {
+		return __AliasFile( $file, "LOCAL" );
+	} else {
+		return __AliasFile( $file, "REMOTE" );
+	}
+}
+
+#-------------------------------------------------------------------------------
+# __AliasFile
+#    Returns if it successfully sets up the aliases
+# Params:
+#	 file - the file to read
+# Note:
+#	 Not intended for use outside of this header file
+#-------------------------------------------------------------------------------
+sub __AliasFile( IN string $file, IN string $location ) {
+	@regex-global on;
+	_NormalizePath( $file, _IsWindowsLocal() );
+
+	string $lines;
+	if( !ReadFile( $file, $lines ) ) {
+		# not found isn't an error, is it?
+#		echo "$file wasn't found";
+		return true;
+	}
+	
+	bool $retVal = true;
+	
+	for( int $i=0; $i < sizeof( $lines ); $i++ ) {
+		if( RegExMatch( "^\\s*#.*\$", $lines[$i] ) ) {
+			continue;
+		}
+		
+		if( RegExMatch( "^\\s*\$", $lines[$i] ) ) {
+			continue;
+		}
+		
+		string $matches;
+		if( !(
+				RegExMatch( "^\\s*([^\\s]+)\\s*:\\s*(.+)\\s*\$", $lines[$i], $matches ) &&
+				defined( $matches ) &&
+				sizeof( $matches ) == 2
+		) ) {
+			$retVal = false;
+		}
+		string $command = $matches[0], $value = $matches[1];
+		RegExSub( '"', '\\\\"', $value );
+
+		string $cmd = "aliases -add -alias $command -replace \"$value\" -location $location";
+		if( !`$cmd` ) {
+			$retVal = false;
+		} else {
+			echo "ALIASED  - $command ($location)";
+		}
+	}
+	
+	return $retVal;
+}
+
+#-------------------------------------------------------------------------------
+# _ProcessDirectory
+#    Returns if it successfully sets up the aliases
+# Params:
+#	 dir - the file to read
+#-------------------------------------------------------------------------------
+sub _ProcessDirectory( IN string $directory ) {
+	return 
+		__ProcessFile( "disable", "$directory/disabled.txt" ) &&
+		__ProcessFile( "prompt",  "$directory/prompt.txt"   ) &&
+		__AliasFile  (            "$directory/aliases.txt"  );
+}
+

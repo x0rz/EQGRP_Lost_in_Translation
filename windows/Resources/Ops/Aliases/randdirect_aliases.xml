@@ -1,0 +1,109 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>randdirect</Name>
+		<ReplaceBeforeArgs>python windows\randdirect.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: randdirect [options]
+Options:
+   [-tcp] (group=listentype)
+      Use TCP/IP as the redirection protocol
+   [-udp] (group=listentype)
+      Use UDP/IP as the redirection protocol
+   [-lplisten [port] [bindAddr]] (group=listenLocation)
+      Listen for new connections on the LP-side (default bind=0.0.0.0).
+	  NOTE: You may choose to exclude [port], which will result in a random port being used
+   [-implantlisten [port] [bindAddr]] (group=listenLocation)
+      Listen for new connections on the Implant-side (default bind=0.0.0.0).
+	  NOTE: You may choose to exclude [port], which will result in a random port being used
+   [-portsharing [clientSrcPort] [clientSrcAddr]]
+   [-target [addr] [destPort] [srcAddr] [srcPort]]
+      The address / port to which data should be forwarded.
+      NOTE: Data is always forwarded to the side opposite where the listening port is.
+	  NOTE: You may choose to exclude [destPort], which will result in a straight through tunnel
+   [-connections [maxConnections]]
+      Sets the maximum number of concurrent connections allowed.
+          (Default=0 / 0=Unlimited)
+   [-limitconnections [addr] [mask]]
+      Limit connections to listen address to a specified IP range.
+   [-sendnotify]
+      Send notification of target connection success / failure to
+      connecting sockets.
+   [-packetsize [bytes]]
+      Sets the maximum size (in bytes) for recv/send calls.  This is of
+      particular interest for datagram (ie, UDP) redirection (default=8192).
+</Help>
+<Options>
+    <Option>tcp</Option>
+    <Option>udp</Option>
+    <Option>value</Option>
+    <Option>lplisten</Option>
+    <Option>implantlisten</Option>
+    <Option>portsharing</Option>
+    <Option>target</Option>
+    <Option>connections</Option>
+    <Option>limitconnections</Option>
+    <Option>sendnotify</Option>
+    <Option>packetsize</Option>
+</Options>
+  </Alias>
+    <Alias>
+		<Name>imr</Name>
+		<ReplaceBeforeArgs>python windows\randdirect.py -args "imr </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: imr [target_ip] [remote_port] [dst_port]
+Resulting command:
+	redirect -tcp -implantlisten [remote_port] -target [target_ip] [dst_port]
+Usage 2: imr [target_ip] [port]
+Resulting command:
+	redirect -tcp -implantlisten [port] -target [target_ip] [port]
+Usage 3: imr [remote_port] [dst_port]
+Resulting command:
+    redirect -tcp -implantlisten [remote_port] -target {127.0.0.1} [dst_port]
+Usage 4: imr [target_ip]
+Resulting command:
+    redirect -tcp -implantlisten {random_port1} -target [target_ip] {random_port1}
+Usage 5: imr [port]
+Resulting command:
+    redirect -tcp -implantlisten [port] -target {127.0.0.1} [port]
+Usage 6: imr
+Resulting command:
+    redirect -tcp -implantlisten {random_port1} -target {127.0.0.1} {random_port1}
+NOTE: You may put "tcp" or "udp" at any point in the options list to change the protocol
+</Help>
+  </Alias>
+    <Alias>
+		<Name>lpr</Name>
+		<ReplaceBeforeArgs>python windows\randdirect.py -args "lpr </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: lpr [target_ip] [local_port] [dst_port]
+Resulting command:
+	redirect -tcp -lplisten [local_port] -target [target_ip] [dst_port]
+Usage 2: lpr [target_ip] [port]
+Resulting command:
+	redirect -tcp -lplisten {random_port1} -target [target_ip] [port]
+Usage 3: lpr [target_ip]
+Resulting command:
+	redirect -tcp -lplisten {random_port1} -target [target_ip] {random_port1}
+NOTE: You may put "tcp" or "udp" at any point in the options list to change the protocol
+</Help>
+  </Alias>
+      <Alias>
+		<Name>hittun</Name>
+		<ReplaceBeforeArgs>python windows\randdirect.py -args "hittun </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: hittun [target_ip] [port]
+Resulting commands:
+    redirect -udp -lplisten [port] -target [target_ip] [port] -packetsize 32000
+    redirect -udp -implantlisten [port] -target {192.168.254.71} [port] -packetsize 32000
+Usage 2: hittun [target_ip]
+Resulting commands:
+    redirect -udp -lplisten {random_port1} -target [target_ip] {random_port1} -packetsize 32000
+    redirect -udp -implantlisten {random_port1} -target {192.168.254.71} {random_port1} -packetsize 32000
+</Help>
+  </Alias>
+</Aliases>

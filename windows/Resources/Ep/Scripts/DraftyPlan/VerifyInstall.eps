@@ -1,0 +1,51 @@
+#--------------------------------------------------------
+# File: VerifyInstall.eps
+#
+# Wrapper script for verify install of DraftyPlan tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use module calls
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_FileExists.epm";
+@include "_GetSystemPaths.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = "memss.exe";
+
+# get the system directory
+string $root;
+string $sys;
+ifnot (_GetSystemPaths($root, $sys)) {
+    echo "Unable to determine root directory\n";
+    return false;
+}
+string $sysDir = "$root\\$sys";
+
+bool $valid = true;
+
+ifnot (_DriverVerifyInstall($driver, 2, 1)) {
+    return false;
+}
+
+#---------------------
+# perform extra checks
+#---------------------
+echo "Checking for $exeName";
+if (_FileExists($exeName, $sysDir)) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $valid = false;
+}
+
+# we're done...
+return $valid;

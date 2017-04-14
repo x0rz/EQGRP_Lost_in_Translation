@@ -1,0 +1,39 @@
+################################################################
+# drive info
+################################################################
+
+bool $ok;
+int $i = 0;
+@record on;
+string $cmd = "listdrives";
+$ok = `$cmd`;
+@record off;
+if ( $ok ) {
+	string $drive_letters = GetCmdData("drive");
+	bool $is_unknown = GetCmdData("is_drive_unknown");
+	bool $is_noroot = GetCmdData("is_drive_noroot");
+	bool $is_removable = GetCmdData("is_drive_removable");
+	bool $is_fixed = GetCmdData("is_drive_fixed");
+	bool $is_remote = GetCmdData("is_drive_remote");
+	bool $is_cdrom = GetCmdData("is_drive_cdrom");
+	bool $is_ramdisk = GetCmdData("is_drive_ramdisk");
+	$i = 0;
+	while ($i < sizeof($drive_letters)) {
+		string $current_drive = $drive_letters[$i];
+		if ( $is_unknown[$i] == true ) {
+#			echo "Unknown drive: $current_drive  ";
+		}
+		if ( $is_fixed[$i] == true ) {
+			`diskspace $current_drive `;
+		}
+		$i++;
+	}
+} else {
+	echo "unable to enumerate drives";
+}
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+echo "If this is a new box, check the system drive free space";
+echo "to be sure you have enough free space to install a L4.";
+echo "Also take note of the memory usage.";
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+pause;

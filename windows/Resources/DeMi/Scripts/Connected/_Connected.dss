@@ -1,0 +1,17 @@
+@include "_CommandModification.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "_VersionChecks.dsi";
+
+@echo off;
+@quiet off;
+
+if (_IsWindows8() && _IsOs64Bit())
+{
+	_DisableCommand("Kisu_Install");
+	_DisableCommand("Kisu_Uninstall");
+	_DisableCommand("Kisu_Survey");
+	_DisableCommand("Kisu_Upgrade");
+}
+
+return true;
+

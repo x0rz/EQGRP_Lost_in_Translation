@@ -1,0 +1,21 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>copyget</Name>
+		<ReplaceBeforeArgs>script windows/copyget.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>copyget &lt;file_to_get&gt;</Help>
+		<Help>  Does a copy/get, copying the file to the temporary directory</Help>
+		<Help>  and deleting it afterwards</Help>
+		<Help></Help>
+		<Help>Options:</Help>
+		<Help>  [-temppath &lt;pathname&gt;]</Help>
+		<Help>     Temporary directory to copy file into</Help>
+		<Help>  [-tempfile &lt;filename&gt;]</Help>
+		<Help>     Temporary file name</Help>
+		<Options>
+			<Option>temppath</Option>
+			<Option>tempfile</Option>
+		</Options>
+	</Alias>
+</Aliases>

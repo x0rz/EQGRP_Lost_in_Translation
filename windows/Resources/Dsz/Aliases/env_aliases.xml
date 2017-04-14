@@ -1,0 +1,31 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>debug</Name>
+		<ReplaceBeforeArgs>lpsetenv -name _DEBUG -value</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+		<Help>Usage: debug &lt;on|off&gt;</Help>
+		<Help>    Used to turn LP debugging on and off</Help>
+		<Options/>
+	</Alias>
+
+	<Alias>
+		<Name>debugload</Name>
+		<ReplaceBeforeArgs>lpsetenv -name _DEBUGLOAD -value</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+		<Help>Usage: debugload &lt;on|off&gt;</Help>
+		<Help>    Used to turn debug module loading on and off</Help>
+		<Options/>
+	</Alias>
+	
+	<Alias>
+		<Name>usefile</Name>
+		<ReplaceBeforeArgs>lpsetenv -name _USEFILE -value</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+		<Help>Usage: usefile &lt;on|off&gt;</Help>
+		<Help>    Used to enable or disable loading implant modules from memory</Help>
+		<Options/>
+	</Alias>
+</Aliases>	
+		

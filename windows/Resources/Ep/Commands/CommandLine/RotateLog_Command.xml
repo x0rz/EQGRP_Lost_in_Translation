@@ -1,0 +1,22 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='24' name='RotateLog'>
+
+    <Help>Closes the current EP log and opens a new one.</Help>
+
+    <Input>
+      <Option name='prefix' optional='true'>
+	<Argument name='userPrefix' data='prefix'/>
+	<Help>The string to be used as the new log prefix</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='prefix' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

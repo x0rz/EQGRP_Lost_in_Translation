@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<t:config id="19e475ba095c90e14ea158179b5b284d6e63bba3"
+          name="Domaintouch"
+          version="1.1.1"
+          configversion="1.1.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+          
+  <t:inputparameters>
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds)"
+                 type="S16"
+                 default="60"/>
+    <t:parameter name="TargetIp"
+                 description="Domain Controller's IP address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by the netlogon service"
+                 type="TcpPort"
+                 binding="//service[name='smb']/port"
+                 default="445"/>
+    
+    <t:paramchoice name="CredentialType" 
+                   description="Password, password hash, ticket, etc"
+                   default="Ticket">
+
+        <t:paramgroup name="UnicodeCreds" 
+                      description="Unicode encoded credentials">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Unicode password entered as hex bytes (in Unicode)"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="MachineHash" 
+                      description="Machine credentials, obtained from LSADump">
+            <t:parameter name="Username"
+                         description="Machine name, including the '$' character, in UNICODE"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Hash of machine password entered as HEX BYTES.  This can be obtained from lsadump"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="PasswordHash" 
+                      description="Password hash">
+            <t:parameter name="Username"
+                         description="Username in Unicode"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="User password entered as HEX BYTES. This can be obtained from lsadump"
+                         type="UString"/>
+        </t:paramgroup>
+
+
+
+    </t:paramchoice>
+  </t:inputparameters>
+  
+  <t:outputparameters>
+      <t:parameter name="CredentialType"
+                   description="CredentialType used by this plugin"
+                   type="String"/>
+      <t:parameter name="Username"
+                   description="Username used by this plugin"
+                   type="UString"/>
+      <t:parameter name="Credential"
+                   description="Credential used by this plugin"
+                   type="UString"/>
+      <t:parameter name="DomainNetbios"
+                   description="Target domain NetBIOS name (in Unicode)"
+                   type="UString"/>
+      <t:parameter name="DomainDns"
+                   description="Target domain DNS name (in Unicode)"
+                   type="UString"/>
+      <t:parameter name="DomainSid"
+                   description="Target domain SID"
+                   type="String"/>
+      <t:parameter name="DomainGuid"
+                   description="Target domain GUID"
+                   type="String"/>
+  </t:outputparameters>
+  
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='smb']/port"
+              closeoncompletion="true"/>
+  </t:redirection>
+
+  <t:logic>
+      <t:or>
+        <t:os family="windows" name="Windows 2000"/>
+        <t:os family="windows" name="Windows XP"/>
+        <t:os family="windows" name="Windows 2003"/>
+        <t:os family="windows" name="Windows 2003 R2"/>
+        <t:os family="windows" name="Windows Vista"/>
+        <t:os family="windows" name="Windows 2008"/>
+        <t:os family="windows" name="Windows 7"/>
+        <t:os family="windows" name="Windows 2008 R2"/>
+      </t:or>
+  </t:logic>
+</t:config>

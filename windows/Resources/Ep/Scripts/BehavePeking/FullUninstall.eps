@@ -1,0 +1,30 @@
+#--------------------------------------------------------
+# File: FullUninstall.eps
+#
+# Wrapper script for Uninstall of BehavePeking tools
+#
+# Modifications:
+#  29 Aug 2005	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+bool $valid = true;
+
+ifnot (_DriverUninstall($driver)) {
+    $valid = false;
+}
+
+ifnot (`dp_uninstall`) {
+    $valid = false;
+}
+
+return $valid;

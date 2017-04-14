@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31327'>
+
+  <Command id='16' name='remoteLocalTime'>
+
+    <Help>Returns the local time on the remote computer.</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

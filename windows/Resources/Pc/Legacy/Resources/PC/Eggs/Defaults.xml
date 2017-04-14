@@ -1,0 +1,12 @@
+<?xml version='1.0' ?>
+
+<EggDefaults usedefault='false'>
+
+	<Egg>Load from memory</Egg>
+	<Egg>Load from file</Egg>
+	<Egg>Load from resource (memory)</Egg>
+	<Egg>Load from resource (file)</Egg>
+	<Egg>Load from file (PC 1.3)</Egg>
+	<Egg>Load from file (PC 1.2)</Egg>
+
+</EggDefaults>

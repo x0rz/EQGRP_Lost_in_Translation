@@ -1,0 +1,290 @@
+@echo off;
+@include "TestIncludes.epm";
+
+bool $rtn = true;
+
+if ("YES" == GetEnv("Target_Win9x")) {
+	# This command isn't available in 9x environment
+	return true;
+}
+
+echo "---------------------------------------------------------------------------";
+echo "PWDUMP Testing";
+echo "---------------------------------------------------------------------------";
+TestSuccess("pwdump ?", true, $rtn);
+TestSuccess("pwdump", true, $rtn);
+
+TestFailure("pwdump -foo", true, $rtn);
+TestFailure("pwdump foo", true, $rtn);
+
+
+
+int		$TestUsers	= 1000;
+string	$BaseUid	= "XxTextUser";
+int		$UserCntBase= 0;
+int		$UserCntTot = 0;
+
+echo "\n";
+echo "---------------------------------------------------------------------------";
+echo "PWDUMP - Basic test with existing users";
+echo "---------------------------------------------------------------------------";
+ifnot(TestScriptVariables($UserCntBase))   /* Basic user test */
+{
+	$rtn = false;
+}
+else
+{
+	@record on;
+	if (`getnetaddr`)
+	{
+		@record off;
+		string $localAddr = GetCmdData("local_address");
+		string $remoteAddr = GetCmdData("remote_address");
+		ifnot($localAddr == $remoteAddr)
+		{
+			#
+			# Implant running on remote target okay to add extra users
+			#
+			echo "\n";
+			echo "---------------------------------------------------------------------------";
+			echo "PWDUMP adding $TestUsers test users to remote target($remoteAddr).";
+			echo "PWDUMP This will take a few minutes to complete.";
+			echo "---------------------------------------------------------------------------";
+			ifnot(CreateTestUsers($BaseUid, $TestUsers))
+			{
+				$rtn = false; 
+				echo "    FAILED - CreateTestUsers failed to add users to target($remoteAddr)";
+				pause;
+			}
+			else
+			{
+				echo "---------------------------------------------------------------------------";
+				echo "PWDUMP - Testing remote target($remoteAddr) after adding $TestUsers users";
+				echo "---------------------------------------------------------------------------";
+				ifnot(TestScriptVariables($UserCntTot))
+				{
+					$rtn = false;
+				}
+				else
+				{
+					int $Expectedusers = $UserCntBase;
+					$Expectedusers += $TestUsers;
+					if ($UserCntTot != $Expectedusers)
+					{
+						$rtn = false;
+						echo "    FAILED - Number of users($UserCntTot) less than extected($Expectedusers).";
+						pause;
+					}
+
+				}
+				echo "\n";
+				echo "---------------------------------------------------------------------------";
+				echo "PWDUMP removing $TestUsers test users from remote target($remoteAddr)";
+				echo "PWDUMP This will take a few minutes to complete.";
+				echo "---------------------------------------------------------------------------";
+				ifnot(DeleteTestUsers())
+				{
+					$rtn = false; 
+					echo "    FAILED - DeleteTestUsers failed to delete the testusers from target box";
+					pause;
+				}
+			}
+		}
+		else
+		{
+			echo "\n";
+			echo "---------------------------------------------------------------------------";
+			echo "PWDUMP - CreateTestUsers not run because we are local";
+			echo "---------------------------------------------------------------------------";
+		}
+	}
+	else
+	{
+		@record off;
+	}
+}
+return $rtn;
+
+
+
+
+
+
+#--------------------------------------------------------------------------
+# TestScriptVariables
+#	Runs pwdump and tests the script variables.  Returns the User count.
+# 
+# Params:
+#	OUT int $userCnt
+#		Users processed by pwdump
+# 
+#--------------------------------------------------------------------------
+sub TestScriptVariables (OUT int $userCnt)
+{
+	bool $subrtn = true;
+
+	$userCnt = 0;
+
+	echo "PWDUMP Testing SCRIPT VARIABLES";
+	@record on;
+	ifnot (`pwdump`)
+	{
+		@record off;
+		$subrtn = false; 
+		echo "    FAILED - pwdump failed";
+		pause;
+	}
+	else
+	{
+		@record off;
+		string $Username = GetCmdData("Username");
+		int $rid = GetCmdData("rid");
+		string $LanmanHash = GetCmdData("LanmanHash");
+		string $NtHash = GetCmdData("NtHash");
+
+
+		ifnot (defined($Username))
+		{
+			echo "    FAILED - Username not defined";
+			$subrtn = false;
+			pause;
+		}
+
+		ifnot (defined($rid))
+		{
+			echo "    FAILED - rid not defined";
+			$subrtn = false;
+			pause;
+		}
+
+		ifnot (defined($LanmanHash))
+		{
+			echo "    FAILED - LanmanHash not defined";
+			$subrtn = false;
+			pause;
+		}
+
+
+		ifnot(defined($NtHash))
+		{
+			echo "    FAILED - NtHash not defined";
+			$subrtn = false;
+			pause;
+		}
+
+		ifnot($subrtn)
+		{
+			return $subrtn;
+		}
+
+		if ((sizeof($Username) == sizeof($rid)) &&
+			  (sizeof($Username) == sizeof($LanmanHash)) &&
+			  (sizeof($Username) == sizeof($NtHash)) )
+		{
+			$userCnt = sizeof($Username);
+			echo "    PASSED - $userCnt  user test";
+		}
+		else
+		{
+			echo "    FAILED - Script variables are not defined.";
+			$subrtn = false;
+			pause;
+		}
+	}
+	return $subrtn;
+}
+
+
+
+#--------------------------------------------------------------------------
+# CreateTestUsers
+#	Adds new users to the target box
+# 
+# Params:
+#	IN string $BaseUid
+#		Base userid used for creating the accounts
+# 
+#	IN int $users
+#		Number of users to add to target box
+#
+#--------------------------------------------------------------------------
+sub CreateTestUsers (IN string $BaseUid, IN int $users)
+{
+
+	bool $subrtn = true;
+
+	# see if createusers.exe is already there - temporarily
+	#------------------------------------------------------
+    ifnot (`checkfile -name createusers.exe`) 
+	{
+		ifnot (TestSuccess("put createusers.exe -name createusers.exe", true, $subrtn))
+		{
+			echo "Unable to uploaded file createusers.exe";
+			pause;
+			return $subrtn;
+		}
+    }
+
+	# see if addusers.exe is already there - temporarily
+	#---------------------------------------------------
+    ifnot (`checkfile -name addusers.exe`) 
+	{
+		ifnot (TestSuccess("put addusers.exe -name addusers.exe", true, $subrtn))
+		{
+			echo "Unable to uploaded file addusers.exe";
+			pause;
+			return $subrtn;
+		}
+    }
+
+	ifnot (TestSuccess("run -command \"createusers.exe  $BaseUid $users\" -redirect createusers", true, $subrtn))
+	{
+		echo "Unable to run -command createusers.exe xxtestuser $users";
+		pause;
+		return $subrtn;
+	}
+
+
+	ifnot (TestSuccess("run -command \"addusers.exe /c users.txt /p:e\" -redirect addusers", true, $subrtn))
+	{
+		echo "Unable to run -command addusers.exe /c users.txt /p:e";
+		pause;
+		return $subrtn;
+	}
+	
+	return $subrtn;
+}
+
+
+#--------------------------------------------------------------------------
+# DeleteTestUsers
+#	Deletes the new users from the target box
+# 
+# Params:
+#
+#--------------------------------------------------------------------------
+sub DeleteTestUsers ()
+{
+
+	bool $subrtn = true;
+
+	# if users.txt exists then try to remove the users contained within
+	#------------------------------------------------------------------
+    if (`checkfile -name users.txt`) 
+	{
+		ifnot (TestSuccess("run -command \"addusers.exe /e users.txt\" -redirect DeleteTestUsers", true, $subrtn))
+		{
+			echo "Unable to run -command addusers.exe /e users.txt";
+			pause;
+		}
+		`del users.txt`;
+	}
+	else
+	{
+		echo "Unable to find users.txt";
+		pause;
+		$subrtn = false;
+    }
+	
+	return $subrtn;
+}

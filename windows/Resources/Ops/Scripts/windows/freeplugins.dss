@@ -1,0 +1,58 @@
+#--------------------------------------------------------
+# File: freeplugins.dss
+#
+# Description: Free loaded plugins
+#
+# Modifications:
+#  11/26/08	Ported to dsz
+#  12/04/08     complete rewrite
+#--------------------------------------------------------
+
+@echo off;
+
+string $cmd;
+
+$cmd[0] = "processoptions"; 
+$cmd[1] = "time";  
+$cmd[2] = "drivers";
+$cmd[3] = "registryquery"; 
+$cmd[4] = "systempaths"; 
+$cmd[5] = "dir"; 
+$cmd[6] = "run"; 
+$cmd[7] = "language"; 
+$cmd[8] = "netbios"; 
+$cmd[9] = "route"; 
+$cmd[10] = "arp";  
+$cmd[11] = "scheduler"; 
+$cmd[12] = "memory"; 
+$cmd[13] = "drives"; 
+$cmd[14] = "diskspace"; 
+$cmd[15] = "services"; 
+$cmd[16] = "users"; 
+$cmd[17] = "groups"; 
+$cmd[18] = "sidlookup"; 
+$cmd[19] = "processinfo"; 
+$cmd[20] = "packages"; 
+$cmd[21] = "passworddump"; 
+$cmd[22] = "flav_control"; 
+$cmd[23] = "cd"; 
+$cmd[24] = "script"; 
+$cmd[25] = "pwd";
+$cmd[26] = "processes";
+$cmd[27] = "SystemVersion";
+$cmd[28] = "Ifconfig";
+$cmd[29] = "NetConnections";
+$cmd[30] = "Netmap";
+
+for (int $i=0; $i < sizeof($cmd); $i++)
+{
+	if(`available  -command $cmd[$i] -isloaded`)
+	{
+		echo "freeing $cmd[$i]";
+		`freeplugin -command $cmd[$i] -force`;		
+	}
+}
+
+`local freeplugin -command run -force`;
+
+@echo on;

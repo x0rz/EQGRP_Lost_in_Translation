@@ -1,0 +1,14 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='19' name='Version'>
+
+    <Help>Prints the LP and implant versions</Help>
+
+    <Input/>
+    <Output/>
+
+  </Command>
+
+</Plugin>

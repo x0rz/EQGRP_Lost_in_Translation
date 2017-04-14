@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>ls</Name>
+		<ReplaceBeforeArgs>dir</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+</Aliases>	
+		

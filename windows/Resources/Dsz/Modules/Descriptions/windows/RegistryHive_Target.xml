@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="RegistryHive_Target" id="311">
+
+	<Interfaces>
+		<Interface provider="0x0101106f" id='0x01010031' />
+	</Interfaces>
+
+	<Dependencies>
+		<Local>Mcl_NtNativeApi</Local>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>Yes</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file">i386-winnt-vc9s/release/RegistryHive_Target.dll</File>
+				<File loadtype="memory">i386-winnt-vc9s/release/RegistryHive_Target.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type="x64">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file">x64-winnt-vc9s/release/RegistryHive_Target.dll</File>
+				<File loadtype="memory">x64-winnt-vc9s/release/RegistryHive_Target.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

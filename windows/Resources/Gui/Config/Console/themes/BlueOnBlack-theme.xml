@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="Name">Blue on Black</entry>
+<entry key="WarningBg">0x000000</entry>
+<entry key="NoticeFg">0x55aaff</entry>
+<entry key="ErrorFg">0xff0000</entry>
+<entry key="NoticeBg">0x000000</entry>
+<entry key="ErrorBg">0xffffff</entry>
+<entry key="NormalFg">0x5555ff</entry>
+<entry key="WarningFg">0xaaaa55</entry>
+<entry key="NormalBg">0x000000</entry>
+</properties>

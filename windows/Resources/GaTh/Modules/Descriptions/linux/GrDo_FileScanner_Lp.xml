@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="GrDo_FileScanner_Lp" id="513">
+    <Interfaces>
+        <Interface provider="0x01010071" id="0x01c10032"/>
+    </Interfaces>
+    <Dependencies>
+        <Local>1513</Local>
+        <Remote>313</Remote>
+    </Dependencies>
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+    <Architecture type="i386">
+        <Platform family="linux">
+            <Version other="*" minor="5+" major="2">
+                <File loadtype="file">i386-linux-gcc/release-glibc2.5/GrDo_FileScanner_Lp.so</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

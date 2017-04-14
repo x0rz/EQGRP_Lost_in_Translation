@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31317'>
+
+  <Command id='16' name='SystemVersion'>
+
+    <Help>Returns the OS version of the target.</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

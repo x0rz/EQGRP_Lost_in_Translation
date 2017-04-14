@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName='Tasking/Mcl_Cmd_Performance_Tasking.pyo' providerType='script'>
+
+	<Command name="Performance" id="0">
+	
+		<Help>Queries the Performance Hive of the registry</Help>
+		
+		<Input>
+			<Option name="initial" optional="true">
+				<Argument name="bufferSize" data="initbuffer" optional="false" />
+				<Help>Sets the initial buffer size (Default:  10240)</Help>
+			</Option>
+			
+			<Option name="objectnum" optional="false" group="dataGroup">
+				<Help>Retrieves a specific number</Help>
+				<Argument name="number" data="dataset" />
+			</Option>
+			
+			<Option name="data" optional="false" group="dataGroup">
+				<Help>Sets the data set that you desire to retrieve</Help>
+				<Argument name="set" optional="false">
+					<Value string="All">
+						<Set data="dataset" value="Global" />
+					</Value>
+					<Value string="Expensive">
+						<Set data="dataset" value="Costly" />
+					</Value>
+					<Value string="LogicalDisk">
+						<Set data="dataset" value="236" />
+						<Set data="objectNumber" value="236" />
+					</Value>
+					<Value string="PhysicalDisk">
+						<Set data="dataset" value="234" />
+						<Set data="objectNumber" value="234" />
+					</Value>
+					<Value string="Browser">
+						<Set data="dataset" value="52" />
+						<Set data="objectNumber" value="52" />
+					</Value>
+					<Value string="Cache">
+						<Set data="dataset" value="86" />
+						<Set data="objectNumber" value="86" />
+					</Value>
+					<Value string="Processor">
+						<Set data="dataset" value="238" />
+						<Set data="objectNumber" value="238" />
+					</Value>
+					<Value string="Memory">
+						<Set data="dataset" value="4" />
+						<Set data="objectNumber" value="4" />
+					</Value>
+					<Value string="Objects">
+						<Set data="dataset" value="260" />
+						<Set data="objectNumber" value="260" />
+					</Value>
+					<Value string="PagingFile">
+						<Set data="dataset" value="700" />
+						<Set data="objectNumber" value="700" />
+					</Value>
+					<Value string="System">
+						<Set data="dataset" value="2" />
+						<Set data="objectNumber" value="2" />
+					</Value>
+					<Value string="Process">
+						<Set data="dataset" value="230" />
+						<Set data="objectNumber" value="230" />
+					</Value>
+					<Value string="Thread">
+						<Set data="dataset" value="232" />
+						<Set data="objectNumber" value="232" />
+					</Value>
+					<Value string="JobObject">
+						<Set data="dataset" value="1500" />
+						<Set data="objectNumber" value="1500" />
+					</Value>
+					<Value string="JobObjectDetails">
+						<Set data="dataset" value="1548" />
+						<Set data="objectNumber" value="1548" />
+					</Value>
+					<Value string="Telephony">
+						<Set data="dataset" value="1150" />
+						<Set data="objectNumber" value="1150" />
+					</Value>
+					<Value string="NetworkInterface">
+						<Set data="dataset" value="510" />
+						<Set data="objectNumber" value="510" />
+					</Value>
+					<Value string="IP">
+						<Set data="dataset" value="546" />
+						<Set data="objectNumber" value="546" />
+					</Value>
+					<Value string="ICMP">
+						<Set data="dataset" value="582" />
+						<Set data="objectNumber" value="582" />
+					</Value>
+					<Value string="UDP">
+						<Set data="dataset" value="658" />
+						<Set data="objectNumber" value="658" />
+					</Value>
+					<Value string="TCP">
+						<Set data="dataset" value="638" />
+						<Set data="objectNumber" value="638" />
+					</Value>
+					<Value string="TerminalServices">
+						<Set data="dataset" value="2176" />
+						<Set data="objectNumber" value="2176" />
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name="bare" optional="true">
+				<Set data='bare' value='true' />
+				<Help>Do not get strings</Help>
+			</Option>
+			
+			<Option name='target' optional='true'>
+				<Argument name='machine' data='remote' />
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='remote' type='string'/>
+			<Data name='initbuffer' type='uint32_t' default="10240" />
+			<Data name='dataset' type='string'/>
+			<Data name='objectNumber' type='uint32_t' default='0xFFFFFFFF' />
+			<Data name='bare' type='bool' default='false' />
+		</Output>
+	</Command>
+</Plugin>

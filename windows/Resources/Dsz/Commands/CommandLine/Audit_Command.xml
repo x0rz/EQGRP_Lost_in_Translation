@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Audit_Tasking.pyo' providerType='script'>
+
+	<Command name="Audit" id="0">
+    
+		<Help>Turns auditing on/off or displays the activities which are currently audited</Help>
+		
+		<Input>
+			<Option name="status" optional="false" group="main">
+				<Set data="type" value="1"/>
+				<Help>Displays currently audited activities</Help>
+			</Option> 
+			
+			<Option name="on" optional="false" group="main">
+				<Set data="type" value="2"/>
+				<Help>Turns auditing on by changing the audit settings</Help>
+			</Option> 
+			
+			<Option name="off" optional="false" group="main">
+				<Set data="type" value="3"/>
+				<Help>Turns auditing off by changing the audit settings</Help>
+			</Option>
+			
+			<Option name="disable" optional="false" group="main">
+				<Help>Disables auditing without modifying the audit settings.</Help>
+				
+				<Argument name='type'>
+					<Value string='all'>
+						<Set data="type" value="4"/>
+					</Value>
+					<Value string='security'>
+						<Set data="type" value="5"/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name="enable" optional="false" group="main">
+				<Help>Enables auditing without modifying the audit settings.</Help>
+
+				<Argument name='type'>
+					<Value string='all'>
+						<Set data="type" value="6"/>
+					</Value>
+					<Value string='security'>
+						<Set data="type" value="7"/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name="force" optional="true">
+				<Set data="force" value="true"/>
+				<Help>Even if policy changes are audited or auditing is already disabled, force action</Help>
+			</Option>
+			
+			<Option name='method' optional='true'>
+				<Help>Specifies memory access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="type" type="uint8_t" default="0"/>
+			<Data name="force" type="bool" default="false"/>
+			<Data name='method'    type='string'/>
+		</Output>
+		
+	</Command>
+	
+</Plugin>

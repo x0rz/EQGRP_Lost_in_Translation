@@ -1,0 +1,128 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31346'>
+
+  <Command id='16' name='regadd'>
+
+    <Help>Adds a given registry key or value</Help>
+
+    <Input>
+
+      <Option name='hive' optional='false'>
+	<Argument name='h'>
+         <Value string='u'>
+          <Set data='hive' value='1' />
+         </Value>
+         <Value string='l'>
+          <Set data='hive' value='2' />
+         </Value>
+         <Value string='c'>
+          <Set data='hive' value='3' />
+         </Value>
+         <Value string='g'>
+          <Set data='hive' value='4' />
+         </Value>
+         <Value string='r'>
+          <Set data='hive' value='5' />
+         </Value>
+         <Value string='d'>
+          <Set data='hive' value='6' />
+         </Value>
+         <Value string='p'>
+          <Set data='hive' value='7' />
+         </Value>
+        </Argument>
+	<Help>Which hive to use</Help>
+      </Option>
+
+      <Option name='key' optional='false'>
+	<Argument name='k' data='key'/>
+	<Help>The key to add the value under (it will be created if it doesn't exist)</Help>
+      </Option>
+
+      <Option name='value' optional='true'>
+	<Argument name='v' data='value'/>
+	<Help>The value to store the data as</Help>
+      </Option>
+
+      <Option name='type' optional='true'>
+	<Argument name='t' data='type'/>
+	<Help>The type of the value</Help>
+      </Option>
+
+      <Option name='data' optional='true'>
+	<Argument name='d' data='data'/>
+	<Help>The data to be added to the value</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='hive'      type='uint8_t'   default='0'/>
+      <Data name='key'       type='string'/>
+      <Data name='value'     type='string'/>
+      <Data name='type'      type='string'/>
+      <Data name='data'      type='string'/>
+    </Output>
+
+  </Command>
+
+  <Command id='17' name='regdelkey'>
+
+    <Help>Deletes a given registry key or value</Help>
+
+    <Input>
+
+      <Option name='hive' optional='false'>
+	<Argument name='h'>
+         <Value string='u'>
+          <Set data='hive' value='1' />
+         </Value>
+         <Value string='l'>
+          <Set data='hive' value='2' />
+         </Value>
+         <Value string='c'>
+          <Set data='hive' value='3' />
+         </Value>
+         <Value string='g'>
+          <Set data='hive' value='4' />
+         </Value>
+         <Value string='r'>
+          <Set data='hive' value='5' />
+         </Value>
+         <Value string='d'>
+          <Set data='hive' value='6' />
+         </Value>
+         <Value string='p'>
+          <Set data='hive' value='7' />
+         </Value>
+        </Argument>
+	<Help>Which hive to use</Help>
+      </Option>
+
+      <Option name='key' optional='false'>
+	<Argument name='k' data='key'/>
+	<Help>The key for deletion</Help>
+      </Option>
+
+      <Option name='value' optional='true' group='type'>
+	<Argument name='v' data='value'/>
+	<Help>The value to delete</Help>
+      </Option>
+
+      <Option name='recursive' optional='true' group='type'>
+	<Set data='recursive' value='true' />
+	<Help>Also delete any subkeys</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='hive'      type='uint8_t' default='0'/>
+      <Data name='key'       type='string'/>
+      <Data name='value'     type='string'/>
+      <Data name='recursive' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+</Plugin>

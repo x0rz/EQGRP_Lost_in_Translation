@@ -1,0 +1,25 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31376'>
+
+  <Command id='16' name='modifyAudit'>
+
+    <Help>Disables auditing.  It modifies the auditing posture,</Help>
+    <Help>but does *NOT* modify the audit settings.</Help>
+
+    <Input>
+      <Option name='all' optional='false' group='options'>
+        <Set data="type" value="0" />
+      </Option>	
+      <Option name='security' optional='false' group='options'>
+        <Set data="type" value="1" />
+      </Option>	
+    </Input>
+
+    <Output>
+      <Data name='type' type='uint8_t' />
+    </Output>
+
+  </Command>
+
+</Plugin>

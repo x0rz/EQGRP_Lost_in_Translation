@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_Ldap_Tasking.pyo" providerType="script">
+	
+    <Command name="Ldap" id="0">
+        <Help>Processes LDAP queries to extract directory information from LDAP servers</Help>
+
+	<Input>
+		<Option name='target' optional='false'>
+			<Argument name='hostName' data='hostName'/>
+			<Help>Name of the host LDAP server</Help>
+		</Option>
+		<Option name='port' optional='true'>
+			<Argument name='port_num' data='port'/>
+			<Help>The port to which to connect (default: 389)</Help>
+		</Option>
+		<Option name='attributes' optional='true'>
+			<Argument name='attrs' data='attrs'/>
+			<Help>Attributes to show (default: show all attributes)</Help>
+			<Help>Multiple attributes must be separated by commas (eg: description,cn,objectClass)</Help>
+		</Option>
+		<Option name='filter' optional='true'>
+			<Argument name='filter' data='filter'/>
+			<Help>Search String (default: "objectClass=*")</Help>
+			<Help>Searches can use logical operators (eg: (|(objectClass=user)(objectClass=lostAndFound)))</Help>
+		</Option>
+		<Option name='scope' optional='true'>
+			<Argument name='scope' data='scope'/>
+			<Help>Level of data to be returned with 0=Base, 1=Immediate Children, 2=Whole Subtree (default: 0) </Help>
+		</Option>
+		<Option name='chunksize' optional='true'>
+			<Argument name='bytes' data='chunksize'/>
+			<Help>How many bytes to queue before returning data.</Help>
+		</Option>
+	</Input>
+
+		<Output>
+			<Data name='port' type='uint16_t' default='389'/>
+			<Data name='scope' type='uint16_t' default='0'/>
+			<Data name='hostName' type='string'/>
+			<Data name='filter' type='string' default='objectClass=*'/>
+			<Data name='attrs' type='string'/>
+			<Data name='chunksize' type='uint32_t' default='65536'/>
+		</Output>
+    </Command>
+</Plugin>

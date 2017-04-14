@@ -1,0 +1,15 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='25' name='Break'>
+
+    <Help>Terminates the current connection. The operation</Help>
+    <Help>of the implant is not affected.</Help>
+
+    <Input/>
+    <Output/>
+
+  </Command>
+
+</Plugin>

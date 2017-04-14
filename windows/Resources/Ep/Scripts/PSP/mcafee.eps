@@ -1,0 +1,368 @@
+#This script attempts to gather as much McAfee information as we can
+#This includes current version, virus def update date, installed date, current configuation
+#It will also attempt to verify the current settings are the same as the last time we checked
+
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+#struct defined in PSPHelpers.epm
+metaData @metaData;
+init(@metaData);
+
+echo "Starting McAfee configuration change check\r";
+@echo off;
+#what version of McAfee are we working with here?
+if ( `regquery -hive L -subkey "software\\network associates\\ePolicy Orchestrator\\application plugins\\VIRUSCAN8000"` ){
+	mcafee80(@metaData);
+}else if(`regquery -hive L -subkey "software\\mcafee\\ePolicy Orchestrator\\application plugins\\VIRUSCAN8600"`){
+	mcafee85(@metaData);
+}else if(`regquery -hive L -subkey "software\\mcafee\\ePolicy Orchestrator\\application plugins\\VIRUSCAN8700"`){
+	mcafee87(@metaData);
+}else if(`regquery -hive L -subkey "software\\mcafee\\ePolicy Orchestrator\\application plugins\\VIRUSCAN8800"`){
+	mcafee88(@metaData);
+}else if(`regquery -hive L -subkey "software\\network associates\\ePolicy Orchestrator\\application plugins\\VIRUSCAN7000"` ){
+	echo "\rIt appears they are running version 7.0\r";
+	echo "\rI'm afraid I can't help you with this version. Good luck!\r";
+	@metaData.$vendor = "McAfee";
+	@metaData.$product = "Virus Scan Enterprise";
+	@metaData.$version = "7";
+	if(writeMetaData(@metaData)){
+		echo "Wrote meta data to disk\r";
+	}else{
+		echo "\rERROR. could not write meta data to disk. ERROR\r";
+	}
+
+}else{
+	echo "I can't figure out what version of McAfee is running! Good luck with that. Exiting...";
+	@metaData.$vendor = "McAfee";
+	if(writeMetaData(@metaData)){
+		echo "Wrote meta data to disk\r";
+	}else{
+		echo "\rERROR. could not write meta data to disk. ERROR\r";
+	}	
+}
+
+#8.8 - very similar to 8.7
+#leaving as unique function in case we find differences in the future
+sub mcafee88 (REF metadata @metaData){
+	echo "They are running McAfee 8.8\r";
+	@echo off;
+	@record on;
+	`regquery -hive L -subkey "software\\McAfee\\SystemCore\\VSCore\\On Access Scanner\\BehaviourBlocking" -value AccessProtectionUserRules`;
+	string $data = GetCmdData("value_data");
+	@record off;
+	@echo on;
+	#Are they using default values?
+	string $defaultSettings = "41636365737350726f74656374696f6e207b0d0a7d0d0a";
+	if( $defaultSettings == $data){ 
+		echo "They are using the default settings for a McAfee 8.8 install. You should be good\r"; 
+	}else{
+		echo "They are not using the default settings. May want to run mcafeestatus\r";
+	}
+
+	if(@metaData.$history){
+		if(checkConfig("mcafee:$data",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+		}
+	}else{
+		createConfig("mcafee:$data",@metaData);
+	}
+	
+	#now we pull some metadata as best we can
+	echo "Preparing to write PSP Metadata information...\r";
+
+	@metaData.$vendor = "McAfee";
+
+	@echo off;
+	@record on;
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value szInstallDateTime`;
+	@metaData.$installDate = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value szProductVer`;
+	@metaData.$version = GetCmdData("value_data");
+	
+	`regquery -hive L -subkey "software\\mcafee\\avengine" -value AVDatDate`;
+	@metaData.$defUpdates = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value quarantinedirectory`;
+	@metaData.$quarantine = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\systemcore\\vscore\\on access scanner\\BehaviourBlocking" -value szLogFileName`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "AccessProtectionLog = $data";
+
+	`regquery -hive L -subkey "software\\mcafee\\systemcore\\vscore\\on access scanner\\BehaviourBlocking" -value szLogFileName_Ent`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "@metaData.$logFile, BufferOverflowLog = $data";
+
+	@metaData.$information = "";
+
+	@record off;
+	@echo on;
+
+	if(writeMetaData(@metaData)){
+		echo "Wrote meta data to disk\r";
+	}else{
+		echo "\rERROR. could not write meta data to disk. ERROR\r";
+	}
+	
+	if( prompt "Would you like to run mcafeestatus now?"){
+		echo "Starting mcafee88\r";
+		`script ..\\mcafee88.eps`;
+	}
+}
+
+#8.7 - very similar to 8.5
+#leaving as unique function in case we find differences in the future
+sub mcafee87 (REF metadata @metaData){
+	echo "They are running McAfee 8.7\r";
+	@echo off;
+	@record on;
+	`regquery -hive L -subkey "software\\McAfee\\VSCore\\On Access Scanner\\BehaviourBlocking" -value AccessProtectionUserRules`;
+	string $data = GetCmdData("value_data");
+	@record off;
+	@echo on;
+	#Are they using default values?
+	string $defaultSettings = "41636365737350726f74656374696f6e207b0d0a7d0d0a";
+	if( $defaultSettings == $data){ 
+		echo "They are using the default settings for a McAfee 8.7 install. You should be good\r"; 
+	}else{
+		echo "They are not using the default settings. May want to run mcafeestatus\r";
+	}
+
+	if(@metaData.$history){
+		if(checkConfig("mcafee:$data",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+		}
+	}else{
+		createConfig("mcafee:$data",@metaData);
+	}
+	
+	#now we pull some metadata as best we can
+	echo "Preparing to write PSP Metadata information...\r";
+
+	@metaData.$vendor = "McAfee";
+
+	@echo off;
+	@record on;
+	
+	if(`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\McAfee Anti-Spyware Enterprise Module" -value DisplayVersion`){
+		#Found AntiSpyware Module installed
+		string $temp = GetCmdData("value_data");
+		@metaData.$product = "Virus Scan Enterprise + AntiSpyware Module $temp";
+	}else{
+		#assuming they don't have AntiSpyware Module installed
+		@metaData.$product = "Virus Scan Enterprise";
+	}
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value szInstallDateTime`;
+	@metaData.$installDate = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value szProductVer`;
+	@metaData.$version = GetCmdData("value_data");
+	
+	`regquery -hive L -subkey "software\\mcafee\\avengine" -value AVDatDate`;
+	@metaData.$defUpdates = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value quarantinedirectory`;
+	@metaData.$quarantine = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\vscore\\on access scanner\\BehaviourBlocking" -value szLogFileName`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "AccessProtectionLog = $data";
+
+	`regquery -hive L -subkey "software\\mcafee\\vscore\\on access scanner\\BehaviourBlocking" -value szLogFileName_Ent`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "@metaData.$logFile, BufferOverflowLog = $data";
+
+	@metaData.$information = "";
+
+	@record off;
+	@echo on;
+
+	if(writeMetaData(@metaData)){
+		echo "Wrote meta data to disk\r";
+	}else{
+		echo "\rERROR. could not write meta data to disk. ERROR\r";
+	}
+	
+	if( prompt "Would you like to run mcafeestatus now?"){
+		echo "Starting mcafee87\r";
+		`script ..\\mcafee87.eps`;
+	}
+}
+
+
+#8.5
+sub mcafee85 (REF metadata @metaData){
+	echo "They are running McAfee 8.5\r";
+	@echo off;
+	@record on;
+	`regquery -hive L -subkey "software\\McAfee\\VSCore\\On Access Scanner\\BehaviourBlocking" -value AccessProtectionUserRules`;
+	string $data = GetCmdData("value_data");
+	@record off;
+	@echo on;
+	#Are they using default values?
+	string $defaultSettings = "41636365737350726f74656374696f6e207b0d0a7d0d0a";
+	if( $defaultSettings == $data){ 
+		echo "They are using the default settings for a McAfee 8.5 install. You should be good\r"; 
+	}else{
+		echo "They are not using the default settings. May want to run mcafeestatus\r";
+	}
+
+	if(@metaData.$history){
+		if(checkConfig("mcafee:$data",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+		}
+	}else{
+		createConfig("mcafee:$data",@metaData);
+	}
+	
+	#now we pull some metadata as best we can
+	echo "Preparing to write PSP Metadata information...\r";
+
+	@metaData.$vendor = "McAfee";
+
+	@echo off;
+	@record on;
+	
+	if(`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\McAfee Anti-Spyware Enterprise Module" -value DisplayVersion`){
+		#Found AntiSpyware Module installed
+		string $temp = GetCmdData("value_data");
+		@metaData.$product = "Virus Scan Enterprise + AntiSpyware Module $temp";
+	}else{
+		#assuming they don't have AntiSpyware Module installed
+		@metaData.$product = "Virus Scan Enterprise";
+	}
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value szInstallDateTime`;
+	@metaData.$installDate = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value szProductVer`;
+	@metaData.$version = GetCmdData("value_data");
+	
+	`regquery -hive L -subkey "software\\mcafee\\avengine" -value AVDatDate`;
+	@metaData.$defUpdates = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\desktopprotection" -value quarantinedirectory`;
+	@metaData.$quarantine = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\mcafee\\vscore\\on access scanner\\BehaviourBlocking" -value szLogFileName`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "AccessProtectionLog = $data";
+
+	`regquery -hive L -subkey "software\\mcafee\\vscore\\on access scanner\\BehaviourBlocking" -value szLogFileName_Ent`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "@metaData.$logFile, BufferOverflowLog = $data";
+
+	@metaData.$information = "";
+
+	@record off;
+	@echo on;
+
+	if(writeMetaData(@metaData)){
+		echo "Wrote meta data to disk\r";
+	}else{
+		echo "\rERROR. could not write meta data to disk. ERROR\r";
+	}
+	
+	if( prompt "Would you like to run mcafeestatus now?"){
+		echo "Starting mcafee85\r";
+		`script ..\\mcafee85.eps`;
+	}
+}
+
+#8.0 
+sub mcafee80(REF metaData @metaData){
+	echo "They are running McAfee 8.0\r";
+	int $i=0;
+	string $data = "";
+	string $buffer;
+	#these are junk variables
+	string $foo;
+	string $bar;
+	@echo off;
+	@record on;
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\Shared Components\\On Access Scanner\\BehaviourBlocking"`;
+	string $subKeys = GetCmdData("value");
+	string $subKeysData = GetCmdData("value_data");
+	#using grep function is slow. write to file, use local grep for speed
+	foreach $foo($subKeys){
+		WriteFile("@metaData.$driveLetter\\temp.txt",TRUE,"$foo=$subKeysData[$i]");
+		$i++;
+	}
+	`local grep -mask temp.txt -pattern FileBlockEnabled -path @metaData.$driveLetter\\`;
+	$buffer = GetCmdData("line_data");
+	foreach $foo($buffer){
+		$bar = split("\n",$foo);
+		$data = "$data$bar[0]";
+	}
+	`local del temp.txt -path @metaData.$driveLetter\\`;
+	@record off;
+	@echo on;
+	if(@metaData.$history){
+		if(checkConfig("mcafee:$data",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!!!!!!!!!!!!!!!\rChanged PSP configs since last time\r!!!!!!!!!!!!!!!!!\r\r";
+		}
+	}else{
+		createConfig("mcafee:$data",@metaData);
+	}
+	
+	#now we care about the metadata
+	echo "Preparing to write PSP Metadata information...\r";
+	@metaData.$vendor = "McAfee";
+	@metaData.$product = "Virus Scan Enterprise";
+	@record on;
+	@echo off;
+
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\VirusScan Enterprise\\CurrentVersion" -value szInstallDateTime`;
+	@metaData.$installDate = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\VirusScan Enterprise\\CurrentVersion" -value szProductVer`;
+	@metaData.$version = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\VirusScan Enterprise\\CurrentVersion" -value szVirDefDate`;
+	@metaData.$defUpdates = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\VirusScan Enterprise\\CurrentVersion" -value szVirDefVer`;
+	$data = GetCmdData("value_data");
+	@metaData.$information = "@metaData.$defUpdates, Virus Definition version = $data";
+
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\Shared Components\\On Access Scanner\\BehaviourBlocking" -value szLogFileName`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "AccessProtectionLog = $data";
+	
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\Shared Components\\On Access Scanner\\BehaviourBlocking" -value szLogFileName_Ent`;
+	$data = GetCmdData("value_data");
+	@metaData.$logFile = "@metaData.$logFile, BufferOverflowLog = $data";
+
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\VirusScan Enterprise\\CurrentVersion\\DefaultTask" -value szMoveToFolder`;
+	@metaData.$quarantine = GetCmdData("value_data");
+
+	`regquery -hive L -subkey "software\\Network Associates\\TVD\\Shared Components\\VirusScan Engine\\4.0.xx" -value szEngineVer`;
+	$data = GetCmdData("value_data");
+	@metaData.$information = "Scanning Engine version = $data";
+
+	@record off;
+	@echo on;
+
+	if(writeMetaData(@metaData)){
+		echo "Wrote meta data to disk\r";
+	}else{
+		echo "\rERROR. could not write meta data to disk. ERROR\r";
+	}
+	
+	if( prompt "Would you like to run mcafeestatus now?"){
+		echo "Starting mcafee80\r";
+		`script ..\\mcafee80.eps`;
+	}
+}

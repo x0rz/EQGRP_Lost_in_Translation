@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<t:config id="37f19b4f9e69dca220147a0361b8aa2084054325"
+          name="Emeraldthread"
+          version="3.0.0"
+          configversion="3.0.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+    <t:touchlist>
+        <t:plugin name="Emeraldthreadtouch"
+            displayname="Emeraldthread Touch"
+            description="Touch to get Target Printer"
+            postmessage="EMTH requires Printer name">
+            <t:ivparam name="TargetIp" value="TargetIp"/>
+            <t:ivparam name="Protocol" value="Protocol"/>
+            <t:ivparam name="TargetPort" value="TargetPort"/>
+            <t:ivparam name="Credentials" value="Credentials"/>
+            <t:oparam name="PrinterName" value="PrinterName"/>
+        </t:plugin>
+    </t:touchlist>
+</t:config>

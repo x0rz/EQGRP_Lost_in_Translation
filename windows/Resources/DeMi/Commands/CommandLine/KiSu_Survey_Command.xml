@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_DiBa_Tasking.pyo" providerType="script">
+	<Command name="kisu_survey" id="2">
+		<Help>Survey target for possible KiSu persistence types</Help>
+
+		<Input>
+		</Input>
+
+		<Output>
+		</Output>
+	</Command>
+</Plugin>

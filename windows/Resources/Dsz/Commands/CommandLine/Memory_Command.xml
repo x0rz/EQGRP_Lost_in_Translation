@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Memory_Tasking.pyo' providerType='script'>
+
+    <Command name="Memory" id="0">
+
+		<Help>Returns information on the computer's memory.</Help>
+	
+        <Input>
+        </Input>
+
+        <Output>
+        </Output>
+    </Command>
+</Plugin>

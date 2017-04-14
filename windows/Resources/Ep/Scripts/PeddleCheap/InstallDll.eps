@@ -1,0 +1,27 @@
+#-------------------------------------------------------------------------------
+# File: InstallDll.eps
+#
+# Description: Performs a level4 install for the dll version
+#
+#-------------------------------------------------------------------------------
+
+@echo off;
+
+if (($argc < 4) || ($argc > 6)) {
+    echo "Usage: $argv[0] <localFile> <remoteName> <matchFile> [notused1] [notused2]";
+    return false;
+}
+
+string $localFile = $argv[1];
+string $remoteName = $argv[2];
+string $matchFile = $argv[3];
+
+echo "Installing DLL";
+bool $rtn = `level4install -local "$localFile" -remote "$remoteName" -match "$matchFile"`;
+if ($rtn) {
+    echo "    INSTALLED";
+} else {
+    echo "    FAILED";
+}
+
+return $rtn;

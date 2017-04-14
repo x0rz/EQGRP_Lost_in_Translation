@@ -1,0 +1,92 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsWindows2000
+#	Returns the whether the current target is Windows 2000
+#----------------------------------------------------
+sub _IsWindows2000()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return (($major == 5) && ($minor == 0));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2000
+
+#----------------------------------------------------
+# _IsWindows2000Local
+#	Returns the whether the local os is Windows 2000
+#----------------------------------------------------
+sub _IsWindows2000Local()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return (($major == 5) && ($minor == 0));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2000Local
+
+#----------------------------------------------------
+# _IsWindows2000OrGreater
+#	Returns the whether the current target is Windows 2000 or greater
+#----------------------------------------------------
+sub _IsWindows2000OrGreater()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major;
+			if (_GetOsVersion($major)) {
+				return ($major >= 5);
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2000OrGreater
+
+#----------------------------------------------------
+# _IsWindows2000OrGreaterLocal
+#	Returns the whether the local os is Windows 2000 or greater
+#----------------------------------------------------
+sub _IsWindows2000OrGreaterLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major;
+			if (_GetOsVersionLocal($major)) {
+				return ($major >= 5);
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2000OrGreaterLocal

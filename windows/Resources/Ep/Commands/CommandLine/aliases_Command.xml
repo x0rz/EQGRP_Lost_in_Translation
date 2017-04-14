@@ -1,0 +1,57 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='33' name='Aliases'>
+
+    <Help>Displays the list of permanent and temporary aliases</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+  <Command id='34' name='AddAlias'>
+
+    <Help>Adds the alias to a list of aliases that apply for this session.</Help>
+
+    <Input>
+      <Option name='alias' optional='false'>
+	<Argument name='command' data='command'/>
+	<Help>The cmd to alias</Help>
+      </Option>
+
+      <Option name='replace' optional='false'>
+	<Argument name='value' data='replace'/>
+	<Help>The value to substitute for the aliased command</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+	<Data name='command' type='string'/>
+	<Data name='replace' type='string'/>
+    </Output>
+  </Command>
+
+  <Command id='35' name='RemoveAlias'>
+
+    <Help>Removes the given alias for this session.</Help>
+
+    <Input>
+      <Option name='alias' optional='false'>
+	<Argument name='command' data='command'/>
+	<Help>The alias to remove</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='command' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

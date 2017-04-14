@@ -1,0 +1,192 @@
+#--------------------------------------------------------
+# File: VerifyInstall.eps
+#
+# Wrapper script for verify install of DarkSkyline tools
+#
+# Modifications:
+#  11/26/2002	Created.
+#--------------------------------------------------------
+
+if ($argc != 3) {
+    echo "Usage: $argv[0] <ServiceName> <ServiceDescription>";
+    return false;
+}
+
+string $ServiceName = $argv[1];
+string $ServiceDescription = $argv[2];
+
+@record on;
+
+# get the root directory
+string $systemroot;
+
+if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+    $systemroot = GetCmdData("enum_keyvalue_data");
+}
+
+ifnot (defined($systemroot[0])) {
+    echo "* Unable to determine system root";
+    return false;
+}
+
+bool $valid = true;
+
+echo "Checking for key";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $valid = false;
+}
+
+
+echo "Checking for key/DisplayName";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName -value DisplayName`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 1) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == $ServiceDescription) {
+	    $valueGood = true;
+	}
+    }
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+
+echo "Checking for key/ErrorControl";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName -value ErrorControl`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 4) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "00000000") {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+echo "Checking for key/ImagePath";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName -value ImagePath`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 2) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "$systemroot\\system32\\$ServiceName.exe") {
+	    $valueGood = true;
+	}
+    }
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+
+echo "Checking for key/ObjectName";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName -value ObjectName`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 1) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "LocalSystem") {
+	    $valueGood = true;
+	}
+    }
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+
+
+echo "Checking for key/Start";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName -value Start`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 4) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "00000002") {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+
+echo "Checking for key/Type";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName -value Type`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 4) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "00000010") {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+echo "Checking for $serviceName.exe";
+if (`dir $serviceName.exe -path "$systemroot\\system32"`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $valid = false;
+}
+
+# we're done...
+return $valid;

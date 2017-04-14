@@ -1,0 +1,136 @@
+<?xml version="1.0" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="Module">
+		<xs:complexType>
+			<xs:sequence> <!-- order matters -->
+				<xs:element ref="Interfaces" minOccurs="0"/>
+				<xs:element ref="Dependencies"/>
+				<xs:element name="Lp" type="YesOrNo"/>
+				<xs:choice>
+					<xs:element name="Implant" type="YesOrNo"/>
+					<xs:element name="Target" type="YesOrNo"/>
+				</xs:choice>
+				<xs:element name="VersionInfo" type="YesOrNo" minOccurs="0"/>
+				<xs:element ref="Architecture" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="possibleHexValue" use="optional" />
+      <xs:attribute name="urId" type="possibleHexValue" use="optional" />
+			<xs:attribute name="name" type="xs:string" use="required" />
+			<xs:attribute name="script" type="xs:string" use="optional" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Interfaces">
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="Interface"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Interface">
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="DataHandler">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:nonNegativeInteger">
+								<xs:attribute name="name" use="optional"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="hexValue" use="required"/>
+			<xs:attribute name="provider" type="hexValue" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Dependencies">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="Local" type="DependencyElementType"/>
+				<xs:element name="Remote" type="DependencyElementType"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+
+  <xs:complexType name="DependencyElementType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="optional" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  
+	<xs:element name="Architecture">
+		<xs:complexType>
+			<xs:sequence minOccurs="1" maxOccurs="unbounded">
+				<xs:element ref="Platform"/>
+			</xs:sequence>
+			<xs:attribute name="type" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Platform">
+		<xs:complexType>
+			<xs:sequence minOccurs="1" maxOccurs="unbounded">
+				<xs:element ref="Version"/>
+			</xs:sequence>
+			<xs:attribute name="family" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="Version">
+		<xs:complexType>
+			<xs:choice minOccurs="1" maxOccurs="unbounded">
+				<xs:element ref="File"/>
+				<xs:element name="Library" type="xs:string"/>
+			</xs:choice>
+			<xs:attribute name="major" type="xs:string" use="required"/>
+			<xs:attribute name="minor" type="xs:string" use="required"/>
+			<xs:attribute name="other" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="File">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="loadtype" type="PluginLoadType" use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	
+	<!-- Types -->
+	<xs:simpleType name='hexValue'>
+		<xs:restriction base='xs:string'>
+			<xs:minLength value='3' />
+			<xs:maxLength value='10' />
+			<xs:pattern value='0x[0-9a-fA-F]*' />
+		</xs:restriction>
+	</xs:simpleType>
+
+  <xs:simpleType name='possibleHexValue'>
+    <xs:union memberTypes='xs:nonNegativeInteger hexValue'/>
+  </xs:simpleType>
+  
+	<xs:simpleType name="YesOrNo">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Yes"/>
+			<xs:enumeration value="No"/>
+			<xs:enumeration value="yes"/>
+			<xs:enumeration value="no"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="PluginLoadType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="file"/>
+			<xs:enumeration value="memory"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+</xs:schema>

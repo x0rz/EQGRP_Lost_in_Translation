@@ -1,0 +1,17 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>usbmonitor</Name>
+		<ReplaceBeforeArgs>background python usbmonitor.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>
+Usage: usbmonitor[options]
+[INTERVAL]
+    Specify the interval (in seconds) at which the drives will be queried.  Defalut = 300 seconds.
+	Ex: usbmonitor -interval 300
+</Help>
+<Options>
+    <Option>interval</Option>
+</Options>
+  </Alias>
+</Aliases>

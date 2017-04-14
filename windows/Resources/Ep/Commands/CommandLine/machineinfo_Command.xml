@@ -1,0 +1,15 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31359'>
+ <Command id='16' name='machineinfo'>
+  <Help>Queries machine info</Help>
+  <Input>
+   <Argument name="remote_comp" data="servername" optional="true">
+    <Help>Name of the computer to query</Help>
+   </Argument>
+  </Input>
+  <Output>
+   <Data name='servername' type='string'/>
+  </Output>
+ </Command>
+</Plugin>

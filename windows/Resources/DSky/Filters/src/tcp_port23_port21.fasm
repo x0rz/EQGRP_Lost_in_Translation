@@ -1,0 +1,2 @@
+filter:ip proto 6 and (port 23 or port 21)
+netmask:255.0.0.0

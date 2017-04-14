@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="Name">Dreamland</entry>
+<entry key="NormalBg">0x101040</entry>
+<entry key="NormalFg">0xa0c0ff</entry>
+<entry key="NoticeBg">0x101040</entry>
+<entry key="NoticeFg">0xffc0ff</entry>
+<entry key="WarningBg">0x101040</entry>
+<entry key="WarningFg">0xffe0b0</entry>
+<entry key="ErrorBg">0x101040</entry>
+<entry key="ErrorFg">0xff2020</entry>
+</properties>

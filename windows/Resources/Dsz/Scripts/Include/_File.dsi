@@ -1,0 +1,130 @@
+#-------------------------------------------------------------------------------
+# _FileExists
+#    Determines if a file exists, or if any files match a mask
+# Params:
+#    file - the file or mask to look for
+#-------------------------------------------------------------------------------
+Sub _FileExists(IN STRING $file)
+{
+
+    return _FileExists($file, "");
+
+}	/* end _FileExists (no path) */
+
+#-------------------------------------------------------------------------------
+# _FileExists
+#    Determines if a file exists, or if any files match a mask
+# Params:
+#    file - the file or mask to look for (can contain a path)
+#       path - where to look (can be "")
+#-------------------------------------------------------------------------------
+Sub _FileExists(IN STRING $file, IN STRING $path)
+{
+    if (StrLen($path) == 0) {
+		return __FileExistsCmd( 'dir "$file"' );
+    } else {
+		return __FileExistsCmd( 'dir "$path/$file"' );
+	}
+}	/* end _FileExists (path) */
+
+#-------------------------------------------------------------------------------
+# _FileExistsLocal
+#    Determines if a file exists, or if any files match a mask
+# Params:
+#    file - the file or mask to look for (can contain a path)
+#    path - where to look (can be "")
+#-------------------------------------------------------------------------------
+Sub _FileExistsLocal(IN STRING $file)
+{
+	return _FileExistsLocal( $file, "" );
+}	/* end _FileExistsLocal (path) */
+
+#-------------------------------------------------------------------------------
+# _FileExistsLocal
+#    Determines if a file exists, or if any files match a mask
+# Params:
+#    file - the file or mask to look for (can contain a path)
+#    path - where to look (can be "")
+#-------------------------------------------------------------------------------
+Sub _FileExistsLocal(IN STRING $file, IN STRING $path)
+{
+    if (StrLen($path) == 0) {
+		return __FileExistsCmd( 'local dir "$file"' );
+    } else {
+		return __FileExistsCmd( 'local dir -path "$path/" -mask "$file"' );
+	}
+}	/* end _FileExistsLocal (path) */
+
+#-------------------------------------------------------------------------------
+# _FileExistsCmd
+#    NOTE:  You should not, generally, call this outside of the _File.dsi file
+#	 Executes a dir command and determines if there is a file returned.
+# Params:
+#	 cmd - the dir command to execute
+#-------------------------------------------------------------------------------
+sub __FileExistsCmd( IN string $cmd )
+{
+	@echo off;
+	@record on;
+	bool $ok = `$cmd`;
+	@record off;
+	if( !$ok )
+	{
+		return false;
+	}
+	
+	return (GetCmdDataSize("DirItem::FileItem") > 0);
+}	/* end _FileExistsCmd (path) */
+
+
+#-------------------------------------------------------------------------------
+# _GetFiles
+#	Returns the files matching a given path and mask
+# Params:
+#	mask	- The file mask
+#	path	- Where to look
+#	files	- The matching files
+#-------------------------------------------------------------------------------
+Sub _GetFiles(IN STRING $path, IN STRING $mask, OUT STRING $files)
+{
+	return __GetFilesCmd( 'dir -mask "$mask" -path "$path/"', $files );
+}	/* end _GetFiles */
+
+#-------------------------------------------------------------------------------
+# _GetFilesLocal
+#	Returns the local files matching a given path and mask
+# Params:
+#	mask	- The file mask
+#	path	- Where to look
+#	files	- The matching files
+#-------------------------------------------------------------------------------
+Sub _GetFilesLocal(IN STRING $path, IN STRING $mask, OUT STRING $files)
+{
+	if( StrLen($path) == 0 ) {
+		return __GetFilesCmd( 'local dir "$mask"', $files );
+	} else {
+		return __GetFilesCmd( 'local dir -path "$path/" -mask "$mask"', $files );
+	}
+
+}	/* end _GetFiles */
+
+#-------------------------------------------------------------------------------
+# _FileExistsCmd
+#    NOTE:  You should not, generally, call this outside of the _File.dsi file
+#	 Executes a dir command and determines if there is a file returned.
+# Params:
+#	 cmd - the dir command to execute
+#	 files - the matching files
+#-------------------------------------------------------------------------------
+sub __GetFilesCmd( IN string $cmd, OUT string $files )
+{
+	@echo off;
+	@record on;
+	bool $ret = `$cmd`;
+	@record off;
+	if( !$ret ) {
+		return false;
+	}
+	return GetCmdData("DirItem::FileItem::name", $files);
+}
+

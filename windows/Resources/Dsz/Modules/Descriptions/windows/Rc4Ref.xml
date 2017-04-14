@@ -1,0 +1,35 @@
+<?xml version='1.0' ?>
+
+<Module id='18' name='Rc4Ref'>
+
+    <Interfaces>
+		<Interface id='0x01c16f7f' provider='0x04010002'/>
+    </Interfaces>
+
+    <Dependencies>
+    </Dependencies>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+	<Architecture type='i386'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+
+</Module>

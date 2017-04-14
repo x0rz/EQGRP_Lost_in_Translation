@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName="Tasking/Mcl_Cmd_SystemPaths_Tasking.pyo" providerType="script">
+
+    <Command name="SystemPaths" id="0">
+
+		<Help>Retrieve the paths of the system and temp directories.</Help>
+		
+        <Input>
+        </Input>
+
+        <Output>
+        </Output>
+        
+    </Command>
+    
+</Plugin>

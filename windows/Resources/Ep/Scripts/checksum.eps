@@ -1,0 +1,30 @@
+# compare a local and remote checksum
+if ($argc < 5) {
+	echo "Compare checksums for a local and target file.";
+	echo "Usage: ";
+	echo "$argv[0] <local name> <local path> <target name> <target path>";
+	return false;
+}
+
+string $localname=$argv[1];
+string $localpath=$argv[2];
+string $targetname=$argv[3];
+string $targetpath=$argv[4];
+
+@record on;
+`checksum -mask "$targetname" -path "$targetpath"`;
+string $targetChecksum=GetCmdData("checksum_value");
+`local checksum -mask "$localname" -path "$localpath"`;
+string $localChecksum=GetCmdData("checksum_value");
+@record off;
+if ($targetChecksum != $localChecksum) {
+	echo "Checksums do not match!";
+	echo "  Local:  $localChecksum";
+	echo "  Remote: $targetchecksum";
+	return false;
+} else {
+	echo "Checksums have been automatically verified.";
+	echo "  Local:  $localChecksum";
+	echo "  Remote: $targetchecksum";
+	return true;
+}

@@ -1,0 +1,28 @@
+@include "DropboxAPI.epm";
+
+# script to wrap the DropboxAPI from a command-line EP script.
+
+# usage: script DrobboxWrapper.eps "option" "rest of options"...
+
+if ($argc < 2) {
+	echo "need arguments";
+	return false;
+}
+
+if ($argv[1] == "CopyLocalFileNewName") {
+	CopyLocalFileToDropbox($argv[2], $argv[3], $argv[4]);
+} else 
+if ($argv[1] == "CopyLocalFile") {
+	CopyLocalFileToDropbox($argv[2], $argv[3]);
+} else 
+if ($argv[1] == "AppendFilePickName") {
+	AppendFileInDropbox($argv[2], $argv[3], $argv[4]);
+} else 
+if ($argv[1] == "AppendFileDefaultName") {
+	AppendFileInDropbox($argv[2], $argv[3]);
+} else {
+	echo "Bad arguments";
+	return false;
+}
+
+return true;

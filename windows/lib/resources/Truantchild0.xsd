@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : Truantchild0.xsd
+    Created on : 24 Oct 2006
+    Author     : Eli Chandler
+    Description:
+-->
+
+<xsd:schema
+    xml:lang="en"
+    targetNamespace="tc0"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:t0="tc0"
+    xmlns:c="urn:adf:Common"
+    elementFormDefault="qualified">
+
+    <xsd:import schemaLocation="./Common.xsd" namespace="urn:adf:Common"/>
+
+    <xsd:simpleType name="DataTypeType">
+      <xsd:restriction base="xsd:string">
+        <!-- Base types -->
+        <xsd:enumeration value="Boolean"/>
+        <xsd:enumeration value="S8"/>
+        <xsd:enumeration value="S16"/>
+        <xsd:enumeration value="S32"/>
+        <xsd:enumeration value="String"/>
+        <xsd:enumeration value="U8"/>
+        <xsd:enumeration value="U16"/>
+        <xsd:enumeration value="U32"/>
+        <xsd:enumeration value="UString"/>
+
+        <!-- Derived types -->
+        <!-- Derived from S32 or U32 depending on platform -->
+        <xsd:enumeration value="Socket"/>
+        <!-- Derived from "String" -->
+        <xsd:enumeration value="IPv4"/>
+        <xsd:enumeration value="LocalFile"/>
+        <!-- Derived from U16 -->
+        <xsd:enumeration value="TcpPort"/>
+        <xsd:enumeration value="UdpPort"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ParamTypeType">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="Scalar"/> <!-- in the sense of Perl's scalar -->
+        <xsd:enumeration value="List"/>
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:attributeGroup name="NameDescription">
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="description" type="xsd:string" use="required"/>
+    </xsd:attributeGroup>
+
+    <xsd:attributeGroup name="NameDescDfltValu">
+      <xsd:attributeGroup ref="t0:NameDescription"/>
+      <xsd:attribute name="default" type="xsd:string"/>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:attributeGroup>
+
+    <xsd:complexType name="ParameterType">
+      <xsd:attributeGroup ref="t0:NameDescDfltValu"/>
+      <xsd:attribute name="format" type="t0:ParamTypeType"/>
+      <!-- format assumed to be "Scalar" if not specified -->
+      <xsd:attribute name="type" type="t0:DataTypeType" use="required"/>
+      <xsd:attribute name="required" type="xsd:boolean"/>
+      <!-- required assumed to be true if not specified -->
+      <xsd:attribute name="hidden" type="xsd:boolean"/>
+      <!-- hidden assumed to be false if not specified -->
+      <xsd:attribute name="binding" type="xsd:string"/>
+      <xsd:attribute name="valid" type="xsd:boolean"/>
+      <xsd:attribute name="xdevmap" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ParamGroupType">
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="parameter" type="t0:ParameterType"/>
+        <xsd:element name="paramchoice" type="t0:ParamChoiceType"/>
+      </xsd:choice>
+      <xsd:attributeGroup ref="t0:NameDescription"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ParamChoiceType">
+      <xsd:sequence>
+        <xsd:element name="paramgroup" type="t0:ParamGroupType"
+                     minOccurs="1" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attributeGroup ref="t0:NameDescDfltValu"/>
+      <xsd:attribute name="xdevmap" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ParametersType">
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element name="parameter" type="t0:ParameterType"/>
+        <xsd:element name="paramchoice" type="t0:ParamChoiceType"/>
+      </xsd:choice>
+    </xsd:complexType>
+
+    <!-- Redirection -->
+    <xsd:complexType name="LocalRedirType">
+      <xsd:attribute name="protocol" type="c:ProtocolType" use="required"/>
+      <xsd:attribute name="listenaddr" type="xsd:string" use="required"/>
+      <xsd:attribute name="listenport" type="xsd:string" use="required"/>
+      <xsd:attribute name="srcport" type="xsd:string"/>
+      <xsd:attribute name="srcportlist" type="xsd:string"/>
+      <xsd:attribute name="srcportrange" type="xsd:string"/>
+      <!-- srcport will be arbitrarily chosen if not specified -->
+      <xsd:attribute name="destaddr" type="xsd:string" use="required"/>
+      <xsd:attribute name="destport" type="xsd:string" use="required"/>
+      <xsd:attribute name="closeoncompletion" type="xsd:boolean"/>
+      <!-- closeoncompletion defaults to false if not specified -->
+    </xsd:complexType>
+
+    <xsd:complexType name="RemoteRedirType">
+      <xsd:attribute name="protocol" type="c:ProtocolType" use="required"/>
+      <xsd:attribute name="listenaddr" type="xsd:string" use="required"/>
+      <xsd:attribute name="listenport" type="xsd:string"/>
+      <xsd:attribute name="listenportlist" type="xsd:string"/>
+      <xsd:attribute name="listenportrange" type="xsd:string"/>
+      <xsd:attribute name="listenportcount" type="xsd:positiveInteger"/>
+      <xsd:attribute name="destaddr" type="xsd:string"/>
+      <!-- destaddr assumed to be "0.0.0.0" (INADDR_ANY) if not specified -->
+      <xsd:attribute name="destport" type="xsd:string" use="required"/>
+      <xsd:attribute name="closeoncompletion" type="xsd:boolean"/>
+      <!-- closeoncompletion defaults to false if not specified -->
+    </xsd:complexType>
+
+    <xsd:complexType name="RedirectionType">
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element name="local" type="t0:LocalRedirType"/>
+        <xsd:element name="remote" type="t0:RemoteRedirType"/>
+      </xsd:choice>
+    </xsd:complexType>
+
+    <!-- Binding -->
+    <xsd:group name="BINDING-GROUP">
+      <xsd:choice>
+<!-- bindtoextern is deprecated
+        <xsd:element name="bindtoextern" type="t0:BindToExternType"
+                     minOccurs="0" maxOccurs="unbounded"/>
+-->
+        <xsd:element name="bindtopath" type="t0:BindToPathType"
+                     minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element name="bindtovalue" type="t0:BindToValueType"
+                     minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:group>
+
+<!-- BindToExtern is deprecated
+    <xsd:complexType name="BindToExternType">
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="extern" type="xsd:string" use="required"/>
+    </xsd:complexType>
+-->
+
+    <xsd:complexType name="BindToPathType">
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="path" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="BindToValueType">
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="value" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <!-- Boolean Logic -->
+    <xsd:group name="BOOLEANLOGIC-GROUP">
+      <xsd:choice>
+        <xsd:element name="and" type="t0:AndType"/>
+        <xsd:element name="not" type="t0:NotType"/>
+        <xsd:element name="or" type="t0:OrType"/>
+      </xsd:choice>
+    </xsd:group>
+
+    <xsd:group name="BOOLEANLOGIC-LINKAGE">
+       <xsd:sequence>
+          <xsd:choice minOccurs="2" maxOccurs="unbounded">
+             <xsd:group ref="t0:BOOLEANLOGIC-GROUP"/>
+             <xsd:group ref="t0:TOUCHINFO-GROUP"/>
+          </xsd:choice>
+          <xsd:group ref="t0:BINDING-GROUP"
+                     minOccurs="0" maxOccurs="unbounded"/>
+       </xsd:sequence>
+    </xsd:group>
+
+    <xsd:group name="UNARY-BOOLEANLOGIC-LINKAGE">
+       <xsd:sequence>
+          <xsd:choice>
+             <xsd:group ref="t0:BOOLEANLOGIC-GROUP"/>
+             <xsd:group ref="t0:TOUCHINFO-GROUP"/>
+          </xsd:choice>
+          <xsd:group ref="t0:BINDING-GROUP"
+                     minOccurs="0" maxOccurs="unbounded"/>
+       </xsd:sequence>
+    </xsd:group>
+
+    <xsd:complexType name="AndType">
+       <xsd:group ref="t0:BOOLEANLOGIC-LINKAGE"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="NotType">
+       <xsd:group ref="t0:UNARY-BOOLEANLOGIC-LINKAGE"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="OrType">
+       <xsd:group ref="t0:BOOLEANLOGIC-LINKAGE"/>
+    </xsd:complexType>
+
+    <!-- Touchinfo -->
+    <xsd:group name="TOUCHINFO-GROUP">
+      <xsd:choice>
+        <xsd:element name="os" type="t0:OperatingSystemType"/>
+        <xsd:element name="os_patch" type="t0:PatchType"/>
+        <xsd:element name="patch" type="t0:PatchType"/>
+        <xsd:element name="product" type="t0:ProductType"/>
+        <xsd:element name="service" type="t0:ServiceType"/>
+        <xsd:element name="misc_service_info" type="t0:MiscInfoType"/>
+        <xsd:element name="contract" type="t0:ContractType"/>
+      </xsd:choice>
+    </xsd:group>
+
+    <xsd:group name="TOUCHINFO-LINKAGE">
+       <xsd:sequence>
+          <xsd:choice minOccurs="0">
+             <xsd:group ref="t0:BOOLEANLOGIC-GROUP"/>
+             <xsd:group ref="t0:TOUCHINFO-GROUP"/>
+          </xsd:choice>
+          <xsd:group ref="t0:BINDING-GROUP"
+                     minOccurs="0" maxOccurs="unbounded"/>
+       </xsd:sequence>
+    </xsd:group>
+
+    <xsd:complexType name="OperatingSystemType">
+        <xsd:complexContent>
+            <xsd:extension base="c:OperatingSystemType">
+                <xsd:group ref="t0:TOUCHINFO-LINKAGE" minOccurs="0"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ServiceType">
+        <xsd:complexContent>
+            <xsd:extension base="c:ServiceType">
+                <xsd:group ref="t0:TOUCHINFO-LINKAGE" minOccurs="0"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProductType">
+        <xsd:complexContent>
+            <xsd:extension base="c:ProductType">
+                <xsd:group ref="t0:TOUCHINFO-LINKAGE" minOccurs="0"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="MiscInfoType">
+        <xsd:complexContent>
+            <xsd:extension base="c:MiscInfoType">
+                <xsd:group ref="t0:TOUCHINFO-LINKAGE" minOccurs="0"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="PatchType">
+        <xsd:complexContent>
+            <xsd:extension base="c:PatchType">
+                <xsd:group ref="t0:TOUCHINFO-LINKAGE" minOccurs="0"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+   <xsd:attributeGroup name="contractattrgroup">
+      <xsd:attribute name="value" type="xsd:string"/>
+   </xsd:attributeGroup>
+
+    <xsd:complexType name="ContractType">
+        <xsd:group ref="t0:TOUCHINFO-LINKAGE" minOccurs="0"/>
+        <xsd:attributeGroup ref="t0:contractattrgroup"/>
+    </xsd:complexType>
+
+    <xsd:group name="LOGIC-LINKAGE">
+       <xsd:choice>
+          <xsd:group ref="t0:BOOLEANLOGIC-GROUP"/>
+          <xsd:group ref="t0:TOUCHINFO-GROUP"/>
+          <xsd:group ref="t0:BINDING-GROUP"/>
+       </xsd:choice>
+    </xsd:group>
+
+    <xsd:complexType name="LogicType">
+      <xsd:sequence>
+        <xsd:group ref="t0:LOGIC-LINKAGE"/>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="VersionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="((\d|[\d-[0]]\d+)\.){2}(\d|[\d-[0]]\d+)"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ConfigVersionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="((\d|[\d-[0]]\d+)\.){3}(\d|[\d-[0]]\d+)"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ConfigType">
+        <xsd:sequence>
+            <xsd:element name="inputparameters" type="t0:ParametersType"
+                         minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="outputparameters" type="t0:ParametersType"
+                         minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="redirection" type="t0:RedirectionType"
+                         minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="logic" type="t0:LogicType"
+                         minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="version" type="t0:VersionType" use="required"/>
+        <xsd:attribute name="configversion"
+                       type="t0:ConfigVersionType"
+                       use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="config" type="t0:ConfigType"/>
+
+</xsd:schema>

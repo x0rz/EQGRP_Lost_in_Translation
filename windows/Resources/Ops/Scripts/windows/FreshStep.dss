@@ -1,0 +1,159 @@
+#---------------------------------------------------------------------------------
+# File: FreshStep.dss
+#
+# Finds and puts "processinfo" files in upload dir.
+#
+# Modifications:
+# 	06/17/2009	Created.
+#	06/19/2009	Updated to get IP Addr
+#	06/25/2009	Fixed FTP output and cleanup
+#   08/04/2009  Added autofind projname
+#	08/10/2009	Update to validate proper Ip Addr and account for exceptions
+#
+#---------------------------------------------------------------------------------
+
+@echo off;
+
+@include "_Arrays.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "Ops_GenericFunctions.dsi";
+
+
+#---------------------------------------------------------------------------------
+string $logsDir;
+string $xmllogsDir;
+string $resourceDir;
+
+if (!_GetLpDirectory("logs", $logsDir)){
+	echo "ERROR - could not find DSZ Log Directory";
+}
+
+$xmllogsDir = "$logsDir/Data";
+_NormalizePath($xmllogsDir, _IsWindowsLocal());
+
+if (!_GetLpDirectory("resources", $resourceDir)){
+	echo "ERROR - could not find DSZ resources Directory";
+}
+
+##########################
+# Get IP Address of Target
+##########################
+string $pathParts;
+
+RegExSplit("\\\\", $logsDir, 0, $pathParts);
+
+int $ipTest = 0;
+int $ipAddr = 0;
+int $in = 0;
+string $tmp;
+while ($ipTest<sizeof($pathParts)){
+	@regex-global on;
+		RegExSub("\\.", "_", $pathParts[$ipTest]);
+	@regex-global off;
+	
+	RegExSplit("_", $pathParts[$ipTest], 0, $tmp);
+	if((sizeof($tmp) == 4) && ($in == 0)){
+		$ipAddr = $ipTest;
+		$in = 1;
+	}
+	$ipTest++;
+}
+
+echo "ipAddr = $ipAddr ; $pathParts[$ipAddr]";
+
+###########################################################
+# Get user input for PROJECTNAME since we cannot look it up
+# Try to figure out project name from PREPS dir
+###########################################################
+string $files;
+string $projname;
+string $prepsDir;
+string $broke;
+string $folderList;
+string $driveletter;
+bool $folderProperty;
+int $i = 0;
+int $x = 0;
+
+# set the prepsDir = [c|d|e]:\opsdisk\preps\* for dir later
+RegExSplit("\\\\", $resourceDir, 0, $broke);
+$prepsDir = "$broke[0]\\$broke[1]\\preps\\*";
+$driveletter = $broke[0];
+
+
+# Check for both opsdisk and dszopsdisk preps locations
+@record on;
+@echo off;
+	if(!`local dir $driveletter\\opsdisk\\preps\\*`){
+		`local dir $prepsDir`;
+	}
+	GetCmdData("DirItem::FileItem::name", $folderList);
+	GetCmdData("DirItem::FileItem::Attributes::Directory", $folderProperty);
+@record off;
+@echo on;
+
+while($x<sizeof($folderList)){
+	#ignore non-folders and the . and .. files
+	if(!(($folderList[$x] == ".") || ($folderList[$x] == ".."))){ 
+		if($folderProperty[$x]){
+			$projname[$i] = $folderList[$x];
+			$i++;
+		}
+	}
+	$x++;
+}
+
+if(sizeof($projname)!=1 ){ 
+	#Can't figure out project name from prepes
+	if (!GetInput("What is your current PROJECTNAME? [prep4op to avoid this]", $projname)){
+		echo "ERROR - could not get PROJECTNAME";
+	}
+}
+#at this point, we now have the project name we need
+
+string $dirtomake = "$driveletter/to_pp/freshstep_$projname\_$pathParts[$ipAddr]";
+_NormalizePath($dirtomake, _IsWindowsLocal());
+
+echo "Creating $dirtomake ...";
+
+if(!FileMkdir ("$dirtomake")){
+	echo "ERROR - could not make dir $dirtomake";
+}
+
+echo "... Copying ProcessInfo files to $dirtomake ...";
+
+if (FileGetFiles($xmllogsDir, "*processinfo*", $files)){
+	for (int $i=0; $i < sizeof($files); $i++){
+		
+		#get filename from path/filename
+		string $path;
+		SplitPath("$files[$i]", $path);
+
+		# create destination location
+		string $dst = "$dirtomake/$path[1]";
+		_NormalizePath($dst, _IsWindowsLocal());
+
+		if(!`local copy "$files[$i]" "$dst"`){
+			echo "ERROR - could not copy";
+		}
+			
+	}
+}
+
+echo "   ... Moving files from $dirtomake to CDR ... ";
+
+string $ScriptsDir;
+Ops_GetScriptsPath($ScriptsDir);
+StrCat($ScriptsDir, "/windows/freshstepCopyFast.bat");
+_NormalizePath($ScriptsDir, _IsWindowsLocal());
+
+if (!`local run -command "attrib -r $driveletter/to_pp/freshstep_$projname\_$pathParts[$ipAddr]/*" -redirect`){
+	echo "ERROR - could not change attribs to RW";
+}
+
+if (!`local run -command "$ScriptsDir"`){
+	echo "ERROR - could not fastmonkey files to high";
+}
+
+return true;
+

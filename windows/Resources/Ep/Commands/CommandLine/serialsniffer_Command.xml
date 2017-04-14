@@ -1,0 +1,94 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31414'>
+
+  <Command id='16' name='serialsniffer'>
+
+    <Help>Controls the DrillerSkyline driver.</Help>
+
+	<Input>
+		<Option name='driver' optional='false'>
+			<Help>The name of the driver on the target</Help>
+			<Argument name='name' data='driver'/>
+		</Option>
+		
+		<Option group='actions' optional='false' name='status'>
+			<Help>Retrieve the status of the target</Help>
+			<Set data='action' value='0'/>
+		</Option>
+		
+		<Option group='actions' optional='false' name='attachNow'>
+			<Help>Attach immediately to the specified device</Help>
+			<Set data='action' value='4'/>
+			<Argument name='device' data='parameter' />
+		</Option>
+
+		<Option group='actions' optional='false' name='attachAlways'>
+			<Help>Set DrillerSkyline to attach specified device next time a reconnect all is given</Help>
+			<Set data='action' value='3'/>
+			<Argument name='device' data='parameter' />
+		</Option>
+
+		<Option group='actions' optional='false' name='removeNow'>
+			<Help>Disconnect immediately from a numbered device</Help>
+			<Set data='action' value='6'/>
+			<Argument name='id' data='id'>
+				<Help>The device's id</Help>
+			</Argument>
+		</Option>
+
+		<Option group='actions' optional='false' name='removeAlways'>
+			<Help>Remove the connection requirement for the given device</Help>
+			<Set data='action' value='5'/>
+			<Argument name='device' data='parameter' />
+		</Option>
+		
+		<Option group='actions' optional='false' name='disconnect'>
+			<Help>Disconnect from all devices</Help>
+			<Set data='action' value='9'/>
+		</Option>
+
+		<Option group='actions' optional='false' name='reconnect'>
+			<Help>Reconnect to all devices, according to the stored settings</Help>
+			<Set data='action' value='10'/>
+		</Option>
+
+		<Option group='actions' optional='false' name='startListening'>
+			<Help>Starts listening on all devices already connected</Help>
+			<Set data='action' value='8'/>
+		</Option>
+
+		<Option group='actions' optional='false' name='stopListening'>
+			<Help>Stops listening on all devices, but does not disconnect</Help>
+			<Set data='action' value='7'/>
+		</Option>
+
+		<Option group='actions' optional='false' name='setLogFile'>
+			<Help>Sets the output file.  This is not read until a startListening or reconnect command is issued</Help>
+			<Set data='action' value='1'/>
+			<Argument name='path' data='parameter' />
+		</Option>
+
+		<Option group='actions' optional='false' name='setMaxLogSize'>
+			<Help>Sets the maximum size of the output file</Help>
+			<Set data='action' value='2'/>
+			<Argument name='bytes' data='fileSize' />
+		</Option>
+		
+		<Option group='actions' optional='false' name='getStoredSettings'>
+			<Help>Retrieving configuration options from the registry</Help>
+			<Set data='action' value='11'/>
+		</Option>
+    </Input>
+
+    <Output>
+      <Data name='driver' type='string'/>
+      <Data name='action' type='uint8_t'/>
+      <Data name='parameter' type='string'/>
+      <Data name='fileSize' type='uint64_t'/>
+      <Data name='id' type='uint32_t'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

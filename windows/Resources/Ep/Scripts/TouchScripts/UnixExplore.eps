@@ -1,0 +1,47 @@
+bool $ok = true;
+string $cmd = "";
+string $out = "";
+
+echo "\n\tUnixExplore";
+
+
+
+@echo off;
+#######################################################################
+$cmd = "banner -ip $argv[1] -port 23 -send "\\x00\\x01\\x00\\x01"";
+#echo "\n---------- UnixExplore : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+$out = "\t\t$cmd (telnet) :";
+if($ok) {echo"$out * YES *";} else { echo "$out no";}
+
+
+@echo off;
+#######################################################################
+$cmd = "banner -ip $argv[1] -port 111-wait 0";
+#echo "\n---------- UnixExplore : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+$out = "\t\t$cmd (sunrpc) :";
+if($ok) {echo"$out * YES *";} else { echo "$out no";}
+
+
+@echo off;
+#######################################################################
+$cmd = "banner -udp -ip $argv[1] -port 177 -send "\\x00\\x01\\x00\\x01\\x00\\x01\\x00\\x00"";
+#echo "\n---------- UnixExplore : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+$out = "\t\t$cmd (xdmcp)  :";
+if($ok) {echo"$out * YES *** YELLOW ***";} else { echo "$out no";}
+
+return true;

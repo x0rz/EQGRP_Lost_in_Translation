@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<Plugin pluginClass="ddb.dsz.plugin.about.About" pluginName="About..." align="left"/>
+	<Plugin pluginClass="ddb.dsz.plugin.systemlogviewer.SystemLogViewer" pluginName="System Logs" align="right"/>
+	<Plugin pluginClass="ds.plugin.replay.ReplayManager" pluginName="Operations" />
+</StartupConfig>

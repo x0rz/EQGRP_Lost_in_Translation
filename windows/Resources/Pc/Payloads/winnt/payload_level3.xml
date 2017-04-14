@@ -1,0 +1,66 @@
+<Payloads>
+	<Payload>
+		<Description>Standard TCP</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level3</Type>
+		<BaseFile>Level3/i386-winnt/release/PC_Level3_dll</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 3 TCP DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>HTTP Proxy</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level3</Type>
+		<BaseFile>Level3/i386-winnt/release/PC_Level3_http_dll</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 3 HTTP DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>Standard TCP</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>exe</BinType>
+		<Type>Level3</Type>
+		<BaseFile>Level3/i386-winnt/release/PC_Level3_exe</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 3 TCP EXE</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+	<Payload>
+		<Description>HTTP Proxy</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc</ShortName>
+		<Arch>i386</Arch>
+		<Os>winnt</Os>
+		<BinType>exe</BinType>
+		<Type>Level3</Type>
+		<BaseFile>Level3/i386-winnt/release/PC_Level3_http_exe</BaseFile>
+		<Persistence>Generic</Persistence>
+		<Extra name="Comms">Winsock</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 3 HTTP EXE</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x86</Extra>
+	</Payload>
+</Payloads>

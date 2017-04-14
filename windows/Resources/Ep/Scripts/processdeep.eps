@@ -1,0 +1,96 @@
+#-----------------------------------------------------------------------------
+# File: process.eps
+#
+#  Attempts to associate processes with their relative directories and dlls
+#
+#-----------------------------------------------------------------------------
+
+############################################################################################
+# Convert a string to lowercase                                                            #
+############################################################################################
+sub lc(IN string $string, OUT string $ret) {
+	@record on; @echo off;
+	`log local run -command "perl -e \\"\$a='$string';\$a=~tr/A-Z/a-z/;print \$a\\"" -redirect`;
+	@record off; @echo on;
+	$ret = GetCmdData("output");
+}
+############################################################################################
+
+string $SYSPATH = GetEnv("SYSPATH");
+string $SYSTEMROOT = GetEnv("SYSTEMROOT");
+
+@echo off;
+@record on;
+ifnot (`log processlist`) {
+	echo "Couldn't get Processlist";
+	return false;
+}
+@record off;
+
+int $ids = GetCmdData("id");
+string $names = GetCmdData("name");
+
+@record on;
+ifnot (`getdirectory -scripts`) {
+	echo "Couldn't get directory";
+	return false;
+}
+@record off;
+string $scripts_path = GetCmdData("dir");
+string $knowns;
+string $bads;
+ReadFile("$scripts_path..\\good_processes.txt",$knowns);
+ReadFile("$scripts_path..\\bad_processes.txt",$bads);
+
+int $i=0;
+while ($i < sizeof($ids)) {
+    string $bad;
+    bool $skip = false;
+    foreach $bad ($bads) {
+	if($names[$i] == $bad) {
+		echo "$ids[$i]:\t$names[$i]";
+		echo "Not running 'log processinfo -id $ids[$i].' It might get caught.\r\n";
+		$skip = true;
+		break;
+	}
+    }
+
+    @record on;
+    ifnot( $skip) {
+        ifnot (`log processinfo -id $ids[$i]`) {
+	    echo "$ids[$i]:\t$names[$i]\t\tCouldn't Get Processinfo\r\n";
+        } else {
+	    string $mod_name = GetCmdData("module_name");
+	    echo "$ids[$i]:\t$names[$i]\r\n\t$mod_name\r\n";
+
+	    ######################################################
+	    # Check common processes against good paths
+	    ######################################################
+	    string $known;
+	    foreach $known ($knowns) {
+		    string $line = Split(",",$known);
+		    string $path;
+		    if($line[1] == "SYSPATH"){
+			    $path = $SYSPATH;
+		    }
+		    if($line[1] == "SYSTEMROOT") {
+			    $path = $SYSTEMROOT;
+		    }
+		    if ($names[$i] == $line[0]) {
+			    string $good_name = "$path\\$line[0]";
+			    lc($mod_name,$mod_name);
+			    lc($good_name,$good_name);
+			    ifnot ($mod_name == $good_name) {
+				    echo "***************** ABOVE $line[0] MAY BE MALWARE *********************";
+			    }
+		    }
+	    }
+        }
+    }
+    @record off;
+    $i++;
+}
+echo "calling freshstep";
+`background script FreshStep.eps`;	
+return true;
+

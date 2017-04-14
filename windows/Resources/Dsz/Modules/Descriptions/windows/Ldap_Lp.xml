@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="Ldap_Lp" id="494" script="Tasking/Mcl_Cmd_Ldap_Tasking.pyo">
+    
+	<Interfaces/>
+
+	<Dependencies>
+		<Remote>Ldap_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"/>
+			</Version>
+		</Platform>
+	</Architecture>
+</Module>

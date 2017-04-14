@@ -1,0 +1,23 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>ripper</Name>
+		<ReplaceBeforeArgs>python ripper\ripper.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: ripper [-l | -p plugin1[,plugin2,..,pluginN] [-m filesize] [-u user1[,user2,...userN]]
+	Options:
+    -p : plugin(s) to run, multiples separated by commas
+	-m bytes: warn if file being collected is larger than bytes (default 262144 = 256kb)
+	-l : list available plugins
+    -u : users to collect against, comma separated
+	Ex. ripper -l
+	Ex. ripper -p unknowns,chrome,menupolice,firefox -m 204800
+</Help>
+<Options>
+    <Option>-p</Option>
+    <Option>-m</Option>
+    <Option>-l</Option>
+</Options>
+  </Alias>
+</Aliases>

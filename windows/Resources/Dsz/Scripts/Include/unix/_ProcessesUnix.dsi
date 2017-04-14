@@ -1,0 +1,20 @@
+@include "_Users.dsi";
+
+#-------------------------------------------------------------------------------
+# _IsProcessRunningAsRoot
+#	Determines whether the current process is running as root
+#-------------------------------------------------------------------------------
+Sub _IsProcessRunningAsRoot()
+{
+
+	string $user;
+	if (_GetCurrentUser($user) &&
+		defined($user) &&
+		($user == "root")) {
+		return true;
+	} else {
+		return false;
+	}
+		
+} /* END _IsProcessRunningAsRoot */
+

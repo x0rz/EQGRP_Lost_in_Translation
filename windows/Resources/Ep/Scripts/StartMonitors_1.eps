@@ -1,0 +1,106 @@
+#--------------------------------------------------------
+# File: StartMonitors.eps
+#
+#  Start State:	Assumes nothing
+#  End State:	All system monitors are started
+#  Errors:	
+#  Comments:	
+#
+# Modifications:
+#  03/21/01	Created from batch file
+#  12/17/01	Added check for nt4 for checknmagent
+#  03/20/02	Added "monitor" prefix to commands
+#  03/18/04 EpEnv Variables to try to keep the monitors from loading more than once.
+#--------------------------------------------------------
+
+#ifnot (prompt "Do you want to begin the monitors?") {
+#    echo "Aborting script...";
+#    return false;
+#}
+
+@echo off;
+
+# NT4
+@record on;
+bool $nt4 = true;
+if (`systemversion`) {
+    int $major = GetCmdData("sysVerMajor");
+    if ($major != 4) {
+	$nt4 = false;
+    }
+}
+@record off;
+
+bool $success = true;
+string $sMonitorStatus;
+
+$sMonitorStatus = GetEnv("mouse");
+ifnot ($sMonitorStatus == "STARTED"){
+	echo "Starting mouse monitor:";
+	if (`monitor checkmouse`) {
+	    echo "    STARTED";
+	} else {
+    		echo "    FAILED";
+    		$success = false;
+	}
+}
+echo "Not Starting keyboard monitor:";
+#if (`monitor checkkeyboard`) {
+#    echo "    STARTED";
+#} else {
+#    echo "    FAILED";
+#    $success = false;
+#}
+
+$sMonitorStatus = GetEnv("network");
+ifnot ($sMonitorStatus == "STARTED"){
+
+echo "Starting network monitor:";
+if (`background netstatmon`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    $success = false;
+}
+}
+
+$sMonitorStatus = GetEnv("process");
+ifnot ($sMonitorStatus == "STARTED"){
+
+echo "Starting process monitor:";
+if (`monitor processmonitor`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    $success = false;
+}
+}
+
+if ($nt4 == true) {
+$sMonitorStatus = GetEnv("nmagent");
+ifnot ($sMonitorStatus == "STARTED"){
+
+    if (`monitor checknmagent`) {
+	echo "    STARTED";
+    } else {
+	echo "    FAILED";
+	$success = false;
+    }
+}
+}
+
+@echo on;
+echo "";
+echo "---------------------------------------------------------------";
+`channels`;
+echo "---------------------------------------------------------------";
+echo "";
+
+if ($success == false) {
+   echo "Unable to start at least one monitor";
+   pause;
+} else {
+   echo "The monitors have been started";
+}
+
+return $success;

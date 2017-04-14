@@ -1,0 +1,39 @@
+@echo off;
+@include "_Versions.dsi";
+
+bool $rtn = true;
+echo("Registering Mcl_ThreadInject options");
+if (`moduletoggle -register -system Mcl_ThreadInject -silent`)
+{
+	echo("    SUCCESS", GOOD);
+}
+else
+{
+	echo("    FAILED", ERROR);
+	$rtn = false;
+}
+
+echo("Setting Mcl_ThreadInject Type");
+
+string $arch, $compiledArch;
+_GetArch($arch);
+_GetCompiledArch($compiledArch);
+
+# determine default based on arch/os
+string $type = "Std";
+if ($arch == "x64" && $compiledArch == "i386")
+{
+	$type = "DrNi";
+}
+
+if (!`ModuleToggle -set $type -system Mcl_ThreadInject -silent -nofree`)
+{
+	echo("    FAILED", ERROR);
+	$rtn = false;
+}
+else
+{
+	echo("    $type", GOOD);
+}
+
+return $rtn;

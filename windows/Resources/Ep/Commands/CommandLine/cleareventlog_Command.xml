@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31354'>
+
+  <Command id='16' name='cleareventlog'>
+
+    <Help>Returns a list of files in the specified directory</Help>
+
+    <Input>
+     <Argument name='logfile' optional='false' data='logfile'/>
+    </Input>
+
+    <Output>
+      <Data name='logfile' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

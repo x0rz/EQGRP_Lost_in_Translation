@@ -1,0 +1,20 @@
+#--------------------------------------------------------
+# File: VerifyRunning.eps
+#
+# Wrapper script to verify DarkSkyline tools are running
+#
+# Modifications:
+#  04/09/2004	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+return _DriverVerifyRunning($driver);

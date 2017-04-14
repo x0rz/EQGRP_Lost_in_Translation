@@ -1,0 +1,38 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='1' name='Library'>
+
+		<Help>Loads or frees a given system library</Help>
+		<Help> </Help>
+		<Help>NOTE: Freeing a library is a potentially dangerous operation</Help>
+
+		<Input>
+			<Option name='load' optional='false' group='operation'>
+				<Argument name='name' optional='false' data='name'/>
+				<Set data='type' value='1'/>
+				<Help>Load a system library</Help>
+			</Option>
+
+			<Option name='free' optional='false' group='operation'>
+				<Argument name='name' optional='false' data='name'/>
+				<Set data='type' value='2'/>
+				<Help>Free a loaded library</Help> 
+			</Option>
+			
+			<Option name='query' optional='false' group='operation'>
+				<Argument name='name' optional='false' data='name'/>
+				<Set data='type' value='3'/>
+				<Help>Queries for the location of a system library</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint8_t'/>
+			<Data name='name' type='string'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

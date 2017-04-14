@@ -1,0 +1,6 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25149' script='DataHandlers/Mcl_Cmd_DiBa_DataHandler.pyo'>
+	<DisplayTransform>diba_display.xsl</DisplayTransform>
+	<StorageTransform>diba_storage.xsl</StorageTransform>
+</DataHandler>

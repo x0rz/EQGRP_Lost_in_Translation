@@ -1,0 +1,12 @@
+[
+    {
+        "command": "hide",
+        "script": "wrappers/hide.py",
+        "reason": "Windows kernel 6.0+ PatchGuard protection"
+    },
+    {
+        "command": "packetredirect",
+        "script": "wrappers/packetredirect.py",
+        "reason": "Trigger failure alerter"
+    }
+]

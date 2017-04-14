@@ -1,0 +1,27 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>ForceLogon</Name>
+		<ReplaceBeforeArgs>script _ForceLogon.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>ForceLogon &lt;-user &lt;USER&gt;&gt;</Help>
+		<Help>    Use ExtremeBail to force the logon of the specified user</Help>
+		
+		<Options>
+			<Option>user</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>AcquireToken</Name>
+		<ReplaceBeforeArgs>script _AcquireToken.dss</ReplaceBeforeArgs>
+		<ReplaceAfterArgs></ReplaceAfterArgs>
+
+		<Help>AcquireToken</Help>
+		<Help>    Guides the operator through acquiring a token</Help>
+		
+		<Options>
+		</Options>
+	</Alias>
+</Aliases>

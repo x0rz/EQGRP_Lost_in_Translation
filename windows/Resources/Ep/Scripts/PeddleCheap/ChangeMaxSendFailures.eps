@@ -1,0 +1,76 @@
+#-----------------------------------------------------------------------------
+# File: ChangeMaxSendFailure.eps
+#
+#  Changes the ID of the given file
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+if ($argc != 3) {
+	echo "Usage: $argv[0] <original_file> <MaxSendFailures>";
+	return false;
+}
+
+string $file = $argv[1];
+string $MaxSendFailures = $argv[2];
+
+
+#string $startHour = $argv[2];
+#string $endHour = $argv[3];
+
+@record on;
+
+# get full path to original file
+ifnot (`getdirectory -resources`) {
+	echo "* ChangeMaxSendFailure: Unable to get resources directory";
+	return false;
+}
+
+string $resDir = GetCmdData("dir");
+ifnot (defined($resDir[0])) {
+	echo "* ChangeMaxSendFailure: Unable to retrieve resources directory";
+	return false;
+}
+
+# see if it's already a full path
+string $fullPath;
+string $parts = Split(":", $file);
+if (sizeof($parts) > 1) {
+	# path is a full path
+	$fullPath = $file;
+} else {
+	$fullPath = "$resDir\\$file";
+}
+
+# get logs directory
+ifnot (`getdirectory -logs`) {
+	echo "* ChangeMaxSendFailure: Unable to get logs directory";
+	return false;
+}
+
+string $currentDir = GetCmdData("dir");
+ifnot (defined($currentDir[0])) {
+	echo "* ChangeMaxSendFailure: Unable to retrieve logs directory";
+	return false;
+}
+
+# get filename
+string $fileParts = Split("\\", $file);
+int $lastPart = sizeof($fileParts);
+$lastPart--;
+string $fileName = $fileParts[$lastPart];
+ifnot (defined($fileName[0])) {
+	echo "* ChangeMaxSendFailure: Unable to determine file name";
+	return false;
+}
+
+$fileName = "$currentDir\\$fileName-MSF$MaxSendFailures";
+
+# set the time
+ifnot (`local run -command "$resDir\\PC\\Tools\\PCConfig.exe -proxy -inFile \\"$fullPath\\" -outFile \\"$fileName\\" -maxFailures $MaxSendFailures"`) {
+	echo "* ChangeMaxSendFailure: Max Send set failed";
+	return false;
+}
+
+echo "Max Send Failures set for $fileName";
+return SetCmdData(STRING, "file", $fileName);

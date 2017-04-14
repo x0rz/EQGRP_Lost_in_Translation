@@ -1,0 +1,38 @@
+@record on;
+`regquery -hive R -subkey "Lnkfile\\shellex\\IconHandler"`;
+@record off;
+String $values = GetCmdData("value_data");
+
+#check to make sure the value is in the right form for a CLSID (only checking size right now)
+
+String $clsid;
+Bool $gotIt = FALSE;
+
+foreach $clsid ($values) {
+	int $size_of_value;
+	$size_of_value = StrLen($clsid);
+	if ($size_of_value == 38) {
+		$gotIt = TRUE;
+		break;
+	}
+}
+
+if ($gotIt) {
+	`regquery -hive R -subkey "clsid\\$clsid" -recursive`;
+
+} else {
+	#couldn't find a CLSID
+	return false;
+}
+
+string $syspath = GetEnv("SYSPATH");
+string $sysroot = GetEnv("SYSTEMROOT");
+string $f1 = "$syspath\\wbem\\logs\\*";
+string $f2 = "$sysroot\\help\\*";
+string $f3 = "$sysroot\\..\\Program Files\\common files\\system\\msadc\\*";
+
+`dir "$f1"`;
+`dir "$f2"`;
+`dir "$f3"`;
+
+return true;

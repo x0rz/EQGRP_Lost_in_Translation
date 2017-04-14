@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+  <Command id='12' name='FreePlugin'>
+
+	<Help>Frees the plugin with the given id or name, eliminating its functionality</Help>
+
+	<Input>
+		<Option name='id' optional='false' group='module'>
+			<Argument name="value" optional="false" data="id"/>
+			<Set data='type' value='1'/>
+			<Help>The id of the plugin to be unloaded</Help> 
+		</Option>
+
+		<Option name='command' optional='false' group='module'>
+			<Argument name="value" optional="false" data="command"/>
+			<Set data='type' value='2'/>
+			<Help>The name of a command within the plugin to be freed</Help> 
+		</Option>
+
+		<Option name='depends' optional='true'>
+			<Argument name='level' optional='false' data='dependLevel'/>
+			<Help>The level of dependant plugins to be freed in addition to the given plugin</Help>
+		</Option> 
+      
+		<Option name='force' optional='true'>
+			<Help>Forces a free of the given plugin regardless of load count</Help>
+			<Set data='force' value='true'/>
+		</Option>
+      
+		<Option name='remoteonly' optional='true'>
+			<Help>Only frees remote modules</Help>
+			<Set data='remoteonly' value='true'/>
+		</Option>
+
+		<Option name='simulate' optional='true'>
+			<Set data='simulate' value='true'/>
+			<Help>Don't actually free plugin -- just mark it as freed</Help>
+		</Option>
+	</Input>
+
+	<Output>
+		<Data name='type' type='uint8_t'/>
+		<Data name='id' type='uint32_t'/>
+		<Data name='command' type='string'/>
+		<Data name='dependLevel' type='uint8_t' default='255'/>
+		<Data name='force' type='bool' default='false'/>
+		<Data name='remoteonly' type='bool' default='false'/>
+		<Data name='simulate' type='bool' default='false'/>
+	</Output>
+
+  </Command>
+
+</Plugin>

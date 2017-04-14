@@ -1,0 +1,76 @@
+#-----------------------------------------------------------------------------
+# File: MatchMac.eps
+#
+#  Takes any number of MAC addresses and attempts to find a matching comment
+#  in the "ethernetMACs.txt" file.  For each MAC address given, a the comment
+#  is stored with the SetCmdData function as "comment".  If no comment is
+#  found, an empty string is stored.
+# Modified thl 4/24/2003 to be faster and to work for more than 12 mac addresses
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+if ($argc < 2) {
+	echo "Usage: $argv[0] <mac1> [mac2] [mac3] ...";
+	return false;
+}
+
+@record on;
+ifnot (`getdirectory -scripts`) {
+	echo "* MatchMac: Unable to get script directory";
+	return false;
+}
+
+string $dir = GetCmdData("dir");
+ifnot (defined($dir[0])) {
+	echo "* MatchMac: Unable to retrieve script directory";
+	return false;
+}
+
+string $macFile = "ethernetMACs.txt";
+string $fileDir = "$dir\\..\\$macFile";
+string $pattern;
+string $lines;
+int $numLines;
+
+@record off;
+@echo on;
+
+int $index=1;
+while ($index < $argc) {
+    string $comment = "";
+
+    if ($argv[$index] == "00-00-00-00-00-00") {
+	# TODO: ignore invalidated entries, here or in calling script
+    }
+
+    string $mac = Split("-", $argv[$index]);
+    if (sizeof($mac) == 6) {
+	$pattern="$mac[0]:$mac[1]:$mac[2]";
+	@record on;
+	@echo off;
+	ifnot (`local grep -mask "$macFile" -pattern "$pattern" -path "$dir\\.." -nocase`) {
+	}
+	$lines = GetCmdData("line_data");
+	$numLines = sizeof($lines);
+	@echo on;
+	@record off;
+
+	int $i=0;
+	while ($i < $numLines) {
+		string $last = Split("     ", $lines[$i]);
+		if (sizeof($last) > 1) {
+			# we have a match
+			$comment = $last[1];
+		}
+		$i++;
+	}
+    } else {
+	echo "Bad mac address: $argv[$index]";
+    }
+
+    SetCmdData(STRING, "comment", $comment);
+    $index++;
+}
+
+return true;

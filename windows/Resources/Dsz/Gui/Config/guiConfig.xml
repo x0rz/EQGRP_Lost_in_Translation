@@ -1,0 +1,19 @@
+<GuiConfig>
+	<WindowSize>
+		<Width>1100</Width>
+		<Height>700</Height>
+	</WindowSize>
+	<FrameSize>
+		<Width>800</Width>
+		<Height>500</Height>
+	</FrameSize>
+	<TabImageSize>
+		<Width>32</Width>
+		<Height>32</Height>
+	</TabImageSize>
+	<!-- Possible values:  Top, Bottom, Left, Right -->
+	<TabAlignment>
+		<Main>Top</Main>
+		<Sub>Bottom</Sub>
+	</TabAlignment>
+</GuiConfig>

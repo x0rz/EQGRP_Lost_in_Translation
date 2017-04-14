@@ -1,0 +1,54 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>eventlogsearch</Name>
+		<ReplaceBeforeArgs>python eventlogsearch.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>eventlogsearch allows summary views of eventlogs to be generated</Help>
+		<Help> </Help>
+		<Help>eventlogsearch [OPTIONS]</Help>
+		<Help>
+[-log (logname)]
+  The event log to search. Default = Security
+[-target (machine)]
+  Remote machine to query
+[-num (numrecords)]
+  The number of entries to parse. A value of zero will result in all entries being parsed. Parsing will cease once the first 1000 records are found unless the 'max' keyword is used.
+[-max (maxreturned)]
+  Maximum entries returned from the target. Default=1000. A value of 0 will result in all possible entries returned. It is recommended that a value of 0 not be used due to the fact that a large database could result in an excessive number of entries being parsed and cause a slowdown in the speed and memory usage of the LP.  
+[-startrecord (startrecnum)]
+  Record with which to begin filtering. Default = Most recent record.
+[-id (id1)]
+  The Event ID on which to filter. Default = No filtering.
+[-logons]
+  Eventlogfilter for common authentication logs
+[-string (stringFilter)]
+  String in entry on which to filter.  Default = No filtering.
+[-sid (sidFilter)]
+  Username on which to filter.  Default = No filtering.
+[-xpath (xpath_value)]
+  XPath expression for search.
+[-summary]
+  Display a list of the strings associated with each event record
+[-monitor]
+  Execute the eventlogfilter command at a given interval and display any new results
+[-interval (interval)]
+  Interval at which to monitor
+</Help>
+<Options>
+    <Option>num</Option>
+    <Option>id</Option>
+    <Option>log</Option>
+    <Option>sid</Option>
+    <Option>string</Option>
+	<Option>startrecord</Option>
+	<Option>xpath</Option>
+	<Option>max</Option>
+	<Option>target</Option>
+	<Option>summary</Option>
+	<Option>logons</Option>
+    <Option>monitor</Option>
+    <Option>interval</Option>
+</Options>
+	</Alias>
+	</Aliases>

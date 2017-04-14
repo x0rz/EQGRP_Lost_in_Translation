@@ -1,0 +1,2 @@
+filter:ether dst 01:00:0c:cc:cc:cc
+netmask:255.0.0.0

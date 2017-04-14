@@ -1,0 +1,34 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31363'>
+
+  <Command id='16' name='portmap'>
+
+    <Help>Shows open ports and the process to which they belong</Help>
+
+    <Input>
+     <Option name="max" optional="true" group="ports">
+      <Argument name="#" data="maxports" />
+      <Help>The maximum number of ports to display (default=100)</Help>
+     </Option>
+
+     <Option name="handlememory" optional="true">
+      <Argument name="#" data="memory" />
+      <Help>The number of bytes to use for open handle list (default=250k)</Help>
+     </Option>
+
+     <!-- available for backwards compatibility -->
+     <Option name="maxports" optional="true" group="ports">
+      <Argument name="#" data="maxports" />
+     </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='maxports' type='uint32_t' default='100'/>
+      <Data name='memory'   type='uint32_t' default='256000'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

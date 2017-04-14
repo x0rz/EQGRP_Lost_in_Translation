@@ -1,0 +1,54 @@
+#############################################
+##	SetEnvs.eps - Set up environment
+##	variables for other scripts to use
+#############################################
+@include "_GenericFunctions.epm";
+
+
+# Directories:
+@echo off;
+
+string $temp;
+
+#this one has to come first because it's used first.
+_GetEPToolsPath($temp);
+SetEnv("OpsdiskTools","$temp");
+
+#this sets systemroot env variable
+`script syspath.eps`;
+
+@record on;
+`systemversion`;
+@record off;
+
+int $major = GetCmdData("sysVerMajor");
+int $minor = GetCmdData("sysVerMinor");
+int $spMajor = GetCmdData("sysSPMajor");
+SetEnv("OSMAJOR","$major");
+SetEnv("OSMINOR","$minor");
+SetEnv("SPMAJOR","$spMajor");
+
+
+_GetEPScriptsPath($temp);
+SetEnv("ScriptsDir", $temp);
+
+_GetEPResourcesPath($temp);
+SetEnv("ResourcesDir", "$temp");
+
+_GetSystemPath($temp);
+SetEnv("syspath","$temp");
+
+_GetTempPath($temp);
+SetEnv("tmppath","$temp");
+
+# Set initial heuristic environment variables
+# FALSE - It isn't set so continue normally
+# TRUE - It is set so skip potential problem commands
+SetEnv("noInject", "FALSE");
+SetEnv("noRegistry", "FALSE");
+SetEnv("noHide", "FALSE");
+SetEnv("noDriver", "FALSE");
+SetEnv("noKeyboard", "FALSE");
+SetEnv("noProcInfo", "FALSE");
+
+@echo on;

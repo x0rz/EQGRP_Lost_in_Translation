@@ -1,0 +1,109 @@
+
+@include "windows/_Sid.dsi";
+
+#-------------------------------------------------------------------------------
+# _GetProcessGroups
+#	Retrieves the process groups for the given process
+# Params:
+#	id - The process id (0=current)
+#	groups - The process groups
+#-------------------------------------------------------------------------------
+Sub _GetProcessGroups(IN int $id, OUT string $groups)
+{
+
+	string $idStr="";
+	if ($id != 0)
+	{
+		$idStr = "-id $id";
+	}
+	
+	@echo off;
+	@record on;
+	if (!`processinfo $idStr`) {
+    	return false;
+	}
+	@record off;
+
+	return GetCmdData("ProcessInfo::Groups::Group::Name", $groups);
+
+} /* END _GetProcessGroups */
+
+#-------------------------------------------------------------------------------
+# _IsProcessInAdminGroup
+#	Determines whether the current process is running as a user
+#	in the 'Administrators' group
+#-------------------------------------------------------------------------------
+Sub _IsProcessInAdminGroup(IN int $id)
+{
+	@echo off;
+	
+	# try to determine localized name for Administrators
+	string $admins;
+	_GetWellKnownSid("Administrators", $admins);
+	
+    return _IsProcessInGroup($id, $admins);
+
+} /* END _IsProcessInAdminGroup */
+
+#-------------------------------------------------------------------------------
+# _IsProcessInGroup
+#	Determines whether the current process is in the given group
+#	in the 'Users' group
+#-------------------------------------------------------------------------------
+Sub _IsProcessInGroup(IN int $id, IN string $group)
+{
+
+    string $groups;
+    if (!_GetProcessGroups($id, $groups)) {
+		return false;
+	}
+	
+	for (int $i=0; $i < sizeof($groups); $i++) {
+		if ($groups[$i] == $group) {
+			return true;
+		}
+	}
+	
+	# didn't find group
+	return false;
+	
+} /* END _IsProcessInGroup */
+
+#-------------------------------------------------------------------------------
+# _IsProcessInUsersGroup
+#	Determines whether the current process is running as a user
+#	in the 'Users' group
+#-------------------------------------------------------------------------------
+Sub _IsProcessInUsersGroup(IN int $id)
+{
+	@echo off;
+	
+	# try to determine localized name for Administrators
+	string $users;
+	_GetWellKnownSid("Users", $users);
+	
+    return _IsProcessInGroup($id, $users);
+	
+} /* END _IsProcessInUsersGroup */
+
+#-------------------------------------------------------------------------------
+# _IsProcessRunningAsSystem
+#	Determines whether the current process is running as SYSTEM
+#-------------------------------------------------------------------------------
+Sub _IsProcessRunningAsSystem(IN int $id)
+{
+	@echo off;
+	
+	# try to determine localized name for system
+	string $system;
+	_GetWellKnownSid("System", $system);
+	
+	string $user;
+	if (!_GetProcessUser($id, $user))
+	{
+		return false;
+	}
+	
+	return ($user == $system);
+
+} /* END _IsProcessRunningAsSystem */

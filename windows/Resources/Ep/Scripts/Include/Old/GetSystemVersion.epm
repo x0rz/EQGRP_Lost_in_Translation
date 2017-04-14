@@ -1,0 +1,59 @@
+#-------------------------------------------------------------------------------
+# GetSystemVersion
+#	Retrieves the remote system version
+# Params:
+#	majorVersion - The OS major version
+#	minorVersion - The OS minor version
+#	buildNumber - The OS build number
+#	platformId - The OS platform ID (0=Win32s | 1=Win9x | 2=WinNt family)
+#	spMajorVersion - The OS Service pack major version (valid on NT Sp4 and higher only)
+#	spMinorVersion - The OS Service pack major version (valid on NT Sp4 and higher only)
+#-------------------------------------------------------------------------------
+Sub GetSystemVersion(OUT int $majorVersion, OUT int $minorVersion, OUT int $buildNumber,
+		     OUT int $platformId, OUT int $spMajorVersion, OUT int $spMinorVersion)
+{
+
+    bool $haveVersion = GetEnv("sysVersionSet");
+    if ($haveVersion) {
+
+	# already got the system version
+	$majorVersion = GetEnv("sysVerMajor");
+	$minorVersion = GetEnv("sysVerMinor");
+	$buildNumber = GetEnv("sysBuild");
+	$platformId = GetEnv("sysPlatformId");
+	$spMajorVersion = GetEnv("sysSPMajor");
+	$spMinorVersion = GetEnv("sysSPMinor");
+
+    } else {
+
+	# need to get the system version
+	@echo off;
+	@record on;
+	ifnot (`systemversion`) {
+	    # command failed
+	    return false;
+	}
+	@record off;
+	@echo on;
+
+	$majorVersion = GetCmdData("sysVerMajor");
+	$minorVersion = GetCmdData("sysVerMinor");
+	$buildNumber = GetCmdData("sysBuild");
+	$platformId = GetCmdData("sysPlatformId");
+	$spMajorVersion = GetCmdData("sysSPMajor");
+	$spMinorVersion = GetCmdData("sysSPMinor");
+
+	# record the version information for later use
+	bool $set = true;
+	ifnot (SetEnv("sysVerMajor", "$majorVersion")) { $set = false; }
+	ifnot (SetEnv("sysVerMinor", "$minorVersion")) { $set = false; }
+	ifnot (SetEnv("sysBuild", "$buildNumber")) { $set = false; }
+	ifnot (SetEnv("sysPlatformId", "$platformId")) { $set = false; }
+	ifnot (SetEnv("sysSPMajor", "$spMajorVersion")) { $set = false; }
+	ifnot (SetEnv("sysSPMinor", "$spMinorVersion")) { $set = false; }
+	SetEnv("sysVersionSet", "$set");
+    }
+   
+    return true;
+
+} /* END GetSystemVersion */

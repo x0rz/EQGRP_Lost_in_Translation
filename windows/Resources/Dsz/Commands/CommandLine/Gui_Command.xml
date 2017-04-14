@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='19' name='Gui'>
+
+		<Help>Interacts with the GUI</Help>
+
+		<Input>
+			<Option name='command' optional='false'>
+				<Help>Sends a given command to the GUI</Help>
+				<Argument name='cmd' data='cmd'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='cmd' type='string'/>
+		</Output>
+
+	</Command>
+</Plugin>

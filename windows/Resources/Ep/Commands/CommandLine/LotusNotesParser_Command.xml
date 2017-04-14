@@ -1,0 +1,70 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31364'>
+
+  <Command id='16' name='lotusnotesparser'>
+
+    <Help>Extracts data from a specified Lotus Notes mail database</Help>
+
+    <Input>
+      <Option name='db' optional='false'>
+        <Argument name='dbfilename' data='dbfile'/>
+        <Help>Relative (e.g. mail\mydb.nsf) or full path of Lotus Notes mail
+        database. Providing the nsf file extension is optional. When using
+        a relative path, the Lotus path is assumed as the default directory.
+        The Lotus Domino path may be determined by querying the following
+        registry key value:
+		HKEY_LOCAL_MACHINE\Software\Lotus\Domino\Path.
+      </Help>
+      </Option>
+
+      <Option name='id' optional='true'>
+	<Argument name='number' data='id'/>
+	<Help>Message id number of single email message to display.
+        This option must be used to retrieve the body and/or attachments
+        of an email message.
+        </Help>
+      </Option>
+
+      <Option name='attach' optional='true'>
+	<Set data='attach' value='true'/>
+	<Help>Extract attachment for specified mail message.
+	This option is only valid with the -id option.
+        </Help>
+      </Option>
+
+      <Option name='after' optional='true'>
+	<Argument name='MM/DD/YYYY' data='after'/>
+	<Help>Only display messages with posted dates after the given date.
+	This option may not be used with the -id option.
+        </Help>
+      </Option>
+
+      <Option name='before' optional='true'>
+	<Argument name='MM/DD/YYYY' data='before'/>
+	<Help>Only display messages with posted dates before the given date.
+	This option may not be used with the -id option.
+        </Help>
+      </Option>
+
+      <Option name='age' optional='true'>
+	<Argument name='days' data='age'/>
+	<Help>Only display messages that are at most 'days' old.
+	This option may not be used with the -id option.
+        </Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='dbfile' type='string'/>
+      <Data name='attach' type='bool' default='false'/>
+      <Data name='id' type='uint32_t'/>
+      <Data name='after' type='string'/>
+      <Data name='before' type='string'/>
+      <Data name='age' type='uint32_t' default='0'/> 
+    </Output>
+
+  </Command>
+
+</Plugin>
+

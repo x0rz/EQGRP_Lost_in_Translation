@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25021' script='DataHandlers/Mcl_Cmd_Ifconfig_DataHandler.pyo'>
+</DataHandler>

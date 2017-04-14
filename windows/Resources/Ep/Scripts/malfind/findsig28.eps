@@ -1,0 +1,30 @@
+string $docsandsettings = GetEnv("SYSTEMROOT");
+$docsandsettings = "$docsandsettings\\..\\Documents and Settings";
+
+@record on;
+`dir * -path "$docsandsettings"`;
+@record off;
+
+string $subkeys = GetCmdData('name');
+string $subkey;
+
+foreach $subkey ($subkeys)
+{
+	if ($subkey == ".")
+	{
+		continue;
+	}
+
+	if ($subkey == "..")
+	{
+		continue;
+	}
+
+	if (`script dirwrapper.eps "$docsandsettings\\$subkey\\Local Settings\\Application Data\\S-1-5-31-1286970278978-5713669491-166975984-320\\*"`)
+	{
+		return true;
+	}
+
+}
+
+return false;

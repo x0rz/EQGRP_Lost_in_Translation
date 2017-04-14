@@ -1,0 +1,56 @@
+
+@quiet off;
+
+if (($argc < 2) || ($argc > 3))
+{
+    echo "Usage: $argv[0] <cmd_to_prompt> [location]";
+    echo "    Adds a prompt before a command is run";
+	return false;
+}
+
+string $location="";
+string $locStr="ALL";
+if ($argc > 2)
+{
+	if (($argv[2] == "both") || ($argv[2] == "all"))
+	{
+		$location = " -location all";
+		$locStr = "ALL";
+	}
+	else if ($argv[2] == "local")
+	{
+		$location = " -location local";
+		$locStr = "LOCAL";
+	}
+	else if ($argv[2] == "remote")
+	{
+		$location = " -location remote";
+		$locStr = "REMOTE";
+	}
+	else if ($argv[2] == "current")
+	{
+		$location = " -location current";
+		$locStr = "CURRENT";
+	}
+	else
+	{
+		echo("Invalid location specified for prompt", ERROR);
+		return false;
+	}
+}
+
+@echo off;
+
+# delete any existing wrapper (if any)
+`wrappers -unregister $argv[1] -pre -script "HelperScripts/_PromptCommand.pyo"$location`;
+
+if (`wrappers -register $argv[1] -pre -script "HelperScripts/_PromptCommand.pyo"$location`)
+{
+	echo "PROMPTED - $argv[1] ($locStr)";
+	return true;
+}
+else
+{
+	echo("* Unable to add prompt alias for $argv[1]", ERROR);
+	return false;
+}

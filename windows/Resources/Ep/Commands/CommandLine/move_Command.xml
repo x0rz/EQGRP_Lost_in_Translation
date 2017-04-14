@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31309'>
+ <Command id='16' name='move'>
+  <Help>Moves or deletes a file.</Help>
+  <Input>
+   <Argument name='from_file'      optional='false' data='source'>
+    <Help>Name of the file to move or delete.</Help>
+   </Argument>
+   <Argument name='to_file' optional='true' data='destination'>
+    <Help>Where to move a file (leave blank for deletion)</Help>
+   </Argument>
+   <Option name='delay' optional='true'>
+    <Set data='delay' value='1'/>
+    <Help>Wait until reboot to (re)move file.</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='source' type='string'/>
+   <Data name='destination' type='string'/>
+   <Data name='delay' type='int8_t' default="0" />
+  </Output>
+ </Command>
+</Plugin>

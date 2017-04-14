@@ -1,0 +1,17 @@
+behavepeking		script BehavePeking.eps
+bp_install		script BehavePeking\FullInstall.eps mdnwdiag
+bp_uninstall		script BehavePeking\FullUninstall.eps mdnwdiag
+bp_installdriver	script BehavePeking\InstallDriver.eps mdnwdiag
+bp_uninstalldriver	script BehavePeking\UninstallDriver.eps mdnwdiag
+bp_installexe		script DraftyPlan\Install.eps pdresy 1
+bp_uninstallexe		script DraftyPlan\Uninstall.eps pdresy
+bp_load			driverload -name mdnwdiag
+bp_unload		driverunload -name mdnwdiag
+bp_verify		script BehavePeking\VerifyInstall.eps mdnwdiag
+bp_running		script BehavePeking\VerifyRunning.eps mdnwdiag
+bp_status		script BehavePeking\GetStatus.eps mdnwdiag
+bp_getfilter		webtipper -name mdnwdiag -get
+bp_setfilter		script BehavePeking\SetFilter.eps mdnwdiag
+bp_configexe		script BehavePeking\ConfigureExe.eps
+bp_start		webtipper -name mdnwdiag -control start
+bp_stop			webtipper -name mdnwdiag -control stop

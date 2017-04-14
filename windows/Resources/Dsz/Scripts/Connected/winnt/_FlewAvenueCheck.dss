@@ -1,0 +1,34 @@
+
+@include "_LpHelperFunctions.dsi";
+@include "_VersionChecks.dsi";
+
+@echo off;
+@quiet off;
+
+bool $rtn=true;
+if (_IsWindows2000OrGreater())
+{
+	if (`flav_control -available`)
+	{
+		# look for Flav scripts for all projects
+		string $dataPath;
+		_GetLpProjectsDirectories($dataPath);
+		for (int $i=0; $i < sizeof($dataPath); $i++)
+		{
+			string $scripts;
+			if (FileGetFiles("$dataPath[$i]/Scripts/Flav", "*.dss", $scripts))
+			{
+				for (int $j=0; $j < sizeof($scripts); $j++)
+				{
+					if (!`script "$scripts[$j]" -args "-enable"`)
+					{
+						$rtn = false;
+					}
+				}
+			}
+		}
+	}
+
+}
+
+return $rtn;

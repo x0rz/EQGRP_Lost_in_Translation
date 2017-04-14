@@ -1,0 +1,35 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31348'>
+
+  <Command id='16' name='processhide'>
+
+    <Help>Hide/Unhide a process</Help>
+
+    <Input>
+      <Option name='hide' optional='false' group='doWhat'>
+	<Set data='flag' value='1'/>
+      </Option>
+      <Option name='unhide' optional='false' group='doWhat'>
+	<Set data='flag' value='2'/>
+      </Option>
+      <Option name='id' optional='false'>
+	<Argument name='#' data='id'/>
+	<Help>Process to show or hide</Help>
+      </Option>
+
+      <Option name='location' optional='true'>
+	<Argument name='hex' data='location'/>
+	<Help>Return value from a processhide.  Required for unhiding.</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='flag'     type='uint8_t' default='0'/>
+      <Data name='id'       type='uint32_t' default='0'/>
+      <Data name='location' type='uint32_t' default='0'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,24 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>jscan</Name>
+		<ReplaceBeforeArgs>script jscanner.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>JScanner Command Line Usage</Help>
+		<Help>jscan [OPTIONS]  SCANTYPE  IP_ADDRESS  [DSTPORT] [SRCPORT]</Help>
+		<Help>OPTIONS</Help>
+		<Help>-d      path containing scan types</Help>
+		<Help>-p      output path</Help>
+		<Help>-t      timeout</Help>
+		<Help>-f      read a file and perform the scans it describes</Help>
+		<Help>-s      maximum number of scan threads</Help>
+		<Help>-o      change default output handler</Help>
+		<Help>-D      port to run as a daemon on and listen for commands</Help>
+		<Help>-P      overwrite any preference by Name then Value(like -ad)</Help>
+		<Help>-h      this help screen</Help>
+		<Help>-v      perform vulnerability anaylsis on all results</Help>
+		<Help>to get a list of scan types run:        jscan scans</Help>
+		<Options>
+		</Options>
+	</Alias>
+</Aliases>

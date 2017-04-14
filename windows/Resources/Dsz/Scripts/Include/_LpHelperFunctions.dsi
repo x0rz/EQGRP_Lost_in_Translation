@@ -1,0 +1,352 @@
+@include "_File.dsi";
+@include "_Arrays.dsi";
+@include "_Paths.dsi";
+@include "_Xml.dsi";
+
+#-------------------------------------------------------------------------------
+# _GetLpDirectory
+#	Retrieves the given LP directory
+# Params:
+#	type - The LP directory type
+#	dir - The full path to the given directory
+#-------------------------------------------------------------------------------
+Sub _GetLpDirectory(IN string $type, OUT string $dir)
+{
+
+
+    if (GetEnv("_lpDir_$type", $dir) && (strlen($dir) > 0)) {
+		# already got directory at one point
+		return true;
+	}
+	
+    # have to get the directory
+	@echo off;
+	@record on;
+	if (!`lpdirectory -$type`) {
+	    # Failed to get directory
+	    return false;
+	}
+
+	if (!GetCmdData("DirectoryItem::dir", $dir) || !defined($dir)) {
+	    # directory not recorded
+	    return false;
+	}
+
+	# record the directory
+	SetEnv("_lpDir_$type", $dir);
+
+    return true;
+
+}
+# END _GetLpDirectory
+
+#-------------------------------------------------------------------------------
+# _GetLpLogsDirectory
+#	Retrieves the LP logging directory
+# Params:
+#	dir - The full path to the logs directory
+#-------------------------------------------------------------------------------
+Sub _GetLpLogsDirectory(OUT string $dir)
+{
+
+	# special case
+	if (GetEnv("_LOGPATH", $dir) && defined($dir))
+	{
+		return true;
+	} else {
+		return _GetLpDirectory("logs", $dir);
+	}
+
+}
+# END _GetLpLogsDirectory
+
+#-------------------------------------------------------------------------------
+# _GetLpResourceName
+#	Retrieves the appropriate (local or remote) name from a Names.xml file
+#	in the given resource directory
+# Params:
+#	subdir - The resource sub-directory name
+#	name - On output contains the name
+#-------------------------------------------------------------------------------
+Sub _GetLpResourceName(IN string $subdir, OUT string $name)
+{
+
+    string $resDir;
+    if (!_GetLpResourcesDirectory($resDir) || !defined($resDir))
+    {
+    	return false;
+	}
+
+	string $xmlPath = "$resDir/$subdir/Names.xml";
+	
+	_XmlElement @xml;
+	if (IsLocal())
+	{
+		if (!_XmlReadFile($xmlPath, "Local", @xml))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (!_XmlReadFile($xmlPath, "Remote", @xml))
+		{
+			return false;
+		}
+	}
+
+	$name = @xml.$text;
+    return true;
+
+}
+# END _GetLpResourceName
+
+#-------------------------------------------------------------------------------
+# _GetLpResourcesDirectory
+#	Retrieves the LP resources directory
+# Params:
+#	dir - The full path to the resources directory
+#-------------------------------------------------------------------------------
+Sub _GetLpResourcesDirectory(OUT string $dir)
+{
+
+    return _GetLpDirectory("resources", $dir);
+
+}
+# END _GetLpResourcesDirectory
+
+#-------------------------------------------------------------------------------
+# _GetLpProjectsDirectories
+#	Retrieves the LP resources directory
+# Params:
+#	dir - The full path to the resources directory
+#-------------------------------------------------------------------------------
+Sub _GetLpProjectsDirectories(OUT string $dirs)
+{
+	string $dir;
+	if( !_GetLpDirectory( "resources", $dir ) ) {
+		return false;
+	}
+
+	string $res, $r;
+    if( !GetEnv( "_RES_DIRS", $res ) || !defined( $res ) || ( strlen( $res ) == 0 ) ) {
+		return false;
+	}
+	
+	if( !RegexSplit( ";", $res, 0, $res ) || !defined( $res ) ) {
+		return false;
+	}
+	
+	for (int $i=0; $i < sizeof($res); $i++) {
+		string $temp = "$dir/$res[$i]";
+		_NormalizePath( $temp, _IsWindowsLocal() );
+		_AppendString( $dirs, $temp );
+	}
+
+	return true;
+}
+# END _GetLpResourcesDirectory
+
+#-------------------------------------------------------------------------------
+# _RecordToolUse
+#    Records the use of a tool
+# Params:
+#    name - The name of the tool
+#    version - The tool version
+#-------------------------------------------------------------------------------
+Sub _RecordToolUse(IN STRING $name, IN STRING $version)
+{
+	return _RecordToolUse($name, $version, "", "", "", "");
+}
+Sub _RecordToolUse(IN STRING $name,
+				   IN STRING $version,
+				   IN STRING $usage,
+				   IN STRING $status)
+{
+	return _RecordToolUse($name, $version, $usage, $status, "", "");
+}
+Sub _RecordToolUse(IN STRING $name,
+				   IN STRING $version,
+				   IN STRING $usage,
+				   IN STRING $status,
+				   IN STRING $comment)
+{
+	return _RecordToolUse($name, $version, $usage, $status, $comment, "");
+}
+Sub _RecordToolUse(IN STRING $name,
+				   IN STRING $version,
+				   IN STRING $usage,
+				   IN STRING $status,
+				   IN STRING $comment,
+				   IN STRING $location)
+{
+
+	@case-sensitive off;
+	
+	if ($name == "") {
+		echo "* No name given -- cannot record tool use";
+		return false;
+	}
+
+	string $usedToolDir = "UsedTools";
+	
+	string $time;
+    GetTimestamp($time);
+    
+    # replace any spaces in test
+    @regex-global on;
+    string $fixedName = $name;
+    RegExSub(" ", "_", $fixedName);
+    
+    string $filename = "$fixedName\_$time.xml";
+    
+    string $logDir;
+	if (!_GetLpLogsDirectory($logDir))
+	{
+		echo "* _RecordToolUse : Failed to get logs directory";
+		return false;
+	}
+	FileMkdir("$logDir/$usedToolDir");
+	
+	# fix any reserved XML characters
+    string $xmlName = $name;
+    RegExSub("&", "&amp;", $xmlName);
+    RegExSub("<", "&lt;", $xmlName);
+    RegExSub(">", "&gt;", $xmlName);
+    string $xmlVersion = $version;
+    RegExSub("&", "&amp;", $xmlVersion);
+    RegExSub("<", "&lt;", $xmlVersion);
+    RegExSub(">", "&gt;", $xmlVersion);
+    
+    string $xmlUsage;
+    for (int $i=0; $i < sizeof($usage); $i++)
+    {
+		if (StrLen($usage[$i]) > 0)
+		{
+			if ($usage[$i] == "EXERCISED")
+			{
+				if (defined($xmlUsage))
+				{
+					$xmlUsage = "$xmlUsage,EXERCISED";
+				}
+				else
+				{
+					$xmlUsage = "EXERCISED";
+				}
+			}
+			else if ($usage[$i] == "ACCESSED")
+			{
+				if (defined($xmlUsage))
+				{
+					$xmlUsage = "$xmlUsage,ACCESSED";
+				}
+				else
+				{
+					$xmlUsage = "ACCESSED";
+				}
+			}
+			else if ($usage[$i] == "INSTALLED")
+			{
+				if (defined($xmlUsage))
+				{
+					$xmlUsage = "$xmlUsage,INSTALLED";
+				}
+				else
+				{
+					$xmlUsage = "INSTALLED";
+				}
+			}
+			else if ($usage[$i] == "UNINSTALLED")
+			{
+				if (defined($xmlUsage))
+				{
+					$xmlUsage = "$xmlUsage,UNINSTALLED";
+				}
+				else
+				{
+					$xmlUsage = "UNINSTALLED";
+				}
+			}
+		}
+		
+		if (defined($xmlUsage))
+		{	
+			RegExSub("&", "&amp;", $xmlUsage);
+			RegExSub("<", "&lt;", $xmlUsage);
+			RegExSub(">", "&gt;", $xmlUsage);
+		}
+    }
+    string $xmlStatus;
+    if (StrLen($status) > 0)
+    {
+		if ($status == "Successful")
+		{
+			$xmlStatus = "Successful";
+		}
+		else if ($status == "Failed")
+		{
+			$xmlStatus = "Failed";
+		}
+		else if ($status == "Cancelled")
+		{
+			$xmlStatus = "Cancelled";
+		}
+		if (defined($xmlStatus))
+		{
+			RegExSub("&", "&amp;", $xmlStatus);
+			RegExSub("<", "&lt;", $xmlStatus);
+			RegExSub(">", "&gt;", $xmlStatus);
+		}
+    }
+    
+    string $xmlLocation;
+    if (StrLen($location) > 0)
+    {
+		$xmlLocation = $location;
+		RegExSub("&", "&amp;", $xmlLocation);
+		RegExSub("<", "&lt;", $xmlLocation);
+		RegExSub(">", "&gt;", $xmlLocation);
+	}
+    string $xmlComment;
+    if (StrLen($comment) > 0)
+    {
+		$xmlComment = $comment;
+		RegExSub("&", "&amp;", $xmlComment);
+		RegExSub("<", "&lt;", $xmlComment);
+		RegExSub(">", "&gt;", $xmlComment);
+	}
+	
+	string $lines;
+	_AppendString($lines, '<?xml version="1.0" ?>\n');
+	_AppendString($lines, '<UsedTool>\n');
+	_AppendString($lines, '    <Name>$xmlName</Name>\n');
+	_AppendString($lines, '    <Version>$xmlVersion</Version>\n');
+	if (defined($xmlUsage))
+	{
+		_AppendString($lines, '    <Usage>$xmlUsage</Usage>\n');
+	}
+	if (defined($xmlStatus))
+	{
+		_AppendString($lines, '    <ToolStatus>$xmlStatus</ToolStatus>\n');
+	}
+	if (defined($xmlLocation))
+	{
+		_AppendString($lines, '    <ToolLocation>$xmlLocation</ToolLocation>\n');
+	}
+	if (defined($xmlComment))
+	{
+		_AppendString($lines, '    <ToolComment>$xmlComment</ToolComment>\n');
+	}
+	_AppendString($lines, '</UsedTool>\n');
+
+	if (!WriteFile("$logDir/$usedToolDir/$filename", false, $lines))
+	{
+		echo "* _RecordToolUse : Failed to write tool use information";
+		return false;
+	}
+	
+    return true;
+
+}
+# END _RecordToolUse
+

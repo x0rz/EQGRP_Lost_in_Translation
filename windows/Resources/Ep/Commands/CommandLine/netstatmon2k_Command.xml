@@ -1,0 +1,39 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31362'>
+
+  <Command id='16' name='netstat'>
+
+    <Help>Shows current network connections</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+      <Data name='type'   type='uint8_t'  default='1'/>
+      <Data name='delay'  type='uint32_t' default='0'/>
+    </Output>
+
+  </Command>
+
+  <Command id='16' name='netstatmon'>
+
+    <Help>Shows current network connections</Help>
+
+    <Input>
+     <Option name="delay" optional="true">
+      <Argument name="n" data="delay" />
+      <Help>number of seconds between netstat updates [default = 5]</Help>
+     </Option>
+     <Option name="noshow" optional="true">
+      <Help>Ignored</Help>
+     </Option>
+    </Input>
+
+    <Output>
+      <Data name='type'   type='uint8_t'  default='2'/>
+      <Data name='delay'  type='uint32_t' default='5'/>
+    </Output>
+
+  </Command>
+</Plugin>

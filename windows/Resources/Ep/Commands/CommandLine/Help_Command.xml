@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='17' name='Help'>
+
+    <Help>Returns a list of possible commands.</Help>
+    <Help> </Help>
+    <Help>If more information about a particular command is desired</Help>
+    <Help>try "&lt;command&gt; ?" at the command prompt.</Help>
+
+    <Input/>
+    <Output/>
+
+  </Command>
+
+</Plugin>

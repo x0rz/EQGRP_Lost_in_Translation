@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<Macro macroFile="Browsers.xml" platform="winnt"/>
+	<Macro macroFile="Transfers.xml" platform="winnt"/>
+
+	<Plugin pluginClass="ddb.dsz.plugin.logviewer.LogViewer"	pluginName="LogViewer" />
+	<Plugin pluginClass="ds.plugin.uber.UberPlugin" pluginName="System" visible="true" align="right">
+		<InitArgs>-load=uberReplay.xml</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ds.plugin.peer.PeerClient"     pluginName="Network Client" align="left">
+		<InitArgs>-load=PeerReplay.xml</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.taskmanager.TaskManager2"	pluginName="Processes" />
+	<Plugin pluginClass="ddb.dsz.plugin.filemanager.ver3.FileManager" pluginName="Files"/>
+	<Plugin pluginClass="ddb.dsz.plugin.netmapviewer.NetmapViewer" pluginName="Network"/>
+	<Plugin pluginClass="ddb.dsz.plugin.transfermonitor.TransferMonitor" pluginName="Transfers"/>
+	<Plugin pluginClass="ddb.dsz.plugin.screenshot.ScreenShot" pluginName="Screenshot" />
+
+</StartupConfig>

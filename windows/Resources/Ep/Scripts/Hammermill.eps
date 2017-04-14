@@ -1,0 +1,114 @@
+
+bool $showUsage = false;
+bool $success = true;
+if ($argc <= 1) {
+    $showUsage = true;
+    $success = false;
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <start|stop> ...";
+    return $success;
+}
+
+int $localPorts;
+int $remotePorts;
+
+# setup the ports
+$localPorts[0] = 2221;
+$remotePorts[0] = 79;
+$localPorts[1] = 2222;
+$remotePorts[1] = 23;
+$localPorts[2] = 2223;
+$remotePorts[2] = 23;
+$localPorts[3] = 2224;
+$remotePorts[3] = 23;
+
+if ($argv[1] == "start") {
+
+    if ($argc <= 2) {
+	$showUsage = true;
+	$success = false;
+    } else if ($argv[2] == "?") {
+	$showUsage = true;
+    }
+
+    if ($showUsage) {
+	echo "Usage: $argv[0] $argv[1] <targetIP> [bind_address]";
+	return $success;
+    }
+
+    string $ipAddr = $argv[2];
+    string $bindAddr;
+    if ($argc > 3) {
+	$bindAddr = $argv[3];
+    } else {
+	$bindAddr = "0.0.0.0";
+    }
+
+    @echo off;
+
+    int $i=0;
+    while ($i < sizeof($localPorts)) {
+	echo "Starting TCP local $localPorts[$i] -> target $remotePorts[$i]";
+	ifnot (`redirect -tcp -lplisten $localPorts[$i] -target $ipAddr $remotePorts[$i] -bind $bindAddr`) { 
+	    echo "    FAILED";
+	    $success = false;
+	} else {
+	    echo "    SUCCESS";
+	}
+	$i++;
+    }
+
+    if ($success) {
+	echo "HAMMERMILL Install redirectors are setup";
+    } else {
+	echo "*** Unable to setup all HAMMERMILL Install redirectors ****";
+    }
+
+    return $success;
+
+} else if ($argv[1] == "stop") {
+
+    if ($argc != 2) {
+	$showUsage = true;
+	if ($argv[2] != "?") {
+	    $success = false;
+	}
+    }
+
+    if ($showUsage) {
+	echo "Usage: $argv[0] $argv[1]";
+	return $success;
+    }
+
+    @echo off;
+
+    int $i=0;
+    while ($i < sizeof($localPorts)) {
+	echo "Stopping TCP local $localPorts[$i]";
+	ifnot (`stop redirect -contains "lplisten $localPorts[$i]"`) { 
+	    echo "    FAILED";
+	    $success = false;
+	} else {
+	    echo "    SUCCESS";
+	}
+	$i++;
+    }
+
+    if ($success) {
+	echo "HAMMERMILL Install redirectors have been stopped";
+    } else {
+	echo "*** Unable to stop all HAMMERMILL Install redirectors ****";
+    }
+
+    return $success;
+
+} else {
+    
+     echo "Invalid script option ($argv[1])";
+     return false;
+
+}

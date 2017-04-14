@@ -1,0 +1,94 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsWindowsXp
+#	Returns the whether the current target is Windows Xp
+#----------------------------------------------------
+sub _IsWindowsXp()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return (($major == 5) && ($minor == 1));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsXp
+
+#----------------------------------------------------
+# _IsWindowsXpLocal
+#	Returns the whether the local os is Windows Xp
+#----------------------------------------------------
+sub _IsWindowsXpLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return (($major == 5) && ($minor == 1));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsXpLocal
+
+#----------------------------------------------------
+# _IsWindowsXpOrGreater
+#	Returns the whether the current target is Windows Xp or greater
+#----------------------------------------------------
+sub _IsWindowsXpOrGreater()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return ((($major == 5) && ($minor >= 1)) ||
+						($major > 5));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsXpOrGreater
+
+#----------------------------------------------------
+# _IsWindowsXpOrGreaterLocal
+#	Returns the whether the local os is Windows Xp or greater
+#----------------------------------------------------
+sub _IsWindowsXpOrGreaterLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return ((($major == 5) && ($minor >= 1)) ||
+						($major > 5));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsXpOrGreaterLocal

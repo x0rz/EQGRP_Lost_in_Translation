@@ -1,0 +1,43 @@
+#####################################################################
+# FTP
+#
+# $Revision: 1.2 $ $Date: 2007-06-04 12:12:49-04 $
+#####################################################################
+
+sub Usage()
+{
+	echo "-------------------------------------------------------";
+	echo "Usage: ftp <script_file> [FTP_Address]";
+	echo "";
+	echo "Address may be specified or set environment variable:";
+	echo "  lpsetenv -option FTP_ADDRESS -value <FTP_ADDRESS>";
+	echo "-------------------------------------------------------";
+	return (FALSE);
+}
+
+int $i = 1;
+string $script_file;
+string $ip = GetEnv("FTP_ADDRESS");
+
+while (defined ($ARGV[$i]) )
+{
+        if ($i == 1) {
+		$script_file = $ARGV[$i];
+	} else if ($i ==2) {
+		$ip = $ARGV[$i];
+	} else {
+		Usage();
+		return (FALSE);
+	}
+	$i++;
+}
+
+if (($script_file == "") || ($ip == ""))
+{
+	Usage();
+	return (FALSE);
+}
+
+return (`run -redirect x -command "ftp -n -d -s:$script_file $ip"`);
+
+

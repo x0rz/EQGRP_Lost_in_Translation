@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<t:config id="d0178d92d73ae8348f7ca99bf78c110e8ba8bf1d"
+          name="Educatedscholartouch"
+          version="1.0.0"
+          configversion="1.0.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+    <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by SMB"
+                 type="TcpPort"
+                 binding="//service[name='smb']/port"/>
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                 type="S16"
+                 default="60"/>
+    <t:parameter name="ProcessIDHigh" description="" type="U16"
+                 value="0x03F" hidden="true"/>
+
+  </t:inputparameters>
+  <t:outputparameters>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="Touch"/>
+                 
+  </t:outputparameters>
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='smb']/port"
+              closeoncompletion="true"/>
+  </t:redirection>
+</t:config>

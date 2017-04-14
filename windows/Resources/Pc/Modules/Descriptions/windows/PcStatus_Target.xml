@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="PcStatus_Target" id="302">
+
+    <Interfaces>
+        <Interface provider="0x01011066" id="0x01010031"/>
+    </Interfaces>
+    
+    <Dependencies/>
+    
+    <Lp>No</Lp>
+	<Target>Yes</Target>
+    
+    <Architecture type="i386">
+        <Platform family="winnt">
+            <Version other="*" minor="*" major="5+">
+                <File loadtype="file">i386-winnt-vc9s/release/PcStatus_Target.dll</File>
+                <File loadtype="memory">i386-winnt-vc9s/release/PcStatus_Target.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+
+	<Architecture type="x64">
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="5+">
+				<File loadtype="file">x64-winnt-vc9s/release/PcStatus_Target.dll</File>
+				<File loadtype="memory">x64-winnt-vc9s/release/PcStatus_Target.dll</File>
+			</Version>
+		</Platform>
+	</Architecture>
+	
+</Module>

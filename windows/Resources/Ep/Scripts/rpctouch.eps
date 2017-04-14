@@ -1,0 +1,112 @@
+#-----------------------------------------------------------------------------
+#  Do a scan on the specified IP
+#  8/15/2008 - Updated to use C:\OPSDisk\Resources\Tools\RPC2.exe
+#  9/23/2008 - Updated to use C:\OPSDisk\Exploits\ESRI 3.0.1\rpc2.exe
+#  1/8/2009  - Updated to use C:\OPSDisk\Resources\Tools\RPC2.exe
+#-----------------------------------------------------------------------------
+
+if ($argc < 2) {
+	echo "Usage: $argv[0] <IP to scan> [probeType] [portTypes]";
+	echo " probeType: ";
+	echo "\t1=General\n\t2=RegProbe\n\t3=XP Home/Pro\n\t4=Atsvc port req.\n\t5=W2K SP4 Atsvc";
+	echo "\t7=probe for DCOM patches\n\t8=W2K3\n\t9=MGMT Probe\n\t10=EPMP Probe";
+	echo "13=W2K3 SP0\n\t14=64-BIT\n\t15=ELV probe";
+	echo " portTypes: 135, 139, 445, 80, or a high port (for atsvc, etc.)";
+	echo " You provided $argc arguments";
+	return false;
+}
+
+string $target= $argv[1];
+string $probeType="1";
+string $portType="135";
+bool $rtn = false;
+
+if ($argc >= 3) {
+	$probeType=$argv[2];
+}
+if ($argc >= 4) {
+	$portType=$argv[3];
+}
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:/resources/ep/scripts";
+}
+@record off;
+
+string $localPort="7777";
+string $protocolType="rpc_tcp";
+string $protocolNum="1";
+
+if ($portType == "139") {
+	$protocolType="rpc_nbt";
+	$protocolNum="2";
+} else if ($portType == "445") {
+	$protocolType="rpc_smb";
+	$protocolNum="3";
+} else if ($portType == "80") {
+	$protocolType="rpc_http";
+	$protocolNum="6";
+}
+
+# set up redirector
+ifnot (`redirect -tcp -lplisten $localPort -target $target $portType`) {
+	echo "* $argv[0]: Unable to set up redirector";
+	return false;
+}
+@echo on;
+
+echo "RPCTOUCH (type $probeType, $portType) on $target";
+# ELV probe
+if ($probeType == "15") {
+	if($portType != "139" && $portType != "445") {
+		echo "\r\nPORT MUST BE 139 OR 445";
+		# close redirector
+		ifnot (`stop redirect -contains "tcp -lplisten $localPort"`) {
+			echo "* $argv[0]: Unable to stop redirector";
+		}	
+		return false;
+	}
+	string $touchname = "elv.exe";
+	
+	string $path = "$ScriptsDir\\..\\..\\..\\exploits";
+
+	@record on;
+	@echo off;
+	ifnot (`local dir $touchname -path $path -recursive`) {
+		echo "Couldn't get touch list";
+		return false;
+	}
+	@record off;
+	@echo on;
+
+	string $touchpath = GetCmdData("path");
+
+	ifnot (`log local run -command "$touchpath[0]/$touchname -r 2 -i 127.0.0.1 -p $localPort -t 1 -b $protocolNum -o 60 -rpc -h $target" -redirect scan_$target-$probeType-$protocolType`) {
+		echo "* $argv[0]: Scanner failed";
+	}
+	ifnot (`stop redirect -contains "tcp -lplisten $localPort"`) {
+		echo "* $argv[0]: Unable to stop redirector";
+		return false;
+	} else {
+		return true;
+	}
+}
+
+# do scan
+ifnot (`log local run -command "$ScriptsDir\\..\\..\\Ops\\Tools\\RPC2.exe -i 127.0.0.1 -p $localPort -t 1 -b $protocolNum -r $probeType" -redirect scan_$target-$probeType-$protocolType`) {
+	echo "* $argv[0]: Scanner failed";
+}
+
+# close redirector
+ifnot (`stop redirect -contains "tcp -lplisten $localPort"`) {
+	echo "* $argv[0]: Unable to stop redirector";
+	return false;
+}	
+
+return true;

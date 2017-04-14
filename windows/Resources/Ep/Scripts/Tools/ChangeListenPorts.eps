@@ -1,0 +1,78 @@
+#-----------------------------------------------------------------------------
+# File: ChangeListenPorts.eps
+#
+#  Changes the listening ports of the given file
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+if ($argc != 8) {
+	echo "Usage: $argv[0] <original_file> <file_type> <port1> <port2> <port3> <port4> <port5>";
+	return false;
+}
+
+string $file = $argv[1];
+string $type = $argv[2];
+string $ports;
+$ports[0] = $argv[3];
+$ports[1] = $argv[4];
+$ports[2] = $argv[5];
+$ports[3] = $argv[6];
+$ports[4] = $argv[7];
+
+@record on;
+
+# get full path to original file
+ifnot (`getdirectory -scripts`) {
+	echo "* ChangeListenPorts: Unable to get scripts directory";
+	return false;
+}
+
+string $ScriptsDir = GetCmdData("dir");
+ifnot (defined($ScriptsDir[0])) {
+	echo "* ChangeListenPorts: Unable to retrieve scripts directory";
+	return false;
+}
+
+# see if it's already a full path
+string $fullPath;
+string $parts = Split(":", $file);
+if (sizeof($parts) > 1) {
+	# path is a full path
+	$fullPath = $file;
+} else {
+	$fullPath = "$ScriptsDir\\..\\..\\$file";
+}
+
+# get current directory
+ifnot (`whereami`) {
+	echo "* ChangeListenPorts: Unable to get current directory";
+	return false;
+}
+
+string $currentDir = GetCmdData("path");
+ifnot (defined($currentDir[0])) {
+	echo "* ChangeListenPorts: Unable to retrieve current directory";
+	return false;
+}
+
+# get filename
+string $fileParts = Split("\\", $file);
+int $lastPart = sizeof($fileParts);
+$lastPart--;
+string $fileName = $fileParts[$lastPart];
+ifnot (defined($fileName[0])) {
+	echo "* ChangeListenPorts: Unable to determine file name";
+	return false;
+}
+
+$fileName = "$currentDir\\$fileName-$ports[0]-$ports[1]-$ports[2]-$ports[3]-$ports[4]";
+
+# set the ports
+ifnot (`local run -command "$ScriptsDir\\..\\..\\Tools\\SetPorts.exe \\"$fullPath\\" \\"$fileName\\" $type $ports[0] $ports[1] $ports[2] $ports[3] $ports[4]" -redirect changehours`) {
+	echo "* ChangeListenPorts: Ports set failed";
+	return false;
+}
+
+echo "Ports set for $fileName";
+return SetCmdData(STRING, "file", $fileName);

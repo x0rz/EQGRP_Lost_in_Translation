@@ -1,0 +1,66 @@
+<Styles>
+	<!-- COMMENT1 -->
+	<Style id="1">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x007f00</Foreground>
+	</Style>
+	<!-- COMMENT2 -->
+	<Style id="2">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x007f00</Foreground>
+	</Style>
+	<!-- LITERAL1 -->
+	<Style id="3">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x7f0000</Foreground>
+	</Style>
+	<!-- LITERAL2 -->
+	<Style id="4">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x7f0000</Foreground>
+	</Style>
+	<!-- LABEL -->
+	<Style id="5">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x000000</Foreground>
+	</Style>
+	<!-- KEYWORD1 -->
+	<!-- if/else/while @echo etc -->
+	<Style id="6">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x0000ff</Foreground>
+	</Style>
+	<!-- KEYWORD2 -->
+	<!-- built in functions, like getcmddata -->
+	<Style id="7">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x00007f</Foreground>
+	</Style>
+	<!-- KEYWORD3 -->
+	<!-- true, false, bool, int, object -->
+	<Style id="8">
+		<Bold>true</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x7f007f</Foreground>
+	</Style>
+	<!-- OPERATOR -->
+	<Style id="9">
+		<Bold>true</Bold>
+		<Italics>false</Italics>
+		<Foreground>0xff0000</Foreground>
+	</Style>
+	<!-- INVALID -->
+	<Style id="10">
+		<Bold>false</Bold>
+		<Italics>false</Italics>
+		<Foreground>0x7f0000</Foreground>
+	</Style>
+	
+</Styles>

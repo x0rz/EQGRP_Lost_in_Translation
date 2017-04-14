@@ -1,0 +1,9 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+[-enable <plugin>]
+    Enable a FLAV plugin
+[-disable <plugin>]
+	Disable a FLAV plugin
+[-status]
+	View the status of the FLAV changes

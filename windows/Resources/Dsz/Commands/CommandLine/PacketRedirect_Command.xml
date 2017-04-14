@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_PacketRedirect_Tasking.pyo' providerType='script'>
+    
+	<Command name="PacketRedirect" id="0">
+
+		<Help>Accepts packets on a TCP connection and sends them out on the remote LAN.</Help>
+
+		<Input>
+			<Option name='listenport' optional='false'>
+				<Argument name='port' data='listenport'/>
+				<Argument name='bindAddr' data='bindAddr' optional='true'/>	
+				<Help>The TCP port to listen on locally.</Help>
+			</Option>
+			
+			<Option name="driver" optional="true" group="type">
+				<Help>Specify the driver device name</Help>
+				<Set data="sendType" value="0"/>
+				<Argument name="name" data="driverName" optional="false" />
+			</Option>
+
+			<Option name="raw" optional="true" group="type">
+				<Help>Send the packet using OS "raw" socket</Help>
+				<Set data="sendType" value="1"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='listenport' type='uint16_t'/>
+			<Data name='bindAddr' type='ipv4addr' default='0.0.0.0'/>
+			<Data name='driverName' type='string'/>
+			<Data name='sendType' type='uint8_t' default='0'/>
+		</Output>
+	
+    </Command>
+</Plugin>

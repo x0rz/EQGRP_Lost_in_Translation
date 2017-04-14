@@ -1,0 +1,193 @@
+
+@include "windows/_ProcessesWindows.dsi";
+@include "unix/_ProcessesUnix.dsi";
+
+#-------------------------------------------------------------------------------
+# _FindProcessOnList
+#	Finds the given process name on the list
+# Params:
+#	IN  STRING name - process name
+#-------------------------------------------------------------------------------
+Sub _FindProcessOnList(IN string $name)
+{
+
+	int $ids;
+	if (_FindProcessOnList($name, $ids) &&
+		defined($ids) &&
+		(sizeof($ids) > 0))
+	{
+		return true;
+	} else {
+		return false;
+	}
+
+} /* END _FindProcessOnList */
+
+#-------------------------------------------------------------------------------
+# _FindProcessOnList
+#	Finds the given process name on the list
+# Params:
+#	IN  STRING name - process name
+#	OUT INT    ids  - process id (possibly a list)
+#-------------------------------------------------------------------------------
+Sub _FindProcessOnList(IN string $name, OUT INT $ids)
+{
+
+	string $listNames;
+	int $listIds;
+	if (_GetProcessList($listIds, $listNames)) {
+		int $onIndex=0;
+		for (int $i=0; $i < sizeof($listNames); $i++) {
+			if ($listNames[$i] == $name) {
+				$ids[$onIndex] = $listIds[$i];
+				$onIndex++;
+			}
+		}
+
+		if ($onIndex > 0) {
+			# found a process
+			return true;
+		}
+	}
+
+	# no matching process found
+	return false;
+
+} /* END _FindProcessOnList */
+
+#-------------------------------------------------------------------------------
+# _FindProcessesOnList
+#	Finds the given process id(s) on the list
+# Params:
+#	IN  INT id - process id(s)
+#-------------------------------------------------------------------------------
+Sub _FindProcessesOnList(IN int $ids)
+{
+
+	int $numToFind = sizeof($ids);
+
+	int $procIds;
+	string $procNames;
+	if (!_GetProcessList($procIds, $procNames)) {
+		return false;
+	}
+	
+	# make sure the processes show up on the list
+	int $found=0;
+	for (int $id=0; $id < sizeof($procIds); $id++) {
+		for (int $i=0; $i < sizeof($ids); $i++) {
+			if ($ids[$i] == $procIds[$id]) {
+				$found++;
+				if ($found >= $numToFind) {
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+	
+} /* END _FindProcessesOnList */
+
+#-------------------------------------------------------------------------------
+# _GetProcessList
+#	Retrieves the process list on the remote system
+# Params:
+#	ids - list of process ids
+#	names - list of process names
+#-------------------------------------------------------------------------------
+Sub _GetProcessList(OUT INT $ids, OUT string $names)
+{
+
+	@echo off;
+	@record on;
+	if (!`processes -list`) {
+    	return false;
+	}
+	@record off;
+
+    return (GetCmdData("InitialProcessListItem::ProcessItem::id", $ids) &&
+			GetCmdData("InitialProcessListItem::ProcessItem::name", $names));
+
+} /* END _GetProcessList */
+
+#-------------------------------------------------------------------------------
+# _GetProcessGroup
+#	Retrieves the process group for the given process
+# Params:
+#	id - The process id (0=current)
+#	user - The process group
+#-------------------------------------------------------------------------------
+Sub _GetProcessGroup(IN int $id, OUT string $group)
+{
+
+	string $idStr="";
+	if ($id != 0)
+	{
+		$idStr = "-id $id";
+	}
+	
+	@echo off;
+	@record on;
+	if (!`processinfo $idStr`) {
+    	return false;
+	}
+	@record off;
+
+	return GetCmdData("ProcessInfo::BasicInfo::PrimaryGroup::Name", $group);
+
+} /* END _GetProcessGroup */
+
+#-------------------------------------------------------------------------------
+# _GetProcessOwner
+#	Retrieves the process owner for the given process
+# Params:
+#	id - The process id (0=current)
+#	owner - The process user
+#-------------------------------------------------------------------------------
+Sub _GetProcessOwner(IN int $id, OUT string $owner)
+{
+
+	string $idStr="";
+	if ($id != 0)
+	{
+		$idStr = "-id $id";
+	}
+	
+	@echo off;
+	@record on;
+	if (!`processinfo $idStr`) {
+    	return false;
+	}
+	@record off;
+
+	return GetCmdData("ProcessInfo::BasicInfo::Owner::Name", $owner);
+
+} /* END _GetProcessOwner */
+
+#-------------------------------------------------------------------------------
+# _GetProcessUser
+#	Retrieves the process user for the given process
+# Params:
+#	id - The process id (0=current)
+#	user - The process user
+#-------------------------------------------------------------------------------
+Sub _GetProcessUser(IN int $id, OUT string $user)
+{
+
+	string $idStr="";
+	if ($id != 0)
+	{
+		$idStr = "-id $id";
+	}
+	
+	@echo off;
+	@record on;
+	if (!`processinfo $idStr`) {
+    	return false;
+	}
+	@record off;
+
+	return GetCmdData("ProcessInfo::BasicInfo::User::Name", $user);
+
+} /* END _GetProcessUser */

@@ -1,0 +1,74 @@
+oddjob_v3_x64.exe
+
+AV Engine	Country	Signature	Updated	Info
+Alwil (avast)	CZ	no_virus	2013-07-08 19:22:16	
+Avira (antivir)	DE	no_virus	2013-07-07 00:51:32	
+ClamAV		no_virus	2013-07-07 02:20:11	
+Eset (nod32)	US	no_virus	2013-07-08 11:38:54	
+Frisk (f-prot)	IS	no_virus	2013-07-07 22:23:41	
+F-Secure	FI	no_virus	2013-07-08 10:04:09	
+Kaspersky	RU	no_virus	2013-07-08 19:29:35	
+Mcafee	US	no_virus	2013-07-06 14:40:00	
+MS Security Essentials	US	no_virus	2013-07-08 10:07:55	
+Norman	NO	no_virus	2013-07-08 04:28:54	
+Panda	ES	no_virus	2013-07-07 15:33:32	
+Rising	CN	no_virus	2013-07-08 10:07:29	
+Symantec	US	no_virus	2013-07-06 09:00:00	
+Trend Micro	JP	no_virus	2013-07-07 02:06:49
+
+
+oddjob_v3_x86.exe
+
+AV Engine	Country	Signature	Updated	Info
+Alwil (avast)	CZ	no_virus	2013-07-08 19:22:16	
+Avira (antivir)	DE	no_virus	2013-07-07 00:51:32	
+ClamAV		no_virus	2013-07-07 02:20:11	
+Eset (nod32)	US	no_virus	2013-07-08 11:38:54	
+Frisk (f-prot)	IS	no_virus	2013-07-07 22:23:41	
+F-Secure	FI	no_virus	2013-07-08 10:04:09	
+Kaspersky	RU	no_virus	2013-07-08 19:29:35	
+Mcafee	US	no_virus	2013-07-06 14:40:00	
+MS Security Essentials	US	no_virus	2013-07-08 10:07:55	
+Norman	NO	no_virus	2013-07-08 04:28:54	
+Panda	ES	no_virus	2013-07-07 15:33:32	
+Rising	CN	no_virus	2013-07-08 10:07:29	
+Symantec	US	no_virus	2013-07-06 09:00:00	
+Trend Micro	JP	no_virus	2013-07-07 02:06:49	
+
+
+oddjob_v3_x86.dll
+
+AV Engine	Country	Signature	Updated	Info
+Alwil (avast)	CZ	no_virus	2013-07-08 19:22:16	
+Avira (antivir)	DE	no_virus	2013-07-07 00:51:32	
+ClamAV		no_virus	2013-07-07 02:20:11	
+Eset (nod32)	US	no_virus	2013-07-08 11:38:54	
+Frisk (f-prot)	IS	no_virus	2013-07-07 22:23:41	
+F-Secure	FI	no_virus	2013-07-08 10:04:09	
+Kaspersky	RU	no_virus	2013-07-08 19:29:35	
+Mcafee	US	no_virus	2013-07-06 14:40:00	
+MS Security Essentials	US	no_virus	2013-07-08 10:07:55	
+Norman	NO	no_virus	2013-07-08 04:28:54	
+Panda	ES	no_virus	2013-07-07 15:33:32	
+Rising	CN	no_virus	2013-07-08 10:07:29	
+Symantec	US	no_virus	2013-07-06 09:00:00	
+Trend Micro	JP	no_virus	2013-07-07 02:06:49	
+
+
+oddjob_v3_x64.dll
+
+AV Engine	Country	Signature	Updated	Info
+Alwil (avast)	CZ	no_virus	2013-07-08 19:22:16	
+Avira (antivir)	DE	no_virus	2013-07-07 00:51:32	
+ClamAV		no_virus	2013-07-07 02:20:11	
+Eset (nod32)	US	no_virus	2013-07-08 11:38:54	
+Frisk (f-prot)	IS	no_virus	2013-07-07 22:23:41	
+F-Secure	FI	no_virus	2013-07-08 10:04:09	
+Kaspersky	RU	no_virus	2013-07-08 19:29:35	
+Mcafee	US	no_virus	2013-07-06 14:40:00	
+MS Security Essentials	US	no_virus	2013-07-08 10:07:55	
+Norman	NO	no_virus	2013-07-08 04:28:54	
+Panda	ES	no_virus	2013-07-07 15:33:32	
+Rising	CN	no_virus	2013-07-08 10:07:29	
+Symantec	US	no_virus	2013-07-06 09:00:00	
+Trend Micro	JP	no_virus	2013-07-07 02:06:49	

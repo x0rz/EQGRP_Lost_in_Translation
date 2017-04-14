@@ -1,0 +1,61 @@
+#------------------------------------------------------
+# File:	EmtpyKeg.eps
+#
+# Performs EmptyKeg Touch
+#
+# Modifications:
+#	03/23/07	Created.
+#
+#------------------------------------------------------
+@include "_RecordToolUse.epm";
+
+#defaults
+string $version = "EmptyKeg 1.0.0.1";
+
+#_RecordToolUse("EmptyKeg", $version);
+
+echo " ";
+#echo "--------------------";
+#echo "$version";
+#echo "--------------------";
+#echo " ";
+
+
+if ($argc != 2)	{
+	echo "Usage: $argv[0] <targetMachine>\r\n";
+	return false;
+} else if ($argv[1]	== "?")	{
+	echo "Usage: $argv[0] <targetMachine>\r\n";
+	return false;
+}
+
+string $target = Split("\\\\", $argv[1]);
+
+if (sizeof($target)	> 1) {
+	$target	= "\\\\$target[1]\\root\\cimv2";
+} else {
+	$target	= "\\\\$target[0]\\root\\cimv2";
+}
+if ($target	== "\\\\") {
+	echo "Invalid target ($target)";
+	return false;
+}
+
+@echo off;
+@record on;
+ifnot (`wmi -target $target -touch`) {
+	echo "Unable to touch $target";
+	return false;
+}
+@record off;
+
+echo "Performing touch against $target";
+echo " ";
+
+string $OS = GetCmdData("OS");
+string $ServicePack = GetCmdData("ServicePack");
+
+echo "Target is running $OS Service Pack $ServicePack";
+
+return true;
+

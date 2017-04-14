@@ -1,0 +1,38 @@
+#--------------------------------------------------------
+# File: FlewAvenue.dss
+#
+# Wrapper script for FlewAvenue tools
+# 09/21/2011 - Gutted and redirected to python script
+#--------------------------------------------------------
+@include "_LpHelperFunctions.dsi";
+@include "_CommandLine.dsi";
+
+@echo off;
+
+string %params;
+if (!_ParseCommandLine($argc, $argv, %params))
+{
+	return false;
+}
+
+string $cmd;
+$cmd = "python _FlAv.py -args \"";
+
+if (defined(%params{'action'}))
+{
+	$cmd = "$cmd -action %params{'action'}";
+}
+
+if (defined(%params{'silent'}))
+{
+	$cmd = "$cmd -silent";
+}
+
+if (defined(%params{'quiet'}))
+{
+	$cmd = "$cmd -quiet";
+}
+
+$cmd = "$cmd\"";
+
+return `$cmd`;

@@ -1,0 +1,13 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>prompt</Name>
+		<ReplaceBeforeArgs>script HelperScripts/_AddPrompt.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>prompt &lt;command&gt; [location]</Help>
+		<Help>    Adds a confirmation prompt for given command</Help>
+		<Help>	  [location] can be: Current, Both, Local, Remote</Help>
+	</Alias>
+</Aliases>

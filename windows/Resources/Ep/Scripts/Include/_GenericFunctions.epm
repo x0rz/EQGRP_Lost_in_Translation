@@ -1,0 +1,97 @@
+#--------------------------------------------------------
+# Get the EP resources path
+#--------------------------------------------------------
+Sub _GetEPResourcesPath(REF string $resourcesDir) {
+	@record on;
+	if(`getdirectory -resources`) {
+  		string $Dir = GetCmdData("dir");
+		$resourcesDir = $Dir[0];
+	}else{
+		$resourcesDir="D:\\opscript\\resources";
+	}
+	@record off;
+
+	return true;
+}
+
+#--------------------------------------------------------
+# Get path that EP scripts are run out of
+#--------------------------------------------------------
+Sub _GetEPScriptsPath(REF string $scriptsDir) {
+	@record on;
+	if(`getdirectory -scripts`) {
+  		string $Dir = GetCmdData("dir");
+		$scriptsDir = $Dir[0];
+	}else{
+		$scriptsDir="D:\\opscript\\resources\\ep\\scripts";
+	}
+	@record off;
+
+	return true;
+}
+
+#--------------------------------------------------------
+# Get path that EP tools are run out of
+#--------------------------------------------------------
+Sub _GetEPToolsPath(REF string $toolsDir) {
+	@record on;
+	if(`getdirectory -resources`) {
+  		string $Dir = GetCmdData("dir");
+		$toolsDir = "$Dir[0]\\Ops\\Tools";
+	}else{
+		$toolsDir="D:\\opscript\\Tools";
+	}
+	@record off;
+
+	return true;
+}
+
+#--------------------------------------------------------
+# Get system path
+#--------------------------------------------------------
+Sub _GetSystemPath(REF string $systemPath) {
+	bool $returnFlag = true;
+
+	@record on;
+	ifnot(`lpgetenv -option systemroot`) {
+		`script syspath.eps`;
+		ifnot (`lpgetenv -option systemroot`) {
+			echo "Could not get system root path...";
+			$returnFlag = false;
+		} else {
+			$systemPath = GetCmdData("value");
+		}
+	} else {
+		$systemPath = GetCmdData("value");
+	}
+	@record off;
+	
+	if ($returnFlag) {
+		$systemPath = "$systemPath\\SYSTEM32";
+	}
+
+	return $returnFlag;
+}
+
+#--------------------------------------------------------
+# Get system path
+#--------------------------------------------------------
+Sub _GetTempPath(REF string $tempPath) {
+	bool $returnFlag = true;
+
+	@record on;
+	ifnot(`lpgetenv -option temppath`) {
+		`script temppath.eps`;
+		ifnot (`lpgetenv -option temppath`) {
+			echo "Could not get temp path.";
+			$returnFlag = false;
+		} else {
+			$temppath=GetCmdData("value");
+		}
+	} else {
+		$temppath=GetCmdData("value");
+	}
+	@record off;
+
+	return $returnFlag;
+}

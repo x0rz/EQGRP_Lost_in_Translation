@@ -1,0 +1,9 @@
+
+ifnot (`background keepalive 60`) {
+    echo "* Failed to start keepalive channel";
+    pause;
+}
+
+`version`;
+
+return true;

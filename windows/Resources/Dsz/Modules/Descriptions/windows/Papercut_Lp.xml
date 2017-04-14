@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="Papercut_Lp" id="506">
+    <Interfaces>
+		<Interface provider="0x0101006A" id="0x01c10032"/>
+    </Interfaces>
+
+    <Dependencies>
+        <Remote>Papercut_Target</Remote>
+    </Dependencies>
+
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+
+    <Architecture type="i386">
+        <Platform family="winnt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">i386-winnt-vc9s/release/Papercut_Lp.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

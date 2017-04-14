@@ -1,0 +1,107 @@
+#-----------------------------------------------------------------------------
+# File: RecordProblem.eps
+#
+#  Records a problem (along with some metadata) to the given log file.
+#
+#-----------------------------------------------------------------------------
+
+if (($argc != 3) || ($argv[1] == "?")) {
+    echo "Usage: script $argv[0] <msg> <logfile>";
+    echo "    Records a message to a given logfile";
+    return true;
+}
+
+@record on;
+ifnot (`getdirectory -logs`) {
+    echo "* Failed to get log directory location";
+    return false;
+}
+string $dir = GetCmdData("dir");
+string $msg = $argv[1];
+string $filename = $argv[2];
+
+@echo off;
+	
+string $date;
+if (GetDate($date) == false) {
+    echo "* Failed to get date for message";
+}
+
+string %addrs;
+ifnot (GetAddresses(%addrs)) {
+    echo "* Failed to get address information for message";
+}
+
+string $logLines;
+$logLines[0] = "DATE: $date";
+$logLines[1] = "REMOTE ADDR: %addrs{'remote'}";
+$logLines[2] = "LOCAL ADDR: %addrs{'local'}";
+$logLines[3] = "COMMENT: $msg";
+$logLines[4] = "";
+
+ifnot (WriteFile("$dir/$filename", true, $logLines)) {
+    echo "Failed to write information to $filename";
+    return false;
+}
+
+echo "Data written to '$dir/$filename'";
+string $line;
+foreach $line ($logLines) {
+    echo "    $line";
+}
+
+return true;
+
+#--------------------------------------------------------------------------------
+sub GetDate(OUT string $timestamp)
+{
+
+    @record on;
+    ifnot (`local remotelocaltime`) {
+	return false;
+    }
+
+    string $date = GetCmdData("remoteDate");
+    string $time = GetCmdData("remoteTime");
+
+    $timestamp = "$date $time";
+    return true;
+
+}
+# END GetDate
+
+#--------------------------------------------------------------------------------
+sub GetAddresses(OUT string %addrs)
+{
+
+    @record on;
+    bool $rtn = true;
+
+    # get remote address
+    ifnot (`getnetaddr`) {
+	$rtn = false;
+    } else {
+	string $remoteAddr = GetCmdData("remote_address");
+	int $remotePort = GetCmdData("remote_port");
+	%addrs{'remote'} = "$remoteAddr:$remotePort";
+    }
+
+    # get local address
+    ifnot (`local ipconfig`) {
+	$rtn = false;
+    } else {
+	string $host = GetCmdData("ipHost");
+	%addrs{'local'} = "$host (";
+	int $index = GetCmdData("ipAdaptIndex");
+	int $i;
+	foreach $i ($index) {
+	    string $ip = GetCmdData("ipAdaptIP_$i");
+	    %addrs{'local'} = "%addrs{'local'} $ip";
+	}
+	%addrs{'local'} = "%addrs{'local'} )";
+    }
+
+    return true;
+
+}
+# END GetDate

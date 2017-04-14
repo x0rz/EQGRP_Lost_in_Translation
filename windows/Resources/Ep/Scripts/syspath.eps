@@ -1,0 +1,12 @@
+@record on;
+string $path;
+ifnot (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+	echo "Could not get system path from registry";
+	@record off;
+	return false;
+}
+$path=GetCmdData("value_data");
+@record off;
+#`pwd`;
+echo "System Root Path: $path";
+`lpsetenv -option systemroot -value "$path"`;

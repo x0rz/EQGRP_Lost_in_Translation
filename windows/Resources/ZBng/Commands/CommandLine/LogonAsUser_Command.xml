@@ -1,0 +1,55 @@
+<?xml version='1.0' ?>
+<Plugin providerName='Tasking/Mcl_Cmd_LogonAsUser_Tasking.pyo' providerType='script'>
+    <Command name="LogonAsUser" id="0">
+    
+		<Help>Logs in as the specified user.</Help>
+		
+		<Input>
+			<Option name='user' optional='false'>
+				<Help>The user to impersonate</Help>
+				<Argument name="UserName" data="user" />
+			</Option>
+			
+			<Option name='domain' optional='true'>
+				<Help>Use "." as the domain to authenticate using the local machine</Help>
+				<Help>If no domain is specified, the user must be in UPN format (user@DNS_domain_name)</Help>
+				<Argument name="Domain" data="domain" />
+			</Option>
+			
+			<Option name='password' optional='false'>
+				<Help>The user's password.</Help>
+				<Argument name="Password" data="password" />
+			</Option>
+			
+			<Option name='type' optional='true'>
+				<Help>If no type is specified, "interactive" is the default</Help>
+				<Argument name="LogonType">
+					<Value string="batch">
+						<Set data="type" value="1"/>
+					</Value>
+					<Value string="interactive">
+						<Set data="type" value="2"/>
+					</Value>
+					<Value string="network">
+						<Set data="type" value="3"/>
+					</Value>
+					<Value string="service">
+						<Set data="type" value="4"/>
+					</Value>
+					<Value string="network_cleartext">
+						<Set data="type" value="5"/>
+					</Value>
+					<Value string="new_credentials">
+						<Set data="type" value="6"/>
+					</Value>
+				</Argument>
+			</Option>
+		</Input>
+		<Output>
+			<Data name='user' type='string' />
+			<Data name='domain' type='string' />
+			<Data name='password' type='string' />
+			<Data name='type' type='uint8_t' default='2' />
+		</Output>
+	</Command>
+</Plugin>

@@ -1,0 +1,48 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31392'>
+
+  <Command id='16' name='processoptions'>
+
+    <Help>Modifies a given process's information</Help>
+
+    <Input>
+      <Option name='id' optional='true'>
+	<Argument name='#' data='id'/>
+	<Help>The ID of the process to modify</Help>
+      </Option>
+
+      <Option name='query' optional='false' group='task'>
+	<Set data='task' value='1'/>
+	<Help>Query the execution options</Help>
+      </Option>
+
+      <Option name='set' optional='false' group='task'>
+	<Set data='task' value='2'/>
+	<Set data='setvalue' value='0x32'/>
+	<Help>Set the execution options to 0x32</Help>
+      </Option>
+
+      <Option name='reset' optional='false' group='task'>
+	<Set data='task' value='2'/>
+	<Set data='setvalue' value='0x0'/>
+	<Help>Set the execution options to 0x00</Help>
+      </Option>
+
+      <Option name='elevate' optional='true'>
+	<Set data='elevate' value='true'/>
+	<Help>Use an elevation technique to modify the execution options directly</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='id' type='uint32_t' default='0'/>
+      <Data name='task' type='uint8_t' default='0'/>
+      <Data name='elevate' type='bool' default='false'/>
+      <Data name='setvalue' type='uint32_t'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

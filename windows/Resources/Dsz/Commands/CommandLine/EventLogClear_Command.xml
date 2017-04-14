@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName='Tasking/Mcl_Cmd_EventLogClear_Tasking.pyo' providerType='script'>
+
+	<Command name="EventLogClear" id="0">
+	
+		<Help>Clears the specified logfile</Help>
+		
+		<Input>
+			<Option name="log" optional="false" group='logfile'>
+				<Argument name='name' optional='false' data='logfile'>
+					<Help>The name of the log file to be cleared</Help>
+				</Argument>
+			</Option>
+			
+			<Option name='target' optional='true'>
+				<Argument name='machine' data='remote' />
+			</Option>
+			
+			<Option name='classic' optional='true'>
+				<Set data='classic' value='true'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='logfile' type='string' />
+			<Data name='remote' type='string' />
+			<Data name='classic' type='bool' />
+		</Output>
+		
+	</Command>
+</Plugin>

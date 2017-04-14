@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_Activity_Tasking.pyo' providerType='script'>
+    <Command name="Activity" id="0">
+
+        <Input>
+			<Option name='last' optional='false' group='action'>
+				<Set data='action' value='1'/>
+				<Help>Get the time since last user activity</Help>
+			</Option>
+			
+			<Option name='monitor' optional='false' group='action'>
+				<Set data='action' value='2'/>
+				<Help>Monitor the system for user activity</Help>
+				
+				<Argument name='delay' optional='true' data='delay'>
+					<Help>Delay between checks</Help>
+				</Argument>
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name='action' type='uint8_t'/>
+			<Data name='delay' type='time' default='15s'/>
+        </Output>
+        
+    </Command>
+</Plugin>

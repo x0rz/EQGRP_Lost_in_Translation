@@ -1,0 +1,26 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31377'>
+
+  <Command id='16' name='lsadump'>
+
+    <Help>This function uses code injection to retrieve account information from </Help>
+	<Help>the Local Security Authority (LSA).  LSA secrets are stored in the registry </Help>
+    <Help>in Hive: HKEY_LOCAL_MACHINE under Key: SECURITY\\Policy\\Secrets. The </Help>
+    <Help>LSA secrets stores service passwords (plain-text), cached passwords hashes </Help>
+    <Help>of the last users to login to the machine, FTP, WEB, etc. plain-text passwords, </Help>
+    <Help>RAS dial up account names, passwords, etc. workstation passwords for domain access, etc.</Help>
+    <Help>This tool was adapted from the program LSADUMP2.</Help>
+    <Help> </Help>
+    <Help> </Help>
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>
+
+

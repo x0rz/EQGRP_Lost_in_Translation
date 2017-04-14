@@ -1,0 +1,125 @@
+bool $ok = true;
+string $cmd = "";
+string $out = "";
+string $banner = "";
+int $i=0;
+
+echo "\n\tInternetServices";
+@echo off;
+#######################################################################
+$cmd = "banner -ip $argv[1] -port  21              ";
+#echo "\n---------- InternetServices : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+
+$out = "\t\t$cmd (ftp) :";
+ifnot ($ok) { echo "$out no";}
+else 
+{
+	echo "$out * YES *";
+	$banner	= GetCmdData("banner");
+	if (defined($banner[0]) == false) {echo "\t\t\t: Connection lost";} 
+	else {
+		$i=0;
+		while ($i < sizeof($banner))
+		{
+			echo "\t\t\t:$banner[$i]";
+			$i++;
+		}
+	}
+}
+
+@echo off;
+#######################################################################
+$cmd = "banner -ip $argv[1] -port  25              ";
+#echo "\n---------- InternetServices : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+$out = "\t\t$cmd (smtp):";
+ifnot ($ok) { echo "$out no";}
+else 
+{
+	echo "$out * YES *";
+	$banner	= GetCmdData("banner");
+	if (defined($banner[0]) == false) {echo "\t\t\t: Connection lost";} 
+	else {
+		$i=0;
+		while ($i < sizeof($banner))
+		{
+			echo "\t\t\t:$banner[$i]";
+			$i++;
+		}
+	}
+}
+
+
+
+
+@echo off;
+#######################################################################
+$cmd = "banner -ip $argv[1] -port  80 -send \"\\n\\n\" ";
+#echo "\n---------- InternetServices : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+$out = "\t\t$cmd (http):";
+ifnot ($ok) { echo "$out no";}
+else 
+{
+	echo "$out * YES *";
+	$banner	= GetCmdData("banner");
+	if (defined($banner[0]) == false) {echo "\t\t\t: Connection lost";} 
+	else {
+		$i=0;
+		while ($i < sizeof($banner))
+		{
+			echo "\t\t\t:$banner[$i]";
+			$i++;
+		}
+	}
+}
+
+@echo off;
+#######################################################################
+$cmd = "banner -ip $argv[1] -port 110              ";
+#echo "\n---------- InternetServices : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+$out = "\t\t$cmd (pop) :";
+ifnot ($ok) { echo "$out no";}
+else 
+{
+	echo "$out * YES *";
+	$banner	= GetCmdData("banner");
+	if (defined($banner[0]) == false) {echo "\t\t\t: Connection lost";} 
+	else {
+		$i=0;
+		while ($i < sizeof($banner))
+		{
+			echo "\t\t\t:$banner[$i]";
+			$i++;
+		}
+	}
+}
+
+return true;
+
+
+
+
+
+
+
+
+

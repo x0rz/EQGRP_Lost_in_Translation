@@ -1,0 +1,48 @@
+<?xml version='1.0' ?>
+<Plugin id='31401'>
+	<Command id='16' name='LogonAsUser'>
+	
+		<Help>Logs in as the specified user.</Help>
+		
+		<Input>
+			<Option name='user' optional='false'>
+				<Help>The user to impersonate</Help>
+				<Argument name="UserName" data="user" />
+			</Option>
+			
+			<Option name='password' optional='false'>
+				<Help>Must be specified is a user is specified.</Help>
+				<Argument name="Password" data="password" />
+			</Option>
+			
+			<Option name='type' optional='true'>
+				<Help>If no type is specified, \"interactive\" is the default</Help>
+				<Argument name="LoginType">
+					<Value string="batch">
+						<Set data="type" value="1" />
+					</Value>
+					<Value string="interactive">
+						<Set data="type" value="2" />
+					</Value>
+					<Value string="network">
+						<Set data="type" value="3" />
+					</Value>
+					<Value string="service">
+						<Set data="type" value="4" />
+					</Value>
+				</Argument>
+			</Option>
+			<Option name='domain' optional='true'>
+				<Help>If no domain is specified, the username must be in UPN format.  If a domain of "." is</Help>
+				<Help>given, authentication is done using local account database.</Help>
+				<Argument name="Domain" data="domain" />
+			</Option>
+		</Input>
+		<Output>
+			<Data name='user' type='string' />
+			<Data name='password' type='string' />
+			<Data name='type' type='uint8_t' default='2' />
+			<Data name='domain' type='string' />
+		</Output>
+	</Command>
+</Plugin>

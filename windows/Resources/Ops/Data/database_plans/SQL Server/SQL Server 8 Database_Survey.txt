@@ -1,0 +1,91 @@
+# list databases
+select name, crdate, filename from sysdatabases;
+
+# table listing & row counts
+select o.name, i.rows from sysobjects o, sysindexes i where o.type = 'U' and o.id = i.id and i.indid in (0,1) order by o.name;
+    
+    
+# all table & column data (schema)
+select o.name as 'table', c.name as 'column', t.name as 'type', c.length, c.isnullable from sysobjects o, syscolumns c, systypes t where o.type = 'U' and o.id = c.id and t.xtype = c.xtype and t.name != 'sysname' order by o.name   
+   
+    print "[5] get top 10 rows from all tables"
+    print "[6] get user info"
+    print "[7] get DB configuration"
+    print "[8] get views"
+
+
+def userInfo():
+    if pre9 == False:
+        qString = "SELECT TOP 1000 loginname, language, isntname, isntgroup, isntuser, sysadmin, dbname FROM sys.syslogins where hasaccess = 1"
+    else:
+        qString = "SELECT TOP 1000 loginname, language, isntname, isntgroup, isntuser, sysadmin, dbname FROM master.dbo.syslogins where hasaccess = 1"
+    global currentCmdName
+    currentCmdName = "UserInfo"     
+    p = querySQL(qString)
+    parseSQLresults(p)
+    clearResults()
+
+def dbConfiguration():
+    if pre9 == False:
+        qString = "SELECT TOP 1000 name, value, minimum, maximum, value_in_use, description, is_dynamic, is_advanced FROM sys.configurations"
+    else:
+        qString = "SELECT TOP 1000 value, config, comment, status FROM master.dbo.sysconfigures"
+    global currentCmdName
+    currentCmdName = "DBConfig"     
+    p = querySQL(qString)
+    parseSQLresults(p)
+    clearResults()
+
+def listViews():
+    if pre9 == False:
+        qString = "SELECT * FROM INFORMATION_SCHEMA.VIEWS"
+    else:
+        qString = "select o.name, c.text from sysobjects o, syscomments c where o.id = c.id and o.xtype = 'V'"
+    global currentCmdName
+    currentCmdName = "Views"        
+    p = querySQL(qString)
+    parseSQLresults(p)
+    clearResults()
+    
+def top10Rows():
+    qString = "select o.name from sysobjects o, sysindexes i where o.type = 'U' and o.id = i.id and i.indid in (0,1) and i.rowcnt > 0 order by o.name"
+    global currentCmdName
+    currentCmdName = "preQueryForTop10_"
+    p = querySQL(qString)
+    parseSQLresults(p)
+    for entry in SQLresults[2:len(SQLresults)]:
+        if pre9 == False:
+            qString = "select distinct(column_name) from information_schema.columns where table_name = '" + entry + "' and character_maximum_length != -1 and character_maximum_length < 50000"
+        else:
+            qString = "select distinct(c.name) from sysobjects o, syscolumns c, systypes t where o.name = '" + entry + "' and o.id = c.id and t.xtype = c.xtype and t.name != 'sysname' and c.length != -1 and c.length < 50000"
+        currentCmdName = "preQueryForTop10_" + entry
+        p = querySQL(qString)
+        colList = ""
+        for col in p:
+            col = col.strip()
+            if col == "":
+                break
+            elif ((col != "column_name") & (col.find("---") == -1)):
+                colList = colList + ", " + col
+        
+        if(list(entry).count(' ')):
+            print("We have a space in the table name, must get the schema for that table to prepend to it")
+            qString = ("select TABLE_SCHEMA from information_schema.columns where TABLE_NAME = \'%s\'" % entry)
+            print qString
+            p = querySQL(qString)
+            schema = p[2]
+            entry = ("%s.[%s]"%(schema,entry))
+
+        if pre9 == False:
+            qString = "select top 10 " + colList[2:len(colList)] + " from " + entry
+        else:
+            qString = "select top 10 " + colList[8:len(colList)] + " from " + entry
+        currentCmdName = "Top10_" + entry
+        print qString
+        p = querySQL(qString)
+        for entry in p:
+            entry = entry.strip()
+            if entry == "":
+                break
+            #print entry
+        print "\n"

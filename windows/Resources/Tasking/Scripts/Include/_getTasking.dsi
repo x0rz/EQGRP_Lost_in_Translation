@@ -1,0 +1,130 @@
+sub _getTasking(IN STRING $getTxtFile, OUT STRING $getCmd, OUT STRING $taskID, OUT STRING $targetID) {
+	echo "\nProcessing $getTxtFile";
+	string $lines;
+	if (!ReadFile ($getTxtFile, $lines)) {
+		return false;
+	}
+      # Process get parameters
+      string $pathStr, $path;
+	string $maskStr, $mask;
+	string $depthStr, $depth;
+	string $startStr, $start;
+	string $directionStr="";
+      string $direction = "";
+	string $timeTypeStr, $timeType;
+	string $timeStr, $time;
+	string $lengthStr, $length;
+	string $maxStr, $max;
+	string $taskIDStr;
+	string $targetIDStr;
+      int $intStart = 0;
+	int $intLength = 0;
+	int $intMax = 0;
+	int $intBytes = 0;
+      int $end = 0;
+
+	$getCmd = "get";
+
+	for (int $i=0; $i < sizeof($lines); $i++) {
+		string $line = $lines[$i];
+
+		# TargetID is required
+		if (RegexMatch("TargetID", $line)) {
+			RegExSplit(" ", $line, 2, $targetIDStr);
+			$targetID = $targetIDStr[1];
+		}
+
+		# TaskID is required
+		if (RegexMatch("TaskID", $line)) {
+			RegExSplit(" ", $line, 2, $taskIDStr);
+			$taskID = $taskIDStr[1];
+		}
+
+		if (RegexMatch("Path", $line)) {
+			RegExSplit(" ", $line, 2, $pathStr);
+			$path = $pathStr[1];
+			$getCmd = "$getCmd -path $path";
+		}
+		if (RegexMatch("Mask", $line)) {
+			RegExSplit(" ", $line, 2, $maskStr);
+			$mask = $maskStr[1];
+			$getCmd = "$getCmd -mask \"$mask\"";
+		}
+		if (RegexMatch("Depth", $line)) {
+			RegExSplit(" ", $line, 2, $depthStr);
+			$depth = $depthStr[1];
+			if ($depth == "0") {
+				$getCmd = "$getCmd -recursive";
+			}
+		}
+		if (RegexMatch("Start", $line)) {
+			RegExSplit(" ", $line, 2, $startStr);
+			$start = $startStr[1];
+			$intStart = <int>$start;
+		}
+		if (RegexMatch("Length", $line)) {
+			RegExSplit(" ", $line, 2, $lengthStr);
+			$length = $lengthStr[1];
+			$intLength = <int>$length;
+			$end += $intStart;
+			$end += $intLength;
+			if ($end > 0) {
+				$end--;
+			}
+		}
+		if (RegexMatch("Direction", $line)) {
+			RegExSplit(" ", $line, 2, $directionStr);
+			$direction = $directionStr[1];
+		}
+		if (RegexMatch("timeType", $line)) {
+			RegExSplit(" ", $line, 2, $timeTypeStr);
+			$timeType = $timeTypeStr[1];
+			$getCmd = "$getCmd -time $timeType";
+		}
+		if (RegexMatch("Time", $line)) {
+			RegExSplit(" ", $line, 2, $timeStr);
+			$time = $timeStr[1];
+		}
+		if (RegexMatch("Maximum", $line)) {
+			RegExSplit(" ", $line, 2, $maxStr);
+			$max = $maxStr[1];
+			$intMax = <int>$max;
+		}
+	}
+
+	if ($direction != "") {
+		if ($time != "") {
+			$getCmd = "$getCmd -$direction $time";
+		}
+		else {
+			return false;
+		}
+	}
+	# If start is negative, start from the end of the file (-tail option)
+	# A negative start value is not implement by UR right now, but if it is
+      # it will mean start x bytes back from the end and go forward the number
+      # of bytes set by the Length parameter (e.g. start=-20 means start
+      # 20 bytes from the end of the file and read to the end or to the value
+      # of Length. We can only do the last 20 bytes in the file.)
+	if ($intStart < 0) {
+		string $posStartStr = "";
+		RegExSplit("-", $start, 0, $posStartStr);
+		int $posStart = <int>$posStartStr[1];
+		$intBytes = $posStart;
+		$getCmd = "$getCmd -tail $intBytes";
+	}
+	else {
+		if ($end > $intStart) {
+			$getCmd = "$getCmd -range $intStart $end";
+		}
+		else {
+			$getCmd = "$getCmd -range $intStart";
+		}
+	}
+
+	# By default we want all files retrieved (-max 0)
+	$getCmd = "$getCmd -max $intMax";		
+
+
+	return true;
+}

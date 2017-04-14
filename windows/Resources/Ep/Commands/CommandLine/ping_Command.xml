@@ -1,0 +1,49 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31355'>
+
+  <Command id='16' name='ping'>
+
+    <Help>
+	Performs pings on the local network returning any responses for display.
+	TTL is displayed along with the data.
+    </Help>
+
+    <Input>
+      <Option name='ip' optional='false' group='type'>
+	<Argument name='addr' data='addr'/>
+	<Set data='byip' value='true'/>
+	<Help>Ping a set address</Help>
+      </Option>
+
+      <Option name='host' optional='false' group='type'>
+	<Argument name='name' data='addr'/>
+	<Set data='byip' value='false'/>
+	<Help>Perform a DNS query and if it succeeds, ping the returned address</Help>
+      </Option>
+
+      <Option name='broadcast' optional='false' group='type'>
+	<Argument name='addr' data='addr'/>
+	<Set data='byip' value='true'/>
+	<Set data='broadcast' value='true'/>
+	<Help>Send a broadcast ping to a set of address (ie, 192.168.255.255) </Help>
+      </Option>
+
+      <Option name='timeout' optional='true'>
+	<Argument name='seconds' data='timeout'/>
+	<Help>Continue to return listings up to the number specified.  If zero,</Help>
+	<Help>return all listings.  If not specified, return all.</Help>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='addr'      type='string'/>
+      <Data name='byip'      type='bool'/>
+      <Data name='broadcast' type='bool' default='false'/>	
+      <Data name='timeout'   type='uint32_t' default='5'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

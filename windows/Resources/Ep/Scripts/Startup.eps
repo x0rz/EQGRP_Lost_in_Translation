@@ -1,0 +1,51 @@
+
+@include "_GetDirectory.epm";
+
+`remotelocaltime`;
+
+string $scriptDir;
+if (_GetLpDirectory("scripts", $scriptDir)) {
+    # remove trailing slash
+    string $path = SplitPath($scriptDir);
+    if (LocalFileExists("SimpleSetup.eps", $path)) {
+	ifnot (`script SimpleSetup.eps`) {
+	    return false;
+	}
+    }
+
+    `lpgetenv`;
+
+    if (LocalFileExists("Simple4.eps", $path)) {
+	ifnot (`script Simple4.eps`) {
+	    return false;
+	}
+    }
+}
+
+return true;
+
+#-------------------------------------------------------------------------------
+Sub LocalFileExists(IN STRING $file, IN STRING $path)
+{
+    @echo off;
+    @record on;
+    bool $ok;
+    if(StrLen($path) == 0)
+    {    $ok = `local dir "$file"`;    }
+    else
+    {    $ok = `local dir "$path\\$file"`;    }
+    
+    @record off;
+    ifnot($ok)
+    {    return false;    }
+
+    string $name = GetCmdData("name");
+    ifnot(defined($name))
+    {    return false;    }
+    if(sizeof($name) < 1)
+    {    return false;    }
+    
+    @echo on;
+    return true;
+
+}	/* end LocalFileExists */

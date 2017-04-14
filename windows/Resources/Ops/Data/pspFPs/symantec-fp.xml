@@ -1,0 +1,13 @@
+<Software value="PSP">
+ <Vendor value="Symantec" directory="%ProgramFiles%\Symantec">
+  <Product value="Endpoint Protection" regkey="HKLM\software\symantec\symantec endpoint protection">
+   <Version value="12" regkey="HKLM\software\symantec\symantec endpoint protection\currentversion" regvalue="PRODUCTVERSION" regcompare="regex" regdata="^12\..+" >
+    <Information value="BE AWARE CLOUD PSP" />
+   </Version>
+   <Version value="11" regkey="HKLM\software\symantec\symantec endpoint protection\currentversion" regvalue="PRODUCTVERSION" regcompare="regex" regdata="^11\..+" />
+  </Product>
+  <Product value="Sygate Personal Firewall" regkey="HKLM\software\sygate technologies, inc.\sygate personal firewall" />
+  <Product value="PC Tools AntiVirus" regkey="HKLM\software\microsoft\windows\currentversion\uninstall\PC Tools AntiVirus_is1" />
+  <Product value="PC Tools Firewall Plus" regkey="HKLM\software\microsoft\windows\currenversion\uninstall\PC Tools Firewall Plus" />
+ </Vendor>
+</Software> 

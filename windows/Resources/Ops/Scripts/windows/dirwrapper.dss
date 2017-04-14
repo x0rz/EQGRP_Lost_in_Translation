@@ -1,0 +1,14 @@
+@echo off;
+@record on;
+`dir $argv[1]`;
+@record off;
+
+string $blah;
+GetCmdData("DirItem::FileItem::name", $blah);
+
+if (defined($blah)) {
+	return true;
+} else {
+	return false;
+}
+

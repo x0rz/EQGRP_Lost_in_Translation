@@ -1,0 +1,48 @@
+<?xml version='1.0' ?>
+<Plugin id='31403'>
+	<Command id='16' name='urcontrol'>
+	
+		<Help>Sends commands to UR</Help>
+		
+		<Input>
+			<Option name='register' optional='false' group='command'>
+				<Set data='type' value='1'/>
+				<Argument name="pid" optional="true" data="pid" />
+				<Help>The process to register as privileged</Help>
+			</Option>
+			
+			<Option name='unregister' optional='false' group='command'>
+				<Set data='type' value='2'/>
+				<Argument name="pid" optional="true" data="pid" />
+				<Help>The privileged process to unregister</Help>
+			</Option>
+			
+			<!--
+			<Option name='hidefile' optional='false' group='command'>
+				<Set data='type' value='3'/>
+				<Argument name="file" optional="false" data="str" />
+				<Help>The file to hide in device format (\??\...)</Help>
+			</Option>
+			
+			<Option name='showfile' optional='false' group='command'>
+				<Set data='type' value='4'/>
+				<Argument name="file" optional="false" data="str" />
+				<Help>The file to reveal in device format (\??\...)</Help>
+			</Option>
+			-->
+
+			<Option name='driver' optional='true'>
+				<Argument name="name" optional="false" data="driver" />
+				<Help>Sets the driver name to contact</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='type' type='uint8_t'/>
+			<Data name='pid' type='uint32_t' default='0'/>
+			<Data name='driver' type='string' default='MSNDSRV'/>
+			<Data name='str' type='string'/>
+		</Output>
+		
+	</Command>
+</Plugin>

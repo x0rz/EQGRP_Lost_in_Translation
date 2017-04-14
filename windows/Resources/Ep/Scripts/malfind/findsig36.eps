@@ -1,0 +1,26 @@
+@include "PerlFunctions.epm";
+
+string $logdir = GetEnv("_LPDIR_LOGS");
+$logdir = "$logdir\\Logs";
+
+@record on;
+`local grep -path "$logdir" -mask "*processinfo*" -pattern kernel32.dll.aslr.`;
+@record off;
+
+string $filenames = GetCmdData('file_name');
+if (sizeof($filenames) > 0)
+{
+	return true;
+}
+
+@record on;
+`local grep -path "$logdir" -mask "*processinfo*" -pattern "sort*.nls"`;
+@record off;
+
+string $filenames = GetCmdData('file_name');
+if (sizeof($filenames) > 0)
+{
+	return true;
+}
+
+return false;

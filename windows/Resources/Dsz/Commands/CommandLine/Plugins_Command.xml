@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+  <Command id='10' name='Plugins'>
+
+	<Help>Lists plugins currently loaded</Help>
+
+	<Input>
+		<Option name='verbose' optional='true'>
+			<Set param='verbose' value='true'/>
+			<Help>Show additional plugin information</Help>
+		</Option>
+	</Input>
+
+	<Output>
+	</Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,24 @@
+#--------------------------------------------------------
+# File: LearnFromPastOps.eps
+#
+# Modifications:
+#  10/15/03     Created
+#--------------------------------------------------------
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:/resources/ep/scripts";
+}
+@record off;
+@echo on;
+
+`local run -command "perl $ScriptsDir/../../../tools/make_gnosis_script.pl" -redirect gnosis`;
+ifnot (`script do_gnosis.eps`) {
+	echo "Could not learn from the past.\n";
+	return false;
+}
+return true;

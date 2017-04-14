@@ -1,0 +1,61 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='40' name='SetUser'>
+
+    <Help>Changes the current environment to impersonate the user specified.</Help>
+
+    <Input>
+      <Option name='revert' optional='false' group='type'>
+	<Help>Revert to the original user</Help>
+	<Set data='revert' value='true'/>
+      </Option>
+
+      <Option name='user' optional='false' group='type'>
+	<Help>The user to impersonate</Help>
+	<Argument name="UserName" data="user"/>
+	<Set data='revert' value='false'/>
+      </Option>
+
+      <Option name='password' optional='true'>
+	<Help>Must be specified is a user is specified.</Help>
+	<Argument name="Password" data="password"/>
+      </Option>
+
+      <Option name='type' optional='true'>
+	<Help>If no type is specified, \"interactive\" is the default</Help>
+	<Argument name="LoginType">
+	    <Value string="batch">
+		<Set data="type" value="1"/>
+	    </Value>
+	    <Value string="interactive">
+		<Set data="type" value="2"/>
+	    </Value>
+	    <Value string="network">
+		<Set data="type" value="3"/>
+	    </Value>
+	    <Value string="service">
+		<Set data="type" value="4"/>
+	    </Value>
+	</Argument>
+      </Option>
+
+      <Option name='domain' optional='true'>
+	<Help>If no domain is specified authentication is on the local machine</Help>
+	<Argument name="Domain" data="domain"/>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='revert' type='bool' default='false'/>
+      <Data name='user' type='string'/>
+      <Data name='password' type='string'/>
+      <Data name='type' type='uint8_t' default='2'/>
+      <Data name='domain' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

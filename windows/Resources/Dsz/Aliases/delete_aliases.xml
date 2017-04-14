@@ -1,0 +1,16 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>del</Name>
+		<ReplaceBeforeArgs>script HelperScripts/_Delete.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Dsz</ReplaceAfterArgs>
+	</Alias>
+
+	<Alias>
+		<Name>rm</Name>
+		<ReplaceBeforeArgs>script HelperScripts/_Delete.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Dsz</ReplaceAfterArgs>
+	</Alias>
+</Aliases>	
+		

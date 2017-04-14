@@ -1,0 +1,1903 @@
+# saved_cfg_timestamp:525176848 ##############################################################################################
+unset key protection enable
+set clock dst-off
+set clock timezone 4
+set clock dst recurring start-weekday 2 0 3 02:00 end-weekday 1 0 11 02:00
+set vrouter trust-vr sharable
+set vrouter "untrust-vr"
+set protocol pim
+exit
+exit
+set vrouter "trust-vr"
+unset auto-route-export
+exit
+set service "EN_SAG_FIN" protocol tcp src-port 0-65535 dst-port 48002-48002 
+set service "EN_Alliance-SWA-Boot" protocol tcp src-port 0-65535 dst-port 48009-48009 
+set service "EN_Server-SAA" protocol tcp src-port 0-65535 dst-port 48100-48105 
+set service "EN_Messanger-SAA" protocol tcp src-port 0-65535 dst-port 48200-48200 
+set service "EN_RTGS" protocol tcp src-port 0-65535 dst-port 1980-1980 
+set service "EN_SAG_FACT" protocol tcp src-port 0-65535 dst-port 48003-48003 
+set service "EN_EPMAP_135" protocol tcp src-port 0-65535 dst-port 135-135 
+set service "EN_EPMAP_135" + udp src-port 0-65535 dst-port 135-135 
+set service "EN_Solid-Mux-Server_1029" protocol tcp src-port 0-65535 dst-port 1029-1029 
+set service "EN_Swa_rpcd" protocol tcp src-port 0-65535 dst-port 6500-6501 
+set service "EN_Swa_rpcd" + udp src-port 0-65535 dst-port 6500-6501 
+set service "EN_SAA-Server-Ports" protocol tcp src-port 0-65535 dst-port 9000-9049 
+set service "EN_SAA-Server-Ports" + udp src-port 0-65535 dst-port 9000-9049 
+set service "EN_SA-Interactive" protocol tcp src-port 0-65535 dst-port 5101-5105 
+set service "RDP" protocol tcp src-port 0-65535 dst-port 3389-3389 
+set service "EN_Side_Safewatch" protocol tcp src-port 0-65535 dst-port 8401-8401 
+set service "EN_Side_Safewatch" + udp src-port 0-65535 dst-port 8400-8400 
+set service "UNIRISX_KEYSRV" protocol tcp src-port 0-65535 dst-port 18201-18201 
+set service "en.MORE-www" protocol tcp src-port 0-65535 dst-port 8089-8089 
+set service "en.MORE-https" protocol tcp src-port 0-65535 dst-port 8090-8090 
+set service "Proxy_48600" protocol tcp src-port 0-65535 dst-port 48600-48600 
+set service "en.More-HTTPS-5443" protocol tcp src-port 0-65535 dst-port 5443-5443 
+set service "HTTP-8080" protocol tcp src-port 0-65535 dst-port 8080-8080 
+set service "HTTPS-1443" protocol tcp src-port 0-65535 dst-port 1443-1443 
+set service "Safewatch-8330" protocol tcp src-port 0-65535 dst-port 8330-8330 
+set service "Safewatch-8336" protocol tcp src-port 0-65535 dst-port 8336-8336 
+set service "SMS_Global_Ports" protocol tcp src-port 0-65535 dst-port 1775-1776 
+set alg appleichat enable
+unset alg appleichat re-assembly enable
+set alg sctp enable
+set auth-server "Local" id 0
+set auth-server "Local" server-name "Local"
+set auth-server "RSA_Server" id 1
+set auth-server "RSA_Server" server-name "192.168.206.100"
+set auth-server "RSA_Server" backup1 "192.168.206.101"
+set auth-server "RSA_Server" account-type xauth 
+set auth-server "RSA_Server" type securid
+set auth default auth server "Local"
+set auth radius accounting port 27911
+set admin name "ENSBadmin"
+set admin password "nBd5PIrLLusBciHPhs0PBnMtk5Dm5n"
+set admin user "juy" password "nG5aE+reBeQIcQYK4sPHRuHtGdG0Kn" privilege "all"
+set admin user "adesear" password "nLtbNIrRDSPEcrMDFs7MT5Htz8Cifn" privilege "all"
+set admin user "msaeed" password "nF3dKrrkHDHCckxALsfARkBtenLoAn" privilege "all"
+set admin user "kbaluyot" password "nMSQP4rHLyxHcWqBmsqP9pMtnMGPYn" privilege "all"
+set admin user "mserhan" password "nBJrKhrpLP9NcPSI/sKEcXItRoJYvn" privilege "read-only"
+set admin user "rmahmoud" password "nGZ/NkraDv/LcjwPns7OcDAtBdOu0n" privilege "read-only"
+set admin user "rmahmoud" role audit
+set admin user "mzaidi" password "nHY/IzrANpGPcfYHAsRM5oFtx5Py9n" privilege "read-only"
+set admin ssh port 2194
+set admin scs password disable username juy
+set admin http redirect
+set admin auth web timeout 10
+set admin auth server "Local"
+set admin auth banner secondary "NOTICE TO USERS... This computer is a property of EastNets (R). Any or all use of this system is governed by the Security Policies of EastNets Service Bureau (ENSB). Any or all uses of this system, and all files on this system may be monitored, recorded, audited, or inspected  at the discretion of EastNets Management. Unauthorized or improper use of this system may result in administrative disciplinary action and civil and criminal penalties. By continuing to use this system you indicate your awareness of and consent to these terms and conditions of use. LOG OFF IMMEDIATELY if you do not agree to the conditions stated in this warning. Please contact ENSB Infrastructure Team to obtain a copy of the Security Policy or visit ENSB portal at http://entranet.eastnets.com/sites/ENSB/."
+set admin auth banner telnet login "EastNets Service Bureau"
+set admin auth banner console login "EastNets Service Bureau"
+set admin auth banner ack-secondary 
+set admin format dos
+set zone "Trust" vrouter "trust-vr"
+set zone "Untrust" vrouter "trust-vr"
+set zone "DMZ" vrouter "trust-vr"
+set zone "VLAN" vrouter "trust-vr"
+set zone id 100 "Trust_US"
+set zone "Untrust-Tun" vrouter "trust-vr"
+set zone "Trust" tcp-rst 
+unset zone "Untrust" block 
+unset zone "Untrust" tcp-rst 
+set zone "MGT" block 
+unset zone "V1-Trust" tcp-rst 
+unset zone "V1-Untrust" tcp-rst 
+set zone "DMZ" tcp-rst 
+unset zone "V1-DMZ" tcp-rst 
+set zone "VLAN" tcp-rst 
+set zone "Trust_US" tcp-rst 
+set zone "Untrust" screen icmp-flood
+set zone "Untrust" screen udp-flood
+set zone "Untrust" screen port-scan
+set zone "Untrust" screen ip-sweep
+set zone "Untrust" screen tear-drop
+set zone "Untrust" screen syn-flood
+set zone "Untrust" screen ping-death
+set zone "Untrust" screen ip-filter-src
+set zone "Untrust" screen land
+set zone "Untrust" screen syn-frag
+set zone "Untrust" screen tcp-no-flag
+set zone "Untrust" screen ip-bad-option
+set zone "Untrust" screen icmp-fragment
+set zone "Untrust" screen syn-fin
+set zone "Untrust" screen fin-no-ack
+set zone "Untrust" screen syn-ack-ack-proxy
+set zone "Untrust" screen tcp-sweep
+set zone "Untrust" screen udp-sweep
+set zone "V1-Untrust" screen tear-drop
+set zone "V1-Untrust" screen syn-flood
+set zone "V1-Untrust" screen ping-death
+set zone "V1-Untrust" screen ip-filter-src
+set zone "V1-Untrust" screen land
+set interface "ethernet0/0" zone "Trust"
+set interface "ethernet0/1" zone "Untrust"
+set interface "ethernet0/2" zone "Untrust"
+set interface "ethernet3/0" zone "Trust_US"
+set interface "ethernet3/3" zone "Untrust"
+set interface "tunnel.1" zone "Untrust"
+set interface "tunnel.2" zone "Untrust"
+set interface "tunnel.3" zone "Untrust"
+set interface "tunnel.4" zone "Untrust"
+set interface "tunnel.7" zone "Trust"
+set interface "tunnel.10" zone "Untrust"
+set interface "tunnel.11" zone "Untrust"
+set interface "tunnel.12" zone "Untrust"
+set interface "tunnel.13" zone "Untrust"
+set interface "tunnel.14" zone "Untrust"
+set interface "tunnel.15" zone "Untrust"
+set interface "tunnel.16" zone "Untrust"
+set interface "tunnel.17" zone "Untrust"
+set interface "tunnel.18" zone "Untrust"
+set interface "tunnel.19" zone "Untrust"
+set interface "tunnel.20" zone "Untrust"
+set interface "tunnel.21" zone "Untrust"
+set interface "tunnel.22" zone "Untrust"
+set interface ethernet0/0 ip 192.168.206.17/24
+set interface ethernet0/0 nat
+unset interface vlan1 ip
+set interface ethernet0/1 ip 192.168.207.17/24
+set interface ethernet0/1 route
+set interface ethernet0/2 ip 80.227.254.205/27
+set interface ethernet0/2 route
+set interface ethernet3/0 ip 192.168.211.17/24
+set interface ethernet3/0 nat
+set interface ethernet3/3 ip 80.227.254.237/27
+set interface ethernet3/3 route
+set interface tunnel.1 ip 10.10.0.10/16
+set interface tunnel.2 ip 10.20.0.10/16
+set interface tunnel.3 ip 10.30.0.10/25
+set interface tunnel.4 ip 10.30.0.139/25
+set interface tunnel.7 ip 10.70.0.55/16
+set interface tunnel.10 ip 10.100.0.10/16
+set interface tunnel.11 ip 10.40.0.10/16
+set interface tunnel.12 ip 10.50.0.10/16
+set interface tunnel.13 ip 10.60.0.10/25
+set interface tunnel.14 ip 10.60.0.139/25
+set interface tunnel.15 ip unnumbered interface ethernet3/3
+set interface tunnel.16 ip unnumbered interface ethernet3/3
+set interface tunnel.17 ip unnumbered interface ethernet3/3
+set interface tunnel.18 ip unnumbered interface ethernet0/2
+set interface tunnel.19 ip unnumbered interface ethernet3/3
+set interface tunnel.20 ip unnumbered interface ethernet3/3
+set interface tunnel.21 ip unnumbered interface ethernet3/3
+set interface tunnel.22 ip unnumbered interface ethernet3/3
+set interface tunnel.7 mtu 1500
+set interface tunnel.10 mtu 1500
+set interface tunnel.11 mtu 1500
+set interface tunnel.15 mtu 1500
+set interface tunnel.16 mtu 1500
+set interface tunnel.17 mtu 1500
+set interface tunnel.18 mtu 1500
+set interface tunnel.19 mtu 1500
+set interface tunnel.20 mtu 1500
+set interface "ethernet3/0" pmtu ipv4
+unset interface vlan1 bypass-others-ipsec
+unset interface vlan1 bypass-non-ip
+set interface ethernet0/0 manage-ip 192.168.206.16
+set interface ethernet0/1 manage-ip 192.168.207.16
+set interface ethernet0/2 manage-ip 80.227.254.207
+set interface ethernet3/0 manage-ip 192.168.211.16
+set interface ethernet3/3 manage-ip 80.227.254.239
+set interface ethernet0/0 ip manageable
+set interface ethernet0/1 ip manageable
+unset interface ethernet0/2 ip manageable
+set interface ethernet3/0 ip manageable
+unset interface ethernet3/3 ip manageable
+set interface ethernet0/1 manage ping
+set interface ethernet0/1 manage ssh
+set interface ethernet0/1 manage telnet
+set interface ethernet0/1 manage snmp
+set interface ethernet0/1 manage ssl
+set interface ethernet0/1 manage web
+set interface ethernet0/2 manage ping
+set interface ethernet0/2 manage ssh
+set interface ethernet0/2 manage ssl
+set interface ethernet3/0 manage ping
+set interface ethernet3/0 manage ssh
+set interface ethernet3/0 manage telnet
+set interface ethernet3/0 manage snmp
+set interface ethernet3/0 manage ssl
+set interface ethernet3/0 manage web
+set interface ethernet3/0 manage ident-reset
+set interface ethernet3/3 manage ping
+set interface ethernet3/3 manage ssh
+set interface ethernet3/3 manage ssl
+set auth-server "RSA_Server" src-interface "ethernet0/0"
+set interface ethernet0/2 vip 80.227.254.208 21 "FTP" 192.168.211.201 manual
+set interface ethernet0/2 vip 80.227.254.208 + 443 "HTTPS" 192.168.211.201 manual
+set interface ethernet0/2 vip 80.227.254.208 + 80 "HTTP" 192.168.211.201 manual
+set interface ethernet0/2 vip 80.227.254.209 21 "FTP" 192.168.211.202 manual
+set interface ethernet0/2 vip 80.227.254.209 + 443 "HTTPS" 192.168.211.202 manual
+set interface ethernet0/2 vip 80.227.254.209 + 80 "HTTP" 192.168.211.202 manual
+set interface ethernet0/2 vip 80.227.254.210 443 "HTTPS" 192.168.211.203 manual
+set interface ethernet0/2 vip 80.227.254.210 + 80 "HTTP" 192.168.211.203 manual
+set interface ethernet0/2 vip 80.227.254.211 443 "HTTPS" 192.168.211.100 manual
+set interface ethernet0/2 vip 80.227.254.211 + 80 "HTTP" 192.168.211.100 manual
+set interface ethernet0/2 vip 80.227.254.217 80 "HTTP" 192.168.211.105 manual
+set interface ethernet0/2 vip 80.227.254.217 + 443 "en.MORE-https" 192.168.211.105 manual
+set interface ethernet0/2 vip 80.227.254.217 + 21 "FTP" 192.168.211.105 manual
+set interface ethernet3/3 vip interface-ip 5443 "HTTPS" 192.168.214.108 manual
+set interface "ethernet0/2" mip 91.75.72.13 host 192.168.214.100 netmask 255.255.255.255 vr "trust-vr"
+set interface "tunnel.15" mip 10.246.89.14 host 192.168.211.105 netmask 255.255.255.255 vr "trust-vr"
+set interface "tunnel.15" mip 10.246.89.13 host 192.168.211.106 netmask 255.255.255.255 vr "trust-vr"
+set interface "tunnel.15" mip 10.246.89.12 host 192.168.214.107 netmask 255.255.255.255 vr "trust-vr"
+set interface "tunnel.15" mip 10.246.89.15 host 192.168.214.108 netmask 255.255.255.255 vr "trust-vr"
+set interface "tunnel.21" mip 172.24.211.230 host 192.168.211.230 netmask 255.255.255.255 vr "trust-vr"
+set interface "tunnel.22" mip 172.25.211.230 host 192.168.211.230 netmask 255.255.255.255 vr "trust-vr"
+unset flow no-tcp-seq-check
+unset flow tcp-syn-check
+unset flow tcp-syn-bit-check
+set flow reverse-route clear-text prefer
+set flow reverse-route tunnel always
+set console page 15
+set hostname ENSBDVPN6
+set pki authority default scep mode "auto"
+set pki x509 default cert-path partial
+set nsrp cluster id 1
+set nsrp rto-mirror sync
+set nsrp rto-mirror route
+set nsrp rto-mirror session ageout-ack
+set nsrp rto-mirror session non-vsi
+set nsrp vsd-group id 0 priority 100
+set nsrp monitor interface ethernet0/0
+set nsrp monitor interface ethernet0/2
+set dns host dns1 80.227.2.4 src-interface ethernet0/2
+set dns host dns2 80.227.2.3 src-interface ethernet0/2
+set dns host dns3 0.0.0.0
+set address "Trust" "192.168.206.0/23" 192.168.206.0 255.255.254.0
+set address "Trust" "ENSBD_NW" 192.168.206.0 255.255.255.0
+set address "Trust" "ENSBD_NW_US" 192.168.211.0 255.255.255.0 "US Network in Dubai Site"
+set address "Trust" "ENSBDXB_SAG1" 192.168.206.25 255.255.255.255 "Primary SAG - DXB"
+set address "Trust" "ENSBDXB_SAG2" 192.168.206.20 255.255.255.255 "Secondary SAG - DXB"
+set address "Trust" "ENSBDXB_SAG3" 192.168.206.22 255.255.255.255
+set address "Trust" "ENSBDXB_SAG4" 192.168.206.23 255.255.255.255
+set address "Trust" "ENSBDXB_SAG5" 192.168.206.26 255.255.255.255
+set address "Trust" "SWP-NLB" 192.168.206.30 255.255.255.255
+set address "Trust" "SWP-SRV1" 192.168.206.28 255.255.255.255
+set address "Trust" "SWP-SRV2" 192.168.206.29 255.255.255.255
+set address "Untrust" "10.100.200.0/24" 10.100.200.0 255.255.255.0
+set address "Untrust" "10.153.0.0/16" 10.153.0.0 255.255.0.0
+set address "Untrust" "213.132.40.99/32" 213.132.40.99 255.255.255.255
+set address "Untrust" "213.132.58.173/32" 213.132.58.173 255.255.255.255
+set address "Untrust" "BICS-HOMESEND-PROD-SVR-01" 193.43.238.249 255.255.255.255
+set address "Untrust" "BICS-HOMESEND-TEST-SVR-01" 193.43.238.250 255.255.255.255
+set address "Untrust" "EEC-WSs" 172.22.7.64 255.255.255.192
+set address "Untrust" "EN-IT-MAIL-SRV" 192.168.2.13 255.255.255.255
+set address "Untrust" "ENSB-JO-NW" 192.168.216.0 255.255.254.0
+set address "Untrust" "ENSB-NOC-NW" 192.168.196.0 255.255.255.0
+set address "Untrust" "ENSBPK_NW" 192.168.246.0 255.255.255.0 "ENSB Pakistan Network"
+set address "Untrust" "ENSBPK_SAG1" 192.168.246.25 255.255.255.255 "Primary SAG - Pakistan"
+set address "Untrust" "ENSBPK_SAG2" 192.168.246.20 255.255.255.255 "Secondary SAG - Pakistan"
+set address "Untrust" "ENSBUS_NW" 192.168.111.0 255.255.255.0 "ENSB USA Network"
+set address "Untrust" "IT-MAIL-SERVER" 10.151.33.129 255.255.255.255
+set address "Untrust" "MEA-WSs" 172.22.7.128 255.255.255.192
+set address "Untrust" "MoneyExpress-Server" 10.10.10.187 255.255.255.255
+set address "Untrust" "PK_CUS_NW_DRCP" 172.23.0.0 255.255.0.0 "PK DRCP Client GNAT"
+set address "Untrust" "PK_CUS_NW_GWCP" 172.22.0.0 255.255.0.0 "PK GWCP Client GNAT"
+set address "Untrust" "RemitONE-SRVR1" 84.45.85.251 255.255.255.255
+set address "Untrust" "RemitONE-SRVR2" 84.45.85.253 255.255.255.255
+set address "Untrust" "RemitONE-SRVR3" 84.45.85.195 255.255.255.255
+set address "Untrust" "RemitONE-SRVR4" 84.45.85.199 255.255.255.255
+set address "Untrust" "RemitONE-Test_SRVR1" 84.45.85.222 255.255.255.255
+set address "Untrust" "SMS_Global_DR_SRVR1" 59.167.123.105 255.255.255.255
+set address "Untrust" "SMS_Global_Production_SRVR1" 203.89.193.162 255.255.255.255
+set address "Untrust" "TELEPIN TEST NW" 10.254.240.0 255.255.255.0
+set address "Untrust" "TELEPIN-FTP" 202.40.237.153 255.255.255.255
+set address "Untrust" "TELEPIN-FTP-TEMP" 202.40.237.145 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL NW" 10.254.240.128 255.255.255.240
+set address "Untrust" "TELEPIN-SINGTEL-SRV-TEMP" 202.40.237.148 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV1" 202.40.237.146 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV2" 202.40.237.147 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV3" 202.40.237.148 255.255.255.255
+set address "Untrust" "TELEPIN-SINGTEL-SRV4" 10.254.240.135 255.255.255.255
+set address "Untrust" "TIDCKWKW_GWCP_NW" 192.168.59.0 255.255.255.0
+set address "Untrust" "UNIRISX_KEYSRV" 206.201.131.9 255.255.255.255 "keyserver.hostidp.com "
+set address "Untrust" "UNIRISX_MGMT_PUBLIC" 213.86.143.14 255.255.255.255
+set address "Untrust" "US_ACBBUS6L_NW" 172.28.2.64 255.255.255.192
+set address "Untrust" "US_CAGPBMHM_NW" 172.28.2.128 255.255.255.192 "CAGPBMHM NETWORK"
+set address "Untrust" "US_CAGPBMHM_NW-DR" 172.28.2.192 255.255.255.192
+set address "Untrust" "US_FEBKUS6LIRV_NW" 172.28.0.192 255.255.255.192
+set address "Untrust" "US_FEBKUS6LLA1_NW" 172.28.0.64 255.255.255.192
+set address "Untrust" "US_FEBKUS6LLA2_NW" 172.28.0.128 255.255.255.192
+set address "Untrust" "US_GPSXUS55_NW" 172.28.1.192 255.255.255.192
+set address "Untrust" "US_GPSXUS55DR_NW" 172.28.2.0 255.255.255.192
+set address "Untrust" "US_IDXDUS033_NW" 172.28.1.64 255.255.255.192
+set address "Untrust" "US_RBBCUS6L_NW" 172.28.1.128 255.255.255.192
+set address "Untrust" "USA_CUS_NW" 172.28.0.0 255.255.0.0
+set address "Trust_US" "10.246.89.5/32" 10.246.89.5 255.255.255.255
+set address "Trust_US" "192.168.211.104/29" 192.168.211.104 255.255.255.248
+set address "Trust_US" "192.168.211.237/32" 192.168.211.237 255.255.255.255
+set address "Trust_US" "192.168.214.104/29" 192.168.214.104 255.255.255.248
+set address "Trust_US" "en.More Web Server 1" 192.168.211.230 255.255.255.255
+set address "Trust_US" "en.More-SRV1" 192.168.211.105 255.255.255.255
+set address "Trust_US" "en.More-SRV2" 192.168.211.106 255.255.255.255
+set address "Trust_US" "ENMOREDAPP1" 192.168.214.107 255.255.255.255
+set address "Trust_US" "ENMOREDAPP2" 192.168.214.108 255.255.255.255
+set address "Trust_US" "ENSB-BICS-NW" 10.246.89.0 255.255.255.248
+set address "Trust_US" "ENSB-BICS-TEST-SRV1" 10.246.89.5 255.255.255.255
+set address "Trust_US" "ENSB_DXB_US_NW" 192.168.211.0 255.255.255.0
+set address "Trust_US" "ENSBDFTP1" 192.168.211.115 255.255.255.255
+set address "Trust_US" "ENSWDAPP-CLUSTER" 192.168.211.237 255.255.255.255
+set address "Trust_US" "ENSWDAPP1" 192.168.211.238 255.255.255.255
+set address "Trust_US" "ENSWDAPP2" 192.168.211.239 255.255.255.255
+set address "Trust_US" "ENUS_AML1" 192.168.211.60 255.255.255.255
+set address "Trust_US" "ENUS_AML2" 192.168.211.61 255.255.255.255
+set address "Trust_US" "ENUS_SAA1" 1.1.1.1 255.255.255.255
+set address "Trust_US" "ENUS_SAA2" 1.1.1.2 255.255.255.255
+set address "Trust_US" "ENUS_SAAS1" 192.168.211.50 255.255.255.255
+set address "Trust_US" "ENUS_SAAS2" 192.168.211.51 255.255.255.255
+set address "Trust_US" "ENUS_SAG1" 192.168.211.25 255.255.255.255
+set address "Trust_US" "ENUS_SAG2" 192.168.211.20 255.255.255.255
+set address "Trust_US" "ENUS_SAG3" 192.168.211.22 255.255.255.255
+set address "Trust_US" "ENUS_SAG4" 192.168.211.23 255.255.255.255
+set address "Trust_US" "ENUS_SAG5" 192.168.211.26 255.255.255.255
+set address "Trust_US" "ENUS_SWP-NLB" 192.168.211.30 255.255.255.255
+set address "Trust_US" "ENUS_SWP1" 192.168.211.28 255.255.255.255
+set address "Trust_US" "ENUS_SWP2" 192.168.211.29 255.255.255.255
+set address "Trust_US" "FINMEX-SRV1" 192.168.211.100 255.255.255.255 "FINMEX PORTAL SERVER"
+set address "Trust_US" "UNIRISX-HOST" 192.168.211.201 255.255.255.255 "UNIRISX Host Server"
+set address "Trust_US" "UNIRISX-SRV03" 192.168.211.203 255.255.255.255 "Unirisx Pharos Server"
+set address "Trust_US" "USA_SL1" 192.168.211.51 255.255.255.255 "Primary Shared License Server"
+set address "Trust_US" "USA_SL2" 192.168.211.52 255.255.255.255 "Backup Shared License Server"
+set group address "Untrust" "BICS-SVR-GROUP"
+set group address "Untrust" "BICS-SVR-GROUP" add "BICS-HOMESEND-PROD-SVR-01"
+set group address "Untrust" "BICS-SVR-GROUP" add "BICS-HOMESEND-TEST-SVR-01"
+set group address "Untrust" "RemitONE-Servers"
+set group address "Untrust" "RemitONE-Servers" add "RemitONE-SRVR1"
+set group address "Untrust" "RemitONE-Servers" add "RemitONE-SRVR2"
+set group address "Untrust" "RemitONE-Servers" add "RemitONE-SRVR3"
+set group address "Untrust" "RemitONE-Servers" add "RemitONE-SRVR4"
+set group address "Trust_US" "en.More Web Servers"
+set group address "Trust_US" "en.More Web Servers" add "en.More Web Server 1"
+set group address "Trust_US" "en.More-APP-Servers"
+set group address "Trust_US" "en.More-APP-Servers" add "ENMOREDAPP1"
+set group address "Trust_US" "en.More-APP-Servers" add "ENMOREDAPP2"
+set group address "Trust_US" "enMORE"
+set group address "Trust_US" "enMORE" add "en.More-SRV1"
+set group address "Trust_US" "enMORE" add "en.More-SRV2"
+set group address "Trust_US" "ENSW-SRVS"
+set group address "Trust_US" "ENSW-SRVS" add "ENSWDAPP-CLUSTER"
+set group address "Trust_US" "ENSW-SRVS" add "ENSWDAPP1"
+set group address "Trust_US" "ENSW-SRVS" add "ENSWDAPP2"
+set group address "Trust_US" "ENUS_AML_NW"
+set group address "Trust_US" "ENUS_AML_NW" add "ENUS_AML1"
+set group address "Trust_US" "ENUS_AML_NW" add "ENUS_AML2"
+set group address "Trust_US" "ENUS_FMHS_NW"
+set group address "Trust_US" "ENUS_FMHS_NW" add "ENUS_SAA1"
+set group address "Trust_US" "ENUS_FMHS_NW" add "ENUS_SAA2"
+set group address "Trust_US" "ENUS_SAAS_NW"
+set group address "Trust_US" "ENUS_SAAS_NW" add "ENUS_SAAS1"
+set group address "Trust_US" "ENUS_SAAS_NW" add "ENUS_SAAS2"
+set group address "Trust_US" "ENUS_SAG_NW"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SAG1"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SAG2"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SAG3"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SAG4"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SAG5"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SWP-NLB"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SWP1"
+set group address "Trust_US" "ENUS_SAG_NW" add "ENUS_SWP2"
+set group address "Trust_US" "UNIRISX"
+set group address "Trust_US" "UNIRISX" add "UNIRISX-HOST"
+set group address "Trust_US" "UNIRISX" add "UNIRISX-SRV03"
+set group address "Trust_US" "USA_SL_Group" comment "Shared License Servers Group"
+set group address "Trust_US" "USA_SL_Group" add "USA_SL1"
+set group address "Trust_US" "USA_SL_Group" add "USA_SL2"
+set group service "EN_ICMP"
+set group service "EN_ICMP" add "ICMP-ANY"
+set group service "EN_MSIH" comment "FMHS/SAAS Ports"
+set group service "EN_MSIH" add "EN_Alliance-SWA-Boot"
+set group service "EN_MSIH" add "EN_EPMAP_135"
+set group service "EN_MSIH" add "EN_Messanger-SAA"
+set group service "EN_MSIH" add "EN_SA-Interactive"
+set group service "EN_MSIH" add "EN_SAA-Server-Ports"
+set group service "EN_MSIH" add "EN_Server-SAA"
+set group service "EN_MSIH" add "EN_Solid-Mux-Server_1029"
+set group service "EN_MSIH" add "EN_Swa_rpcd"
+set group service "EN_SAG" comment "GWCP Service"
+set group service "EN_SAG" add "EN_SAG_FACT"
+set group service "EN_SAG" add "EN_SAG_FIN"
+set group service "EN_SAG" add "Proxy_48600"
+set group service "MoneyExpress_Ports"
+set group service "MoneyExpress_Ports" add "FTP"
+set group service "MoneyExpress_Ports" add "HTTP"
+set group service "TELEPIN-SINGTEL"
+set group service "TELEPIN-SINGTEL" add "EN_Side_Safewatch"
+set group service "TELEPIN-SINGTEL" add "HTTP-8080"
+set group service "TELEPIN-SINGTEL" add "HTTPS-1443"
+set group service "TELEPIN-SINGTEL" add "Safewatch-8330"
+set group service "TELEPIN-SINGTEL" add "Safewatch-8336"
+set ippool "Default_Pool" 10.100.5.1 10.100.5.254
+set ippool "ensb_mgmt_pool" 10.100.200.11 10.100.200.20
+set ippool "unirisx_mgmt_pool" 10.100.205.1 10.100.205.10
+set ippool "unirisx_pharos_pool" 10.100.210.11 10.100.210.20
+set ippool "finmex_mgmt_pool" 10.100.215.11 10.100.215.20
+set ippool "cs_support_pool" 10.100.220.10 10.100.220.20
+set ippool "Singtel-Users-Pool" 10.159.9.136 10.159.9.145
+set ippool "sw-support-pool" 10.100.225.11 10.100.225.20
+set ippool "en.More-LVL3-Pool" 10.100.150.1 10.100.150.14
+set user "AAbuhijleh" uid 75
+set user "AAbuhijleh" ike-id u-fqdn "AAbuhijleh@eastnets.com" share-limit 1
+set user "AAbuhijleh" type ike xauth
+set user "AAbuhijleh" remote ippool "finmex_mgmt_pool"
+set user "AAbuhijleh" password "sLLc3lXkNyXbRLsYOrCvNBF/TJnHHb+zDw=="
+unset user "AAbuhijleh" type auth
+set user "AAbuhijleh" "enable"
+set user "ARousan" uid 25
+set user "ARousan" ike-id u-fqdn "ARousan@eastnets.com" share-limit 1
+set user "ARousan" type ike xauth
+set user "ARousan" remote ippool "finmex_mgmt_pool"
+set user "ARousan" password "qqlIj6g6NZo4kBsXFNCM6tU+c2nr1PdWPw=="
+unset user "ARousan" type auth
+set user "ARousan" "enable"
+set user "EMagsombol" uid 68
+set user "EMagsombol" ike-id u-fqdn "EMagsombol@eastnets.com" share-limit 1
+set user "EMagsombol" type ike xauth
+set user "EMagsombol" remote ippool "en.More-LVL3-Pool"
+set user "EMagsombol" password "EMjYQYgONdecCfs6NdCAbDO2ghnqmKoxog=="
+unset user "EMagsombol" type auth
+set user "EMagsombol" "enable"
+set user "KShahzad" uid 65
+set user "KShahzad" ike-id u-fqdn "KShahzad@eastnets.com" share-limit 1
+set user "KShahzad" type ike xauth
+set user "KShahzad" remote ippool "en.More-LVL3-Pool"
+set user "KShahzad" password "fxSoe9zHNTTGCdszoFCSil8D6xnUByH1SQ=="
+unset user "KShahzad" type auth
+set user "KShahzad" "disable"
+set user "LAbuezz" uid 70
+set user "LAbuezz" ike-id u-fqdn "LAbuezz@eastnets.com" share-limit 1
+set user "LAbuezz" type ike xauth
+set user "LAbuezz" remote ippool "en.More-LVL3-Pool"
+set user "LAbuezz" password "4hcS1T1rN4WjSGsfNwCfPp3cpfn3g1v2Qw=="
+unset user "LAbuezz" type auth
+set user "LAbuezz" "enable"
+set user "PPU" uid 69
+set user "PPU" ike-id u-fqdn "PPU@eastnets.com" share-limit 1
+set user "PPU" type ike xauth
+set user "PPU" remote ippool "en.More-LVL3-Pool"
+set user "PPU" password "x8pz0PSkNMjFHJs2o3Cmb0SPpKnknb7lfA=="
+unset user "PPU" type auth
+set user "PPU" "enable"
+set user "SJaber" uid 74
+set user "SJaber" ike-id u-fqdn "SJaber@eastnets.com" share-limit 1
+set user "SJaber" type ike xauth
+set user "SJaber" remote ippool "en.More-LVL3-Pool"
+set user "SJaber" password "RHNlQnF5NRMEhvsEn5CC/9xAumnJ0Qu1WQ=="
+unset user "SJaber" type auth
+set user "SJaber" "enable"
+set user "SQasim" uid 27
+set user "SQasim" ike-id u-fqdn "SQasim@eastnets.com" share-limit 1
+set user "SQasim" type ike xauth
+set user "SQasim" remote ippool "finmex_mgmt_pool"
+set user "SQasim" password "UKRAu9YiNmDZKZslNNC2VEP+mHnESXTP1Q=="
+unset user "SQasim" type auth
+set user "SQasim" "enable"
+set user "SW-AAbuhijleh" uid 49
+set user "SW-AAbuhijleh" ike-id u-fqdn "SW-AAbuhijleh@eastnets.com" share-limit 1
+set user "SW-AAbuhijleh" type ike xauth
+set user "SW-AAbuhijleh" remote ippool "sw-support-pool"
+set user "SW-AAbuhijleh" password "qKfUkzuqNZBt/0sfsDCK7AHwPtnkBCNCRA=="
+unset user "SW-AAbuhijleh" type auth
+set user "SW-AAbuhijleh" "enable"
+set user "SW-AEdwan" uid 52
+set user "SW-AEdwan" ike-id u-fqdn "SW-AEdwan@eastnets.com" share-limit 1
+set user "SW-AEdwan" type ike xauth
+set user "SW-AEdwan" remote ippool "sw-support-pool"
+set user "SW-AEdwan" password "gR4lQlpNNZMxZ4sOk2CFWJgKgRnh13PouQ=="
+unset user "SW-AEdwan" type auth
+set user "SW-AEdwan" "enable"
+set user "SW-AEdwan2" uid 54
+set user "SW-AEdwan2" ike-id u-fqdn "SW-AEdwan2@eastnets.com" share-limit 1
+set user "SW-AEdwan2" type ike xauth
+set user "SW-AEdwan2" remote ippool "sw-support-pool"
+set user "SW-AEdwan2" password "nSQ7RJeJN1XMWQsgvgCjfHL2SlnJvYGBIw=="
+unset user "SW-AEdwan2" type auth
+set user "SW-AEdwan2" "enable"
+set user "SW-FTawaha" uid 50
+set user "SW-FTawaha" ike-id u-fqdn "SW-FTawaha@eastnets.com" share-limit 1
+set user "SW-FTawaha" type ike xauth
+set user "SW-FTawaha" remote ippool "sw-support-pool"
+set user "SW-FTawaha" password "eVKkeYk/NyTDj7semDCzaihREmnBIZyVpQ=="
+unset user "SW-FTawaha" type auth
+set user "SW-FTawaha" "enable"
+set user "SW-MAQatanany" uid 48
+set user "SW-MAQatanany" ike-id u-fqdn "SW-MAQatanany@eastnets.com" share-limit 1
+set user "SW-MAQatanany" type ike xauth
+set user "SW-MAQatanany" remote ippool "sw-support-pool"
+set user "SW-MAQatanany" password "6T/2m1DQNlMm0EswalCf2RFyisn+YSxYyQ=="
+unset user "SW-MAQatanany" type auth
+set user "SW-MAQatanany" "enable"
+set user "SW-MSalameh" uid 51
+set user "SW-MSalameh" ike-id u-fqdn "SW-MSalameh@eastnets.com" share-limit 1
+set user "SW-MSalameh" type ike xauth
+set user "SW-MSalameh" remote ippool "sw-support-pool"
+set user "SW-MSalameh" password "F7rnvu3BN/yG1Rs6zECTSyPj1HnUizwJ9A=="
+unset user "SW-MSalameh" type auth
+set user "SW-MSalameh" "disable"
+set user "SW-RDevilla" uid 55
+set user "SW-RDevilla" ike-id u-fqdn "SW-RDevilla@eastnets.com" share-limit 1
+set user "SW-RDevilla" type ike xauth
+set user "SW-RDevilla" remote ippool "sw-support-pool"
+set user "SW-RDevilla" password "ksb9nIPqNB3X18smbHCKV+Z/gDndFsFDJw=="
+unset user "SW-RDevilla" type auth
+set user "SW-RDevilla" "disable"
+set user "SW-SBKalahaf" uid 46
+set user "SW-SBKalahaf" ike-id u-fqdn "SW-SBKalahaf@eastnets.com" share-limit 1
+set user "SW-SBKalahaf" type ike xauth
+set user "SW-SBKalahaf" remote ippool "sw-support-pool"
+set user "SW-SBKalahaf" password "cFfFf4EaN+WrswsN2ZCqTJstVKnC7WcD6Q=="
+unset user "SW-SBKalahaf" type auth
+set user "SW-SBKalahaf" "enable"
+set user "SW-SQasim" uid 47
+set user "SW-SQasim" ike-id u-fqdn "SW-SQasim@eastnets.com" share-limit 1
+set user "SW-SQasim" type ike xauth
+set user "SW-SQasim" remote ippool "sw-support-pool"
+set user "SW-SQasim" password "UbacajCoNXAOBhsi3ICMUfZSdmnnaxJIuw=="
+unset user "SW-SQasim" type auth
+set user "SW-SQasim" "enable"
+set user "Singprod1" uid 41
+set user "Singprod1" ike-id u-fqdn "Singprod1@eastnets.com" share-limit 1
+set user "Singprod1" type ike xauth
+set user "Singprod1" remote ippool "Singtel-Users-Pool"
+set user "Singprod1" password "xJB2HUcCNaJkJPsZb2CIa38zwZn+GkO1Lw=="
+unset user "Singprod1" type auth
+set user "Singprod1" "enable"
+set user "Singprod2" uid 42
+set user "Singprod2" ike-id u-fqdn "Singprod2@eastnets.com" share-limit 1
+set user "Singprod2" type ike xauth
+set user "Singprod2" remote ippool "Singtel-Users-Pool"
+set user "Singprod2" password "j8suFekhN6N9usskgzCoxPBtEHn42azSJw=="
+unset user "Singprod2" type auth
+set user "Singprod2" "enable"
+set user "Singprod3" uid 43
+set user "Singprod3" ike-id u-fqdn "Singprod3@eastnets.com" share-limit 1
+set user "Singprod3" type ike xauth
+set user "Singprod3" remote ippool "Singtel-Users-Pool"
+set user "Singprod3" password "pg8AXQUGNMzFJwsb95CEeu0QU8n2HFe7ng=="
+unset user "Singprod3" type auth
+set user "Singprod3" "enable"
+set user "Singprod4" uid 44
+set user "Singprod4" ike-id u-fqdn "Singprod4@eastnets.com" share-limit 1
+set user "Singprod4" type ike xauth
+set user "Singprod4" remote ippool "Singtel-Users-Pool"
+set user "Singprod4" password "AKoOTQjvNb5o1LseQWCyS1Oa7NnJLMEkCA=="
+unset user "Singprod4" type auth
+set user "Singprod4" "enable"
+set user "Singprod5" uid 45
+set user "Singprod5" ike-id u-fqdn "Singprod5@eastnets.com" share-limit 1
+set user "Singprod5" type ike xauth
+set user "Singprod5" remote ippool "Singtel-Users-Pool"
+set user "Singprod5" password "cCWzK+IzNCCcgmsAbICpeWeUJinL7rjqEQ=="
+unset user "Singprod5" type auth
+set user "Singprod5" "enable"
+set user "VAntonio" uid 67
+set user "VAntonio" ike-id u-fqdn "VAntonio@eastnets.com" share-limit 1
+set user "VAntonio" type ike xauth
+set user "VAntonio" remote ippool "en.More-LVL3-Pool"
+set user "VAntonio" password "Nv4HYtSTNGLLjwsCgLCCdGsELAnxu6Zpeg=="
+unset user "VAntonio" type auth
+set user "VAntonio" "enable"
+set user "ZNassif" uid 71
+set user "ZNassif" ike-id u-fqdn "ZNassif@eastnets.com" share-limit 1
+set user "ZNassif" type ike xauth
+set user "ZNassif" remote ippool "en.More-LVL3-Pool"
+set user "ZNassif" password "E0/5H3PfNxr4MesyjhC59qdYI5ngFcFzXw=="
+unset user "ZNassif" type auth
+set user "ZNassif" "enable"
+set user "aataedwan" uid 17
+set user "aataedwan" ike-id u-fqdn "aataedwan@eastnets.com" share-limit 1
+set user "aataedwan" type ike xauth
+set user "aataedwan" remote ippool "ensb_mgmt_pool"
+set user "aataedwan" password "wdzMMaaVNsrD6csbgOCaAWgKbsn76XpakQ=="
+unset user "aataedwan" type auth
+set user "aataedwan" "enable"
+set user "adesear" uid 9
+set user "adesear" ike-id u-fqdn "adesear@eastnets.com" share-limit 1
+set user "adesear" type ike xauth
+set user "adesear" remote ippool "ensb_mgmt_pool"
+set user "adesear" password "ncmSPFS2NFED/usSAcC20nxNz1nHj15qzA=="
+unset user "adesear" type auth
+set user "adesear" "enable"
+set user "aibrahim" uid 1
+set user "aibrahim" ike-id u-fqdn "aibrahim@eastnets.com" share-limit 1
+set user "aibrahim" type ike xauth
+set user "aibrahim" password "v/+gad1dNno9Ros+HmCsUeoBF1nDSv8Aew=="
+unset user "aibrahim" type auth
+set user "aibrahim" "enable"
+set user "ajaber" uid 35
+set user "ajaber" ike-id u-fqdn "ajaber@eastnets.com" share-limit 1
+set user "ajaber" type ike xauth
+set user "ajaber" remote ippool "finmex_mgmt_pool"
+set user "ajaber" password "iscut//ZNwITwDsfXQCpUAkNKsn4oEeJtA=="
+unset user "ajaber" type auth
+set user "ajaber" "enable"
+set user "asalameh" uid 34
+set user "asalameh" ike-id u-fqdn "asalameh@eastnets.com" share-limit 1
+set user "asalameh" type ike xauth
+set user "asalameh" remote ippool "ensb_mgmt_pool"
+set user "asalameh" password "fdH9+KorNuSOuGsFSJC/s7PNhHnt+e0rdw=="
+unset user "asalameh" type auth
+set user "asalameh" "enable"
+set user "bics-test" uid 26
+set user "bics-test" ike-id u-fqdn "bics@eastnets.com" share-limit 1
+set user "bics-test" type ike xauth
+set user "bics-test" remote ippool "ensb_mgmt_pool"
+set user "bics-test" password "cNdhQobnN8063msQbDCQQQOMpjnCEWLLbg=="
+unset user "bics-test" type auth
+set user "bics-test" "enable"
+set user "dgradinarov" uid 5
+set user "dgradinarov" ike-id u-fqdn "dgradinarov@eastnets.com" share-limit 1
+set user "dgradinarov" type ike xauth
+set user "dgradinarov" remote ippool "ensb_mgmt_pool"
+set user "dgradinarov" password "vvDEinpgNT9CXssBSNCnOkOaFyncE256TQ=="
+unset user "dgradinarov" type auth
+set user "dgradinarov" "enable"
+set user "emagsombol" uid 32
+set user "emagsombol" ike-id u-fqdn "emagsombol@eastnets.com" share-limit 1
+set user "emagsombol" type ike xauth
+set user "emagsombol" remote ippool "cs_support_pool"
+set user "emagsombol" password "1Jg7ZdNlNAeNVMsrDVCfdNArsgnPu+Ur1g=="
+unset user "emagsombol" type auth
+set user "emagsombol" "enable"
+set user "finmex" uid 18
+set user "finmex" ike-id u-fqdn "finmex@eastnets.com" share-limit 1
+set user "finmex" type ike xauth
+set user "finmex" remote ippool "finmex_mgmt_pool"
+set user "finmex" password "c7q/STW4NeRmIfs5E5Ca2wAHLin0rgjufg=="
+unset user "finmex" type auth
+set user "finmex" "enable"
+set user "finmex_mgmt" uid 19
+set user "finmex_mgmt" type xauth
+set user "finmex_mgmt" remote ippool "finmex_mgmt_pool"
+set user "finmex_mgmt" password "bV7HhEhyNPukAzskjkCIk6m/vOntqHqMEg=="
+unset user "finmex_mgmt" type auth
+set user "finmex_mgmt" "enable"
+set user "gruiz" uid 13
+set user "gruiz" ike-id u-fqdn "gruiz@eastnets.com" share-limit 1
+set user "gruiz" type ike xauth
+set user "gruiz" remote ippool "ensb_mgmt_pool"
+set user "gruiz" password "2VU35rbuN1kRbosdHeCMUhjQNonobo8Rjg=="
+unset user "gruiz" type auth
+set user "gruiz" "enable"
+set user "hkharbat" uid 33
+set user "hkharbat" ike-id u-fqdn "hkharbat@eastnets.com" share-limit 1
+set user "hkharbat" type ike xauth
+set user "hkharbat" remote ippool "ensb_mgmt_pool"
+set user "hkharbat" password "jkZsfUMqNw3yCTsY0tCn4yh/ubnLaYThlQ=="
+unset user "hkharbat" type auth
+set user "hkharbat" "enable"
+set user "juy" uid 6
+set user "juy" ike-id u-fqdn "juy@eastnets.com" share-limit 1
+set user "juy" type ike xauth
+set user "juy" remote ippool "ensb_mgmt_pool"
+set user "juy" password "0a7W6+VaNXRvUvsD00CcXT+ZP+n5VIjnfQ=="
+unset user "juy" type auth
+set user "juy" "enable"
+set user "juy_dxb" uid 10
+set user "juy_dxb" ike-id u-fqdn "juy_dxb@eastnets.com" share-limit 1
+set user "juy_dxb" type auth ike
+set user "juy_dxb" password "gj2vh2QENJ91+tsbPACj4lUeibnv57s5CQ=="
+set user "juy_dxb" "enable"
+set user "kbaluyot" uid 12
+set user "kbaluyot" ike-id u-fqdn "kbaluyot@eastnets.com" share-limit 1
+set user "kbaluyot" type ike xauth
+set user "kbaluyot" remote ippool "ensb_mgmt_pool"
+set user "kbaluyot" password "AxvooJ3KNjxY59sZ4JCL0/yHs9n3slcAnA=="
+unset user "kbaluyot" type auth
+set user "kbaluyot" "enable"
+set user "kpurswani" uid 36
+set user "kpurswani" ike-id u-fqdn "kpurswani@eastnets.com" share-limit 1
+set user "kpurswani" type ike xauth
+set user "kpurswani" remote ippool "finmex_mgmt_pool"
+set user "kpurswani" password "9ePQfiUhNXkNynsNq8C7/zWhCJn0o+XMoQ=="
+unset user "kpurswani" type auth
+set user "kpurswani" "enable"
+set user "msaeed" uid 20
+set user "msaeed" ike-id u-fqdn "msaeed@eastnets.com" share-limit 1
+set user "msaeed" type ike xauth
+set user "msaeed" remote ippool "ensb_mgmt_pool"
+set user "msaeed" password "LmIQJQ8eNIwoC7sUSrCLFFuOwSn1zhebww=="
+unset user "msaeed" type auth
+set user "msaeed" "enable"
+set user "mserhan" uid 16
+set user "mserhan" ike-id u-fqdn "mserhan@eastnets.com" share-limit 1
+set user "mserhan" type ike xauth
+set user "mserhan" remote ippool "unirisx_mgmt_pool"
+set user "mserhan" password "mx3gKAfgN/cmDQsWtWCwCPYHaynhJbjLuA=="
+unset user "mserhan" type auth
+set user "mserhan" "enable"
+set user "pharos" uid 14
+set user "pharos" ike-id u-fqdn "pharos@eastnets.com" share-limit 1
+set user "pharos" type ike xauth
+set user "pharos" remote ippool "unirisx_pharos_pool"
+set user "pharos" password "uSxCyKEeNAfoVcseZiCWVcoBWPnzz/7vuw=="
+unset user "pharos" type auth
+set user "pharos" "enable"
+set user "pharos01" uid 15
+set user "pharos01" ike-id u-fqdn "pharos01@eastnets.com" share-limit 1
+set user "pharos01" type ike xauth
+set user "pharos01" remote ippool "unirisx_pharos_pool"
+set user "pharos01" password "pfWhtcayNTlBVEs0FhCm3+AOGznmkJPZmg=="
+unset user "pharos01" type auth
+set user "pharos01" "enable"
+set user "preethypu" uid 31
+set user "preethypu" ike-id u-fqdn "preethypu@eastnets.com" share-limit 1
+set user "preethypu" type ike xauth
+set user "preethypu" remote ippool "cs_support_pool"
+set user "preethypu" password "ZI1so/6bNAFIDXs6F/CTV/ruSFn+hXAefA=="
+unset user "preethypu" type auth
+set user "preethypu" "enable"
+set user "sw-test" uid 53
+set user "sw-test" ike-id u-fqdn "sw-test@eastnets.com" share-limit 1
+set user "sw-test" type ike xauth
+set user "sw-test" remote ippool "sw-support-pool"
+set user "sw-test" password "yMFERGviN1mewUsvNiCKb0jHlBnS3qpQ7w=="
+unset user "sw-test" type auth
+set user "sw-test" "enable"
+set user "temp" uid 7
+set user "temp" ike-id u-fqdn "temp@eastnets.com" share-limit 1
+set user "temp" type ike xauth
+set user "temp" password "PO/tTJj4NU7NRGsUtVC7NpZIgHnO6odOFw=="
+unset user "temp" type auth
+set user "temp" "enable"
+set user "test" uid 29
+set user "test" ike-id u-fqdn "test@eastnets.com" share-limit 1
+set user "test" type ike xauth
+set user "test" remote ippool "finmex_mgmt_pool"
+set user "test" password "j/KW4ZUhNmPymvsrLLCqgDNkYrnfb1NY/A=="
+unset user "test" type auth
+set user "test" "enable"
+set user "tswaity" uid 64
+set user "tswaity" ike-id u-fqdn "tswaity@eastnets.com" share-limit 1
+set user "tswaity" type ike xauth
+set user "tswaity" remote ippool "finmex_mgmt_pool"
+set user "tswaity" password "OYGrIzauN7rcNWss8MCRs/fUkCnwEDuTfw=="
+unset user "tswaity" type auth
+set user "tswaity" "enable"
+set user "unirisx" uid 8
+set user "unirisx" ike-id u-fqdn "unirisx@eastnets.com" share-limit 1
+set user "unirisx" type ike xauth
+set user "unirisx" remote ippool "unirisx_mgmt_pool"
+set user "unirisx" password "vkHJY2ldNwwnXWsfc7C6CEZ2fmnKI21dcA=="
+unset user "unirisx" type auth
+set user "unirisx" "enable"
+set user "vfolloso" uid 30
+set user "vfolloso" ike-id u-fqdn "vfolloso@eastnets.com" share-limit 1
+set user "vfolloso" type ike xauth
+set user "vfolloso" remote ippool "cs_support_pool"
+set user "vfolloso" password "C6CbB8cHNMqpHIs7cUCCcuOPkknlavem1Q=="
+unset user "vfolloso" type auth
+set user "vfolloso" "enable"
+set user-group "Dialup_group" id 3
+set user-group "Dialup_group" location external
+set user-group "Dialup_group" type xauth 
+set user-group "bicstest" id 10
+set user-group "bicstest" user "bics-test"
+set user-group "cs_support_group" id 12
+set user-group "cs_support_group" user "emagsombol"
+set user-group "cs_support_group" user "juy_dxb"
+set user-group "cs_support_group" user "preethypu"
+set user-group "cs_support_group" user "vfolloso"
+set user-group "en.More-LVL1-Group" id 19
+set user-group "en.More-LVL2-Group" id 20
+set user-group "en.More-LVL3-Group" id 18
+set user-group "en.More-LVL3-Group" user "EMagsombol"
+set user-group "en.More-LVL3-Group" user "KShahzad"
+set user-group "en.More-LVL3-Group" user "LAbuezz"
+set user-group "en.More-LVL3-Group" user "PPU"
+set user-group "en.More-LVL3-Group" user "SJaber"
+set user-group "en.More-LVL3-Group" user "VAntonio"
+set user-group "en.More-LVL3-Group" user "ZNassif"
+set user-group "en.More-LVL4-Group" id 21
+set user-group "ensb_mgmt_group" id 1
+set user-group "ensb_mgmt_group" user "aataedwan"
+set user-group "ensb_mgmt_group" user "adesear"
+set user-group "ensb_mgmt_group" user "juy"
+set user-group "ensb_mgmt_group" user "msaeed"
+set user-group "finmex_mgmt_group" id 7
+set user-group "finmex_mgmt_group" user "AAbuhijleh"
+set user-group "finmex_mgmt_group" user "ARousan"
+set user-group "finmex_mgmt_group" user "SQasim"
+set user-group "finmex_mgmt_group" user "ajaber"
+set user-group "finmex_mgmt_group" user "finmex"
+set user-group "finmex_mgmt_group" user "finmex_mgmt"
+set user-group "finmex_mgmt_group" user "kpurswani"
+set user-group "finmex_mgmt_group" user "test"
+set user-group "finmex_mgmt_group" user "tswaity"
+set user-group "singtel-users-group" id 16
+set user-group "singtel-users-group" user "Singprod1"
+set user-group "singtel-users-group" user "Singprod2"
+set user-group "singtel-users-group" user "Singprod3"
+set user-group "singtel-users-group" user "Singprod4"
+set user-group "singtel-users-group" user "Singprod5"
+set user-group "sw-support-group" id 15
+set user-group "sw-support-group" user "SW-AAbuhijleh"
+set user-group "sw-support-group" user "SW-AEdwan"
+set user-group "sw-support-group" user "SW-AEdwan2"
+set user-group "sw-support-group" user "SW-FTawaha"
+set user-group "sw-support-group" user "SW-MAQatanany"
+set user-group "sw-support-group" user "SW-MSalameh"
+set user-group "sw-support-group" user "SW-RDevilla"
+set user-group "sw-support-group" user "SW-SBKalahaf"
+set user-group "sw-support-group" user "SW-SQasim"
+set user-group "sw-support-group" user "kbaluyot"
+set user-group "temp_group" id 4
+set user-group "temp_group" user "temp"
+set user-group "unirisx_mgmt_group" id 2
+set user-group "unirisx_mgmt_group" user "mserhan"
+set user-group "unirisx_mgmt_group" user "unirisx"
+set user-group "unirisx_pharos_group" id 6
+set user-group "unirisx_pharos_group" user "pharos"
+set user-group "unirisx_pharos_group" user "pharos01"
+set user-group "us_mgmt_group" id 5
+set user-group "us_mgmt_group" user "asalameh"
+set user-group "us_mgmt_group" user "hkharbat"
+set crypto-policy
+exit
+set ike gateway "GW_ENSBPK_ISDN" address 192.168.247.7 Main outgoing-interface "ethernet0/1" preshare "3R8lQyNQNf9CFVsXRxCrDk9EPXnVvJ//Tx4FqlOfiv+2G0E1jpDJ4ME=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_ENSBPK" address 202.63.216.20 Main outgoing-interface "ethernet0/2" preshare "SBI+YdTUNmNTOqsYX7CGiavFOpnF3MkG7nez9O8BGYq7l0bjJUEP/Ug=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_PTSAAEAA_LL" address 213.132.40.101 id "PTSAAEAA@eastnets.com" Aggr outgoing-interface "ethernet0/2" preshare "KTTnXomfNfbE2JsFaMCYtFc22gnicYPKlT94/ZupwB0/UVNf8pe83ZQ=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_PTSAAEAA_ISDN" address 0.0.0.0 id "PTSAAEAA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "cReD8Pk0N4fxCisvsVCEuk8nhzngsiMoresEY8S2ezJvO89mM07um4g=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_PTSAAEAA_ISDN" nat-traversal
+set ike gateway "GW_KHYBPKKA_LL" address 210.2.139.34 Main outgoing-interface "ethernet0/2" preshare "q0mHyIkMNKVvoMswXCCuqbPma4ngAEdmS1nhzal/xjExmAEIBTAK1rc=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_KHYBPKKA_ISDN" address 0.0.0.0 id "KHYBPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "vECQId6kNTf8qIsqrUChh9BSlunBejxlo6OC8sJsu1a+dPz7bwD710w=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_KHYBPKKA_ISDN" nat-traversal
+set ike gateway "GW_AIINPKKA_LL" address 203.130.2.203 Main outgoing-interface "ethernet0/2" preshare "XX379lLUNEUZicsIdsCoNyVtj4nzVKdd9/wdBBIebBKxXXzLsEt3URA=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_AIINPKKA_ISDN" address 0.0.0.0 id "AIINPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "puGntBYVNGyGrtsHv0CyWoOwT9nCT6AX5Lli4kAPEp9xqShQRUqcNrk=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_AIINPKKA_ISDN" nat-traversal
+set ike gateway "GW_BKIPPKKA_LL" address 210.2.139.58 Main outgoing-interface "ethernet0/2" preshare "tNjGsQCRNrLiiTsFXvCE7s+dFSn6w73wAqtrmFsT/p2Iyz2q8lL+OC4=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_BKIPPKKA_ISDN" address 0.0.0.0 id "BKIPPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "uSLzqz3/NYMZr3sUbnCX+V83ThnTzLrwaTKXb9dltW5TdL7Qdm3Fv8I=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_BKIPPKKA_ISDN" nat-traversal
+set ike gateway "GW_PLCOPKKA_LL" address 202.44.85.229 Main outgoing-interface "ethernet0/2" preshare "++5SdQjeNMLwQXsi+KCQnJw9cenWfQnh4bkvz7QMIrSd5oRFPIRylTg=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_PLCOPKKA_ISDN" address 0.0.0.0 id "PLCOPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "EcDDa07pNuKgZzsEkMCkfubSr+nZR8Z/a2tIT1yK+wAPLpyluCs4S50=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_PLCOPKKA_ISDN" nat-traversal
+set ike gateway "GW_DBHDPKKA_LL" address 203.101.171.34 Main outgoing-interface "ethernet0/2" preshare "1S87JSiKNR0LUws770CHi+J7OanI2eD3zuE2HvYyUmbWTFTYL5ss52E=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_DBHDPKKA_ISDN" address 0.0.0.0 id "DBHDPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "QUCty03+NIeM1NsUnGC+KgyLXKn9xZICrrIZQuuk9O+xJnkU+qpavnM=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_DBHDPKKA_ISDN" nat-traversal
+set ike gateway "GW_FDIBPKKA_LL" address 202.88.39.45 Main outgoing-interface "ethernet0/2" preshare "7+9y90XrNRlaZ9ssS2CgQHMVHYng0UmR+iPoVAFZmESTrnUDxmGnhCc=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_FDIBPKKA_ISDN" address 0.0.0.0 id "FDIBPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "KknTZ1FnN7AUvKsHF5CeikgmIXnRwENHnYOc6pajYy6xAbuPm7QgOH8=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_FDIBPKKA_ISDN" nat-traversal
+set ike gateway "GW_FAYSPKKA_LL" address 125.209.98.178 Main outgoing-interface "ethernet0/2" preshare "Ue1Gq+A+NsqgIvsDZUCdIrR4PnndqPiyUx5Hw3D89t8DomUjG5m+mLo=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_FAYSPKKA_ISDN" address 0.0.0.0 id "FAYSPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "zz+w5HIzNkmz3csO7ECqv4VPNGn+xKmGOOYmckEHnLxlMqe4Iaq6qRk=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_FAYSPKKA_ISDN" nat-traversal
+set ike gateway "GW_NIBPPKKA_LL" address 124.29.205.107 Main outgoing-interface "ethernet0/2" preshare "Cz7LpsRZN0YDlws8qnCFebX7l/neGQkFZ1GRxt9juEgQBnRIt5O1KyI=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_NIBPPKKA_ISDN" address 0.0.0.0 id "NIBPPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "rXORMywtN8wz8qsOk/CsRbS9iin7VCdUgNrSULk5Vi4PbJkrK2KUtSI=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_NIBPPKKA_ISDN" nat-traversal
+set ike gateway "GW_US_FEBKUS6LLA1_SAAS_LL" address 71.158.80.172 Main outgoing-interface "ethernet0/2" preshare "3mUyWtfoNRfII0sUXACOYLi+nznvKmuFjnCwvcA/9ik+GeX4lAFm2RM=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_US_FEBKUS6LLA2_SAAS_LL" address 71.158.80.173 Main outgoing-interface "ethernet0/2" preshare "/ssdQ/H8NCq/rqs9FzCtrCS/K3nFVyMerLlLWlDWWA2EDAfwmlWptao=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_US_FEBKUS6LIRV_SAAS_LL" address 12.9.145.231 Main outgoing-interface "ethernet0/2" preshare "v+gljqyvNL3f6csKVQC9Gk+XFPnfG2nLSSaFDsl29UJOqWW3sOAn0TE=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_MEZNPKKA_LL" address 125.209.91.19 Main outgoing-interface "ethernet0/2" preshare "8Mq6BNxmNN8pN3srkkC4HTGVDFnktMkXdcOssyEy7HAKDRkG1QeKYyU=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_MEZNPKKA_ISDN" address 0.0.0.0 id "MEZNPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "cTlvCxltNuixZ3sfwYCIPfFvOJneaUTh4Xzuwz7XIyV+cGuUDVbaJE4=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_MEZNPKKA_ISDN" nat-traversal
+set ike gateway "GW_FWOMPKKA_LL" address 124.29.205.6 Main outgoing-interface "ethernet0/2" preshare "L600zYrnNS4b/AsveHC2A6L2yXnjEdEFk74DiVuL+8X6ZBj+L4pRohA=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_FWOMPKKA_ISDN" address 0.0.0.0 id "FWOMPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "G9i2bNXWNeUMS/s0uzClBzi0Lin/6v+g1sWRDEcNWIXusNZSxVpZRLk=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_FWOMPKKA_ISDN" nat-traversal
+set ike gateway "GW_ENSBUS" address 209.123.80.7 Main outgoing-interface "ethernet0/2" preshare "4rTUk1MXNkrTsfsidpCXBGQa9rnCK493oApgpplG6EizYQC1j5+Lnes=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_FAYSPKKA_DR_LL" address 58.27.253.14 Main outgoing-interface "ethernet0/2" preshare "0XGZVpjSN18nT1sDypCYNCdXScnEFPdVdiWqP3foYFtE4DHtCRmadzo=" proposal "pre-g2-3des-md5" "pre-g2-aes128-sha"
+set ike gateway "GW_FAYSPKKA_DR_LL" cert peer-ca all
+set ike gateway "GW_UNIRISX_DIALIN" dialup "unirisx_mgmt_group" Aggr outgoing-interface "ethernet0/2" preshare "EhLFyzGsNDdLBKsxFHCJJAtbpynyfEGu4A==" proposal "pre-g2-3des-md5"
+set ike gateway "GW_UNIRISX_DIALIN" nat-traversal udp-checksum
+set ike gateway "GW_UNIRISX_DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "GW_UNIRISX_DIALIN" xauth
+set ike gateway "GW_UNIRISX_DIALIN" xauth server auth-method chap pap
+unset ike gateway "GW_UNIRISX_DIALIN" xauth do-edipi-auth
+set ike gateway "GW_ENSB_MGMT_DIALIN(UNIRISX)" dialup "ensb_mgmt_group" Aggr outgoing-interface "ethernet0/2" preshare "V3SPR3ziNDVefSsfDnCV5ctS5YnE6YnL4hfD6AEH0Kwqs8TqUoaMARg=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_ENSB_MGMT_DIALIN(UNIRISX)" nat-traversal udp-checksum
+set ike gateway "GW_ENSB_MGMT_DIALIN(UNIRISX)" nat-traversal keepalive-frequency 5
+set ike gateway "GW_ENSB_MGMT_DIALIN(UNIRISX)" xauth
+set ike gateway "GW_ENSB_MGMT_DIALIN(UNIRISX)" xauth server auth-method chap pap
+unset ike gateway "GW_ENSB_MGMT_DIALIN(UNIRISX)" xauth do-edipi-auth
+set ike gateway "GW_US_MGMT_DIALIN" dialup "us_mgmt_group" Aggr outgoing-interface "ethernet0/2" preshare "gu5E6btINzLn8isFKACCdX5FH8nTU+833Mbl8k0kJjG0ChOeaDvZ9A8=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_US_MGMT_DIALIN" nat-traversal udp-checksum
+set ike gateway "GW_US_MGMT_DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "GW_US_MGMT_DIALIN" xauth
+set ike gateway "GW_US_MGMT_DIALIN" xauth server auth-method chap pap
+unset ike gateway "GW_US_MGMT_DIALIN" xauth do-edipi-auth
+set ike gateway "GW_ENTEST_ISDN" address 0.0.0.0 id "ENTEST@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "QABHootgN2M9YjsxfQCyjw/F7envE348PQ==" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_ENTEST_ISDN" nat-traversal
+set ike gateway "GW_US_IDXDUS33_SAAS_LL" address 65.102.232.108 Main outgoing-interface "ethernet0/2" preshare "gjkTMd69N4C7KxsVgPCzG7CWYMneIb/WVrS7/xNAix7NDLBAWDHEmPo=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_UNIRISX_PHAROS_DIALIN" dialup "unirisx_pharos_group" Aggr outgoing-interface "ethernet0/2" preshare "PNn+61dNNzvuU+sSZJCxwBnoOPnlskGlRw==" proposal "pre-g2-3des-md5"
+set ike gateway "GW_UNIRISX_PHAROS_DIALIN" nat-traversal udp-checksum
+set ike gateway "GW_UNIRISX_PHAROS_DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "GW_UNIRISX_PHAROS_DIALIN" xauth
+set ike gateway "GW_UNIRISX_PHAROS_DIALIN" xauth server auth-method chap pap
+unset ike gateway "GW_UNIRISX_PHAROS_DIALIN" xauth do-edipi-auth
+set ike gateway "GW_US_RBBCUS6L_SAAS_LL" address 12.236.105.37 Main outgoing-interface "ethernet0/2" preshare "ptKLYJLmNJzHdzsjvDCCtCfusCnJNjllfvDQEw1f024wyxMXeZtjMAI=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_BAHLPKKA_GWCP_LL" address 202.125.136.108 Main outgoing-interface "ethernet0/2" preshare "OePZgOrJNyMdyvsANyCxntpm+Ynf4XXNBxdBDO11AsYt4Gad1Bwim8k=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_BAHLPKKA_DRCP_LL" address 117.20.16.142 Main outgoing-interface "ethernet0/2" preshare "QRhITC/qNsl/Rps72PCH+de2RlnJZhQI1xsW8aDtsSj02zEgqp3RzwQ=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_FINMEX_DIALIN" dialup "finmex_mgmt_group" Aggr outgoing-interface "ethernet0/2" preshare "uoeOvk6FNeLSdCsOQnCqTJ3NvZnxOsPqYS93L8eKIRssryxIlTGvbI8=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_FINMEX_DIALIN" nat-traversal udp-checksum
+set ike gateway "GW_FINMEX_DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "GW_FINMEX_DIALIN" xauth
+set ike gateway "GW_FINMEX_DIALIN" xauth server auth-method chap pap
+unset ike gateway "GW_FINMEX_DIALIN" xauth do-edipi-auth
+set ike gateway "GW_TIDCKWKW_LL" address 62.150.82.143 Main outgoing-interface "ethernet0/2" preshare "1tyk9CLkNZWiSFsuncCA2fWODbn8dIBmmKyOtgygvrLkhRIMa3hWCiE=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_TIDCKWKW_LL_BACKUP" address 83.96.35.43 Main outgoing-interface "ethernet0/2" preshare "yOfoM/M3Nk16D7sxdKC6h0gWihnSZagEKE+qzm8ybp7XMJNrTPa5Cr8=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_AIINPKKA_DRCP_LL" address 124.29.206.2 Main outgoing-interface "ethernet0/2" preshare "C1m+HzpSNW7TBOseTaCveY2nXInwP7bMLt6w/GQhpSGtk9gi0qOtyIs=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_AIINPKKA1_ISDN" address 0.0.0.0 id "AIINPKKA1@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "XWqO67vAN1mrLtsY3VCDmwbL27nivavLNmC8Ucb6dFlqsyGnRb35M2o=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_AIINPKKA1_ISDN" nat-traversal
+set ike gateway "GW_AIINPKKA1_LL" address 124.29.205.226 Main outgoing-interface "ethernet0/2" preshare "RP7d3JP+Nm5qnJsZSnCq8LwBxLn9Ud4zk7ljsREpTBQZCcabY2cBm8c=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_US_GPSXUS55_SAAS_LL" address 66.60.96.242 Main outgoing-interface "ethernet0/2" preshare "b7i8CA+6N8SQtmsNKyCWSxX8fxnZS4SXsjnqQTcH2gQLlqM0mVwisCw=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_US_GPSXUS55DR_SAAS_LL" address 99.48.94.42 Main outgoing-interface "ethernet0/2" preshare "3/7XYA8FN2h3bdsESoCN1pdD1GnGyMb4RRFCpLCq8UZY3m5kdO5Kv6U=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_JSBLPKKA_LL" address 203.130.1.17 Main outgoing-interface "ethernet0/2" preshare "35IYVav+NAEazSsw6sCm4bpwQznAoQ7iKbfhwpT775Mk3azkwmLXfzI=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_JSBLPKKA_ISDN" address 0.0.0.0 id "JSBLPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "bl1dw1yFNC2oWosMgkCkMW08JDnnDMu5FI5gETbwPx7c+yI5MBy+Lkg=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_JSBLPKKA_ISDN" nat-traversal
+set ike gateway "GW_ACBBUS6L_SAAS_LL" address 66.126.22.22 Main outgoing-interface "ethernet0/2" preshare "dCTO7aUXNJ9ibJsxMYCPX5JplLnRPfXgkRCv8nDOM27BnLW1cBUHvM8=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_SONEPKKA_LL" address 124.29.206.142 Main outgoing-interface "ethernet0/2" preshare "34CJEn8iNf7mqUsBZICN/2EOH5nkheQYJ6bS1g6gUTgjPDjZR1jCsyM=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_SONEPKKA_ISDN" address 0.0.0.0 id "SONEPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "k2Nx3SomNVt4WVsadTCo1Av8tRnW6MEWAz9BiZyL3oF/xoiGLAuYi/k=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_SONEPKKA_ISDN" nat-traversal
+set ike gateway "GW_CAGPBMHM_LL1" address 216.249.35.244 Main outgoing-interface "ethernet0/2" preshare "+yYQ/GtFNni2pKsBdRCSEjr3d2n2qg+6VvoB+bltlmajbux/4WwYj6c=" proposal "pre-g2-3des-md5"
+set ike gateway "DC-JO-LL" address 77.245.10.172 Main outgoing-interface "ethernet0/2" preshare "1Eehh6VRNjt0LZsl92CRoy0d1AnXdp9DvVcJTbKMqVnVqWB8KwmfKIs=" proposal "pre-g2-3des-sha"
+set ike gateway "GW_UNILPKKA_LL" address 103.247.124.141 Main outgoing-interface "ethernet0/2" preshare "QGMfA3buNz2FFVsGVPC+5enxPtnMwlEWZuTYGxRSWRLtd6Ekh1ytZuY=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_UNILPKKA_ISDN" address 0.0.0.0 id "UNILPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "q5kl4B12Nb4z+hsdN9CN/LZz2ynQ5QHyd0t36cvNQFkx0TEnquZczuY=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_UNILPKKA_ISDN" nat-traversal udp-checksum
+set ike gateway "GW_UNILPKKA_ISDN" nat-traversal keepalive-frequency 5
+set ike gateway "NISLAEAD-FHMS-LL" address 213.132.56.215 Main outgoing-interface "ethernet0/2" preshare "3KT87/SpN4W3DBsNxeCv86bta+n9pbZxnY+S0a4rEm0IE3ePHqiw5ys=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_MEZNPKKA_DRCP_LL" address 58.27.253.251 Main outgoing-interface "ethernet0/2" preshare "lW93qsVHNkLSeGsRx2C1VouMY5nuS2GkrcrmTsQswJN10aw/SA2q8ig=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_NIBPPKKA_LL2" address 115.186.127.22 Main outgoing-interface "ethernet0/2" preshare "YatP7AM+NgxaNMsCerC3p1wqw5n1zbJsJtyuDsdSkaqCzyY/5L2JRUs=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_NIBPPKKA_DR_LL" address 203.101.168.5 Main outgoing-interface "ethernet0/2" preshare "lXNjC1DfNfVm2qssdWC0+pECLKn55TIz7vQcmWavL+AkxmwacOiyil8=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_NIBPPKKA_DR_ISDN" address 0.0.0.0 id "NIBPPKKA_DR@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "UW7atDxPNx9t+1st6BCqQFCIHpnULuOfJPMTUDEV6cwJq8qDUoN/HXY=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_NIBPPKKA_DR_ISDN" nat-traversal
+set ike gateway "GW_CAGPBMHM_LL2" address 199.172.216.82 Main outgoing-interface "ethernet0/2" preshare "WTbwv0nENTZkZHsZ6NCo4hEOginUm5sggPZGhRDk8ao8pQBXTrwcHvY=" proposal "pre-g2-3des-sha"
+set ike gateway "BICS-GATEWAY-LL" address 80.84.22.1 Main outgoing-interface "ethernet3/3" preshare "sAPvR3+ONfPKS2sEFICaJwVJsrngRzVWT2SRiWeyZ/K8p4vdORky+94=" proposal "pre-g2-3des-sha" "pre-g2-des-sha"
+set ike gateway "bicstest1" dialup "bicstest" Aggr outgoing-interface "ethernet3/3" preshare "Bbz1lZHJNaUph6sqeAC2rc8/QInThEv0bQ==" proposal "pre-g2-3des-sha"
+set ike gateway "bicstest1" nat-traversal udp-checksum
+set ike gateway "bicstest1" nat-traversal keepalive-frequency 5
+set ike gateway "bicstest1" xauth
+unset ike gateway "bicstest1" xauth do-edipi-auth
+set ike gateway "GW_CAGPBMHM_LL-DR1" address 66.55.120.245 Main outgoing-interface "ethernet0/2" preshare "/m/v/ci1NXTuX5sfSoCQ+oJIEYnfIWDohw8XAsKkmQbFBbz2dwiguec=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_ENSBNOC" address 80.227.254.242 Main outgoing-interface "ethernet0/2" preshare "WMD0Zy7iNAdtBns0HJCkOy+ujonhpCW+/TyCWpI5tywoEQEsDqlBP+w=" proposal "pre-g2-3des-sha"
+set ike gateway "CS-SUPPORT-DIALIN" dialup "cs_support_group" Aggr outgoing-interface "ethernet0/2" preshare "Z/NinbYCNd6fansmPnC/FrUu71nJFsPrIg==" proposal "pre-g2-3des-sha"
+set ike gateway "CS-SUPPORT-DIALIN" nat-traversal udp-checksum
+set ike gateway "CS-SUPPORT-DIALIN" nat-traversal keepalive-frequency 0
+set ike gateway "CS-SUPPORT-DIALIN" xauth
+unset ike gateway "CS-SUPPORT-DIALIN" xauth do-edipi-auth
+set ike gateway "GW_SAUDPKKA_GWCP_LL" address 58.27.246.186 Main outgoing-interface "ethernet0/2" preshare "wSFH+ESAN5MykIs+dtCVdcRqAwnsAEpX2M1upj3pF26k9BYrzG6ShWY=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_SAUDPKKA_DRCP_LL" address 58.27.246.194 Main outgoing-interface "ethernet0/2" preshare "clO1L6HANu/+Dvsyn4CsvkpTzSne3Vjb50AsHHRh8DlQe+pjNoZUwU0=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_BKIPPKKA_DRCP_LL" address 125.209.120.202 Main outgoing-interface "ethernet0/2" preshare "tNjGsQCRNrLiiTsFXvCE7s+dFSn6w73wAqtrmFsT/p2Iyz2q8lL+OC4=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_BKIPPKKA_DRCP_ISDN" address 0.0.0.0 id "BKIPPKKA_DRCP@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "uSLzqz3/NYMZr3sUbnCX+V83ThnTzLrwaTKXb9dltW5TdL7Qdm3Fv8I=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_BKIPPKKA_DRCP_ISDN" nat-traversal
+set ike gateway "MoneyExpress-Gateway" address 213.154.75.226 Main outgoing-interface "ethernet3/3" preshare "2wl2fvvBNigoCUsnwyCVAyB1hen7NxXn4A==" proposal "pre-g2-aes128-sha"
+set ike gateway "GW_BURJPKKA_DRCP_LL" address 202.147.191.34 Main outgoing-interface "ethernet0/2" preshare "cSNnVlceNdl4Qus4t1Cgz5ulqFnrSBgaIKHGhDfvdq3i8/XUc07Bltc=" proposal "pre-g2-3des-md5"
+set ike gateway "SW-SUPPORT-DIALIN" dialup "sw-support-group" Aggr outgoing-interface "ethernet0/2" preshare "x04jVf9fNXs92Zs1TBCqRnRwkNnxS6y3cSoUBoYs27EfZ0u0hz6Gcn4=" proposal "pre-g2-3des-sha"
+set ike gateway "SW-SUPPORT-DIALIN" nat-traversal udp-checksum
+set ike gateway "SW-SUPPORT-DIALIN" nat-traversal keepalive-frequency 5
+set ike gateway "SW-SUPPORT-DIALIN" xauth
+unset ike gateway "SW-SUPPORT-DIALIN" xauth do-edipi-auth
+set ike gateway "GW_DUIBPKKA_DRCP_LL" address 202.163.69.3 Main outgoing-interface "ethernet0/2" preshare "aJhr8mlhNjHgYMs82nCDCwjWfsnMk3GWX7c0+rVXPRIVwW2/61w5nME=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_DUIBPKKA_DRCP_ISDN" address 0.0.0.0 id "DUIBPKKA@eastnets.com" Aggr outgoing-interface "ethernet0/1" preshare "sqQyyISJNlTVqysO0cCYIIFodynMnVjEm9u2zCk73plIcTb0ldXFal4=" proposal "pre-g2-3des-md5"
+unset ike gateway "GW_DUIBPKKA_DRCP_ISDN" nat-traversal
+set ike gateway "ENSB-TELEPIN-LL" address 202.40.237.158 Main outgoing-interface "ethernet0/2" preshare "hX04lnqWNrFubWsrIcCeXoKLF5npHExKGsmQxil9gXuAKH8NsMDTdBE=" proposal "pre-g2-3des-sha"
+set ike gateway "SINGTEL-USERS-DIALIN" dialup "singtel-users-group" Aggr outgoing-interface "ethernet0/2" preshare "35NwqgeBNKn0Wns/O1CyOA0BfCnAdywVCfwbq1uQ6dJ0olcJc7HRY2Y=" proposal "pre-g2-3des-sha"
+set ike gateway "SINGTEL-USERS-DIALIN" nat-traversal udp-checksum
+set ike gateway "SINGTEL-USERS-DIALIN" nat-traversal keepalive-frequency 0
+set ike gateway "SINGTEL-USERS-DIALIN" xauth
+unset ike gateway "SINGTEL-USERS-DIALIN" xauth do-edipi-auth
+set ike gateway "EEC_en.More-LL" address 0.0.0.0 id "EEC@en.More.com" Aggr outgoing-interface "ethernet3/3" preshare "0wkIUMycN1IbyasT64C3Wsg2+PnWUb5i6A==" proposal "pre-g2-3des-sha"
+set ike gateway "EEC_en.More-LL" nat-traversal udp-checksum
+set ike gateway "EEC_en.More-LL" nat-traversal keepalive-frequency 5
+set ike gateway "EN-IT-LL" address 213.132.40.99 Main outgoing-interface "ethernet3/3" preshare "jVr/dyOBNlmtZiswcTCMNgq3V4nCMw8f33UlbN15S+f2Bv+ltK5GbJU=" proposal "pre-g2-3des-sha"
+set ike gateway "en.More-LVL3-GW_Gp" dialup "en.More-LVL3-Group" Aggr outgoing-interface "ethernet0/2" preshare "wvoOsK9TNu/eETsxODC8uc4+cWn7zHM5uA==" proposal "pre-g2-3des-sha"
+set ike gateway "en.More-LVL3-GW_Gp" nat-traversal udp-checksum
+set ike gateway "en.More-LVL3-GW_Gp" nat-traversal keepalive-frequency 0
+set ike gateway "en.More-LVL3-GW_Gp" xauth
+set ike gateway "en.More-LVL3-GW_Gp" xauth server auth-method chap pap
+unset ike gateway "en.More-LVL3-GW_Gp" xauth do-edipi-auth
+set ike gateway "SMS-Global-Production-GW" address 203.89.199.148 Main outgoing-interface "ethernet3/3" preshare "uqGJ8i9rNX9GGns+iHCAHd6QYgnZMqbA+Q==" proposal "pre-g2-3des-sha"
+set ike gateway "SMS-Global-DR-GW" address 59.167.123.81 Main outgoing-interface "ethernet3/3" preshare "Ay8GfoGqNiP08ss3sfCc7/uZBKnENtqJAg==" proposal "pre-g2-3des-sha"
+set ike gateway "GW_NBPAPKKA_DRCP_LL" address 103.28.150.160 Main outgoing-interface "ethernet0/2" preshare "tPWM1cSwNn2wR9sUPwC7Al162Dnvf3q/bFilOa75sLzjSVGlYudeplE=" proposal "pre-g2-3des-md5"
+set ike gateway "GW_NBPAPKKA_DRCP_LL" nat-traversal
+set ike gateway "GW_NBPAPKKA_DRCP_LL" nat-traversal udp-checksum
+set ike gateway "GW_NBPAPKKA_DRCP_LL" nat-traversal keepalive-frequency 0
+set ike gateway "DBIS-TEST" address 196.201.198.163 Main outgoing-interface "ethernet0/2" preshare "n1wKqvBrNkPiclsvt6CjdjxpcHnJZzOytZQdsE5AtcnRy++qrK7vLfg=" proposal "pre-g2-3des-sha"
+set ike gateway "DBIS-TEST" nat-traversal
+set ike gateway "DBIS-TEST" nat-traversal udp-checksum
+set ike gateway "DBIS-TEST" nat-traversal keepalive-frequency 0
+set ike gateway "MEA_en.More-LL" address 0.0.0.0 id "MEA@en.More.com" Aggr outgoing-interface "ethernet3/3" preshare "0wkIUMycN1IbyasT64C3Wsg2+PnWUb5i6A==" proposal "pre-g2-3des-sha"
+set ike gateway "MEA_en.More-LL" nat-traversal udp-checksum
+set ike gateway "MEA_en.More-LL" nat-traversal keepalive-frequency 5
+set ike respond-bad-spi 1
+set ike ikev2 ike-sa-soft-lifetime 60
+unset ike ikeid-enumeration
+unset ike dos-protection
+unset ipsec access-session enable
+set ipsec access-session maximum 5000
+set ipsec access-session upper-threshold 0
+set ipsec access-session lower-threshold 0
+set ipsec access-session dead-p2-sa-timeout 0
+unset ipsec access-session log-error
+unset ipsec access-session info-exch-connected
+unset ipsec access-session use-error-log
+set xauth default ippool "Default_Pool"
+set vpn "VPN_ENSBPK_ISDN" gateway "GW_ENSBPK_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_ENSBPK_ISDN" monitor optimized
+set vpn "VPN_ENSBPK_ISDN" id 0x19 bind interface tunnel.4
+set vpn "VPN_ENSBPK" gateway "GW_ENSBPK" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_ENSBPK" monitor optimized rekey
+set vpn "VPN_ENSBPK" id 0x83 bind interface tunnel.3
+set vpn "VPN_PTSAAEAA_LL" gateway "GW_PTSAAEAA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_PTSAAEAA_LL" monitor optimized rekey
+set vpn "VPN_PTSAAEAA_LL" id 0x10 bind interface tunnel.1
+set vpn "VPN_PTSAAEAA_ISDN" gateway "GW_PTSAAEAA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_PTSAAEAA_ISDN" monitor optimized rekey
+set vpn "VPN_PTSAAEAA_ISDN" id 0x13 bind interface tunnel.2
+set vpn "VPN_KHYBPKAKA_LL" gateway "GW_KHYBPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_KHYBPKAKA_LL" monitor optimized rekey
+set vpn "VPN_KHYBPKAKA_LL" id 0x106 bind interface tunnel.1
+set vpn "VPN_KHYBPKKA_ISDN" gateway "GW_KHYBPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_KHYBPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_KHYBPKKA_ISDN" id 0x20 bind interface tunnel.2
+set vpn "VPN_BKIPPKKA_LL" gateway "GW_BKIPPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_BKIPPKKA_LL" monitor optimized rekey
+set vpn "VPN_BKIPPKKA_LL" id 0x21 bind interface tunnel.1
+set vpn "VPN_BKIPPKKA_ISDN" gateway "GW_BKIPPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_BKIPPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_BKIPPKKA_ISDN" id 0x22 bind interface tunnel.2
+set vpn "VPN_AIINPKKA_LL" gateway "GW_AIINPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_AIINPKKA_LL" monitor optimized rekey
+set vpn "VPN_AIINPKKA_LL" id 0x5f bind interface tunnel.1
+set vpn "VPN_AIINPKKA_ISDN" gateway "GW_AIINPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_AIINPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_AIINPKKA_ISDN" id 0x24 bind interface tunnel.2
+set vpn "VPN_PLCOPKKA_LL" gateway "GW_PLCOPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_PLCOPKKA_LL" monitor optimized rekey
+set vpn "VPN_PLCOPKKA_LL" id 0x61 bind interface tunnel.1
+set vpn "VPN_PLCOPKKA_ISDN" gateway "GW_PLCOPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_PLCOPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_PLCOPKKA_ISDN" id 0x26 bind interface tunnel.2
+set vpn "VPN_DBHDPKKA_LL" gateway "GW_DBHDPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_DBHDPKKA_LL" monitor optimized rekey
+set vpn "VPN_DBHDPKKA_LL" id 0x85 bind interface tunnel.1
+set vpn "VPN_DBHDPKKA_ISDN" gateway "GW_DBHDPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_DBHDPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_DBHDPKKA_ISDN" id 0x28 bind interface tunnel.2
+set vpn "VPN_FAYSPKKA_LL" gateway "GW_FAYSPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FAYSPKKA_LL" monitor optimized rekey
+set vpn "VPN_FAYSPKKA_LL" id 0x29 bind interface tunnel.1
+set vpn "VPN_FAYSPKKA_ISDN" gateway "GW_FAYSPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FAYSPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_FAYSPKKA_ISDN" id 0x2a bind interface tunnel.2
+set vpn "VPN_FDIBPKKA_LL" gateway "GW_FDIBPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FDIBPKKA_LL" monitor optimized rekey
+set vpn "VPN_FDIBPKKA_LL" id 0x54 bind interface tunnel.1
+set vpn "VPN_FDIBPKKA_ISDN" gateway "GW_FDIBPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FDIBPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_FDIBPKKA_ISDN" id 0x2c bind interface tunnel.2
+set vpn "VPN_NIBPPKKA_LL" gateway "GW_NIBPPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_NIBPPKKA_LL" monitor optimized rekey
+set vpn "VPN_NIBPPKKA_LL" id 0x99 bind interface tunnel.1
+set vpn "VPN_NIBPPKKA_ISDN" gateway "GW_NIBPPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_NIBPPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_FEBKUS6LLA1_SAAS_LL" gateway "GW_US_FEBKUS6LLA1_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FEBKUS6LLA1_SAAS_LL" monitor rekey
+set vpn "VPN_FEBKUS6LLA1_SAAS_LL" id 0x33 bind interface tunnel.11
+set vpn "VPN_FEBKUS6LLA2_SAAS_LL" gateway "GW_US_FEBKUS6LLA2_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FEBKUS6LLA2_SAAS_LL" monitor rekey
+set vpn "VPN_FEBKUS6LLA2_SAAS_LL" id 0x32 bind interface tunnel.11
+set vpn "VPN_FEBKUS6LIRV_SAAS_LL" gateway "GW_US_FEBKUS6LIRV_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FEBKUS6LIRV_SAAS_LL" monitor optimized rekey
+set vpn "VPN_FEBKUS6LIRV_SAAS_LL" id 0x34 bind interface tunnel.11
+set vpn "VPN_MEZNPKKA_LL" gateway "GW_MEZNPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_MEZNPKKA_LL" monitor optimized rekey
+set vpn "VPN_MEZNPKKA_LL" id 0x92 bind interface tunnel.1
+set vpn "VPN_MEZNPKKA_ISDN" gateway "GW_MEZNPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_MEZNPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_MEZNPKKA_ISDN" id 0x36 bind interface tunnel.2
+set vpn "VPN_FWOMPKKA_LL" gateway "GW_FWOMPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FWOMPKKA_LL" monitor optimized rekey
+set vpn "VPN_FWOMPKKA_LL" id 0x37 bind interface tunnel.1
+set vpn "VPN_FWOMPKKA_ISDN" gateway "GW_FWOMPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FWOMPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_FWOMPKKA_ISDN" id 0x38 bind interface tunnel.2
+set vpn "VPN_ENSBUS" gateway "GW_ENSBUS" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_ENSBUS" monitor optimized rekey
+set vpn "VPN_ENSBUS" id 0x47 bind interface tunnel.13
+set vpn "VPN_FAYSPKKA_DR_LL" gateway "GW_FAYSPKKA_DR_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FAYSPKKA_DR_LL" monitor optimized rekey
+set vpn "VPN_FAYSPKKA_DR_LL" id 0x56 bind interface tunnel.1
+set vpn "VPN_UNIRISX_DIALIN" gateway "GW_UNIRISX_DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_UNIRISX_DIALIN" monitor optimized rekey
+set vpn "VPN_ENSB_MGMT_DIALIN(UNIRISX)" gateway "GW_ENSB_MGMT_DIALIN(UNIRISX)" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_ENSB_MGMT_DIALIN(UNIRISX)" monitor
+set vpn "VPN_US_MGMT_DIALIN" gateway "GW_US_MGMT_DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_US_MGMT_DIALIN" monitor optimized rekey
+set vpn "VPN_ENTEST_ISDN" gateway "GW_ENTEST_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_ENTEST_ISDN" id 0x66 bind interface tunnel.2
+set vpn "VPN_IDXDUS33_SAAS_LL" gateway "GW_US_IDXDUS33_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_IDXDUS33_SAAS_LL" monitor optimized rekey
+set vpn "VPN_UNIRISX_PHAROS_DIALIN" gateway "GW_UNIRISX_PHAROS_DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_UNIRISX_PHAROS_DIALIN" monitor optimized rekey
+set vpn "VPN_RBBCUS6L_SAAS_LL" gateway "GW_US_RBBCUS6L_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_RBBCUS6L_SAAS_LL" monitor optimized rekey
+set vpn "VPN_RBBCUS6L_SAAS_LL" id 0x70 bind interface tunnel.11
+set vpn "VPN_BAHLPKKA_GWCP_LL" gateway "GW_BAHLPKKA_GWCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_BAHLPKKA_GWCP_LL" monitor optimized rekey
+set vpn "VPN_BAHLPKKA_GWCP_LL" id 0x71 bind interface tunnel.1
+set vpn "VPN_BAHLPKKA_DRCP_LL" gateway "GW_BAHLPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_BAHLPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_BAHLPKKA_DRCP_LL" id 0x72 bind interface tunnel.1
+set vpn "VPN_FINMEX_DIALIN" gateway "GW_FINMEX_DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_FINMEX_DIALIN" monitor
+set vpn "VPN_TIDCKWKW_LL" gateway "GW_TIDCKWKW_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_TIDCKWKW_LL" monitor optimized rekey
+set vpn "VPN_TIDCKWKW_LL" id 0x76 bind interface tunnel.1
+set vpn "VPN_TIDCKWKW_LL_BACKUP" gateway "GW_TIDCKWKW_LL_BACKUP" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_TIDCKWKW_LL_BACKUP" monitor optimized rekey
+set vpn "VPN_TIDCKWKW_LL_BACKUP" id 0x78 bind interface tunnel.2
+set vpn "VPN_AIINPKKA_DRCP_LL" gateway "GW_AIINPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_AIINPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_AIINPKKA_DRCP_LL" id 0x94 bind interface tunnel.1
+set vpn "VPN_AIINPKKA_DRCP_LL" dscp-mark 0
+set vpn "VPN_AIINPKKA1_LL" gateway "GW_AIINPKKA1_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_AIINPKKA1_LL" monitor optimized rekey
+set vpn "VPN_AIINPKKA1_LL" id 0x91 bind interface tunnel.1
+set vpn "VPN_AIINPKKA1_LL" dscp-mark 0
+set vpn "VPN_AIINPKKA1_ISDN" gateway "GW_AIINPKKA1_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_AIINPKKA1_ISDN" monitor optimized rekey
+set vpn "VPN_AIINPKKA1_ISDN" id 0x7b bind interface tunnel.2
+set vpn "VPN_AIINPKKA1_ISDN" dscp-mark 0
+set vpn "VPN_GPSXUS55_SAAS_LL" gateway "GW_US_GPSXUS55_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_GPSXUS55_SAAS_LL" monitor optimized rekey
+set vpn "VPN_GPSXUS55_SAAS_LL" id 0x7d bind interface tunnel.11
+set vpn "VPN_GPSXUS55DR_SAAS_LL" gateway "GW_US_GPSXUS55DR_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_GPSXUS55DR_SAAS_LL" monitor optimized rekey
+set vpn "VPN_GPSXUS55DR_SAAS_LL" id 0x7e bind interface tunnel.11
+set vpn "VPN_JSBLPKKA_LL" gateway "GW_JSBLPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_JSBLPKKA_LL" monitor optimized rekey
+set vpn "VPN_JSBLPKKA_LL" id 0xe3 bind interface tunnel.1
+set vpn "VPN_JSBLPKKA_ISDN" gateway "GW_JSBLPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_JSBLPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_JSBLPKKA_ISDN" id 0x87 bind interface tunnel.2
+set vpn "VPN_ACBBUS6L_SAAS_LL" gateway "GW_ACBBUS6L_SAAS_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_ACBBUS6L_SAAS_LL" monitor optimized rekey
+set vpn "VPN_ACBBUS6L_SAAS_LL" id 0x88 bind interface tunnel.11
+set vpn "VPN_SONEPKKA_LL" gateway "GW_SONEPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_SONEPKKA_LL" monitor optimized rekey
+set vpn "VPN_SONEPKKA_LL" id 0x89 bind interface tunnel.1
+set vpn "VPN_SONEPKKA_ISDN" gateway "GW_ENSBPK_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_SONEPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_SONEPKKA_ISDN" id 0x8a bind interface tunnel.2
+set vpn "VPN_CAGPBMHM_LL1" gateway "GW_CAGPBMHM_LL1" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_CAGPBMHM_LL1" monitor optimized rekey
+set vpn "VPN_CAGPBMHM_LL1" id 0xcf bind interface tunnel.11
+set vpn "DC-JO-LL" gateway "DC-JO-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-JO-LL" monitor optimized rekey
+set vpn "DC-JO-LL" id 0xe9 bind interface tunnel.10
+set vpn "VPN_UNILPKKA_LL" gateway "GW_UNILPKKA_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_UNILPKKA_LL" monitor optimized rekey
+set vpn "VPN_UNILPKKA_LL" id 0xfd bind interface tunnel.1
+set vpn "VPN_UNILPKKA_ISDN" gateway "GW_UNILPKKA_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_UNILPKKA_ISDN" monitor optimized rekey
+set vpn "VPN_UNILPKKA_ISDN" id 0x8f bind interface tunnel.2
+set vpn "VPN_MEZNPKKA_DRCP_LL" gateway "GW_MEZNPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_MEZNPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_MEZNPKKA_DRCP_LL" id 0x95 bind interface tunnel.1
+set vpn "VPN_NIBPPKKA_LL2" gateway "GW_NIBPPKKA_LL2" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_NIBPPKKA_LL2" monitor optimized rekey
+set vpn "VPN_NIBPPKKA_LL2" id 0x96 bind interface tunnel.2
+set vpn "VPN_NIBPPKKA_LL2" dscp-mark 0
+set vpn "VPN_NIBPPKKA_DR_LL" gateway "GW_NIBPPKKA_DR_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_NIBPPKKA_DR_LL" monitor optimized rekey
+set vpn "VPN_NIBPPKKA_DR_LL" id 0x9a bind interface tunnel.1
+set vpn "VPN_NIBPPKKA_DR_ISDN" gateway "GW_NIBPPKKA_DR_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_NIBPPKKA_DR_ISDN" monitor optimized rekey
+set vpn "VPN_NIBPPKKA_DR_ISDN" id 0x9b bind interface tunnel.2
+set vpn "VPN_CAGPBMHM_LL2" gateway "GW_CAGPBMHM_LL2" no-replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "VPN_CAGPBMHM_LL2" monitor optimized rekey
+set vpn "VPN_CAGPBMHM_LL2" id 0xcc bind interface tunnel.12
+set vpn "VPN_CAGPBMHM_LL2" dscp-mark 0
+set vpn "bicstest" gateway "bicstest1" no-replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "VPN_CAGPBMHM_LL-DR1" gateway "GW_CAGPBMHM_LL-DR1" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_CAGPBMHM_LL-DR1" monitor optimized rekey
+set vpn "VPN_CAGPBMHM_LL-DR1" id 0xb4 bind interface tunnel.11
+set vpn "VPN_ENSBNOC" gateway "GW_ENSBNOC" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "VPN_ENSBNOC" monitor optimized rekey
+set vpn "VPN_ENSBNOC" id 0xc7 bind interface tunnel.7
+set vpn "BICS-LL" gateway "BICS-GATEWAY-LL" replay tunnel idletime 0 proposal "nopfs-esp-3des-sha"  "nopfs-esp-des-sha" 
+set vpn "BICS-LL" id 0xc9 bind interface tunnel.15
+set vpn "BICS-LL" dscp-mark 0
+set interface tunnel.15 nhtb 3.3.3.3 vpn "BICS-LL"
+set vpn "CS-SUPPORT-DIALIN" gateway "CS-SUPPORT-DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "CS-SUPPORT-DIALIN" monitor optimized rekey
+set vpn "VPN_SAUDPKKA_GWCP_LL" gateway "GW_SAUDPKKA_GWCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_SAUDPKKA_GWCP_LL" monitor optimized rekey
+set vpn "VPN_SAUDPKKA_GWCP_LL" id 0xd6 bind interface tunnel.1
+set vpn "VPN_SAUDPKKA_DRCP_LL" gateway "GW_SAUDPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_SAUDPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_SAUDPKKA_DRCP_LL" id 0xd3 bind interface tunnel.1
+set vpn "VPN_BKIPPKKA_DRCP_LL" gateway "GW_BKIPPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_BKIPPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_BKIPPKKA_DRCP_LL" id 0xd4 bind interface tunnel.1
+set vpn "VPN_BKIPPKKA_DRCP_ISDN" gateway "GW_BKIPPKKA_DRCP_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_BKIPPKKA_DRCP_ISDN" monitor optimized rekey
+set vpn "VPN_BKIPPKKA_DRCP_ISDN" id 0xd5 bind interface tunnel.2
+set vpn "MoneyExpress-VPN" gateway "MoneyExpress-Gateway" replay tunnel idletime 0 proposal "g2-esp-aes128-sha" 
+set vpn "VPN_BURJPKKA_DRCP_LL" gateway "GW_BURJPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_BURJPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_BURJPKKA_DRCP_LL" id 0xdd bind interface tunnel.1
+set vpn "SW-SUPPORT-DIALIN" gateway "SW-SUPPORT-DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "VPN_DUIBPKKA_DRCP_LL" gateway "GW_DUIBPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_DUIBPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_DUIBPKKA_DRCP_LL" id 0xe5 bind interface tunnel.1
+set vpn "VPN_DUIBPKKA_DRCP_ISDN" gateway "GW_DUIBPKKA_DRCP_ISDN" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_DUIBPKKA_DRCP_ISDN" monitor optimized rekey
+set vpn "VPN_DUIBPKKA_DRCP_ISDN" id 0xe6 bind interface tunnel.2
+set vpn "ENSB-TELEPIN-LL" gateway "ENSB-TELEPIN-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "ENSB-TELEPIN-LL" monitor optimized rekey
+set vpn "ENSB-TELEPIN-LL" id 0xe7 bind interface tunnel.18
+set interface tunnel.18 nhtb 7.7.7.7 vpn "ENSB-TELEPIN-LL"
+set vpn "SINGTEL-USERS-DIALIN" gateway "SINGTEL-USERS-DIALIN" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "EEC_en.More-LL" gateway "EEC_en.More-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "EEC_en.More-LL" monitor optimized rekey
+set vpn "EEC_en.More-LL" id 0xea bind interface tunnel.1
+set vpn "EEC_en.More-LL" dscp-mark 0
+set vpn "EN-IT-LL" gateway "EN-IT-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "EN-IT-LL" id 0xef bind interface tunnel.20
+set vpn "en.More-LVL3-VPN_Gp" gateway "en.More-LVL3-GW_Gp" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "en.More-LVL3-VPN_Gp" monitor
+set vpn "SMS-Global-Production-VPN" gateway "SMS-Global-Production-GW" replay tunnel idletime 0 proposal "nopfs-esp-3des-sha" 
+set vpn "SMS-Global-Production-VPN" id 0x103 bind interface tunnel.21
+set interface tunnel.21 nhtb 8.8.8.8 vpn "SMS-Global-Production-VPN"
+set vpn "SMS-Global-DR-VPN" gateway "SMS-Global-DR-GW" replay tunnel idletime 0 proposal "nopfs-esp-3des-sha" 
+set vpn "SMS-Global-DR-VPN" id 0x102 bind interface tunnel.22
+set interface tunnel.22 nhtb 9.9.9.9 vpn "SMS-Global-DR-VPN"
+set vpn "VPN_NBPAPKKA_DRCP_LL" gateway "GW_NBPAPKKA_DRCP_LL" replay tunnel idletime 0 proposal "g2-esp-3des-md5" 
+set vpn "VPN_NBPAPKKA_DRCP_LL" monitor optimized rekey
+set vpn "VPN_NBPAPKKA_DRCP_LL" id 0x104 bind interface tunnel.1
+set vpn "DBIS-TEST" gateway "DBIS-TEST" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DBIS-TEST" monitor optimized rekey
+set vpn "DBIS-TEST" id 0x107 bind interface tunnel.1
+set vpn "MEA_en.More-LL" gateway "MEA_en.More-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "MEA_en.More-LL" monitor optimized rekey
+set vpn "MEA_en.More-LL" id 0x108 bind interface tunnel.1
+set vpn "MEA_en.More-LL" dscp-mark 0
+unset interface tunnel.21 acvpn-dynamic-routing
+unset interface tunnel.22 acvpn-dynamic-routing
+set vpn-group id 1
+set attack db sigpack base
+set attack db mode Update
+set attack db schedule daily 00:00
+set url protocol websense
+exit
+set vpn "BICS-LL" proxy-id local-ip 10.246.89.12/30 remote-ip 193.43.238.248/30 "ANY" 
+set vpn "MoneyExpress-VPN" proxy-id local-ip 192.168.211.230/32 remote-ip 10.10.10.187/32 "ANY" 
+set vpn "ENSB-TELEPIN-LL" proxy-id local-ip 192.168.211.237/32 remote-ip 202.40.237.144/28 "ANY" 
+set vpn "EN-IT-LL" proxy-id check
+set vpn "EN-IT-LL" proxy-id local-ip 192.168.211.0/24 remote-ip 192.168.2.0/24 "ANY" 
+set vpn "SMS-Global-Production-VPN" proxy-id check
+set vpn "SMS-Global-Production-VPN" proxy-id local-ip 172.24.211.230/32 remote-ip 203.89.193.162/32 "HTTP" 
+set vpn "SMS-Global-Production-VPN" proxy-id local-ip 172.24.211.230/32 remote-ip 203.89.193.162/32 "HTTPS" 
+set vpn "SMS-Global-Production-VPN" proxy-id local-ip 172.24.211.230/32 remote-ip 203.89.193.162/32 "SMS_Global_Ports" 
+set vpn "SMS-Global-Production-VPN" proxy-id local-ip 172.24.211.230/32 remote-ip 203.89.193.162/32 "ICMP-ANY" 
+set vpn "SMS-Global-DR-VPN" proxy-id check
+set vpn "SMS-Global-DR-VPN" proxy-id local-ip 172.25.211.230/32 remote-ip 59.167.123.105/32 "HTTPS" 
+set vpn "SMS-Global-DR-VPN" proxy-id local-ip 172.25.211.230/32 remote-ip 59.167.123.105/32 "HTTP" 
+set vpn "SMS-Global-DR-VPN" proxy-id local-ip 172.25.211.230/32 remote-ip 59.167.123.105/32 "SMS_Global_Ports" 
+set vpn "SMS-Global-DR-VPN" proxy-id local-ip 172.25.211.230/32 remote-ip 59.167.123.105/32 "ICMP-ANY" 
+set policy id 142 from "Trust_US" to "Untrust"  "en.More Web Server 1" "SMS_Global_DR_SRVR1" "ANY" permit log 
+set policy id 142
+set log session-init
+exit
+set policy id 141 from "Trust_US" to "Untrust"  "en.More Web Server 1" "SMS_Global_Production_SRVR1" "ANY" permit log 
+set policy id 141
+set log session-init
+exit
+set policy id 140 from "Trust_US" to "Untrust"  "en.More Web Server 1" "Dial-Up VPN" "HTTPS" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf9 pair-policy 139 log 
+set policy id 140
+set log session-init
+exit
+set policy id 139 from "Untrust" to "Trust_US"  "Dial-Up VPN" "en.More Web Server 1" "HTTPS" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf9 pair-policy 140 log 
+set policy id 139
+set log session-init
+exit
+set policy id 138 from "Trust_US" to "Untrust"  "en.More Web Server 1" "Dial-Up VPN" "HTTP" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf8 pair-policy 137 log 
+set policy id 138
+set log session-init
+exit
+set policy id 137 from "Untrust" to "Trust_US"  "Dial-Up VPN" "en.More Web Server 1" "HTTP" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf8 pair-policy 138 log 
+set policy id 137
+set log session-init
+exit
+set policy id 124 from "Untrust" to "Trust_US"  "Dial-Up VPN" "192.168.214.104/29" "ANY" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf1 pair-policy 123 log 
+set policy id 124
+set log session-init
+exit
+set policy id 123 from "Trust_US" to "Untrust"  "192.168.214.104/29" "Dial-Up VPN" "ANY" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf1 pair-policy 124 log 
+set policy id 123
+set log session-init
+exit
+set policy id 122 from "Untrust" to "Trust_US"  "Dial-Up VPN" "192.168.211.104/29" "ANY" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf0 pair-policy 121 log 
+set policy id 122
+set log session-init
+exit
+set policy id 121 from "Trust_US" to "Untrust"  "192.168.211.104/29" "Dial-Up VPN" "ANY" tunnel vpn "en.More-LVL3-VPN_Gp" id 0xf0 pair-policy 122 log 
+set policy id 121
+set log session-init
+exit
+set policy id 118 from "Untrust" to "Trust_US"  "EEC-WSs" "en.More Web Servers" "HTTPS" permit log 
+set policy id 118
+set log session-init
+exit
+set policy id 117 from "Trust_US" to "Untrust"  "en.More Web Servers" "EEC-WSs" "ANY" permit log 
+set policy id 117
+set log session-init
+exit
+set policy id 116 from "Trust_US" to "Untrust"  "ENSWDAPP-CLUSTER" "TELEPIN-FTP" "ANY" permit log 
+set policy id 116
+set src-address "ENSWDAPP1"
+set src-address "ENSWDAPP2"
+set dst-address "TELEPIN-FTP-TEMP"
+set dst-address "TELEPIN-SINGTEL NW"
+set dst-address "TELEPIN-SINGTEL-SRV-TEMP"
+set dst-address "TELEPIN-SINGTEL-SRV1"
+set dst-address "TELEPIN-SINGTEL-SRV2"
+set dst-address "TELEPIN-SINGTEL-SRV3"
+set dst-address "TELEPIN-SINGTEL-SRV4"
+set log session-init
+exit
+set policy id 105 from "Trust_US" to "Untrust"  "ENMOREDAPP2" "RemitONE-Servers" "HTTPS" nat src permit log 
+set policy id 105
+set log session-init
+exit
+set policy id 113 from "Untrust" to "Trust_US"  "TELEPIN TEST NW" "ENSWDAPP-CLUSTER" "ICMP-ANY" permit log 
+set policy id 113
+set src-address "TELEPIN-FTP"
+set src-address "TELEPIN-SINGTEL NW"
+set src-address "TELEPIN-SINGTEL-SRV-TEMP"
+set src-address "TELEPIN-SINGTEL-SRV1"
+set src-address "TELEPIN-SINGTEL-SRV2"
+set src-address "TELEPIN-SINGTEL-SRV3"
+set src-address "TELEPIN-SINGTEL-SRV4"
+set dst-address "ENSWDAPP1"
+set dst-address "ENSWDAPP2"
+set log session-init
+exit
+set policy id 114 from "Untrust" to "Trust_US"  "Dial-Up VPN" "ENSWDAPP-CLUSTER" "ANY" tunnel vpn "SINGTEL-USERS-DIALIN" id 0xe8 pair-policy 115 log 
+set policy id 114
+set log session-init
+exit
+set policy id 104 from "Untrust" to "Trust_US"  "RemitONE-Servers" "VIP(ethernet3/3)" "en.More-HTTPS-5443" permit log 
+set policy id 104
+set log session-init
+exit
+set policy id 102 from "Untrust" to "Trust_US"  "MoneyExpress-Server" "en.More Web Server 1" "MoneyExpress_Ports" tunnel vpn "MoneyExpress-VPN" id 0xdb pair-policy 101 log 
+set policy id 102
+set log session-init
+exit
+set policy id 101 from "Trust_US" to "Untrust"  "en.More Web Server 1" "MoneyExpress-Server" "MoneyExpress_Ports" tunnel vpn "MoneyExpress-VPN" id 0xdb pair-policy 102 log 
+set policy id 101
+set log session-init
+exit
+set policy id 100 from "Untrust" to "Trust_US"  "Dial-Up VPN" "en.More Web Server 1" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xd7 pair-policy 99 log 
+set policy id 100
+set log session-init
+exit
+set policy id 99 from "Trust_US" to "Untrust"  "en.More Web Server 1" "Dial-Up VPN" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xd7 pair-policy 100 log 
+set policy id 99
+set log session-init
+exit
+set policy id 98 from "Trust_US" to "Untrust"  "ENMOREDAPP2" "Any" "ANY" nat src permit log 
+set policy id 98 disable
+set policy id 98
+set log session-init
+exit
+set policy id 97 from "Trust_US" to "Untrust"  "en.More Web Servers" "Any" "ANY" nat src permit log 
+set policy id 97 disable
+set policy id 97
+set log session-init
+exit
+set policy id 68 name "enMore" from "Untrust" to "Trust_US"  "Any" "VIP(80.227.254.217)" "FTP" permit log 
+set policy id 68
+set service "HTTP"
+set service "HTTPS"
+set log session-init
+exit
+set policy id 61 from "Untrust" to "Trust_US"  "UNIRISX_MGMT_PUBLIC" "VIP(80.227.254.209)" "FTP" permit log 
+set policy id 61
+set log session-init
+exit
+set policy id 60 from "Untrust" to "Trust_US"  "UNIRISX_MGMT_PUBLIC" "VIP(80.227.254.208)" "FTP" permit log 
+set policy id 60
+set log session-init
+exit
+set policy id 58 from "Untrust" to "Trust_US"  "Any" "VIP(80.227.254.208)" "HTTP" permit log 
+set policy id 58
+set service "HTTPS"
+set log session-init
+exit
+set policy id 59 from "Untrust" to "Trust_US"  "Any" "VIP(80.227.254.209)" "HTTP" permit log 
+set policy id 59
+set service "HTTPS"
+set log session-init
+exit
+set policy id 62 from "Untrust" to "Trust_US"  "Any" "VIP(80.227.254.210)" "HTTP" permit log 
+set policy id 62
+set service "HTTPS"
+set log session-init
+exit
+set policy id 63 from "Untrust" to "Trust_US"  "Any" "VIP(80.227.254.211)" "DNS" permit log 
+set policy id 63
+set service "FTP"
+set service "HTTP"
+set service "HTTPS"
+set service "ICMP-ANY"
+set log session-init
+exit
+set policy id 56 from "Untrust" to "Trust"  "10.153.0.0/16" "192.168.206.0/23" "ANY" permit log 
+set policy id 56
+exit
+set policy id 52 from "Trust" to "Trust_US"  "Any" "Any" "ANY" permit log 
+set policy id 52
+set log session-init
+exit
+set policy id 57 from "Untrust" to "Trust_US"  "USA_CUS_NW" "ENSB_DXB_US_NW" "ICMP-ANY" permit log 
+set policy id 57
+exit
+set policy id 48 from "Untrust" to "Trust_US"  "USA_CUS_NW" "ENUS_AML_NW" "EN_Side_Safewatch" permit log 
+set policy id 48
+set log session-init
+exit
+set policy id 43 from "Trust_US" to "Untrust"  "FINMEX-SRV1" "Dial-Up VPN" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0x75 pair-policy 42 log 
+set policy id 43
+set log session-init
+exit
+set policy id 71 from "Trust_US" to "Untrust"  "en.More-SRV1" "Dial-Up VPN" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0x9d pair-policy 70 log 
+set policy id 71
+set log session-init
+exit
+set policy id 92 from "Trust_US" to "Untrust"  "en.More-SRV2" "Dial-Up VPN" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xcd pair-policy 91 log 
+set policy id 92
+set log session-init
+exit
+set policy id 94 from "Trust_US" to "Untrust"  "ENMOREDAPP1" "Dial-Up VPN" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xd1 pair-policy 93 log 
+set policy id 94
+set log session-init
+exit
+set policy id 96 from "Trust_US" to "Untrust"  "ENMOREDAPP2" "Dial-Up VPN" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xd2 pair-policy 95 log 
+set policy id 96
+set log session-init
+exit
+set policy id 42 from "Untrust" to "Trust_US"  "Dial-Up VPN" "FINMEX-SRV1" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0x75 pair-policy 43 log 
+set policy id 42
+set log session-init
+exit
+set policy id 70 from "Untrust" to "Trust_US"  "Dial-Up VPN" "en.More-SRV1" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0x9d pair-policy 71 log 
+set policy id 70
+set log session-init
+exit
+set policy id 91 from "Untrust" to "Trust_US"  "Dial-Up VPN" "en.More-SRV2" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xcd pair-policy 92 log 
+set policy id 91
+set log session-init
+exit
+set policy id 93 from "Untrust" to "Trust_US"  "Dial-Up VPN" "ENMOREDAPP1" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xd1 pair-policy 94 log 
+set policy id 93
+set log session-init
+exit
+set policy id 95 from "Untrust" to "Trust_US"  "Dial-Up VPN" "ENMOREDAPP2" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xd2 pair-policy 96 log 
+set policy id 95
+set log session-init
+exit
+set policy id 40 from "Trust_US" to "Untrust"  "UNIRISX-SRV03" "Dial-Up VPN" "ANY" tunnel vpn "VPN_UNIRISX_PHAROS_DIALIN" id 0x6f pair-policy 39 log 
+set policy id 40
+set log session-init
+exit
+set policy id 39 from "Untrust" to "Trust_US"  "Dial-Up VPN" "UNIRISX-SRV03" "ANY" tunnel vpn "VPN_UNIRISX_PHAROS_DIALIN" id 0x6f pair-policy 40 log 
+set policy id 39 disable
+set policy id 39
+set log session-init
+exit
+set policy id 33 name "VPN_ENSB_MGMT_DIALIN(UNIRISX)" from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "Dial-Up VPN" "ANY" tunnel vpn "VPN_US_MGMT_DIALIN" id 0x64 pair-policy 32 log 
+set policy id 33
+exit
+set policy id 32 name "VPN_ENSB_MGMT_DIALIN(UNIRISX)" from "Untrust" to "Trust_US"  "Dial-Up VPN" "ENSB_DXB_US_NW" "ANY" tunnel vpn "VPN_US_MGMT_DIALIN" id 0x64 pair-policy 33 log 
+set policy id 32
+exit
+set policy id 27 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "Dial-Up VPN" "RDP" tunnel vpn "VPN_UNIRISX_DIALIN" id 0x62 log 
+set policy id 27
+exit
+set policy id 26 from "Untrust" to "Trust_US"  "Dial-Up VPN" "UNIRISX-HOST" "RDP" tunnel vpn "VPN_UNIRISX_DIALIN" id 0x69 pair-policy 38 log 
+set policy id 26
+exit
+set policy id 25 name "VPN_ENSB_MGMT_DIALIN(UNIRISX)" from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "Dial-Up VPN" "ANY" tunnel vpn "VPN_ENSB_MGMT_DIALIN(UNIRISX)" id 0x5e pair-policy 24 log 
+set policy id 25
+exit
+set policy id 24 name "VPN_ENSB_MGMT_DIALIN(UNIRISX)" from "Untrust" to "Trust_US"  "Dial-Up VPN" "ENSB_DXB_US_NW" "ANY" tunnel vpn "VPN_ENSB_MGMT_DIALIN(UNIRISX)" id 0x5e pair-policy 25 log 
+set policy id 24
+exit
+set policy id 23 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "Dial-Up VPN" "ANY" tunnel vpn "VPN_UNIRISX_DIALIN" id 0x5d pair-policy 22 log 
+set policy id 23
+exit
+set policy id 22 from "Untrust" to "Trust_US"  "Dial-Up VPN" "ENSB_DXB_US_NW" "ANY" tunnel vpn "VPN_UNIRISX_DIALIN" id 0x5d pair-policy 23 log 
+set policy id 22
+exit
+set policy id 20 from "Untrust" to "Trust_US"  "ENSBUS_NW" "ENSB_DXB_US_NW" "ANY" permit log 
+set policy id 20
+exit
+set policy id 11 from "Untrust" to "Trust_US"  "USA_CUS_NW" "ENUS_SAG_NW" "ICMP-ANY" permit log 
+set policy id 11
+set service "EN_SAG"
+exit
+set policy id 10 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "USA_CUS_NW" "ANY" permit log 
+set policy id 10
+exit
+set policy id 9 from "Untrust" to "Trust"  "ENSBPK_NW" "ENSBD_NW" "ANY" permit log 
+set policy id 9
+exit
+set policy id 5 from "Untrust" to "Trust"  "PK_CUS_NW_DRCP" "ENSBDXB_SAG1" "ICMP-ANY" permit log 
+set policy id 5
+set src-address "PK_CUS_NW_GWCP"
+set dst-address "ENSBDXB_SAG2"
+set dst-address "ENSBDXB_SAG3"
+set dst-address "ENSBDXB_SAG4"
+set dst-address "ENSBDXB_SAG5"
+set service "EN_SAG"
+exit
+set policy id 7 from "Untrust" to "Global"  "Any" "Any" "ANY" permit log 
+set policy id 7 disable
+set policy id 7
+exit
+set policy id 6 from "Untrust" to "Untrust"  "Any" "Any" "ANY" permit log 
+set policy id 6
+exit
+set policy id 4 from "Trust" to "Untrust"  "Any" "Any" "ANY" permit log 
+set policy id 4
+exit
+set policy id 12 from "Untrust" to "Trust_US"  "US_FEBKUS6LIRV_NW" "ENSB_DXB_US_NW" "ICMP-ANY" permit log 
+set policy id 12
+set src-address "US_FEBKUS6LLA1_NW"
+set src-address "US_FEBKUS6LLA2_NW"
+set service "EN_MSIH"
+exit
+set policy id 19 from "Untrust" to "Trust"  "ENSBUS_NW" "ENSBD_NW_US" "ANY" permit log 
+set policy id 19
+exit
+set policy id 21 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "ENSBUS_NW" "ANY" permit log 
+set policy id 21
+exit
+set policy id 35 from "Untrust" to "Trust_US"  "US_IDXDUS033_NW" "ENSB_DXB_US_NW" "ICMP-ANY" permit log 
+set policy id 35
+set service "EN_MSIH"
+exit
+set policy id 38 from "Trust_US" to "Untrust"  "UNIRISX-HOST" "Dial-Up VPN" "RDP" tunnel vpn "VPN_UNIRISX_DIALIN" id 0x69 pair-policy 26 log 
+set policy id 38
+exit
+set policy id 46 from "Trust_US" to "Untrust"  "FINMEX-SRV1" "213.132.58.173/32" "FTP" nat src permit log 
+set policy id 46
+exit
+set policy id 41 from "Untrust" to "Trust_US"  "US_RBBCUS6L_NW" "ENSB_DXB_US_NW" "ICMP-ANY" permit log 
+set policy id 41
+set service "EN_MSIH"
+exit
+set policy id 47 from "Untrust" to "Trust_US"  "US_GPSXUS55_NW" "ENSB_DXB_US_NW" "ICMP-ANY" permit log 
+set policy id 47
+set src-address "US_GPSXUS55DR_NW"
+set service "EN_MSIH"
+set log session-init
+exit
+set policy id 45 from "Trust_US" to "Untrust"  "FINMEX-SRV1" "Any" "ANY" nat src permit log 
+set policy id 45
+exit
+set policy id 49 from "Untrust" to "Trust_US"  "US_ACBBUS6L_NW" "ENSB_DXB_US_NW" "ICMP-ANY" permit log 
+set policy id 49
+set service "EN_MSIH"
+set log session-init
+exit
+set policy id 50 from "Untrust" to "Trust_US"  "US_CAGPBMHM_NW" "ENSB_DXB_US_NW" "FTP" permit log 
+set policy id 50 disable
+set policy id 50
+set service "ICMP-ANY"
+set service "SSH"
+set service "EN_MSIH"
+set log session-init
+exit
+set policy id 51 from "Untrust" to "Trust_US"  "US_CAGPBMHM_NW" "ENSB_DXB_US_NW" "ANY" permit log 
+set policy id 51
+set log session-init
+exit
+set policy id 53 from "Trust_US" to "Trust"  "Any" "Any" "ANY" permit log 
+set policy id 53
+set log session-init
+exit
+set policy id 54 from "Untrust" to "Trust_US"  "ENSB-JO-NW" "ENSB_DXB_US_NW" "ANY" permit log 
+set policy id 54
+set log session-init
+exit
+set policy id 67 from "Untrust" to "Trust_US"  "UNIRISX_KEYSRV" "UNIRISX-HOST" "UNIRISX_KEYSRV" permit log 
+set policy id 67
+set log session-init
+exit
+set policy id 55 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "ENSB-JO-NW" "ANY" permit log 
+set policy id 55
+exit
+set policy id 64 name "UNIRISX DNS" from "Trust_US" to "Untrust"  "UNIRISX" "Any" "DNS" nat src permit log 
+set policy id 64
+set log session-init
+exit
+set policy id 65 name "UNIRISX_KEYSRV" from "Trust_US" to "Untrust"  "UNIRISX-HOST" "UNIRISX_KEYSRV" "UNIRISX_KEYSRV" nat src permit log 
+set policy id 65
+set log session-init
+exit
+set policy id 85 from "Trust_US" to "Untrust"  "en.More-SRV1" "BICS-HOMESEND-PROD-SVR-01" "ANY" permit log 
+set policy id 85
+set src-address "ENMOREDAPP1"
+set src-address "ENMOREDAPP2"
+set log session-init
+exit
+set policy id 82 from "Trust_US" to "Untrust"  "en.More-SRV2" "BICS-HOMESEND-TEST-SVR-01" "ANY" permit log 
+set policy id 82
+set log session-init
+exit
+set policy id 78 from "Trust_US" to "Untrust"  "en.More-SRV1" "BICS-HOMESEND-TEST-SVR-01" "ANY" permit log 
+set policy id 78 disable
+set policy id 78
+set log session-init
+exit
+set policy id 80 from "Trust_US" to "Untrust"  "ENSB-BICS-NW" "Dial-Up VPN" "ANY" tunnel vpn "bicstest" id 0xac log 
+set policy id 80 disable
+set policy id 80
+set log session-init
+exit
+set policy id 66 from "Untrust" to "Trust_US"  "Any" "UNIRISX" "DNS" permit log 
+set policy id 66
+set log session-init
+exit
+set policy id 69 from "Trust_US" to "Untrust"  "en.More-SRV1" "Any" "ANY" nat src permit log 
+set policy id 69
+set log session-init
+exit
+set policy id 108 from "Trust_US" to "Untrust"  "ENSW-SRVS" "Any" "ANY" nat src permit log 
+set policy id 108
+set log session-init
+exit
+set policy id 103 from "Trust_US" to "Untrust"  "192.168.211.237/32" "Any" "ANY" nat src permit log 
+set policy id 103
+set log session-init
+exit
+set policy id 120 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "IT-MAIL-SERVER" "ANY" nat dst ip 192.168.2.13 permit log 
+set policy id 120
+set log session-init
+exit
+set policy id 72 from "Untrust" to "Trust_US"  "US_CAGPBMHM_NW-DR" "ENSB_DXB_US_NW" "ANY" permit log 
+set policy id 72
+set log session-init
+exit
+set policy id 81 from "Untrust" to "Trust_US"  "BICS-HOMESEND-PROD-SVR-01" "MIP(10.246.89.12)" "FTP" permit log 
+set policy id 81
+set dst-address "MIP(10.246.89.14)"
+set dst-address "MIP(10.246.89.15)"
+set service "HTTPS"
+set log session-init
+exit
+set policy id 79 from "Untrust" to "Trust_US"  "BICS-HOMESEND-TEST-SVR-01" "MIP(10.246.89.13)" "FTP" permit log 
+set policy id 79
+set service "HTTPS"
+set log session-init
+exit
+set policy id 77 from "Trust_US" to "Untrust"  "Any" "Any" "ANY" permit log 
+set policy id 77
+set log session-init
+exit
+set policy id 83 from "Untrust" to "Trust_US"  "Any" "en.More-SRV1" "DNS" permit log 
+set policy id 83
+set dst-address "en.More-SRV2"
+set log session-init
+exit
+set policy id 84 from "Trust_US" to "Untrust"  "ENSBDFTP1" "Any" "FTP" permit log 
+set policy id 84
+set log session-init
+exit
+set policy id 86 from "Untrust" to "Trust"  "ENSB-NOC-NW" "ENSBD_NW_US" "ANY" permit log 
+set policy id 86
+set log session-init
+exit
+set policy id 88 from "Untrust" to "Trust"  "PK_CUS_NW_GWCP" "SWP-NLB" "HTTPS" permit log 
+set policy id 88
+set dst-address "SWP-SRV1"
+set dst-address "SWP-SRV2"
+set service "ICMP-ANY"
+set service "Proxy_48600"
+set log session-init
+exit
+set policy id 89 from "Untrust" to "Trust_US"  "Dial-Up VPN" "en.More-SRV1" "ANY" tunnel vpn "CS-SUPPORT-DIALIN" id 0xcb pair-policy 90 log 
+set policy id 89
+set log session-init
+exit
+set policy id 90 from "Trust_US" to "Untrust"  "en.More-SRV1" "Dial-Up VPN" "ANY" tunnel vpn "CS-SUPPORT-DIALIN" id 0xcb pair-policy 89 log 
+set policy id 90
+set log session-init
+exit
+set policy id 107 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "Dial-Up VPN" "ANY" tunnel vpn "VPN_FINMEX_DIALIN" id 0xdf log 
+set policy id 107
+set log session-init
+exit
+set policy id 109 from "Untrust" to "Trust_US"  "Dial-Up VPN" "ENSB_DXB_US_NW" "ANY" tunnel vpn "SW-SUPPORT-DIALIN" id 0xe4 pair-policy 110 log 
+set policy id 109
+set log session-init
+exit
+set policy id 110 from "Trust_US" to "Untrust"  "ENSB_DXB_US_NW" "Dial-Up VPN" "ANY" tunnel vpn "SW-SUPPORT-DIALIN" id 0xe4 pair-policy 109 log 
+set policy id 110
+set log session-init
+exit
+set policy id 111 from "Untrust" to "Trust_US"  "TELEPIN-FTP" "ENSWDAPP-CLUSTER" "TELEPIN-SINGTEL" permit log 
+set policy id 111
+set src-address "TELEPIN-SINGTEL NW"
+set src-address "TELEPIN-SINGTEL-SRV-TEMP"
+set src-address "TELEPIN-SINGTEL-SRV1"
+set src-address "TELEPIN-SINGTEL-SRV2"
+set src-address "TELEPIN-SINGTEL-SRV3"
+set src-address "TELEPIN-SINGTEL-SRV4"
+set dst-address "ENSWDAPP1"
+set dst-address "ENSWDAPP2"
+set log session-init
+exit
+set policy id 112 from "Untrust" to "Trust_US"  "TELEPIN-FTP" "ENSBDFTP1" "FTP" permit log 
+set policy id 112
+set src-address "TELEPIN-SINGTEL-SRV-TEMP"
+set dst-address "ENSWDAPP-CLUSTER"
+set service "SSH"
+set log session-init
+exit
+set policy id 115 from "Trust_US" to "Untrust"  "ENSWDAPP-CLUSTER" "Dial-Up VPN" "ANY" tunnel vpn "SINGTEL-USERS-DIALIN" id 0xe8 pair-policy 114 log 
+set policy id 115
+set log session-init
+exit
+set policy id 119 from "Untrust" to "Trust_US"  "EN-IT-MAIL-SRV" "ENSB_DXB_US_NW" "SMTP" permit log 
+set policy id 119
+set log session-init
+exit
+set policy id 144 from "Untrust" to "Trust_US"  "SMS_Global_Production_SRVR1" "MIP(172.24.211.230)" "ANY" permit log 
+set policy id 144
+exit
+set policy id 143 from "Untrust" to "Trust_US"  "SMS_Global_DR_SRVR1" "MIP(172.25.211.230)" "ANY" permit log 
+set policy id 143
+exit
+set policy id 145 from "Trust_US" to "Untrust"  "en.More Web Servers" "MEA-WSs" "ANY" permit log 
+set policy id 145
+set log session-init
+exit
+set policy id 146 from "Untrust" to "Trust_US"  "MEA-WSs" "en.More Web Servers" "HTTPS" permit log 
+set policy id 146
+set log session-init
+exit
+set syslog config "192.168.206.111"
+set syslog config "192.168.206.111" facilities local0 local0
+set syslog config "192.168.206.111" port 1513
+set syslog enable
+set log exclude-id 1 event-type 8
+unset log module system level information destination syslog
+unset log module system level emergency destination webtrends
+unset log module system level alert destination webtrends
+unset log module system level notification destination webtrends
+unset log module system level emergency destination usb
+unset log module system level alert destination usb
+unset log module system level critical destination usb
+unset log module system level error destination usb
+unset log module system level warning destination usb
+unset log module system level notification destination usb
+unset log module system level information destination usb
+unset log module system level debugging destination usb
+set nsmgmt bulkcli reboot-timeout 60
+set ssh version v2
+set ssh enable
+set scp enable
+set config lock timeout 5
+unset license-key auto-update
+set telnet client enable
+set ssl port 2443
+set snmp community "SSG520" Read-Only Trap-on traffic version v1  
+set snmp host "SSG520" 192.168.206.111/32 src-interface ethernet0/0  trap v1
+set snmp port listen 161
+set snmp port trap 162
+set snmpv3 local-engine id "JN10D590EADA"
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+unset add-default-route
+set route 172.28.0.0/28 interface tunnel.2 gateway 10.20.0.200 preference 20
+set route 172.22.0.0/16 interface tunnel.2 gateway 10.20.0.1 preference 20 metric 10
+set route 10.82.0.0/16 interface tunnel.1 gateway 10.10.0.1 preference 20
+set route 10.82.0.0/16 interface tunnel.2 gateway 10.20.0.1 preference 20 metric 10
+set route 10.82.110.0/24 interface ethernet0/2 gateway 91.75.72.1 preference 20
+set route 10.91.0.0/16 interface ethernet0/1 gateway 192.168.207.1 preference 20
+set route 172.22.0.0/28 interface tunnel.1 gateway 10.10.0.200 preference 20
+set route 172.22.0.0/28 interface tunnel.2 gateway 10.20.0.200 preference 20 metric 10
+set route 10.95.115.0/24 interface ethernet0/1 gateway 192.168.207.1 preference 20
+set route 192.168.246.0/24 interface tunnel.3 gateway 10.30.0.1 preference 20
+set route 192.168.246.0/24 interface tunnel.4 gateway 10.30.0.129 preference 20 metric 10
+set route 192.168.247.0/24 interface ethernet0/1 gateway 192.168.207.1 preference 20
+set route 172.22.0.64/26 interface tunnel.1 gateway 10.10.0.100 preference 20
+set route 172.22.0.64/26 interface tunnel.2 gateway 10.20.0.100 preference 20 metric 10
+set route 172.22.0.128/26 interface tunnel.1 gateway 10.10.0.105 preference 20
+set route 172.22.0.128/26 interface tunnel.2 gateway 10.20.0.105 preference 20 metric 10
+set route 172.22.0.192/26 interface tunnel.1 gateway 10.10.0.110 preference 20
+set route 172.22.0.192/26 interface tunnel.2 gateway 10.20.0.110 preference 20 metric 10
+set route 172.22.1.192/26 interface tunnel.1 gateway 10.10.0.130 preference 20
+set route 172.22.1.192/26 interface tunnel.2 gateway 10.20.0.130 preference 20 metric 10
+set route 172.22.1.128/26 interface tunnel.1 gateway 10.10.0.125 preference 20
+set route 172.22.1.128/26 interface tunnel.2 gateway 10.20.0.125 preference 20 metric 10
+set route 172.22.1.64/26 interface tunnel.1 gateway 10.10.0.120 preference 20
+set route 172.22.1.64/26 interface tunnel.2 gateway 10.20.0.120 preference 20 metric 10
+set route 172.22.1.0/26 interface tunnel.1 gateway 10.10.0.115 preference 20
+set route 172.22.1.0/26 interface tunnel.2 gateway 10.20.0.115 preference 20 metric 10
+set route 172.22.2.64/26 interface tunnel.1 gateway 10.10.0.140 preference 20
+set route 172.22.2.64/26 interface tunnel.2 gateway 10.20.0.140 preference 20 metric 10
+set route 172.28.0.64/26 interface tunnel.11 gateway 10.40.0.100 preference 20
+set route 172.28.0.128/26 interface tunnel.11 gateway 10.40.0.105 preference 20
+set route 172.28.0.192/26 interface tunnel.11 gateway 10.40.0.110 preference 20
+set route 172.28.0.0/16 interface null preference 20 metric 999
+set route 172.22.2.192/26 interface tunnel.1 gateway 10.10.0.150 preference 20
+set route 172.22.2.192/26 interface tunnel.2 gateway 10.20.0.150 preference 20 metric 10
+set route 172.22.2.128/26 interface tunnel.1 gateway 10.10.0.145 preference 20
+set route 172.22.2.128/26 interface tunnel.2 gateway 10.20.0.145 preference 20 metric 10
+set route 192.168.111.0/24 interface tunnel.13 gateway 10.60.0.1 preference 20
+set route 192.168.111.0/24 interface tunnel.14 gateway 10.60.0.129 preference 20 metric 10
+set route 172.22.3.64/26 interface tunnel.1 gateway 10.10.0.160 preference 20
+set route 172.28.1.64/26 interface tunnel.11 gateway 10.40.0.115 preference 20
+set route 172.28.1.128/26 interface tunnel.11 gateway 10.40.0.120 preference 20
+set route 172.22.2.0/26 interface tunnel.1 gateway 10.10.0.135 preference 20
+set route 172.22.3.0/26 interface tunnel.1 gateway 10.10.0.155 preference 20
+set route 172.22.4.64/26 interface tunnel.1 gateway 10.10.0.175 preference 20
+set route 172.22.3.128/26 interface tunnel.2 gateway 10.20.0.170 preference 20 metric 10
+set route 172.22.4.64/26 interface tunnel.2 gateway 10.20.0.175 preference 20 metric 10
+set route 172.28.1.192/26 interface tunnel.11 gateway 10.40.0.125 preference 20
+set route 172.28.2.0/26 interface tunnel.11 gateway 10.40.0.130 preference 20
+set route 172.22.0.0/16 interface tunnel.3 gateway 10.30.0.1 preference 20 metric 100
+set route 172.22.0.0/16 interface tunnel.4 gateway 10.30.0.129 preference 20 metric 110
+set route 172.22.3.128/26 interface tunnel.1 gateway 10.10.0.170 preference 20
+set route 172.22.4.128/26 interface tunnel.1 gateway 10.10.0.180 preference 20
+set route 172.22.4.128/26 interface tunnel.2 gateway 10.20.0.180 preference 20 metric 10
+set route 172.22.5.0/26 interface tunnel.1 gateway 10.10.0.185 preference 20
+set route 172.22.5.0/26 interface tunnel.2 gateway 10.20.0.185 preference 20 metric 10
+set route 172.28.2.64/26 interface tunnel.11 gateway 10.40.0.135 preference 20
+set route 172.28.2.128/26 interface tunnel.11 gateway 10.40.0.140 preference 20
+set route 172.22.3.192/26 interface tunnel.1 gateway 10.10.0.165 preference 20
+set route 172.22.3.192/26 interface tunnel.2 gateway 10.20.0.165 preference 20 metric 10
+set route 192.168.216.0/23 interface ethernet0/0 gateway 192.168.206.4 metric 10 description "ENSB-JO-NW"
+set route 0.0.0.0/0 interface ethernet0/2 gateway 80.227.254.193 metric 2
+set route 0.0.0.0/0 interface ethernet0/2 gateway 80.227.254.194 metric 3
+set route 0.0.0.0/0 interface ethernet0/2 gateway 80.227.254.195 metric 4
+set route 172.22.5.64/26 interface tunnel.1 gateway 10.10.0.195
+set route 172.22.5.64/26 interface tunnel.2 gateway 10.20.0.195 metric 20
+set route 172.22.5.128/26 interface tunnel.1 gateway 10.10.0.200 description "NIBPPKKA_DR"
+set route 172.22.5.128/26 interface tunnel.2 gateway 10.20.0.200 metric 10 description "NIBPPKKA_DR"
+set route 172.28.2.192/26 interface tunnel.11 gateway 10.40.0.145 description "CAGPBMHM-DR-GWCP-LL"
+set route 10.149.11.0/24 interface ethernet0/0 gateway 192.168.206.7 description "ROUTE TO SSL-VPN-MGMT-NW"
+set route 192.168.196.0/24 interface tunnel.7 gateway 10.70.0.20 description "DC NOC"
+set route 193.43.238.248/30 interface tunnel.15 gateway 3.3.3.3
+set route 172.28.2.128/26 interface tunnel.12 gateway 10.50.0.140 description "CAGPBMHM-FMHS-LL2"
+set route 172.22.6.0/26 interface tunnel.1 gateway 10.10.0.210 description "SAUDPKKA-GWCP"
+set route 172.22.6.64/26 interface tunnel.1 gateway 10.10.0.215 description "SAUDPKKA-DRCP-LL"
+set route 172.22.6.128/26 interface tunnel.1 gateway 10.10.0.220 preference 20
+set route 172.22.6.128/26 interface tunnel.2 gateway 10.20.0.220 preference 20 metric 10
+set route 80.84.22.1/32 interface ethernet3/3 gateway 80.227.254.225
+set route 213.132.35.201/32 interface ethernet3/3 gateway 80.227.254.225 description "For testing with EHDF, Delete"
+set route 213.154.75.226/32 interface ethernet3/3 gateway 80.227.254.225 description "MoneyExpress-VPN"
+set route 192.168.214.108/32 interface ethernet3/0 gateway 192.168.211.1
+set route 84.45.85.251/32 interface ethernet3/3 gateway 80.227.254.225 description "Remit Public IP 1"
+set route 84.45.85.253/32 interface ethernet3/3 gateway 80.227.254.225 description "Remit Public IP 2"
+set route 84.45.85.222/32 interface ethernet3/3 gateway 80.227.254.225 description "Remit Public IP 3"
+set route 172.22.6.192/26 interface tunnel.1 gateway 10.10.0.225 description "BURJPKKA-DRCP-LL"
+set route 192.168.214.107/32 interface ethernet3/0 gateway 192.168.211.1
+set route 10.254.240.128/28 interface tunnel.18 gateway 7.7.7.7 description "ENSB-TELEPIN-LL"
+set route 202.40.237.153/32 interface tunnel.18 gateway 7.7.7.7 description "ENSB-TELEPIN-LL-FTP"
+set route 202.40.237.144/29 interface tunnel.18 gateway 7.7.7.7 description "ENSB-TELEPIN-LL"
+set route 172.22.7.0/26 interface tunnel.1 gateway 10.10.0.235 description "DUIBPKKA-DRCP-LL"
+set route 172.22.7.0/26 interface tunnel.2 gateway 10.20.0.235 description "DUIBPKKA-DRCP-ISDN"
+set route 192.168.216.0/23 interface tunnel.10 gateway 10.100.0.15
+set route 172.22.7.64/26 interface tunnel.1 gateway 10.10.0.240 description "EEC_en.More-LL"
+set route 84.45.85.199/32 interface ethernet3/3 gateway 80.227.254.225 description "Remit Public IP 4"
+set route 84.45.85.195/32 interface ethernet3/3 gateway 80.227.254.225 description "Remit Public IP 5"
+set route 192.168.2.0/24 interface tunnel.20 gateway 11.11.11.11 description "EN-IT-LL"
+set route 203.89.198.148/32 interface ethernet3/3 gateway 80.227.254.225 description "SMS_Global_Production_Route"
+set route 59.167.123.81/32 interface ethernet3/3 gateway 80.227.254.225 description "SMS_Global_DR_Route"
+set route 203.89.193.162/32 interface tunnel.21 gateway 8.8.8.8 description "SMS_Global_Production-Tunnel"
+set route 59.167.123.105/32 interface tunnel.22 gateway 9.9.9.9 description "SMS_Global_DR-Tunnel"
+set route 172.22.7.128/26 interface tunnel.1 gateway 10.10.0.245 description "NBPAPKKA-DRCP-LL"
+set route 172.22.7.128/26 interface tunnel.1 gateway 10.10.0.250 description "MEA_en.More-LL"
+exit
+set vrouter "untrust-vr"
+set protocol pim
+exit
+exit
+set vrouter "trust-vr"
+exit

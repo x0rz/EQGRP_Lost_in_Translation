@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_PcStatus_Tasking.pyo" providerType="script">
+
+    <Command name="pc_status" id="0">
+    
+		<Help>Queries the given PC id for status.</Help>
+
+        <Input>
+			<Option name='id' optional='false' group='id'>
+				<Argument name='value' data='id'/>
+			</Option>
+
+			<Option name='name' optional='false' group='id'>
+				<Argument name='value' data='name'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='id' type='uint64_t'/>
+			<Data name='name' type='string'/>
+		</Output>
+    </Command>
+</Plugin>

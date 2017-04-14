@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_RegistryKeys_Tasking.pyo' providerType='script'>
+
+	<Command id="0" name="RegistryAdd">
+		<Input>
+			<Option name="hive" optional="false">
+				<Help>Which hive to use</Help>
+				<Help>U - HKEY_USERS</Help>
+				<Help>L - HKEY_LOCAL_MACHINE</Help>
+				<Help>C - HKEY_CURRENT_USER</Help>
+				<Help>G - HKEY_CURRENT_CONFIG</Help>
+				<Help>R - HKEY_CLASSES_ROOT</Help>
+				<Argument name="h" optional="false">
+					<Value string="u">
+						<Set data="hive" value="1" />
+					</Value>
+					<Value string="l">
+						<Set data="hive" value="2" />
+					</Value>
+					<Value string="c">
+						<Set data="hive" value="3" />
+					</Value>
+					<Value string="g">
+						<Set data="hive" value="4" />
+					</Value>
+					<Value string="r">
+						<Set data="hive" value="5" />
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name="key" optional="false">
+				<Help>The registry key</Help>
+				<Argument data="key" name="k" optional="false" />
+			</Option>
+			
+			<Option name="value" optional="true">
+				<Help>The value name.  An empty string sets the (Default) value.</Help>
+				<Argument data="value" name="v" optional="false" />
+			</Option>
+	
+			<Option name="type" optional="true">
+				<Help>The type of the value</Help>
+				<Argument name="t" optional="false">
+					<Value string="REG_SZ">
+						<Set data="type" value="REG_SZ" />
+					</Value>
+					<Value string="REG_EXPAND_SZ">
+						<Set data="type" value="REG_EXPAND_SZ" />
+					</Value>
+					<Value string="REG_BINARY">
+						<Set data="type" value="REG_BINARY" />
+					</Value>
+					<Value string="REG_DWORD">
+						<Set data="type" value="REG_DWORD" />
+					</Value>
+					<Value string="REG_MULTI_SZ">
+						<Set data="type" value="REG_MULTI_SZ" />
+					</Value>
+					<Value string="REG_NONE">
+						<Set data="type" value="REG_NONE" />
+					</Value>
+					<Value string="REG_DWORD_LITTLE_ENDIAN">
+						<Set data="type" value="REG_DWORD_LITTLE_ENDIAN" />
+					</Value>
+					<Value string="REG_DWORD_BIG_ENDIAN">
+						<Set data="type" value="REG_DWORD_BIG_ENDIAN" />
+					</Value>
+					<Value string="REG_LINK">
+						<Set data="type" value="REG_LINK" />
+					</Value>
+					<Value string="REG_RESOURCE_LIST">
+						<Set data="type" value="REG_RESOURCE_LIST" />
+					</Value>
+					<Value string="REG_FULL_RESOURCE_DESCRIPTOR">
+						<Set data="type" value="REG_FULL_RESOURCE_DESCRIPTOR" />
+					</Value>
+					<Value string="REG_RESOURCE_REQUIREMENTS_LIST">
+						<Set data="type" value="REG_RESOURCE_REQUIREMENTS_LIST" />
+					</Value>					
+				</Argument>
+			</Option>
+			
+			<Option name="data" optional="true">
+				<Help>The data for the value</Help>
+				<Argument data="data" name="d" optional="false" />
+			</Option>
+			
+			<Option name='target' optional='true'>
+				<Argument name='machine' data='remote' />
+			</Option>
+
+			<Option name='wow64' optional='true' group='wow'>
+				<Help>On 64-bit Windows, work on the 64-bit Software keys</Help>
+				<Set data="wowtype" value="1" />
+			</Option>
+
+			<Option name='wow32' optional='true' group='wow'>
+				<Help>On 64-bit Windows, work on the 32-bit Software keys</Help>
+				<Set data="wowtype" value="2" />
+			</Option>
+
+			<Option name='volatile' optional='true' group='volatile'>
+				<Help>When creating a key, create it as "volatile"</Help>
+				<Set data="volatile" value="true" />
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+
+		</Input>
+		
+		<Output>
+			<Data name="hive" type="uint8_t" default="0" />
+			<Data name="key" type="string" />
+			<Data name="value" type="string" />
+			<Data name="type" type="string" />
+			<Data name="data" type="string" />
+			<Data name='remote' type='string' />
+			<Data name='wowtype' type='uint8_t' />
+			<Data name='volatile' type='bool' />
+			<Data name='method'    type='string'/>
+		</Output>
+	</Command>
+</Plugin>

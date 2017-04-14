@@ -1,0 +1,11 @@
+<Software value="PSP">
+ <Vendor value="McAfee">
+  <Product value="Internet Security/Total Protection">
+   <Script name="mcafeeISTP" />
+  </Product>
+  <Product value="VirusScan Enterprise">
+   <SafetyCheck command="registryadd" handlerfunc="ops.psp.mcafeeSafetyChecks.registryadd" />
+   <Script name="mcafee" entrypoint="_survey" />
+  </Product>
+ </Vendor>
+</Software>

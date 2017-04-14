@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+<Plugin id='31319'>
+ <Command id='16' name='checkmouse'>
+  <Help>Monitors a machine's mouse.</Help>
+  <Input>
+  </Input>
+  <Output>
+  </Output>
+ </Command>
+</Plugin>

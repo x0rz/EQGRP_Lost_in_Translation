@@ -1,0 +1,35 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31326'>
+
+  <Command id='16' name='exitwindows'>
+
+    <Help>Performs logoff, reboot, shutdown or poweroff of the target computer.</Help>
+
+    <Input>
+
+      <Option name='logoff' optional='false' group='exittype'>
+       <Set data='type' value='1'/>
+      </Option>
+
+      <Option name='poweroff' optional='false' group='exittype'>
+       <Set data='type' value='2'/>
+      </Option>
+
+      <Option name='reboot' optional='false' group='exittype'>
+       <Set data='type' value='3'/>
+      </Option>
+
+      <Option name='shutdown' optional='false' group='exittype'>
+       <Set data='type' value='4'/>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='type' type='uint8_t'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

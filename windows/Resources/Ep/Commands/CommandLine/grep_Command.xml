@@ -1,0 +1,101 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31345'>
+
+  <Command id='16' name='grep'>
+
+    <Help>Searches files for a specified string.</Help>
+
+    <Input>
+
+      <Option name='mask' optional='false'>
+	<Argument name='filemask' data='mask'/>
+	<Help>The mask to specify which file(s) to search</Help>
+      </Option>
+
+      <Option name='pattern' optional='false'>
+	<Argument name='phrase' data='phrase'/>
+	<Help>The phrase(s) to search the given file(s) for</Help>
+	<Help>The phrases need to be of the form 'phrase1|phrase2|...|phraseX'</Help>
+      </Option>
+
+      <Option name='path' optional='true'>
+	<Argument name='pathname' data='path'/>
+	<Help>Do a grep for files within a directory other than the current one.</Help>
+      </Option>
+
+      <Option name='max' optional='true'>
+	<Argument name='number' data='max'/>
+	<Help>Continue to return listings up to the number specified.  If zero,</Help>
+	<Help>return all listings.  Default: 100</Help>
+      </Option>
+
+      <Option name='time' optional='true'>
+	<Help>Time type to use in after/before/age and display</Help>
+	<Help>(defaults to modified)</Help>
+
+	<Argument name='type'>
+	    <Value string='accessed'>
+		<Set data='timetype' value='1'/>
+	    </Value>
+	    <Value string='modified'>
+		<Set data='timetype' value='2'/>
+	    </Value>
+	    <Value string='created'>
+		<Set data='timetype' value='3'/>
+	    </Value>
+	</Argument>
+      </Option>
+
+      <Option name='after' optional='true'>
+	<Help>Only display files with timestamps after the given date</Help>
+	<Argument name='MM/DD/YYYY' data='after'/>
+      </Option>
+
+      <Option name='before' optional='true'>
+	<Help>Only display files with timestamps before the given date</Help>
+	<Argument name='MM/DD/YYYY' data='before'/>
+      </Option>
+	
+      <Option name='recursive' optional='true'>
+	<Set data='recursive' value='true'/>
+      </Option>
+
+      <Option name='nocase' optional='true'>
+        <Help>Ignore case when matching phrases</Help>
+	<Set data='nocase' value='true'/>
+      </Option>
+
+      <Option name='name' optional='true'>
+	<Help>No longer used</Help>
+	<Argument name='subfile'/>
+      </Option>
+
+      <Option name='listall' optional='true'>
+        <Help>Record matching files that don't also contain any matching strings</Help>
+	<Set data='listall' value='true'/>
+      </Option>
+
+      <Option name='unicode' optional='true'>
+        <Help>Act on the file(s) as UNICODE files.</Help>
+	<Set data='unicode' value='true'/>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='mask'      type='string'/>
+      <Data name='phrase'    type='string'/>
+      <Data name='path'      type='string'/>
+      <Data name='max'       type='uint32_t' default='100'/>
+      <Data name='timetype'  type='uint32_t'  default='2'/>
+      <Data name='after'     type='string'/>
+      <Data name='before'    type='string'/>
+      <Data name='recursive' type='bool'     default='false'/>
+      <Data name='nocase'    type='bool'     default='false'/>
+      <Data name='listall'   type='bool'     default='false'/>
+      <Data name='unicode'   type='bool'     default='false'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

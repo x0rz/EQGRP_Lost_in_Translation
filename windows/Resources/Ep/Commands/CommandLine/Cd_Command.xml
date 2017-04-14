@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31313'>
+
+  <Command id='16' name='cd'>
+
+    <Help>Change the current working directory (within the current process space)</Help>
+
+    <Input>
+	<Argument name='directory' optional='false' data='dir'/>
+    </Input>
+
+    <Output>
+	<Data name='dir' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

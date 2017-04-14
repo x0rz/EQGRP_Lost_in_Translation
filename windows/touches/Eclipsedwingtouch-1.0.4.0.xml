@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<t:config id="04b6895e13883c32fe5575de1e666145cf149b7f"
+          name="Eclipsedwingtouch"
+          version="1.0.4"
+          configversion="1.0.4.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+    <t:inputparameters>
+        <t:parameter name="TargetIp"
+                     description="Target IP Address"
+                     type="IPv4"
+                     binding="//identifier"/>
+        <t:parameter name="TargetPort"
+                     description="Port used by SMB or NBT"
+                     type="TcpPort"/>
+        <t:parameter name="ServerName"
+                     description="Server Name"
+                     type="String"
+                     value="*SMBSERVER"
+                     hidden="true"/>
+        <t:parameter name="ClientName"
+                     description="Client Name"
+                     type="String"
+                     value="*SMBCLIENT"
+                     hidden="true"/>
+
+        <t:paramchoice name="Protocol" description="Protocol to connect to target with">
+            <t:paramgroup name="SMB" description="SMB over TCP (port 445)"/>
+            <t:paramgroup name="NBT" description="Netbios over TCP (port 139)"/>
+        </t:paramchoice>
+        <t:parameter name="NetworkTimeout"
+                     description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                     type="S16"
+                     default="60"/>
+    </t:inputparameters>
+
+    <t:outputparameters>
+        <t:parameter name="Contract"
+                     description="The contract fulfilled by this plugin"
+                     type="String"
+                     value="VulnScan"/>
+        <t:parameter name="OsPatch"
+                     description=""
+                     type="String"
+                     required="false"/>
+    </t:outputparameters>
+
+    <t:redirection>
+        <t:local protocol="TCP"
+                 listenaddr="TargetIp"
+                 listenport="TargetPort"
+                 destaddr="//identifier"
+                 destport="TargetPort"
+                 closeoncompletion="true"/>
+    </t:redirection>
+    <t:logic>
+      <t:or>
+          <t:service name="smb">
+              <t:bindtovalue name="Protocol" value="SMB"/>
+              <t:bindtopath name="TargetPort" path="//service[name='smb']/port"/>
+          </t:service>
+          <t:service name="nbt">
+              <t:bindtovalue name="Protocol" value="NBT"/>
+              <t:bindtopath name="TargetPort" path="//service[name='nbt']/port"/>
+          </t:service>
+      </t:or> 
+    </t:logic>  
+</t:config>

@@ -1,0 +1,17 @@
+drillerskyline			script DrillerSkyline\DrillerSkyline.eps
+drill_install			script DrillerSkyline\Install.eps serstat
+drill_uninstall			script DrillerSkyline\Uninstall.eps serstat
+drill_load				driverload -name serstat
+drill_unload			driverunload -name serstat
+drill_verify			script DrillerSkyline\VerifyInstall.eps serstat
+drill_running			script DrillerSkyline\VerifyRunning.eps serstat
+drill_status			script DrillerSkyline\GetStatus.eps serstat
+drill_setmaxsize		script DrillerSkyline\SetMaxFileSize.eps serstat
+drill_stop				serialsniffer -driver serstat -stopListening
+drill_start				serialsniffer -driver serstat -startListening
+drill_disconnect		serialsniffer -driver serstat -disconnect
+drill_reconnect			serialsniffer -driver serstat -reconnect
+drill_getcapture		script DrillerSkyline\HandleCapture.eps serstat get
+drill_deletecapture		script DrillerSkyline\HandleCapture.eps serstat delete
+drill_attach			script DrillerSkyline\Attach.eps serstat
+drill_detach			script DrillerSkyline\Detach.eps serstat

@@ -1,0 +1,43 @@
+﻿<?xml version='1.0' ?>
+
+<Plugin id='31413'>
+
+ <Command id='16' name='modifygroup'>
+
+  <Help>Changes an existing group within a process to another group.</Help>
+  <Help>Optionally changes the attributes for that group as well.</Help>
+
+  <Input>
+   <Option name='orig' optional='false'>
+    <Argument name='name' data='orig' />
+    <Help>The group to be changed</Help>
+   </Option>
+
+   <Option name='new' optional='false'>
+    <Argument name='name' data='new' />
+    <Help>The group to take the place of the old group</Help>
+   </Option>
+
+   <Option name='id' optional='true'>
+    <Argument name='#' data='id' />
+    <Help>The id of the process to update.  If none is specified,</Help>
+    <Help>the current process id of the implant is used.</Help>
+   </Option>
+
+   <Option name='attributes' optional='true'>
+     <Set data='change' value='true' />
+     <Argument optional='false' name='attribValue' data='att'>
+     </Argument>
+    <Help>If specified, the attributes for the given group are updated.</Help>
+   </Option>
+
+  </Input>
+  <Output>
+   <Data name='orig' type='string'/>
+   <Data name='new'  type='string'/>
+   <Data name='id'   type='uint32_t'/>
+   <Data name='att'  type='uint32_t'/>
+   <Data name='change' type='bool' default='false' />
+  </Output>
+ </Command>
+</Plugin>

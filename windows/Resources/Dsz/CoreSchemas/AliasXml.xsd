@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="Aliases">
+	<xs:complexType>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="Alias">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Name" type="xs:string"/>
+						<xs:element name="Location" type="xs:string" minOccurs="0"/>
+						<xs:element name="ReplaceBeforeArgs" type="xs:string"/>
+						<xs:element name="ReplaceAfterArgs" type="xs:string"/>
+						<xs:element name="Help" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element name="Options" type="aliasOptions" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+
+<xs:complexType name="aliasOptions">
+	<xs:sequence minOccurs="0" maxOccurs="unbounded">
+		<xs:element name="Option" type="xs:string"/>
+	</xs:sequence>
+</xs:complexType>
+				
+</xs:schema>

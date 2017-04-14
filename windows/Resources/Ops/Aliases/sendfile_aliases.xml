@@ -1,0 +1,91 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+	  <Name>copyegg</Name> 
+	  <ReplaceBeforeArgs>python lib\sendfile.py -args " --destdir imps </ReplaceBeforeArgs> 
+	  <ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs> 
+	  <Help>copyegg [filenameprefix] [localfile]</Help> 
+	  <Help>[filenameprefix]</Help> 
+	  <Help>String you want prepended to the filename when FTPed</Help> 
+	  <Help>[localfile]</Help> 
+	  <Help>Full path to the file you wish to FTP</Help>   
+	  <Help>==================================================================================</Help> 
+	  <Help>Push egg as FAKETEST_EGG-W-1-.....</Help>
+	  <Help>copyegg -o FAKETEST_EGG -i C:\full\path\to\my\egg\Pcegg.ex_</Help>
+	  <Help>==================================================================================</Help>
+  </Alias>
+  <Alias>
+	  <Name>copyfast</Name> 
+	  <ReplaceBeforeArgs>python lib\sendfile.py -args " --destdir fast </ReplaceBeforeArgs> 
+	  <ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs> 
+	  <Help>copyfast [filenameprefix] [localfile]</Help> 
+	  <Help>[filenameprefix]</Help> 
+	  <Help>String you want prepended to the filename when FTPed</Help> 
+	  <Help>[localfile]</Help> 
+	  <Help>Full path to the file (or folder) you wish to FTP</Help>   
+	  <Help>==================================================================================</Help> 
+	  <Help>Push to fast as FAKETEST_PC2-W-1-.....</Help>
+	  <Help>copyfast -o FAKETEST_PC2 -i D:\DSZOpsdisk\tmp\payload</Help>
+	  <Help>==================================================================================</Help>
+  </Alias>
+  <Alias>
+	  <Name>copyslow</Name> 
+	  <ReplaceBeforeArgs>python lib\sendfile.py -args " --destdir slow </ReplaceBeforeArgs> 
+	  <ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs> 
+	  <Help>copyslow [filenameprefix] [localfile]</Help> 
+	  <Help>[filenameprefix]</Help> 
+	  <Help>String you want prepended to the filename when FTPed</Help> 
+	  <Help>[localfile]</Help> 
+	  <Help>Full path to the file (or folder) you wish to FTP</Help>   
+	  <Help>==================================================================================</Help> 
+	  <Help>Push to slow as FAKETEST_PC2-W-1-.....</Help>
+	  <Help>copyslow -o FAKETEST_PC2 -i D:\DSZOpsdisk\tmp\payload</Help>
+	  <Help>==================================================================================</Help>
+  </Alias>
+  <Alias>
+	<Name>prep_ur_egg</Name>
+	<ReplaceBeforeArgs>python prep_ur_egg.py -args "</ReplaceBeforeArgs>
+	<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+	<Help>Usage: python prep_ur_egg.py [eggname]
+Wrapper for pc_prep that will ask for your UR/VAL ID, run through the standard pc_prep script to make your egg, then
+automatically send your egg to the imps folder with both the ZIP and the egg named based on your UR/VAL ID.
+[eggname]
+	Optional argument which is your UR/VAL ID.  If you don't put this in, the script will prompt you for it
+	</Help>
+  </Alias>
+  <Alias>
+		<Name>freshscan</Name>
+		<ReplaceBeforeArgs>python windows\freshscan.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>Usage: python windows\freshscan.py
+Autosubmits files to FRESHSTEP.  Will prompt to get file from target if needed</Help>
+  </Alias>
+  <Alias>
+    <Name>copypc</Name>
+      <ReplaceBeforeArgs>python copypc.py -args "</ReplaceBeforeArgs>
+      <ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+      <Help>usage: copypc [-h] [-u USERID] [-p PROJECT] [-v] [--insane] [-d PAYDIR] [-x]
+              [payload_folder]
+Copies PC L4 payload files via fastmonkey
+positional arguments:
+  payload_folder        Payload folder to read and copy files from.
+optional arguments:
+  -h, --help            show this help message and exit
+  -u USERID, --userID USERID
+                        Your user ID. You will be prompted if ID is not known
+                        and not given.
+  -p PROJECT, --project PROJECT
+                        Project. Defaults to current DSZ LP project if not
+                        specified.
+  -v, --verbose         Print verbose information about the copying process.
+  --insane              Indicate the you are insane (disables PC ID sanity
+                        hash prompt loop).
+  -d PAYDIR, --directory PAYDIR
+                        (Deprecated) Payload folder to read and copy files
+                        from. Provided for backwards compatibility support
+                        only.
+  -x, --norename        Disables rename of the payload directory to
+                        &lt;name&gt;.sent after sending data.
+</Help>
+  </Alias>
+</Aliases>

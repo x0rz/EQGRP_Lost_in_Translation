@@ -1,0 +1,57 @@
+#--------------------------------------------------------
+# File: VerifyInstall.eps
+#
+# Wrapper script for verify install of Capn tools
+#
+# Modifications:
+#  8/10/2005	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "cloak.eps";
+@include "getResDir.eps";
+
+
+if ($argc != 3) {
+    echo "Usage: $argv[0] <driverName> <cloaker>";
+    return false;
+}
+
+#logic: returns true if running or if not running, but files are in place
+string $resPath;
+getResDirectory($resPath);
+
+string $driver = $argv[1];
+string $cloaker = $argv[2];
+
+@echo on;
+echo "- Checking for running driver";
+@echo off;
+if(`script Capn\\VerifyRunning.eps $driver $cloaker`){
+  @echo on;
+  echo "-  RUNNING";
+  @echo off;
+  ifnot(cloakIt($argv[2], $resPath, "enable")) {
+    @echo on;
+    echo "WARNING: EP couldn't gain uncloaked privileges";
+    @echo off;
+  }
+
+  
+  Bool $installed = _DriverVerifyInstall($driver, 2, 1);
+  
+  ifnot(cloakIt($argv[2], $resPath, "disable")) {
+    @echo on;
+    echo "WARNING: EP couldn't recloak - proceed with caution";
+    @echo off;
+  }
+  return $installed;
+}	
+
+@echo on;
+echo "-  NOT RUNNING";
+@echo off;
+ifnot (_DriverVerifyInstall($driver, 2, 1)) {
+  return false;
+}
+
+return true;

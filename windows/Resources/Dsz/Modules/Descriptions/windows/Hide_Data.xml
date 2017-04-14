@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="Hide_Data" id="1466">
+
+	<Interfaces>
+		<Interface provider="0x01010042" id='0x01c10034'>
+			<DataHandler>25091</DataHandler>
+		</Interface>
+	</Interfaces>
+
+	<Dependencies>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file">i386-winnt-vc9/release/Hide_LpData.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

@@ -1,0 +1,29 @@
+
+@include "_Versions.dsi";
+
+@echo off;
+
+if (($argc != 2) ||
+	(($argv[1] != "INSTALL") && ($argv[1] != "UPGRADE")))
+{
+	echo("* Invalid parameter(s)", ERROR);
+	echo();
+	echo("Usage: $argv[0] <INSTALL|UPGRADE>");
+	return false;
+}
+
+string $os;
+if (!_GetOsFamily($os))
+{
+	echo("* Failed to get OS for install", ERROR);
+	return false;
+}
+
+string $lines;
+if (!ReadFile("%_sgEnv{'script_path'}/$os/_Install.dss", $lines))
+{
+	echo("* No install script found for $os", ERROR);
+	return false;
+}
+
+return `script "%_sgEnv{'script_path'}/$os/_Install.dss" -args "$argv[1]"`;

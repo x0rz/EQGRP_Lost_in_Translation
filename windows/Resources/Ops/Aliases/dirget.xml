@@ -1,0 +1,8 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>dirget</Name>
+		<ReplaceBeforeArgs>script windows/dirget.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+	</Alias>
+</Aliases>

@@ -1,0 +1,99 @@
+#---------------------------------------------------------------------------
+# File: Add.eps
+#
+# Adds ports to firewall registry keys.  Used via Firewall aliases.
+#
+# Modifications:
+#   10/12/04	Created.
+#---------------------------------------------------------------------------
+
+@case-sensitive off;
+@echo off;
+
+if ($argc != 3 || 
+    (<int>$argv[1] < 1) || 
+    (<int>$argv[1] > 65535) ||
+    (($argv[2] != "tcp") && ($argv[2] != "udp"))) {
+    echo "Usage: $argv[0] <port number> <TCP|UDP>";
+    return false;
+}
+
+# Make protocol consistent with other registry entries
+if ( $argv[2] == "tcp"){
+    $argv[2] = "TCP";
+} else if ($argv[2] == "udp" ){
+    $argv[2] = "UDP";
+} else {
+    echo "Invalid protocol";
+    return false;
+}
+
+string $subkey = "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy";
+
+# If the registry key does not exist, prompt user if they want to create it.
+# If they create the key, the firewall port will be added; if not, registry does not change.
+ifnot (`regquery -hive l -subkey $subkey\\StandardProfile\\GloballyOpenPorts\\List`) {
+    ifnot (prompt "StandardProfile\\GloballyOpenPorts\\List does not exist.  Create key and add port?") {
+	# not adding port
+	echo "";
+	echo "Port $argv[1]:$argv[2] not added to StandardProfile\\GloballyOpenPorts\\List";
+	echo "";
+    } else {
+	ifnot(`regadd -hive l -key $subkey\\StandardProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled`) {
+	    echo "";
+	    echo "Error creating StandardProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled";
+	    echo "";
+	} else {
+	    echo "";
+	    echo "DomainProfile\\GloballyOpenPorts\\List $argv[1]:$argv[2] added successfully.";
+	    echo "";
+	}
+    }
+
+} else {
+    ifnot(`regadd -hive l -key $subkey\\StandardProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled`) {
+	echo "";
+	echo "Error creating StandardProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled";
+	echo "";
+    } else {
+	echo "";
+	echo "StandardProfile\\GloballyOpenPorts\\List $argv[1]:$argv[2] added successfully.";
+	echo "";
+    }
+}
+
+# If the registry key does not exist, prompt user if they want to create it.
+# If they create the key, the firewall port will be added; if not, registry does not change.		
+ifnot (`regquery -hive l -subkey $subkey\\DomainProfile\\GloballyOpenPorts\\List`) {
+    ifnot (prompt "DomainProfile\\GloballyOpenPorts\\List does not exist.  Create key and add port?") {
+	echo "";
+	echo "Port $argv[1]:$argv[2] not added to DomainProfile\\GloballyOpenPorts\\List";
+	echo "";
+    } else {
+	ifnot(`regadd -hive l -key $subkey\\DomainProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled`) {
+	    echo "";
+	    echo "Error creating DomainProfileProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled";
+	    echo "";
+	} else {
+	    echo "";
+	    echo "DomainProfile\\GloballyOpenPorts\\List $argv[1]:$argv[2] added successfully.";
+	    echo "";
+	}
+    }
+
+} else {
+    ifnot(`regadd -hive l -key $subkey\\DomainProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled`) {
+	echo "";
+	echo "Error creating DomainProfile\\GloballyOpenPorts\\List -value $argv[1]:$argv[2] -type REG_SZ -data $argv[1]:$argv[2]:*:Enabled";
+	echo "";
+    } else {
+	echo "";
+	echo "DomainProfile\\GloballyOpenPorts\\List $argv[1]:$argv[2] added successfully.";
+	echo "";
+    }
+}
+
+echo "Sleeping to allow time for OS to see new port";
+Sleep(20000);
+
+return true;

@@ -1,0 +1,80 @@
+<?xml version='1.0' ?>
+<Plugin providerName='Tasking/Mcl_Cmd_EventLogQuery_Tasking.pyo' providerType='script'>
+
+	<Command name='eventlogfilter' id='1'>	
+	
+ 		<Help>Allows user to filter event log entries based on specific criteria. User can specify event ID, username, or messge username.</Help> 		
+	
+		<Input>
+		
+			<Option name='num' optional='false'>
+				<Help>The number of entries to parse. A value of zero will result in all entries being parsed. Parsing will cease once the first 1000 records are found unless the 'max' keyword is used.</Help>
+				<Argument name="numrecords" data="num"/>
+			</Option>			
+
+			<Option name='id' optional='true'>
+			    <Help>The Event ID on which to filter. Default = No filtering.</Help>
+			    <Argument name='id1' data='id'/>
+			</Option>		
+							
+			<Option name='log' optional='true'>
+				<Help>The event log to search. Default = Security</Help>
+				<Argument name="logname" data="log"/>
+			</Option>	
+					
+		    <Option name='sid' optional='true' group='sidFilter'>
+			    <Help>Username on which to filter.  Default = No filtering.</Help>
+			    <Argument name='sidFilter' data='sidFilter'/>
+			</Option>
+			<Option name='hdrusername' optional='true' group='sidFilter'>
+				<Help>Username on which to filter. (deprecated -- use -sid instead)</Help>
+				<Argument name='sidFilter' data='sidFilter'/>
+			</Option>
+			
+			<Option name='string' optional='true' group='stringFilter'>
+			    <Help>String in entry on which to filter.  Default = No filtering.</Help>
+			    <Argument name='stringFilter' data='stringFilter'/>
+			</Option>
+			<Option name='msgusername' optional='true' group='stringFilter'>
+				<Help>String in entry on which to filter. (deprecated -- use -string instead)</Help>
+				<Argument name='stringFilter' data='stringFilter'/>
+			</Option>
+			
+			<Option name='startrecord' optional='true' group='basefilter'>
+			    <Help>Record with which to begin filtering. Default = Most recent record.</Help>
+			    <Argument name='startrecnum' data='startrecord'/>
+			</Option>
+
+			<Option name='xpath' optional='true' group='basefilter'>
+				<Help>XPath expression for search.</Help>
+				<Argument name='xpath_value' data='xpath'/>
+			</Option>
+			
+			<Option name='max' optional='true'>
+			    <Help>Maximum entries returned from the target. Default=1000. A value of 0 will result in all possible entries returned. It is recommended that a value of 0 not be used due to the fact that a large database could result in an excessive number of entries being parsed and cause a slowdown in the speed and memory usage of the LP.</Help>
+			    <Argument name='maxreturned' data='max'/>
+			</Option>
+			
+			<Option name='target' optional='true'>
+				<Argument name='machine' data='remote'/>
+			</Option>
+
+			<Option name='classic' optional='true'>
+				<Set data='classic' value='true'/>
+			</Option>
+		</Input>
+		<Output>		    
+		    <Data name='num' type='uint32_t'/>
+		    <Data name='id' type='uint32_t' default='0'/>
+		    <Data name='startrecord' type='uint64_t' default='0'/>
+		    <Data name='max' type='uint32_t' default='1000'/>
+			<Data name='log' type='string' default='Security'/>
+			<Data name='sidFilter' type='string'/>
+			<Data name='stringFilter' type='string'/>
+			<Data name='xpath' type='string'/>
+			<Data name='remote' type='string'/>
+			<Data name='classic' type='bool' />
+		</Output> 
+	</Command>
+	
+</Plugin>

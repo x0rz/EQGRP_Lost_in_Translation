@@ -1,0 +1,38 @@
+<?xml version='1.0' ?>
+
+<Module id='22' name='LinkMgr'>
+
+    <Interfaces>
+		<Interface id='0x01016f8f' provider='0x06010001'/>
+		<Interface id='0x01816f8f' provider='0x06010001'/>
+		<Interface id='0x01c16f8e' provider='0x06010001'/>
+		<Interface id='0x01c16f90' provider='0x06010001'/>
+    </Interfaces>
+
+    <Dependencies>
+    </Dependencies>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+	<Architecture type='i386'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='windows_nt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+
+</Module>

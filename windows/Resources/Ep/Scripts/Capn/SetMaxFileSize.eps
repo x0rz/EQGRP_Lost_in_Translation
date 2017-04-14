@@ -1,0 +1,44 @@
+#--------------------------------------------------------
+# File: SetMaxFileSize.eps
+#
+# Sets the maximum capture file size for DarkSkyline tools
+#
+# Modifications:
+#  08/10/2005	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+# make sure it's not already installed
+ifnot (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver`) {
+    echo "* $driver is not yet installed";
+    return false;
+}
+
+echo "";
+echo "Enter a size of zero for an unlimited capture file";
+echo "";
+
+int $size = GetInput("Enter the maximum capture file size (in bytes)");
+if ($size < 0) {
+    echo "Size must be greater than or equal to zero";
+    return false;
+}
+
+# add the registry keys
+bool $keysAdded = true;
+echo "Adding maximum file size registry key";
+ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value Backup -type REG_DWORD -data $size`) {
+    echo "    FAILED";
+    return false;
+}
+
+echo "    SUCCESS";
+return true;

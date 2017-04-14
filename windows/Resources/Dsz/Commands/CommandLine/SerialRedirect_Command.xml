@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin interface='0x01c10032'  provider='0x01010078' >
+
+    <Command id="0" name="SerialRedirect">
+
+        <Help>Provides a VPN-like capability to a forward Serial connection.</Help>       
+
+		<Input>
+			<Option name='port' optional='false' group='connectionType'>
+				<Argument name='port' data='port'/>
+				<Set data='connectionType' value='0'/>
+				<Help>Connect to a serial communications device port i.e. COM1</Help>
+			</Option>
+			<Option name='handle' optional='false' group='connectionType'>
+				<Argument name='#' data='handle' />
+				<Set data='connectionType' value='1'/>
+				<Help>Connect with an already established handle</Help>
+			</Option>
+			
+			<Option name='baudrate' optional='true'>
+				<Argument name='#' data='baudrate' />
+				<Help>baudrate of connection (default: 9600)</Help>
+			</Option>
+			<Option name='dataBits' optional='true'>
+				<Argument name='#' data='dataBits' />
+				<Help>The number of bits in the bytes transmitted and received (default: 8)</Help>
+			</Option>
+			<Option name='parity' optional='true'>
+				<Argument name='value' data='parity' />
+				<Help>parity scheme to be used (default: None)</Help>
+				<Help>[0] None</Help>
+				<Help>[1] Odd</Help>
+				<Help>[2] Even</Help>
+				<Help>[3] Mark</Help>
+				<Help>[4] Space</Help>
+			</Option>
+			<Option name='stopBits' optional='true'>
+				<Argument name='value' data='stopBits' />
+				<Help>The number of stop bits to be used (default: One)</Help>
+				<Help>[0] One</Help>
+				<Help>[1] One Point Five</Help>
+				<Help>[2] Two</Help>
+			</Option>
+			<Option name='timeout' optional='true'>
+				<Argument name='#' data='timeout' />
+				<Help>Timeout in secounds for device connection (default: 5)</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='connectionType' type='uint8_t'/>
+			<Data name='port' type='string'/>
+			<Data name='handle' type='uint32_t'/>
+			<Data name='baudrate' type='uint32_t' default='9600'/>
+			<Data name='dataBits' type='uint8_t' default='8'/>
+			<Data name='parity' type='uint8_t' default='0'/>
+			<Data name='stopBits' type='uint8_t' default='0'/>
+			<Data name='timeout' type='uint16_t' default='5'/>
+		</Output>
+    </Command>
+</Plugin>

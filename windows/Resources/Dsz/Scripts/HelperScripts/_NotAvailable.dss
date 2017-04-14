@@ -1,0 +1,3 @@
+
+echo("Command '$ARGV[1]' is not available on this platform", ERROR);
+return false;

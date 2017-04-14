@@ -1,0 +1,1875 @@
+@echo off;
+@include "_Processes.dsi";
+@include "_Commands.dsi";
+@include "_PFreIncludes.dsi";
+bool $rtn = true;
+string $scriptpath;
+string $uploadDirPath;
+string $tempDownloadDirPath;
+string $logsDirectoryPath;
+SplitPath($argv[0], $scriptpath);
+string $scriptdir = $scriptpath[0];
+_PFre_GetUploadsDir($uploadDirPath);
+_PFre_GetTempDownloadDir($tempDownloadDirPath);
+_GetLpLogsDirectory($logsDirectoryPath);
+string $PFreVersion = _PFre_GetProjectVersion();
+_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Successful", "Running oraclesurevey.dss", "");
+
+@record on;
+`local fileattributes -file $tempDownloadDirPath`;
+@record off;
+
+int $my_attributes;
+GetCmdData("file::attributes::value", $my_attributes);
+
+
+if ($my_attributes == 0)
+{
+	# Need to create the TempDownloads directory
+	`local mkdir $tempDownloadDirPath`;
+	echo "Created local directory $tempDownloadDirPath. \n";
+}
+
+
+_PFre_MyBanner("Beginning ORACLE Survey");
+
+
+OraclePlugins @myOraclePlugins;
+@myOraclePlugins.$local_id = 0;
+@myOraclePlugins.$local_name = "Oracle_Lp";
+@myOraclePlugins.$remote_id = 0;
+@myOraclePlugins.$remote_name = "Oracle_Implant";
+
+/******************************************/
+/* Grab process list and parse through it */
+/* to determine the Oracle process ID(s)  */
+/******************************************/
+
+OracleProcesses @myOraProcInfo;
+@myOraProcInfo.$counter = 0;
+@myOraProcInfo.$singleinstance = true;
+
+string $oracleexecutables = "ORACLE.EXE";
+$oracleexecutables[1] = "ORACLE80.EXE";
+$oracleexecutables[2] = "ORACLE73.EXE";
+
+string $sqlplusexecutables = "SQLPLUS.EXE";
+$sqlplusexecutables[1] = "PLUS80.EXE";
+$sqlplusexecutables[2] = "PLUS73.EXE";
+
+/*************************************/
+/* Identify running Oracle processes */
+/*************************************/
+_PFre_GetOraclePIDs($oracleexecutables, $sqlplusexecutables, @myOraProcInfo);
+
+
+if (@myOraProcInfo.$counter == 0)
+{
+	string $myMsg;
+	$myMsg[0] = "***WARNING*** Couldn't find a running process for: $oracleexecutables[0], $oracleexecutables[1], or $oracleexecutables[2]";
+	$myMsg[1] = "";
+	$myMsg[2] = "This may not be an Oracle server or the server may be shut down!";
+	_PFre_MyBannerMultiLine($myMsg, "\n");
+	@echo on;
+	@echo on;
+	_PFre_MyBannerMultiLine("Verify that Oracle is actually running on this box.", "\n");
+
+	`processes -list`;
+	int $pids;
+	string $processnames;
+
+
+	echo "\n";
+	int $oraclePID;
+	GetInput("Please enter the Oracle process ID or 0 if there is none ", $oraclePID);
+	@echo off;
+	@echo off;
+	echo "\n";
+	if ($oraclePID == 0)
+	{
+		string $myMsg2;
+		$myMsg2[0] = "Without the Oracle server running, we can't exploit Oracle,";
+		$myMsg2[1] = "but could still possibly gather some info.";
+		_PFre_MyBannerMultiLine($myMsg2, "\n");
+		
+		if (prompt ("Do you want to Quit the script?") )
+		{
+			@echo on;
+			return $rtn;
+		}
+	}
+	else
+	{
+		_PFre_GetOraclePIDs($oracleexecutables, $sqlplusexecutables, @myOraProcInfo, $oraclePID);
+	}
+}
+
+
+
+bool $bSqlplusPathOK;
+
+_PFre_MySeparator2();
+
+_PFre_SetSqlPlus(@myOraProcInfo);
+
+$bSqlplusPathOK = _PFre_VerifySqlPlus(@myOraProcInfo);
+_PFre_MySeparator2();
+_PFre_Memorycheck(@myOraProcInfo, @myOraclePlugins);
+_PFre_MySeparator2();
+_PFre_Crc(@myOraProcInfo);
+
+_PFre_MyBanner("Testing:  oracle -open");
+if ( _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins) )
+{
+	echo "... Successful!\n";
+}
+
+_PFre_MyBanner("Testing:  oracle -close");
+if ( _PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins) )
+{
+	echo "... Successful!\n";
+}
+else
+{
+	echo "It looks like there might be a problem";
+	if (prompt("Do you want to diagnose the problem?"))
+	{
+		_PFre_DiagnoseOracleProblem(@myOraProcInfo, @myOraclePlugins);
+	}
+}
+
+
+/******************************************/
+/* Query the SOFTWARE\Oracle registry key */
+/******************************************/
+
+
+_PFre_MyBanner("Recursively querying the SOFTWARE\\Oracle registry key.", "\n");
+
+OracleRegistry @myOraReg;
+
+_PFre_InitOraReg(@myOraReg);
+_PFre_GetAndParseOracleRegistry(@myOraReg);
+
+
+string $networkadmindirs;
+string $different_oracle_homes;
+string $base_path;
+string $different_oracle_bases;
+
+if ( @myOraProcInfo.$counter != 0 )
+{
+	$networkadmindirs = "@myOraProcInfo.$oracle_home[0]\\network\\admin";
+	$different_oracle_homes = @myOraProcInfo.$oracle_home[0];
+	SplitPath(@myOraProcInfo.$oracle_home[0], $base_path);
+	$different_oracle_bases = $base_path[0];
+}
+
+if (! @myOraProcInfo.$singleinstance)
+{
+	int $count = 1;
+	for (int $i = 0; $i < sizeof(@myOraProcInfo.$oracle_home); $i++)
+	{
+		bool $found = false;
+		for (int $j = 0; $j < sizeof($different_oracle_homes); $j++)
+		{
+			if ($different_oracle_homes[$j] == @myOraProcInfo.$oracle_home[$i])
+			{
+				$found = true;
+			}
+		}
+		if (! $found )
+		{
+			$networkadmindirs[$count] = "@myOraProcInfo.$oracle_home[$i]\\network\\admin";
+			$different_oracle_homes[$count] = @myOraProcInfo.$oracle_home[$i];
+			SplitPath(@myOraProcInfo.$oracle_home[$i], $base_path);
+			$different_oracle_bases[$count] = $base_path[0];
+			$count++;
+		}
+	}
+}
+
+_PFre_MySeparator2();
+
+if ( @myOraProcInfo.$counter != 0 )
+{
+	for (int $i = 0; $i < sizeof($networkadmindirs); $i++)
+	{
+		@echo on;
+		@echo on;
+		`dir -mask *.ora -path $networkadmindirs[$i]`;
+		@echo off;
+		@echo off;
+		if ( prompt ("\nDo you want to get all *.ora files from $networkadmindirs[$i]?" ) )
+		{
+			echo "\n";
+			string $msg = " Getting files from:";
+			$msg[1] = " 	$networkadmindirs[$i]\\*.ora";
+			_PFre_MyBannerMultiLine($msg, "\n");
+			`background get -mask *.ora -path $networkadmindirs[$i]`;
+		}
+		_PFre_MyBanner("TNSNAMES.ORA");
+		object $tnsnames_lines;
+		string $tnsnames_line;
+		string $tnsnames_file;
+		@record on;
+		`strings $networkadmindirs[$i]\\tnsnames.ora`;
+		@record off;
+		GetCmdData("strings::string", $tnsnames_lines);
+		for (int $i = 0; $i < sizeof($tnsnames_lines); $i++)			
+		{
+			GetCmdData("$tnsnames_lines[$i]::string", $tnsnames_line);
+			$tnsnames_file[$i] = $tnsnames_line;
+		}
+		_PFre_MyBannerMultiLine($tnsnames_file, "\n\n");
+		_PFre_MyBanner("LISTENER.ORA");
+		object $listener_lines;
+		string $listener_line;
+		string $listener_file;
+		@record on;
+		`strings $networkadmindirs[$i]\\listener.ora`;
+		@record off;
+		GetCmdData("strings::string", $listener_lines);
+		for (int $i = 0; $i < sizeof($listener_lines); $i++)			
+		{
+			GetCmdData("$listener_lines[$i]::string", $listener_line);
+			$listener_file[$i] = $listener_line;
+		}
+		_PFre_MyBannerMultiLine($listener_file, "\n\n");
+	}
+}
+
+
+/*************************************************/
+/* Query the registry for the ORACLE_BASE,       */
+/* ORACLE_HOME, ORACLE_SID, and NLS_LANG values. */
+/*************************************************/
+echo "\n";
+_PFre_MyBanner("Getting info from the registry");
+
+string $oraclebase;
+string $oraclehome;
+if ( @myOraProcInfo.$counter != 0 )
+{
+	$oraclebase = $different_oracle_bases[0];
+	$oraclehome = @myOraProcInfo.$oracle_home[0];
+}
+string $oraclesid;
+string $nlslang;
+string $nlscharacterset;
+
+if ( @myOraProcInfo.$counter == 0 )
+{
+	string $_mybases;
+	if ( @myOraReg.$numhomes == 1 )
+	{
+		$oraclehome = @myOraReg.$myoraclehomes[0];
+		SplitPath(@myOraReg.$myoraclehomes[0], $_mybases);
+		$different_oracle_bases = $_mybases;
+	}
+	else if (@myOraReg.$numhomes > 1 )
+	{
+		for (int $i = 0; $i < sizeof(@myOraReg.$myoraclehomes); $i++)
+		{
+			echo "$i.  @myOraReg.$myoraclehomes[$i]";
+		}
+		echo "\n";
+		int $selection;
+		GetInput("Enter the number of the home to use", $selection, "0");
+
+		$oraclehome = @myOraReg.$myoraclehomes[$selection];
+		SplitPath(@myOraReg.$myoraclehomes[$selection], $_mybases);
+		$different_oracle_bases = $_mybases;
+	}
+}
+
+if ( @myOraReg.$numsids == 1 )
+{
+	$oraclesid = @myOraReg.$myoraclesids[0];
+}
+else if (@myOraReg.$numsids > 1 )
+{
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclesids); $i++)
+	{
+		echo "$i.  @myOraReg.$myoraclesids[$i]";
+	}
+	echo "\n";
+	int $selection;
+	GetInput("Enter the number of the SID to use", $selection, "0");
+
+	$oraclesid = @myOraReg.$myoraclesids[$selection];
+}
+
+
+if ( @myOraReg.$numlangs == 1 )
+{
+	RegExSplit("\\.", @myOraReg.$myoraclenlslangs[0], 0, $nlslang);
+	int $lastPart = sizeof($nlslang);
+	$lastPart--;
+	$nlscharacterset = $nlslang[$lastPart];
+}
+else if (@myOraReg.$numlangs > 1 )
+{
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclenlslangs); $i++)
+	{
+		echo "$i.  @myOraReg.$myoraclenlslangs[$i]";
+	}
+	echo "\n";
+	int $selection;
+	GetInput("Enter the number of the NLS_LANG to use", $selection, "0");
+	if (RegExSplit("\\.", @myOraReg.$myoraclenlslangs[$selection], 0, $nlslang) == false)
+	{
+		echo "ERROR:  RegExSplit: An error occurred.";
+	}
+	$nlscharacterset = $nlslang[1];
+}
+
+if ( @myOraReg.$numbases == 1 )
+{
+	$oraclebase = @myOraReg.$myoraclebases[0];
+}
+else if ( @myOraReg.$numbases > 1 )
+{
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclebases); $i++)
+	{
+		echo "$i.  @myOraReg.$myoraclebases[$i]";
+	}
+	echo "\n";
+	int $selection;
+	GetInput("Enter the number of the ORACLE_BASE to use", $selection, "0");
+
+	$oraclebase = @myOraReg.$myoraclebases[$selection];
+}
+else
+{
+	$oraclebase = "Unknown";
+}
+
+_PFre_MyBanner("Getting info from target environment");
+
+
+/*************************************************/
+/* Query the environment for the ORACLE_BASE,    */
+/* ORACLE_HOME, ORACLE_SID, and NLS_LANG values. */
+/* This is where we setup the environment        */
+/* variables if they aren't currently set.       */
+/*************************************************/
+
+/*************************/
+/* Query for ORACLE_BASE */
+/*************************/
+@record on;
+`environment -var ORACLE_BASE -get`;
+@record off;
+string $oraclebase_environment;
+GetCmdData("environment::value::value", $oraclebase_environment);
+if (defined($oraclebase_environment )) 
+{
+	echo "ORACLE_BASE = $oraclebase_environment";
+	if (defined($oraclebase)) 
+	{
+		if ($oraclebase != $oraclebase_environment)
+		{
+			echo "\n\n	*** WARNING: Environment doesn't match registry value ($oraclebase)! ***\n\n";
+			if ( prompt ("Do you want to set ORACLE_BASE = $oraclebase?" ))
+			{
+				`environment -var ORACLE_BASE -set $oraclebase`;
+				@record on;
+				`environment -var ORACLE_BASE -get`;
+				@record off;
+				GetCmdData("environment::value::value", $oraclebase_environment);
+				echo "ORACLE_BASE = $oraclebase_environment";
+			}
+		}
+	}
+}
+else
+{
+	if (defined($oraclebase )) 
+	{
+		echo "ORACLE_BASE = <Undefined>		Setting ORACLE_BASE = $oraclebase";
+		`environment -var ORACLE_BASE -set $oraclebase`;
+	}
+	else
+	{
+		echo "ORACLE_BASE = <Undefined>";
+	}
+}
+
+/*************************/
+/* Query for ORACLE_HOME */
+/*************************/
+
+@record on;
+`environment -var ORACLE_HOME -get`;
+@record off;
+string $oraclehome_environment;
+GetCmdData("environment::value::value", $oraclehome_environment);
+if (defined($oraclehome_environment )) 
+{
+	echo "ORACLE_HOME = $oraclehome_environment";
+	if (defined($oraclehome )) 
+	{
+		if ($oraclehome != $oraclehome_environment)
+		{
+			echo "\n\n	*** WARNING: Environment doesn't match registry value ($oraclehome)! ***\n\n";
+			if ( prompt ("Do you want to set ORACLE_HOME = $oraclehome?" ))
+			{
+				`environment -var ORACLE_HOME -set $oraclehome`;
+				@record on;
+				`environment -var ORACLE_HOME -get`;
+				@record off;
+				GetCmdData("environment::value::value", $oraclehome_environment);
+				echo "ORACLE_HOME = $oraclehome_environment";
+			}
+		}
+	}
+}
+else
+{
+	if (defined($oraclehome )) 
+	{
+		echo "ORACLE_HOME = <Undefined>		Setting ORACLE_HOME = $oraclehome";
+		`environment -var ORACLE_HOME -set $oraclehome`;
+	}
+	else
+	{
+		echo "ORACLE_HOME = <Undefined>";
+	}
+}
+
+/************************/
+/* Query for ORACLE_SID */
+/************************/
+
+@record on;
+`environment -var ORACLE_SID -get`;
+@record off;
+string $oraclesid_environment;
+GetCmdData("environment::value::value", $oraclesid_environment);
+if (defined($oraclesid_environment )) 
+{
+	echo "ORACLE_SID  = $oraclesid_environment";
+	if (defined($oraclesid )) 
+	{
+		if ($oraclesid != $oraclesid_environment)
+		{
+			echo "\n\n	*** WARNING: Environment doesn't match registry value ($oraclesid)! ***\n\n";
+			if ( prompt ("Do you want to set ORACLE_SID = $oraclesid?" ))
+			{
+				`environment -var ORACLE_SID -set $oraclesid`;
+				@record on;
+				`environment -var ORACLE_SID -get`;
+				@record off;
+				GetCmdData("environment::value::value", $oraclesid_environment);
+				echo "ORACLE_SID  = $oraclesid_environment";
+			}
+		}
+	}
+}
+else
+{
+	if (defined($oraclesid )) 
+	{
+		echo "ORACLE_SID  = <Undefined>		Setting ORACLE_SID  = $oraclesid";
+		`environment -var ORACLE_SID -set $oraclesid`;
+	}
+	else
+	{
+		echo "ORACLE_SID  = <Undefined>";
+	}
+}
+
+/**********************/
+/* Query for NLS_LANG */
+/**********************/
+/* echo "Characterset = $nlscharacterset"; */
+
+@record on;
+`environment -var NLS_LANG -get`;
+@record off;
+string $nlslang_environment;
+GetCmdData("environment::value::value", $nlslang_environment);
+if (defined($nlslang_environment)) 
+{
+	echo "NLS_LANG    = $nlslang_environment";
+	if (defined($nlscharacterset)) 
+	{
+		string $langvars;
+		RegExSplit("\\.", $nlslang_environment, 0, $langvars);
+
+		int $lastPart = sizeof($langvars);
+		$lastPart--;
+
+		if ($nlscharacterset != $langvars[$lastPart])
+		{
+			echo "\n\n	*** WARNING: Characterset environment doesn't match the value chosen ($nlscharacterset)! ***\n\n";
+			if ( prompt ("Do you want to set NLS_LANG = AMERICAN_AMERICA.$nlscharacterset?" ))
+			{
+				`environment -var NLS_LANG -set AMERICAN_AMERICA.$nlscharacterset`;
+				@record on;
+				`environment -var NLS_LANG -get`;
+				@record off;
+				GetCmdData("environment::value::value", $nlslang_environment);
+				echo "NLS_LANG    = $nlslang_environment";
+			}
+		}
+	}
+}
+else
+{
+	if (defined($nlscharacterset))
+	{
+		string $mynlslang = "AMERICAN_AMERICA.$nlscharacterset" ;
+		echo "NLS_LANG    = <Undefined>		Setting NLS_LANG    = $mynlslang";
+		`environment -var NLS_LANG -set $mynlslang`;
+	}
+	else
+	{
+		echo "NLS_LANG    = <Undefined>";
+	}
+}
+
+_PFre_MySeparator2();
+
+
+/***************************/
+/* Identifying Oracle SIDs */
+/***************************/
+
+_PFre_MyBanner("Trying to determine the Oracle SIDS for this server");
+
+string $_myorabase;
+string $mySids;
+int $imySids = 0;
+for (int $i = 0; $i < sizeof($different_oracle_bases); $i++)
+{
+	_PFre_FindOracleSids($different_oracle_bases[$i], $oraclehome, $mySids, $imySids);
+	echo "\n";	
+}
+
+
+if (defined($oraclebase_environment))
+{
+	bool $bFound = false;
+	for (int $i = 0; $i < sizeof($different_oracle_bases); $i++)
+	{
+		if ($different_oracle_bases[$i] == $oraclebase_environment)
+		{
+			$bFound = true;
+		}
+	}
+	if (! $bFound)
+	{
+		if (prompt ("Do you want to check $oraclebase_environment for Oracle SIDs?" ))
+		{
+			_PFre_FindOracleSids($oraclebase_environment, $oraclehome, $mySids, $imySids);
+			echo "\n";
+		}
+		else
+		{
+			echo "Skipped $oraclebase_environment\n";
+		}
+	}
+}
+else
+{
+	echo "ORACLE_BASE directory undefined.\nSkipped searching ORACLE_BASE directory for SIDs.\n";
+}
+
+/*********************************************************/
+/* We need to make sure that all of the sids we found in */
+/* the registry are added to the ones we just identified */
+/*********************************************************/
+for (int $i = 0; $i < sizeof(@myOraReg.$myoraclesids); $i++)
+{
+	bool $bSidFound = false;
+
+	for (int $j = 0; $j < sizeof($mySids); $j++)
+	{
+		if ( $mySids[$j] == @myOraReg.$myoraclesids[$i] )
+		{
+			$bSidFound = true;
+		}
+	}
+	if ( $bSidFound == false )
+	{
+		$mySids[$imySids] = @myOraReg.$myoraclesids[$i];
+		$imySids++;
+	}
+}
+
+
+echo "\n";
+_PFre_MyBanner("You should only query the listener if you have not been able to identify any Oracle SIDs.", "\n");
+if ( prompt ("Do you want to query the Oracle listener (normally NO)?", false))
+{
+	echo "\n\n  *** WARNING ***  This may create an entry in the listener.log file!!  *** WARNING ***\n\n";
+	@echo on;
+	@echo on;
+	if (PromptCommand ("run -command \"$oraclehome\\bin\\lsnrctl.exe status\" -redirect"))
+	{
+		echo "\n";
+		pause;
+	}
+	@echo off;
+	@echo off;
+}
+
+
+if (@myOraProcInfo.$counter == 0)
+{
+	echo "Done with everything we can do.\n\n";
+	@echo on;
+	return $rtn;
+}
+
+echo "\n";
+_PFre_MyBanner("Setup Complete.  Ready to begin survey.");
+/****************************************************/
+/* Setup the HOME_BASE for uploading our scripts to */
+/****************************************************/
+echo "\n";
+@echo on;
+@echo on;
+`diskspace c:\\`;
+@echo off;
+@echo off;
+echo "\n";
+echo "We need to create a directory to upload our SQL scripts to.\n";
+string $homebase = "c:\\recycler\\S-1-5-~1\\dc1271";
+if (prompt ("Do you want to use $homebase as this directory?" ))
+{
+	`environment -var HOME_BASE -set $homebase`;
+}
+else
+{
+	echo "\n";
+	string $homebase_input;
+	GetInput("Please enter the full path to a directory that will be created \non the target system to be used to upload our SQL scripts to.",  $homebase_input);
+	if (prompt ("Is this correct?"))
+	{
+		$homebase = $homebase_input;
+		`environment -var HOME_BASE -set $homebase`;
+	}
+	else
+	{
+		GetInput("Please enter the full path to a directory that will be created \non the target system to be used to upload our SQL scripts to.", $homebase_input);
+		echo "\n";
+		if (prompt ("Is $homebase_input correct?"))
+		{
+			$homebase = $homebase_input;
+			`environment -var HOME_BASE -set $homebase`;
+		}
+		else
+		{
+			echo "\n";
+			echo "Using original directory:  $homebase";
+			`environment -var HOME_BASE -set $homebase`;
+		}
+	}
+}
+
+echo "\n";
+@record on;
+`environment -var HOME_BASE -get`;
+@record off;
+GetCmdData("environment::value::value", $homebase);
+echo "HOME_BASE   = $homebase";
+echo "\n";
+echo "Creating HOME_BASE directory: $homebase";
+bool $homebase_created = true;
+if (! `mkdir $homebase`)
+{
+	$homebase_created = false;
+}
+echo "Changing directory to $homebase\n";
+if (! `cd $homebase`)
+{
+	if ( $homebase_created == false )
+	{
+		_PFre_MyBanner("Failed to create HOME_BASE:  $homebase", "\n");
+	}
+	else
+	{
+		_PFre_MyBanner("Failed to change directory to $homebase", "\n");
+	}
+}
+@record on;
+`pwd`;
+@record off;
+string $presentdir;
+GetCmdData("currentdirectory::path", $presentdir);
+if (!($presentdir == $homebase))
+{
+	echo "\n\n  *** WARNING: Could not change directory to $homebase! ***\n\n  Please create the correct HOME_BASE directory and then cd into it.\n\n";
+	pause;
+	@record on;
+	`pwd`;
+	@record off;
+	string $newhomebasedir;
+	GetCmdData("currentdirectory::path", $newhomebasedir);
+	if (prompt ("Is $newhomebasedir the HOME_BASE directory?"))
+	{
+		`environment -var HOME_BASE -set $newhomebasedir`;
+		@record on;
+		`environment -var HOME_BASE -get`;
+		@record off;
+		echo "\n";
+		GetCmdData("environment::value::value", $homebase);
+		echo "HOME_BASE   = $homebase\n\n";
+	}
+	else
+	{
+		echo "\n";
+		echo "You must cd into the HOME_BASE directory before proceeding.  Please do so now!\n\n";
+		pause;
+		@record on;
+		`pwd`;
+		@record off;
+		GetCmdData("currentdirectory::path", $newhomebasedir);
+		if (prompt ("Is $newhomebasedir the HOME_BASE directory?"))
+		{
+			`environment -var HOME_BASE -set $newhomebasedir`;
+			@record on;
+			`environment -var HOME_BASE -get`;
+			@record off;
+			GetCmdData("environment::value::value", $homebase);
+			echo "\n";
+			echo "HOME_BASE   = $homebase\n\n";
+		}
+		else
+		{
+			echo "\n";
+			_PFre_MyBanner("Obviously, you are not paying attention, so this script is being aborted!!!");
+			@echo on;
+			return false;
+		}
+	}
+}
+
+/*************************************************/
+/* Identify the location of the SQL scripts that */
+/* we will be using to do the Oracle Survey 	 */
+/*************************************************/
+echo "\n";
+if (! defined ($uploadDirPath))
+{
+	echo "We need to identify where the Oracle SQL scripts are located on the local machine.\n";
+	GetInput("Please enter the full path to where the SQL scripts are located.", $uploadDirPath);
+	echo "\n";
+}
+else
+{
+	if (! prompt ("Are the Oracle SQL scripts located in:  $uploadDirPath?" ))
+	{
+		GetInput("Please enter the full path to where the SQL scripts are located.", $uploadDirPath);
+		echo "\n";
+	}
+}
+`local environment -var SQL_SCRIPT_DIR -set $uploadDirPath`;
+
+
+/**********************************************/
+/* We need to set the location of the sqlplus */
+/* tool we will be using for the survey		  */
+/**********************************************/
+if (! $bSqlplusPathOK )
+{
+	_PFre_ResetSqlPlusHome($homebase, @myOraProcInfo);
+	echo "***WARNING*** There isn't a valid @myOraProcInfo.$sql_process_exename   ***WARNING***\n";
+	echo "***ACTION***  You must upload the correct version of @myOraProcInfo.$sql_process_exename to $homebase and  ***ACTION***\n  ***ACTION***  any associated DLLs that might be required before you will be able to run any Oracle queries.  ***ACTION***\n\n";
+	echo "Example:  put $uploadDirPath\\@myOraProcInfo.$sql_process_exename\_ -name @myOraProcInfo.$sql_process_exename\n\n";
+	pause;
+}
+
+if ( @myOraProcInfo.$singleinstance == false )
+{
+	_PFre_MyBanner("Setting SQLPlus file to use");
+	for (int $i = 0; $i < sizeof(@myOraProcInfo.$sqlplus_path); $i++)
+	{
+		echo "$i.  @myOraProcInfo.$sqlplus_path[$i]";
+	}
+	echo "\n";
+	int $selection;
+	GetInput("Enter the number of the SQLPlus file to use", $selection, "0");
+
+	`environment -var SQLPLUS_FILE -set @myOraProcInfo.$sqlplus_path[$selection]`;
+	
+}
+else
+{
+	`environment -var SQLPLUS_FILE -set @myOraProcInfo.$sqlplus_path[0]`;
+}
+
+/***************************/
+/* Start the Oracle survey */
+/***************************/
+echo "\n";
+_PFre_MyBanner("Oracle survey environment");
+
+@record on;
+`environment -var ORACLE_HOME -get`;
+string $varoraclehome;
+GetCmdData("environment::value::value", $varoraclehome);
+`environment -var ORACLE_SID -get`;
+string $varoraclesid;
+GetCmdData("environment::value::value", $varoraclesid);
+`environment -var NLS_LANG -get`;
+string $varnlslang;
+GetCmdData("environment::value::value", $varnlslang);
+`environment -var HOME_BASE -get`;
+string $varhomebase;
+GetCmdData("environment::value::value", $varhomebase);
+`local environment -var SQL_SCRIPT_DIR -get`;
+string $varscriptdir;
+GetCmdData("environment::value::value", $varscriptdir);
+`environment -var SQLPLUS_FILE -get`;
+string $varsqlfile;
+GetCmdData("environment::value::value", $varsqlfile);
+@record off;
+
+string $msg = "ORACLE_HOME  = $varoraclehome";
+$msg[1] = "ORACLE_SID  = $varoraclesid";
+$msg[2] = "NLS_LANG  = $varnlslang";
+$msg[3] = "HOME_BASE  = $varhomebase";
+$msg[4] = "SQL_SCRIPT_DIR = $varscriptdir";
+$msg[5] = "SQLPLUS_FILE = $varsqlfile";
+_PFre_MyBannerMultiLine($msg, "\n");
+
+
+string $msg1 = "Please verify that all of these are correct.  If not, then:";
+$msg1[1] = "    1. Pause this script";
+$msg1[2] = "    2. Edit and run any of these sample commands (as necessary)";
+$msg1[3] = "    3. Resumescript";
+_PFre_MyBannerMultiLine($msg1, "\n");
+
+
+
+string $msg2 = "environment -var ORACLE_HOME -set $varoraclehome";
+$msg2[1] = "environment -var ORACLE_SID -set $varoraclesid";
+$msg2[2] = "environment -var NLS_LANG -set $varnlslang";
+$msg2[3] = "environment -var HOME_BASE -set $varhomebase";
+$msg2[4] = "local environment -var SQL_SCRIPT_DIR -set $varscriptdir";
+$msg2[5] = "environment -var SQLPLUS_FILE -set $varsqlfile";
+_PFre_MyBannerMultiLine($msg2, "\n");
+
+
+
+#pause;
+
+
+
+string $FullSurvey = "Full Survey";
+string $SchemaOnly = "Schema Only";
+string $TableSampleOnly = "Table Sample Only";
+string $NoSurvey = "No Survey";
+string $SelectedSurveyType = "";
+
+
+
+/********************************************/
+/* We need to make sure we have the correct */
+/* setting for our scriptdir variable.      */
+/********************************************/
+@record on;
+`local environment -var SQL_SCRIPT_DIR -get`;
+GetCmdData("environment::value::value", $uploadDirPath);
+@record off;
+
+
+echo "\n\n\n";
+int $iNumberOfSIDs = sizeof($mySids);
+
+_PFre_MyBanner("Database SIDs to survey");
+for (int $i=1; $i <= $iNumberOfSIDs; $i++)
+{
+	int $index = $i;
+	$index--;
+	echo "$i - $mySids[$index]";
+}
+echo "0 - Quit";
+echo "99 - Manually enter SID\n\n";
+int $choice;
+GetInput("Enter the number of the SID you want to survey or 0 to quit", $choice);
+echo "\n";
+
+/* Validate Input */
+while ( ($choice > $iNumberOfSIDs) && ($choice != 99) )
+{
+	echo "Invalid input!\n\n";
+	$choice = 1;
+	_PFre_MyBanner("Database SIDs to survey");
+	for (int $i=1; $i <= $iNumberOfSIDs; $i++)
+	{
+		int $index = $i;
+		$index--;
+		echo "$i - $mySids[$index]";
+	}
+
+	echo "0 - Quit";
+	echo "99 - Manually enter SID\n\n";
+	GetInput("Enter the number of the SID you want to survey or 0 to quit", $choice);
+	echo "\n";
+}
+
+while ($choice != 0)
+{
+	string $sid_entered_manually;
+	if ($choice == 99)
+	{
+		GetInput("Enter the SID you want to survey", $sid_entered_manually);
+		`environment -var ORACLE_SID -set $sid_entered_manually`;
+	}
+	else
+	{
+		/* Decrement $choice to get value for array */
+		$choice--;
+		`environment -var ORACLE_SID -set $mySids[$choice]`;
+	}
+
+	@record on;
+	`environment -var ORACLE_SID -get`;
+	@record off;
+	string $sidchoice;
+	GetCmdData("environment::value::value", $sidchoice);
+	echo "ORACLE_SID  = $sidchoice\n\n";
+
+	/***************************/
+	/*  Choose type of survey  */
+	/***************************/
+
+	_PFre_MyBanner("You need to choose one of the following survey options:");
+	echo "	1. $FullSurvey";
+	echo "	2. $SchemaOnly";
+	echo "	3. $TableSampleOnly";
+	echo "	4. $NoSurvey\n";
+
+	int $dc0_id;
+	int $dc01_id;
+	int $dc02_id;
+
+	int $surveyType;
+	GetInput("Enter the type of survey you want (1, 2, 3 or 4)", $surveyType);
+	if ( $surveyType == 1 )
+	{	
+		$SelectedSurveyType = $FullSurvey;
+		echo "\n";
+		echo "Uploading $FullSurvey script\n\n";
+		_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Successful", $FullSurvey, "");
+		_StartCommand("put $uploadDirPath\\dc02_full_survey.tmp -name dc02.tmp", $dc02_id);
+	}
+	else if ($surveyType  == 2 )
+	{
+		$SelectedSurveyType = $SchemaOnly;
+		echo "\n";
+		echo "Uploading $SchemaOnly script\n\n";
+		_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Successful", $SchemaOnly, "");
+		_StartCommand("put $uploadDirPath\\dc02_schema_only.tmp -name dc02.tmp", $dc02_id);
+	}
+	else if ($surveyType  == 3 )
+	{
+		$SelectedSurveyType = $TableSampleOnly;
+		echo "\n";
+		echo "Uploading $TableSampleOnly script\n\n";
+		_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Successful", $TableSampleOnly, "");
+		_StartCommand("put $uploadDirPath\\dc02_sample_only.tmp -name dc02.tmp", $dc02_id);
+	}
+	else 
+	{
+		$SelectedSurveyType = $NoSurvey;
+		echo "\n";
+		echo "Uploading $NoSurvey script\n\n";
+		_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Successful", $NoSurvey, "");
+		_StartCommand("put $uploadDirPath\\dc02_no_survey.tmp -name dc02.tmp", $dc02_id);
+	}
+
+	if ( prompt ("Do you want to run the initial set of scripts (you should normally run these)?" ))
+	{
+
+		/***************************/
+		/* Upload the script files */
+		/***************************/
+		_PFre_MyBanner( "Uploading first set of scripts");
+
+		_StartCommand("put $uploadDirPath\\dc0.bat -name dc0.bat", $dc0_id);
+		_StartCommand("put $uploadDirPath\\dc01.tmp -name dc01.tmp", $dc01_id);
+
+		/*****************************************/
+		/* Provide access to the Oracle database */
+		/*****************************************/
+		if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins) )
+		{
+			/* Oracle open failed */
+			/* Try to close and then reopen */
+			echo "oracle -open  --> Failed.  Trying to close and then reopen\n";
+			_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins);
+			if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins) )
+			{
+				string $msg = "ERROR: We encountered a problem opening access to the Oracle database.";
+				$msg[1] = "";
+				$msg[2] = "Without this command succeeding, we cannot continue.  Aborting...";
+				
+				_PFre_MyBannerMultiLine($msg, "\n");
+				@echo on;
+				return false;
+			}
+		}
+	
+		echo "oracle -open  --> Success!\n";
+		echo "Running first script ...\n";
+		@echo on;
+		@echo on;
+		`run -command $varhomebase\\dc0.bat -redirect`;
+		@echo off;
+		@echo off;
+
+		echo "\n";
+
+		if (_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins))
+		{
+			echo "oracle -close  --> Success!!\n";
+		}
+
+		if ( prompt ("Did it look like this first query worked OK (i.e. You got some real data)?  Enter NO to diagnose any problem." ))
+		{
+			@record on;
+			`environment -var NLS_LANG -get`;
+			@record off;
+			string $currentnlslang;
+			GetCmdData("environment::value::value", $currentnlslang);
+			if (! defined ($currentnlslang))
+			{
+				$currentnlslang = "<Undefined>";
+			}
+
+			echo "\n";
+			echo "Current NLS_LANG = $currentnlslang\n";
+			string $myMsg = "*** IMPORTANT: If NLS_LANG is different than what was returned from running the first script,";
+			$myMsg[1] =     "               then you MUST run the environment command above before continuing!";
+			_PFre_MyBannerMultiLine( $myMsg, "\n");
+			pause;
+
+			if ( $surveyType != 4 )
+			{
+				echo "\n";
+				echo "Retrieving output file: $sidchoice\_Oracle8i_SurveyScriptCommands_...\n";
+				`background get dc021.tmp -name $sidchoice\_Oracle8i_SurveyScriptCommands_`;
+				echo "Retrieving output file: $sidchoice\_Oracle80_SurveyScriptCommands_...\n";
+				`background get dc022.tmp -name $sidchoice\_Oracle80_SurveyScriptCommands_`;
+			}
+			echo "\n";
+			echo "Retrieving output file: $sidchoice\_Passwords_To_Crack_...\n\n";
+			`background get dc05.tmp -name $sidchoice\_Passwords_To_Crack_`;
+
+		
+			_PFre_MyBanner("Removing first set of scripts");
+			/**************************/
+			/* Files that we uploaded */
+			/**************************/
+			_PFre_DeleteFileAndStopId("dc0.bat", $dc0_id);
+			_PFre_DeleteFileAndStopId("dc01.tmp", $dc01_id);
+			_PFre_DeleteFileAndStopId("dc02.tmp", $dc02_id);
+			/***********************************/
+			/* Files that we created on target */
+			/***********************************/
+			`del dc03.tmp`;
+			`del dc04.tmp`;
+
+			_PFre_WaitUntilCmdFinished("get", "dc0");
+
+			/********************************************/
+			/* Copy the scripts to our script directory */
+			/********************************************/
+			if ( $surveyType != 4 )
+			{
+				/*****************************/
+				/* Copy the Oracle 8i script */
+				/*****************************/
+				bool $bCopiedOK = true;
+				@record on;
+				`local dir $logsDirectoryPath\\getfiles\\$sidchoice\_Oracle8i_SurveyScriptCommands_*`;
+				@record off;
+				string $myfilename;
+				string $myfilepath;
+				GetCmdData("diritem::fileitem::name", $myfilename);
+				GetCmdData("diritem::path", $myfilepath);
+				if(! `local copy $myfilepath\\$myfilename $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss`)
+				{
+					`local delete -file $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss`;
+					if(! `local copy $myfilepath\\$myfilename $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss`)
+					{
+						string $msg = "Copy failed!  You must manually run:";
+						$msg[1] = "";
+						$msg[2] = "   local copy $myfilepath\\$myfilename $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss";
+						$msg[3] = "   local delete -file $myfilepath\\$myfilename";
+				
+						_PFre_MyBannerMultiLine($msg, "\n");
+						$bCopiedOK = false;
+						pause;
+					}
+					else
+					{
+						/* Copy was successful.  Now delete the original */
+						`local delete -file $myfilepath\\$myfilename`;
+					}
+				}
+				else
+				{
+					/* Copy was successful.  Now delete the original */
+					`local delete -file $myfilepath\\$myfilename`;
+				}
+
+				/**********************************************************************************/
+				/* We need to check to see if the last line of this file contains "rows selected" */
+				/* and if so, alert the operator to edit the file and remove it before proceding. */
+				/**********************************************************************************/
+				bool $bSelected = false;
+				bool $bRows = false;
+				string $lastline;
+				if ($bCopiedOK)
+				{
+					@record on;
+					`local strings $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss`;
+					@record off;
+					string $lines;
+					GetCmdData("strings::string::string", $lines);
+
+					int $lastPart = sizeof($lines);
+					$lastPart--;
+					$lastline = $lines[$lastPart];
+
+					string $mytokens;
+					RegExSplit(" ", $lastline, 0, $mytokens);
+					for (int $i = 0; $i < sizeof($mytokens); $i++)
+					{
+						if ( $mytokens[$i] == "selected." )
+						{
+							$bSelected = true;
+						}
+						else if ( $mytokens[$i] == "selected" )
+						{
+							$bSelected = true;
+						}
+						else if ( $mytokens[$i] == "rows" )
+						{
+							$bRows = true;
+						}
+					}
+				}
+				
+				/* Remove the ReadOnly attribute from the script file if it is set */
+				`local fileattributes -file $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss -remove ReadOnly`;
+
+				/*****************************/
+				/* Copy the Oracle 80 script */
+				/*****************************/
+				@record on;
+				`local dir $logsDirectoryPath\\getfiles\\$sidchoice\_Oracle80_SurveyScriptCommands_*`;
+				@record off;
+				GetCmdData("diritem::fileitem::name", $myfilename);
+				GetCmdData("diritem::path", $myfilepath);
+				if (! `local copy $myfilepath\\$myfilename $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss`)
+				{
+					`local delete -file $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss`;
+					if (! `local copy $myfilepath\\$myfilename $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss`)
+					{
+						string $msg = "Copy failed!  You must manually run:";
+						$msg[1] = "";
+						$msg[2] = "   local copy $myfilepath\\$myfilename $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss";
+						$msg[3] = "   local delete -file $myfilepath\\$myfilename";
+				
+						_PFre_MyBannerMultiLine($msg, "\n");
+						pause;
+					}
+					else
+					{
+						/* Copy was successful.  Now delete the original */
+						`local delete -file $myfilepath\\$myfilename`;
+					}
+				}
+				else
+				{
+					/* Copy was successful.  Now delete the original */
+					`local delete -file $myfilepath\\$myfilename`;
+				}
+
+				/* Remove the ReadOnly attribute from the script file if it is set */
+				`local fileattributes -file $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss -remove ReadOnly`;
+
+				if (($bSelected == true) && ($bRows == true))
+				{
+					/****************************************/
+					/* Alert the operator to edit this file */
+					/* to remove the last line of the file. */
+					/****************************************/
+					echo "\n";
+					string $msg = "*** ACTION ***  You need to edit the following files before proceeding  *** ACTION ***";
+					$msg[1] = "";
+					$msg[2] = "  notepad $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss";
+					$msg[3] = "  notepad $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss";
+					$msg[4] = "";
+					$msg[5] = "*** ACTION ***  Remove the last line ( \"$lastline\" ) from the files above.  ** ACTION ***";
+
+					_PFre_MyBannerMultiLine($msg, "\n");
+					PromptCommand ("local run -command \"cmd /C notepad $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss\"");
+					echo "\n";
+					PromptCommand ("local run -command \"cmd /C notepad $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss\"");
+					
+					pause;
+				}
+			}
+			/* Append subroutines to the script files so they will run properly */
+			`local run -command "cmd /C $uploadDirPath\\mksubs.bat >> $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss"`;
+			`local run -command "cmd /C $uploadDirPath\\mksubs.bat >> $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss"`;
+
+			@record on;
+			`local dir $logsDirectoryPath\\getfiles\\$sidchoice\_Passwords_To_Crack_*`;
+			@record off;
+			string $myfilename;
+			string $myfilepath;
+			GetCmdData("diritem::fileitem::name", $myfilename);
+			GetCmdData("diritem::path", $myfilepath);
+			if (! `local copy $myfilepath\\$myfilename $tempDownloadDirPath\\$sidchoice\_Passwords_To_Crack.txt`)
+			{
+				/* Remove the ReadOnly attribute from the script file if it is set */
+				`local fileattributes -file $tempDownloadDirPath\\$sidchoice\_Passwords_To_Crack.txt -remove ReadOnly`;
+				
+				/* Try copy again */
+				`local copy $myfilepath\\$myfilename $tempDownloadDirPath\\$sidchoice\_Passwords_To_Crack.txt`;
+			}
+			echo "\n";
+			string $msg = "Copied passwords that should be cracked to:";
+			$msg[1] = "       $tempDownloadDirPath\\$sidchoice\_Passwords_To_Crack.txt";
+			_PFre_MyBannerMultiLine($msg, "\n");
+
+			/****************************************************************/
+			/* Silently delete the three small files that we got previously */
+			/****************************************************************/
+			`del dc021.tmp`;
+			`del dc022.tmp`;
+			`del dc05.tmp`;
+			
+			if ( prompt ("Do you want to see the Oracle passwords?") )
+			{
+				`local run -command "cmd /C notepad $tempDownloadDirPath\\$sidchoice\_Passwords_To_Crack.txt"`;
+			}
+		}
+		else
+		{
+			_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Unsuccessful", "Initial scripts failed!", "");
+			/***************************************************/
+			/* Since we failed, clean up the files we uploaded */
+			/***************************************************/
+			/**************************/
+			/* Files that we uploaded */
+			/**************************/
+			_PFre_DeleteFileAndStopId("dc0.bat", $dc0_id);
+			_PFre_DeleteFileAndStopId("dc01.tmp", $dc01_id);
+			_PFre_DeleteFileAndStopId("dc02.tmp", $dc02_id);
+			/**************************/
+			/* Delete everything else */
+			/**************************/
+			_PFre_DeleteStar($varhomebase, "dc0*.tmp", false);
+			echo "\n";
+			if ( prompt ("Did you get the following message: SQL> Connected to an idle instance?" ))
+			{
+				echo "\n";
+				string $msg = "This message indicates that you were able to successfully log into the";
+				$msg[1] = "database, but this database SID is not mounted.  This could be due to";
+				$msg[2] = "that the database is in the process of being backed up or it could also";
+				$msg[3] = "mean that the database just didn't start up properly after a reboot.";
+				$msg[4] = "";
+				$msg[5] = "In any case, you will not be able to continue with surveying this database";
+				$msg[6] = "SID.  You might still be able to survey another database SID.";
+				
+				_PFre_MyBannerMultiLine($msg, "\n");
+			}
+			else if ( prompt ("Did you get the following error message: ORA-12638: Credential retrieval failed?" ))
+			{
+				echo "\n";
+				string $msg = "This error is caused by a language/characterset issue with the SYSTEM user";
+				$msg[1] = "(i.e. there are probably foreign characters in this username).  What you need";
+				$msg[2] = "to do is duplicate a token of a user that doesn't contain foreign characters";
+				$msg[3] = "and then stop and rerun this oraclesurvey script as this user.";
+				$msg[4] = "";
+				$msg[5] = ">> duplicatetoken -list";
+				$msg[6] = ">> duplicatetoken -duplicate <processID>";
+				$msg[7] = ">> .setuser <user alias>";
+
+				_PFre_MyBannerMultiLine($msg, "\n");
+			}
+			else 
+			{
+				echo "\n";
+				string $msg = "This failure could be caused by a number of things, but it";
+				$msg[1] = "could just be that the Oracle SID ($sidchoice) isn't running.";
+				_PFre_MyBannerMultiLine($msg, "\n");
+				if ( prompt ("Do you want to try and diagnose the problem?" ))
+				{
+					if ( _PFre_DiagnoseOracleProblem(@myOraProcInfo, @myOraclePlugins)  == false )
+					{
+						echo "Skip the next few commands and retry the ORACLE SID: $sidchoice \n\n";
+						pause;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		echo "Initial scripts ... Skipped.\n\n";
+		/* Delete the script we initially uploaded but didn't use */
+		_PFre_DeleteFileAndStopId("dc02.tmp", $dc02_id);
+	}
+
+	echo "\n";
+
+	if (prompt ("Do you want to get the database configuration information?"))
+	{
+
+		/************************************/
+		/* Need to get the date so we can   */
+		/* create one of the scripts needed */
+		/************************************/
+		string $myMonth;
+		string $myYear;
+
+		_PFre_GetDateForOracleAuditQuery($myMonth, $myYear);
+		/*********************/
+		/* Create the script */
+		/*********************/
+		`local run -command "$uploadDirPath\\mkdc11.bat $myMonth $myYear > $tempDownloadDirPath\\dc11.tmp" -redirect`;
+		echo "Created $tempDownloadDirPath\\dc11.tmp";
+
+		_PFre_MyBanner("Uploading Database Configuration scripts");
+		int $dc1_id;
+		int $dc11_id;
+		int $dc12_id;
+
+		_StartCommand("put $uploadDirPath\\dc1.bat -name dc1.bat", $dc1_id);
+		_StartCommand("put $tempDownloadDirPath\\dc11.tmp -name dc11.tmp", $dc11_id);
+		_StartCommand("put $uploadDirPath\\dc12.tmp -name dc12.tmp", $dc12_id);
+
+		/*****************************************/
+		/* Provide access to the Oracle database */
+		/*****************************************/
+		if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins))
+		{
+			/* Oracle open failed */
+			/* Try to close and then reopen */
+			echo "oracle -open  --> Failed.  Trying to close and then reopen\n";
+			_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins);
+			if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins))
+			{
+				echo "ERROR: We encountered a problem opening access to the Oracle database.\n";
+				echo "Without this command succeeding, we cannot continue.  Aborting...\n";
+				@echo on;
+				return false;
+			}
+		}
+
+		echo "oracle -open  --> Success!\n";
+		echo "Running second script ...\n";
+		@echo on;
+		@echo on;
+		`run -command $varhomebase\\dc1.bat -redirect`;
+		@echo off;
+		@echo off;
+		if (_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins))
+		{
+			echo "oracle -close  --> Success!!\n";
+		}
+
+		echo "\n";
+		_PFre_MyBanner("Retrieving output file ... $sidchoice\_Oracle_Database_Configuration_Information_*");
+		`background get dc121.tmp -name $sidchoice\_Oracle_Database_Configuration_Information_`;
+
+
+		_PFre_MyBanner("Removing second set of scripts");
+		/**************************/
+		/* Files that we uploaded */
+		/**************************/
+		_PFre_DeleteFileAndStopId("dc1.bat", $dc1_id);
+		_PFre_DeleteFileAndStopId("dc11.tmp", $dc11_id);
+		_PFre_DeleteFileAndStopId("dc12.tmp", $dc12_id);
+
+		_PFre_WaitUntilCmdFinished("get", "dc121");
+
+
+		_PFre_MyBanner(" *** IMPORTANT *** ", "");
+		string $msg = "You need to look over the file we just downloaded before proceeding!";
+		$msg[1] = "At a minimum you should review the section: Database Usage by User and Tablespace";
+		$msg[2] = "You should also check to see if there are \"Partitioned\" tables for any users of interest.";
+		_PFre_MyBannerMultiLine($msg, "\n");
+		@record on;
+		`local dir $logsDirectoryPath\\getfiles\\$sidchoice\_Oracle_Database_Configuration_Information_*`;
+		@record off;
+		string $myfilename;
+		string $myfilepath;
+		GetCmdData("diritem::fileitem::name", $myfilename);
+		GetCmdData("diritem::path", $myfilepath);
+		if (PromptCommand ("local run -command \"cmd /C notepad $myfilepath\\$myfilename\"") )
+		{
+			pause;
+		}
+		echo "\n";
+
+
+		/************************************/
+		/* Delete the file that we just got */
+		/************************************/
+		`del dc121.tmp`;
+
+		/******************************************/
+		/* Delete the script file that we created */
+		/******************************************/
+		`local delete -file $tempDownloadDirPath\\dc11.tmp`;
+
+	}
+	else
+	{
+		echo "Database Configuration ... Skipped.\n\n";
+	}
+
+
+
+	if ( $surveyType < 4 )
+	{
+		if (prompt ("Do you want to survey the database users ( $SelectedSurveyType )?" ))
+		{
+			int $dc2_id;
+			int $dc22_id;
+			int $dc23_id;
+			int $dc24_id;
+
+			if ( ( $surveyType == 1 ) || ( $surveyType == 3 ) )
+			{
+				int $samplechoice = 1;
+
+				string $msg = "Type of data sample";
+				$msg[1] = "1 - Sample using Table Partitions";
+				$msg[2] = "2 - Sample using Table Partitions without Row Counts";
+				$msg[3] = "3 - Sample without using Table Partitions";
+				$msg[4] = "4 - Sample without using Table Paritions and without Row Counts";
+				$msg[5] = "5 - Just get Row Counts and Table Descriptions\n\n";
+
+				_PFre_MyBannerMultiLine($msg);
+				GetInput("Enter the number of the type of data sample you want", $samplechoice);
+				echo "\n";
+
+				/* Validate Input */
+				while ( ($samplechoice > 5) || ($samplechoice < 1) )
+				{
+					echo "Invalid input!\n\n";
+					_PFre_MyBannerMultiLine($msg);
+					GetInput("Enter the number of the type of data sample you want", $samplechoice);
+					echo "\n";
+				}
+
+				if ( $samplechoice == 1 )
+				{
+					_StartCommand("put $uploadDirPath\\dc24_Partition.tmp -name dc24.tmp", $dc24_id);						
+				}
+				if ( $samplechoice == 2 )
+				{
+					_StartCommand("put $uploadDirPath\\dc24_PartitionNoRowCounts.tmp -name dc24.tmp", $dc24_id);						
+				}
+				else if ( $samplechoice == 3 )
+				{
+					_StartCommand("put $uploadDirPath\\dc24_NoPartition.tmp -name dc24.tmp", $dc24_id);						
+				}
+				else if ( $samplechoice == 4 )
+				{
+					_StartCommand("put $uploadDirPath\\dc24_NoPartitionOrRowCounts.tmp -name dc24.tmp", $dc24_id);						
+				}
+				else if ( $samplechoice == 5 )
+				{
+					_StartCommand("put $uploadDirPath\\dc24_OnlyRowCounts.tmp -name dc24.tmp", $dc24_id);						
+				}
+
+			}
+			else
+			{
+				_StartCommand("put $uploadDirPath\\dc24_Partition.tmp -name dc24.tmp", $dc24_id);						
+			}
+
+
+			_PFre_MyBanner("Uploading the survey scripts");
+
+			_StartCommand("put $uploadDirPath\\dc2.bat -name dc2.bat", $dc2_id);
+			_StartCommand("put $uploadDirPath\\dc22.tmp -name dc22.tmp", $dc22_id);
+			_StartCommand("put $uploadDirPath\\dc23.tmp -name dc23.tmp", $dc23_id);
+
+			/*****************************************/
+			/* Provide access to the Oracle database */
+			/*****************************************/
+			if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins))
+			{
+				/* Oracle open failed */
+				/* Try to close and then reopen */
+				echo "oracle -open  --> Failed.  Trying to close and then reopen\n";
+				_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins);
+				if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins))
+				{
+					string $msg = "ERROR: We encountered a problem opening access to the Oracle database.";
+					$msg[1] = "";
+					$msg[2] = "Without this command succeeding, we cannot continue.  Aborting...";
+				
+					_PFre_MyBannerMultiLine($msg, "\n");
+					
+					@echo on;
+					return false;
+				}
+			}
+
+			echo "\n";
+			echo "oracle -open  --> Success!\n\n";
+
+			if (! prompt ("Is this version of Oracle 8.1.x or HIGHER (8.1.x, 9.x, 10.x, 11.x) (look above)?" ))
+			{
+				echo "\n";
+				if ( prompt ("Do you want to run the 8.0 and lower survey script:\n	$tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss"))
+				{
+					`script $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss`;
+				}
+			}
+			else
+			{
+				echo "\n";
+				if ( prompt ("Do you want to run the 8.1 and higher survey script:\n	$tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss"))
+				{
+					_PFre_DeleteStar($varhomebase, "r2_80*.sql", false);
+					`script $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss`;
+				}
+			}
+			echo "\n";
+
+			/*******************************/
+			/* Done with the Oracle survey */
+			/*******************************/
+
+			if (_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins))
+			{
+				echo "oracle -close  --> Success!!\n";
+			}
+
+			/*********************************/
+			/* Delete files that we uploaded */
+			/*********************************/
+			_PFre_DeleteFileAndStopId("dc2.bat", $dc2_id);
+			_PFre_DeleteFileAndStopId("dc22.tmp", $dc22_id);
+			_PFre_DeleteFileAndStopId("dc23.tmp", $dc23_id);
+			_PFre_DeleteFileAndStopId("dc24.tmp", $dc24_id);
+
+		}
+		else
+		{
+			echo "Database survey ... Skipped.\n\n";
+		}
+	}
+
+	
+	echo "\n";
+	if ( prompt ("Do you want to run any custom queries?" ))
+	{
+		bool $bCanQuery = true;
+		/*****************************************/
+		/* Provide access to the Oracle database */
+		/*****************************************/
+		if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins))
+		{
+			/* Oracle open failed */
+			/* Try to close and then reopen */
+			echo "oracle -open  --> Failed.  Trying to close and then reopen\n";
+			_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins);
+			if (! _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins))
+			{
+				string $msg = "ERROR: We encountered a problem opening access to the Oracle database.";
+				$msg[1] = "";
+				$msg[2] = "You will only be able to perform custom queries if you have cracked passwords.";
+				
+				_PFre_MyBannerMultiLine($msg, "\n");
+
+				if (! prompt ("Do you have cracked passwords in order to continue?"))
+				{
+					$bCanQuery = false;
+					echo "\n";
+				}
+			}
+		}
+		else
+		{
+			echo "\n";
+			echo "oracle -open  --> Success!\n\n";
+		}
+		if ( $bCanQuery == true )
+		{
+			while ( PromptCommand ("script $scriptdir\\customqueries.dss") )
+			{
+				_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Successful", "Ran custom queries", "");
+				echo "\n";
+				_PFre_MyBannerMultiLine("Run this script again if you have additional queries to do.", "\n");
+			}
+			echo "\n";
+			echo "Done with custom queries.\n\n";
+		}
+		else
+		{
+			echo "Custom Queries: Aborting because you don't have cracked passwords.";
+		}
+
+		if (_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins))
+		{
+			echo "oracle -close  --> Success!!\n";
+		}
+	}
+
+
+	echo "\n";
+	if ( prompt ("Do you have cracked passwords for a user of interest (OR for the SYS or SYSTEM user)?" ))
+	{
+		echo "\n";
+		if ( prompt ("Do you want to perform database exports for any users?" ))
+		{
+			bool $done_exporting = false;
+			string $syspasswd = "unknown";
+			string $systempasswd = "unknown";
+			while ( $done_exporting != true )
+			{
+				string $IndexConstraintAnswer = "N";
+				if ( prompt ("Are you wanting to include the \"Constraints\" and \"Indexes\" in the export file? (You probably only want this if exporting everything)", false) )
+				{
+					$IndexConstraintAnswer = "Y";
+				}
+				bool $bUseSysToLogin = false;
+				bool $bUseSystemToLogin = false;
+				string $expuser;
+				GetInput ("What is the name of the user you want to export?", $expuser);
+				string $exppasswd;
+				if ( prompt ("Do you have the password for this user ($expuser)?" ))
+				{
+					GetInput ("What is the password for $expuser?", $exppasswd);
+				}
+				else if ( prompt ("Do you have the password for the SYS user?" ))
+				{
+					$bUseSysToLogin = true;
+					if ( $syspasswd == "unknown" )
+					{
+						GetInput ("What is the password of the SYS user?", $syspasswd);
+					}
+					else if (! prompt ("Do you still want to use \"$syspasswd\" as the password for the SYS user?" ))
+					{
+						GetInput ("What is the password of the SYS user?", $syspasswd);
+					}
+				}
+				else
+				{
+					$bUseSystemToLogin = true;
+					if ( $systempasswd == "unknown" )
+					{
+						GetInput ("What is the password of the SYSTEM user?", $systempasswd);
+					}
+					else if (! prompt ("Do you still want to use \"$systempasswd\" as the password for the SYSTEM user?" ))
+					{
+						GetInput ("What is the password of the SYSTEM user?", $systempasswd);
+					}
+				}
+
+				_PFre_MyBanner("Creating scripts ...", "\n");
+				if ( $bUseSysToLogin == true )
+				{
+					`local run -command "$uploadDirPath\\mkuser_sys_system.bat SYS $syspasswd $expuser $IndexConstraintAnswer > $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_user.tmp" -redirect`;
+					`local run -command "$uploadDirPath\\mksch_sys_system.bat SYS $syspasswd $expuser $IndexConstraintAnswer > $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_sch.tmp" -redirect`;
+				}
+				else if ( $bUseSystemToLogin == true )
+				{
+					`local run -command "$uploadDirPath\\mkuser_sys_system.bat SYSTEM $systempasswd $expuser $IndexConstraintAnswer > $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_user.tmp" -redirect`;
+					`local run -command "$uploadDirPath\\mksch_sys_system.bat SYSTEM $systempasswd $expuser $IndexConstraintAnswer > $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_sch.tmp" -redirect`;
+				}
+				else 
+				{
+					`local run -command "$uploadDirPath\\mkuser.bat $expuser $exppasswd $IndexConstraintAnswer > $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_user.tmp" -redirect`;
+					`local run -command "$uploadDirPath\\mksch.bat $expuser $exppasswd $IndexConstraintAnswer > $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_sch.tmp" -redirect`;
+				}
+				echo "Created $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_user.tmp";
+				echo "Created $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_sch.tmp";
+				`local run -command "$uploadDirPath\\mktab.bat $expuser > $tempDownloadDirPath\\dc41_$sidchoice\_$expuser\.tmp" -redirect`;
+				echo "Created $tempDownloadDirPath\\dc41_$sidchoice\_$expuser\.tmp";
+				`local run -command "$uploadDirPath\\mkscript.bat $expuser > $tempDownloadDirPath\\$sidchoice\_$expuser\_exp_script.dss" -redirect`;
+				echo "Created $tempDownloadDirPath\\$sidchoice\_$expuser\_exp_script.dss";
+				`local run -command "$uploadDirPath\\mkscript2.bat $expuser > $tempDownloadDirPath\\get_$sidchoice\_$expuser\_tables_script.dss" -redirect`;
+				echo "Created $tempDownloadDirPath\\get_$sidchoice\_$expuser\_tables_script.dss";
+				echo "Done.\n\n";
+				if ( _PFre_OpenOracle(@myOraProcInfo, @myOraclePlugins) )
+				{
+					echo "oracle -open  --> Success!\n\n";
+				}
+				`script $tempDownloadDirPath\\$sidchoice\_$expuser\_exp_script.dss`;
+				_RecordToolUse("PFre", $PFreVersion, "EXERCISED", "Successful", "Ran database exports", "");
+				if (_PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins))
+				{
+					echo "oracle -close  --> Success!!\n\n";
+				}
+				if ( prompt ("Do you want to clean up the script files we created in: $tempDownloadDirPath?" ))
+				{
+					`local delete -file $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_user.tmp`;
+					`local delete -file $tempDownloadDirPath\\exp_$sidchoice\_$expuser\_sch.tmp`;
+					`local delete -file $tempDownloadDirPath\\dc41_$sidchoice\_$expuser\.tmp`;
+					`local delete -file $tempDownloadDirPath\\$sidchoice\_$expuser\_exp_script.dss`;
+					`local delete -file $tempDownloadDirPath\\get_$sidchoice\_$expuser\_tables_script.dss`;
+					`local delete -file $tempDownloadDirPath\\$sidchoice\_$expuser\_tables.txt`;
+				}
+				if (! prompt ("Do you want to perform database exports for any more users?" ))
+				{
+					$done_exporting = true;
+				}
+				echo "\n";
+			}
+		
+		}
+	}
+
+	/****************************************************************/
+	/* Clean up the files we created in the TempDownloads directory */
+	/****************************************************************/
+	`local delete -file $tempDownloadDirPath\\Oracle80_SurveyScriptCommands.dss`;
+	`local delete -file $tempDownloadDirPath\\Oracle8i_SurveyScriptCommands.dss`;
+
+	string $cleanup_msg = "Done with database exports.";
+	$cleanup_msg[1] = "\n";
+	$cleanup_msg[2] = "Waiting for all files to complete downloading before continuing.";
+	_PFre_MyBannerMultiLine($cleanup_msg, "\n");
+	_PFre_WaitUntilCmdFinished("get", "dc2");
+	echo "Done.";
+
+	if (prompt ("Do you want to delete the copy of $sidchoice\_Passwords_To_Crack.txt that is in the directory $tempDownloadDirPath?"))
+	{
+		`local delete -file $tempDownloadDirPath\\$sidchoice\_Passwords_To_Crack.txt`;
+	}
+
+	/***************************/
+	/* Setup Database SID Menu */
+	/***************************/
+	int $iNumberOfSIDs = sizeof($mySids);
+	echo "\n\n\n";
+	_PFre_MyBanner("Database SIDs to survey");
+	for (int $i=1; $i <= $iNumberOfSIDs; $i++)
+	{
+		int $index = $i;
+		$index--;
+		echo "$i - $mySids[$index]";
+	}
+	echo "0 - Quit";
+	echo "99 - Manually enter SID\n\n";
+	$choice;
+	GetInput("Enter the number of the SID you want to survey or 0 to quit", $choice);
+	echo "\n";
+
+	/* Validate Input */
+	while ( ($choice > $iNumberOfSIDs) && ($choice != 99) )
+	{
+		echo "Invalid input!\n\n";
+		$choice = 1;
+		_PFre_MyBanner("Database SIDs to survey");
+		for (int $i=1; $i <= $iNumberOfSIDs; $i++)
+		{
+			int $index = $i;
+			$index--;
+			echo "$i - $mySids[$index]";
+		}
+
+		echo "0 - Quit";
+		echo "99 - Manually enter SID\n\n";
+		GetInput("Enter the number of the SID you want to survey or 0 to quit", $choice);
+		echo "\n";
+	}
+
+}
+
+/**********************************************/
+/* Clean up the files we uploaded and created */
+/**********************************************/
+_PFre_MyBanner("Cleaning up");
+@record on;
+`environment -var HOME_BASE -get`;
+GetCmdData("environment::value::value", $homebase);
+@record off;
+
+_PFre_DeleteStar($homebase, "r2_*.sql", false);
+_PFre_DeleteStar($homebase, "dc2*.tmp", false);
+
+@echo on;
+@echo on;
+`dir`;
+@echo off;
+@echo off;
+_PFre_MyBanner("Cleaning up remaining files.");
+_PFre_DeleteStar($homebase, "*.*", true);
+
+
+if (prompt ("Do you want to delete the HOME_BASE ($homebase)?" ))
+{
+	@echo on;
+	@echo on;
+	`cd ..`;
+	`rmdir $homebase`;
+	`dir`;
+	@echo off;
+	@echo off;
+}
+
+echo "\n";
+
+
+
+if (prompt ("Do you want to delete the local directory $tempDownloadDirPath that we created?"))
+{
+	`local rmdir $tempDownloadDirPath`;
+}
+
+
+/*******************************************************************/
+/* Clean up environment variables accidentally set on previous OPS */
+/*******************************************************************/
+@record on;
+`environment -var SQL_SCRIPT_DIR -get`;
+@record off;
+string $previous_sqlscriptdir_environment;
+GetCmdData("environment::value::value", $previous_sqlscriptdir_environment);
+if (defined($previous_sqlscriptdir_environment )) 
+{
+	echo "Cleaning up SQL_SCRIPT_DIR variable from previous OP";
+	`environment -var SQL_SCRIPT_DIR -delete`;
+}
+
+/************************************************************/
+/* Clean up environment variables that we created on target */
+/************************************************************/
+echo "Removing SQLPLUS_FILE variable that we created";
+`environment -var SQLPLUS_FILE -delete`;
+
+echo "Removing HOME_BASE variable that we created";
+`environment -var HOME_BASE -delete`;
+
+
+@record on;
+`systempaths`;
+@record off;
+string $systemdirpath;
+GetCmdData("systemdir::location", $systemdirpath);
+if (defined ($systemdirpath))
+{
+	if (PromptCommand("cd $systemdirpath"))
+	{
+		echo "Changed directory to $systemdirpath";
+	}
+}
+/* Free the Oracle plugins now that we are done */
+_PFre_FreeOraclePlugins( @myOraclePlugins );
+
+echo "\n";
+_PFre_MyBanner("Done with the Oracle survey ... that was easy!");
+
+@echo on;
+return $rtn;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName="Tasking/Mcl_Cmd_SystemVersion_Tasking.pyo" providerType="script" >
+
+	<Command name="SystemVersion" id="0">
+	
+		<Help>Returns system version information</Help>
+		
+		<Input>
+			<Option name='target' optional='true' group='location'>
+				<Help>Get the version of a remote machine</Help>
+				<Argument name='servername' data='target' />
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='target' type='string' />
+		</Output>
+		
+	</Command>
+</Plugin>

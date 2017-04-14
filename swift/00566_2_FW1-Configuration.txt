@@ -1,0 +1,551 @@
+ENSBPASA1# show run
+: Saved
+:
+ASA Version 7.0(6)
+!
+hostname ENSBPASA1
+domain-name sag
+enable password PVSASRJovmamnVkD encrypted
+names
+name 192.168.202.25 sag-srv1
+name 192.168.202.20 sag-srv2
+name 192.168.246.7 vpn1-2-nsrp
+name 192.168.246.6 vpn2-int
+name 192.168.246.5 vpn1-int
+name 192.168.246.10 vpn3-mgmt
+name 192.168.246.9 vpn3-int
+name 149.134.0.0 swiftnet-nw
+name 192.168.247.1 isdn-router
+name 192.168.202.22 sag-test
+name 192.168.206.0 ensb-dxb-nw
+name 10.100.200.0 ensb-mgmt-nw
+name 10.100.201.0 ensb-support-nw
+name 192.168.202.10 mgmt-srv1
+name 192.168.219.28 swp-srvr1
+name 192.168.219.30 swp-srvr-cluster
+dns-guard
+!
+interface Ethernet0/0
+ nameif sag
+ security-level 80
+ ip address 192.168.202.1 255.255.255.0 standby 192.168.202.2
+!
+interface Ethernet0/1
+ nameif clients
+ security-level 10
+ ip address 192.168.246.1 255.255.255.0 standby 192.168.246.2
+!
+interface Ethernet0/2
+ nameif swift
+ security-level 60
+ ip address 192.168.244.1 255.255.255.0 standby 192.168.244.2
+!
+interface Ethernet0/3
+ description LAN Failover Interface
+!
+interface Management0/0
+ nameif dmz
+ security-level 20
+ ip address 192.168.219.1 255.255.255.0
+!
+passwd PVSASRJovmamnVkD encrypted
+ftp mode passive
+clock timezone PKT 5
+object-group network sag-servers-prod
+ network-object sag-srv1 255.255.255.255
+ network-object sag-srv2 255.255.255.255
+object-group network ensb-vpns-group
+ network-object vpn1-int 255.255.255.255
+ network-object vpn2-int 255.255.255.255
+ network-object vpn1-2-nsrp 255.255.255.255
+ network-object vpn3-int 255.255.255.255
+ network-object vpn3-mgmt 255.255.255.255
+object-group network swift-switch-in
+ network-object 149.134.244.129 255.255.255.255
+ network-object 149.134.244.130 255.255.255.255
+ network-object 149.134.252.4 255.255.255.255
+ network-object 149.134.252.6 255.255.255.255
+ network-object 149.134.252.128 255.255.255.255
+ network-object 149.134.252.129 255.255.255.255
+object-group network swift-dns
+ network-object 149.134.244.133 255.255.255.255
+ network-object 149.134.252.7 255.255.255.255
+object-group network swift-directory
+ network-object 149.134.244.129 255.255.255.255
+ network-object 149.134.244.130 255.255.255.255
+ network-object 149.134.252.4 255.255.255.255
+ network-object 149.134.252.6 255.255.255.255
+ network-object 149.134.252.128 255.255.255.255
+ network-object 149.134.252.129 255.255.255.255
+ network-object 149.134.252.132 255.255.255.255
+object-group network swift-ca-ra
+ network-object 149.134.244.131 255.255.255.255
+ network-object 149.134.252.2 255.255.255.255
+ network-object 149.134.252.130 255.255.255.255
+object-group network swift-rvs
+ network-object 149.134.244.133 255.255.255.255
+ network-object 149.134.244.134 255.255.255.255
+ network-object 149.134.252.7 255.255.255.255
+ network-object 149.134.252.8 255.255.255.255
+ network-object 149.134.252.133 255.255.255.255
+object-group network swift-web-connector
+ network-object 149.134.244.133 255.255.255.255
+ network-object 149.134.244.134 255.255.255.255
+ network-object 149.134.252.7 255.255.255.255
+ network-object 149.134.252.8 255.255.255.255
+ network-object 149.134.252.133 255.255.255.255
+object-group network swift-secrets-webserver
+ network-object 149.134.252.8 255.255.255.255
+ network-object 149.134.244.134 255.255.255.255
+ network-object 149.134.252.133 255.255.255.255
+object-group network swift-myswift-webserver
+ network-object 149.134.244.134 255.255.255.255
+ network-object 149.134.252.8 255.255.255.255
+ network-object 149.134.252.133 255.255.255.255
+ network-object 149.134.128.254 255.255.255.255
+ network-object 149.134.129.254 255.255.255.255
+object-group network swift-switch-out
+ network-object 149.134.244.129 255.255.255.255
+ network-object 149.134.244.130 255.255.255.255
+ network-object 149.134.252.4 255.255.255.255
+ network-object 149.134.252.6 255.255.255.255
+ network-object 149.134.252.128 255.255.255.255
+ network-object 149.134.252.129 255.255.255.255
+object-group network swift-dialup
+ network-object 149.134.255.254 255.255.255.255
+object-group service msih-ports-udp udp
+ port-object range 9000 9059
+ port-object range 48200 48200
+ port-object range 48100 48105
+ port-object range 135 135
+ port-object range 48002 48009
+ port-object range 6500 6501
+ port-object range 1029 1029
+object-group service msih-ports-udp-casmf udp
+ port-object range 5101 5105
+ port-object range 5206 5207
+object-group service swift-dns-port udp
+ port-object range domain domain
+object-group service symantec-av udp
+ port-object range 38293 38293
+ port-object range 2967 2967
+object-group service FMSIH-OUT-TCP tcp
+ port-object range 9100 9106
+ port-object range 6500 6501
+object-group service FMSIH-OUT-TCP-CASMF tcp
+ group-object FMSIH-OUT-TCP
+ port-object range 5206 5207
+ port-object range 5101 5105
+object-group service FMSIH-PRINT-TCP tcp
+ port-object range 9100 9100
+object-group service msih-ports-tcp tcp
+ port-object range 9000 9059
+ port-object range 48200 48200
+ port-object range 48100 48105
+ port-object range 135 135
+ port-object range 48009 48009
+ port-object range 6500 6501
+ port-object range 1029 1029
+object-group service msih-ports-tcp-casmf tcp
+ group-object msih-ports-tcp
+ port-object range 5206 5207
+ port-object range 5101 5105
+object-group service snmp tcp-udp
+ port-object range 161 162
+object-group service doubletake tcp-udp
+ port-object range 1105 1106
+ port-object range 1100 1100
+object-group service msih-ports tcp-udp
+ port-object range 48200 48200
+ port-object range 48100 48105
+ port-object range 135 135
+ port-object range 48009 48009
+ port-object range 6500 6501
+ port-object range 9000 9049
+ port-object range 1029 1029
+object-group service shared-ports tcp
+ port-object range 445 445
+ port-object range netbios-ssn netbios-ssn
+ port-object range 137 137
+object-group service swift-49168-9 tcp
+ port-object range 49168 49169
+object-group service swift-cara-port tcp
+ port-object range 709 709
+object-group service swift-dialup-port tcp
+ port-object eq www
+object-group service swift-direcotry-ports tcp
+ port-object range 1400 1409
+ port-object range 1600 1609
+ port-object range 1100 1109
+ port-object range ldap ldap
+ port-object range 1300 1309
+ port-object range 1500 1509
+ port-object range 1200 1209
+object-group service swift-myswift-webserver-port tcp
+ port-object range https https
+object-group service swift-rvs-port tcp
+ port-object range 49170 49170
+object-group service swift-secrets-webserver-port tcp
+ port-object range 49172 49172
+object-group service swift-switch-ports tcp
+ port-object range 50153 50190
+ port-object range 52100 52399
+ port-object range 49500 49510
+ port-object range 50200 50806
+object-group service swift-web-connector-ports tcp
+ port-object eq www
+ port-object range 49171 49171
+object-group service vnc-port tcp
+ port-object range 5800 5800
+ port-object range 5900 5900
+object-group network sag-srv-test
+ network-object sag-test 255.255.255.255
+object-group network sag-servers-prod_ref
+ network-object 192.168.246.25 255.255.255.255
+ network-object 192.168.246.20 255.255.255.255
+object-group network ensb-dxb-nw
+ network-object ensb-dxb-nw 255.255.255.0
+object-group service web-ports tcp
+ port-object eq www
+ port-object eq https
+object-group network mgmt-srv-group
+ network-object mgmt-srv1 255.255.255.255
+object-group network mgmt-srv-group_ref
+ network-object 192.168.246.110 255.255.255.255
+object-group network swp-srvrs
+ network-object swp-srvr-cluster 255.255.255.255
+object-group service swp-tcp-ports tcp
+ port-object range 48600 48600
+ port-object eq https
+object-group network swp-srvrs_ref
+ network-object 192.168.246.30 255.255.255.255
+object-group network mgmt-srv-group_ref_1
+ network-object 192.168.219.10 255.255.255.255
+object-group network sag-servers-prod_ref_1
+ network-object 192.168.219.25 255.255.255.255
+ network-object 192.168.219.20 255.255.255.255
+access-list clients_access_in extended permit ip any any inactive
+access-list clients_access_in extended permit icmp any any
+access-list clients_access_in extended permit tcp any object-group sag-servers-p
+rod_ref eq 48002
+access-list clients_access_in extended permit tcp any object-group sag-servers-p
+rod_ref eq 48003
+access-list clients_access_in remark ADD MSAEED 18JUL@)11
+access-list clients_access_in extended permit tcp any object-group swp-srvrs_ref
+ object-group swp-tcp-ports
+access-list clients_access_in extended permit tcp object-group ensb-dxb-nw objec
+t-group sag-servers-prod_ref eq 3389
+access-list clients_access_in extended permit tcp ensb-mgmt-nw 255.255.255.0 obj
+ect-group sag-servers-prod_ref eq 3389
+access-list clients_access_in extended permit tcp ensb-mgmt-nw 255.255.255.0 obj
+ect-group swp-srvrs_ref eq 3389
+access-list clients_access_in extended permit tcp ensb-mgmt-nw 255.255.255.0 obj
+ect-group mgmt-srv-group_ref eq 3389
+access-list clients_access_in extended permit tcp ensb-support-nw 255.255.255.0
+object-group sag-servers-prod_ref eq 3389
+access-list clients_access_in extended permit tcp ensb-support-nw 255.255.255.0
+object-group mgmt-srv-group_ref eq 3389
+access-list clients_access_in extended permit tcp object-group ensb-dxb-nw any e
+q 3389
+access-list clients_access_in remark ADD MSAEED 18JUL@)11
+access-list clients_access_in extended permit icmp any object-group swp-srvrs_re
+f
+access-list sag_access_in extended permit icmp any any
+access-list sag_access_in extended permit ip any any
+access-list sag_access_in remark ADD MSAEED 18JUL2011
+access-list sag_access_in extended permit ip object-group sag-servers-prod objec
+t-group swp-srvrs
+access-list sag_access_in remark ADD MSAEED 18JUL2011
+access-list sag_access_in extended permit icmp object-group sag-servers-prod obj
+ect-group swp-srvrs
+access-list sag_access_in remark ADD MSAEED 18JUL2011
+access-list sag_access_in extended permit ip object-group mgmt-srv-group object-
+group swp-srvrs
+access-list sag_access_in remark ADD MSAEED 18JUL2011
+access-list sag_access_in extended permit icmp object-group mgmt-srv-group objec
+t-group swp-srvrs
+access-list swift_access_in extended permit ip any any
+access-list swift_access_in remark ADD MSAEED 18JUL2011
+access-list swift_access_in extended permit ip swiftnet-nw 255.255.0.0 object-gr
+oup swp-srvrs
+access-list swift_access_in remark ADD MSAEED 18JUL2011
+access-list swift_access_in extended permit icmp swiftnet-nw 255.255.0.0 object-
+group swp-srvrs
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit ip object-group swp-srvrs object-group
+ sag-servers-prod
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit icmp object-group swp-srvrs object-gro
+up sag-servers-prod_ref_1
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit ip object-group swp-srvrs object-group
+ mgmt-srv-group_ref_1
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit icmp object-group swp-srvrs object-gro
+up mgmt-srv-group_ref_1
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit ip object-group swp-srvrs swiftnet-nw
+255.255.0.0
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit icmp object-group swp-srvrs swiftnet-n
+w 255.255.0.0
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit ip object-group swp-srvrs any
+access-list dmz_access_in remark ADD by MSAEED 18JUL2011
+access-list dmz_access_in extended permit icmp object-group swp-srvrs any
+access-list dmz_pnat_inbound extended permit ip host swp-srvr-cluster swiftnet-n
+w 255.255.0.0
+access-list sag_pnat_outbound_V3 extended permit ip host sag-srv2 swiftnet-nw 25
+5.255.0.0
+pager lines 24
+logging enable
+logging standby
+logging asdm warnings
+mtu sag 1500
+mtu clients 1500
+mtu swift 1500
+mtu dmz 1500
+failover
+failover lan unit primary
+failover lan interface failover Ethernet0/3
+failover interface ip failover 10.20.0.1 255.255.255.0 standby 10.20.0.2
+asdm image disk0:/asdm506.bin
+no asdm history enable
+arp timeout 14400
+global (swift) 1 sag-srv2
+nat (dmz) 1 access-list dmz_pnat_inbound outside
+static (sag,swift) sag-srv1 sag-srv1 netmask 255.255.255.255
+static (sag,swift) sag-test sag-test netmask 255.255.255.255
+static (sag,clients) 192.168.246.22 sag-test netmask 255.255.255.255
+static (sag,clients) 192.168.246.25 sag-srv1 netmask 255.255.255.255
+static (sag,clients) 192.168.246.20 sag-srv2 netmask 255.255.255.255
+static (sag,clients) 192.168.246.110 mgmt-srv1 netmask 255.255.255.255
+static (dmz,clients) 192.168.246.30 swp-srvr-cluster netmask 255.255.255.255
+static (dmz,clients) 192.168.246.28 swp-srvr1 netmask 255.255.255.255
+static (sag,dmz) 192.168.219.25 sag-srv1 netmask 255.255.255.255
+static (sag,dmz) 192.168.219.22 sag-test netmask 255.255.255.255
+static (sag,dmz) 192.168.219.20 sag-srv2 netmask 255.255.255.255
+static (sag,dmz) 192.168.219.110 mgmt-srv1 netmask 255.255.255.255
+static (sag,swift) sag-srv2  access-list sag_pnat_outbound_V3
+access-group sag_access_in in interface sag
+access-group clients_access_in in interface clients
+access-group swift_access_in in interface swift
+access-group dmz_access_in in interface dmz
+route clients 10.82.0.0 255.255.0.0 vpn3-int 1
+route clients 0.0.0.0 0.0.0.0 vpn1-2-nsrp 1
+route swift swiftnet-nw 255.255.0.0 192.168.244.30 1
+timeout xlate 3:00:00
+timeout conn 1:00:00 half-closed 0:10:00 udp 0:02:00 icmp 0:00:02
+timeout sunrpc 0:10:00 h323 0:05:00 h225 1:00:00 mgcp 0:05:00
+timeout mgcp-pat 0:05:00 sip 0:30:00 sip_media 0:02:00
+timeout uauth 0:05:00 absolute
+http server enable
+http 192.168.202.0 255.255.255.0 sag
+http 192.168.1.0 255.255.255.0 dmz
+no snmp-server location
+no snmp-server contact
+snmp-server enable traps snmp authentication linkup linkdown coldstart
+telnet 192.168.202.0 255.255.255.0 sag
+telnet timeout 5
+ssh timeout 5
+console timeout 0
+dhcpd lease 3600
+dhcpd ping_timeout 50
+tftp-server sag mgmt-srv1 /
+Cryptochecksum:a6442190bc37addd95fdde00719002ee
+: end
+ENSBPASA1#
+
+
+
+
+ENSBPASA1# show int
+Interface Ethernet0/0 "sag", is up, line protocol is up
+  Hardware is i82546GB rev03, BW 100 Mbps
+        Auto-Duplex(Full-duplex), Auto-Speed(100 Mbps)
+        MAC address 001b.0ce2.4698, MTU 1500
+        IP address 192.168.202.1, subnet mask 255.255.255.0
+        97790164 packets input, 13420314935 bytes, 0 no buffer
+        Received 775045 broadcasts, 0 runts, 0 giants
+        0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+        0 L2 decode drops
+        105536624 packets output, 43453902145 bytes, 0 underruns
+        0 output errors, 0 collisions
+        0 late collisions, 0 deferred
+        input queue (curr/max blocks): hardware (0/0) software (0/0)
+        output queue (curr/max blocks): hardware (0/10) software (0/0)
+  Traffic Statistics for "sag":
+        97790164 packets input, 11474995521 bytes
+        105536624 packets output, 41423614565 bytes
+        296167 packets dropped
+      1 minute input rate 9 pkts/sec,  1091 bytes/sec
+      1 minute output rate 11 pkts/sec,  1084 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 10 pkts/sec,  2011 bytes/sec
+      5 minute output rate 12 pkts/sec,  1499 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface Ethernet0/1 "clients", is up, line protocol is up
+  Hardware is i82546GB rev03, BW 100 Mbps
+        Auto-Duplex(Full-duplex), Auto-Speed(100 Mbps)
+        MAC address 001b.0ce2.4699, MTU 1500
+        IP address 192.168.246.1, subnet mask 255.255.255.0
+        87317478 packets input, 38968875541 bytes, 0 no buffer
+        Received 58983 broadcasts, 0 runts, 0 giants
+        0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+        0 L2 decode drops
+        79673272 packets output, 9601731613 bytes, 0 underruns
+        0 output errors, 0 collisions
+        0 late collisions, 0 deferred
+        input queue (curr/max blocks): hardware (1/0) software (0/0)
+        output queue (curr/max blocks): hardware (0/13) software (0/0)
+  Traffic Statistics for "clients":
+        87317478 packets input, 37326932936 bytes
+        79673272 packets output, 8037363465 bytes
+        529966 packets dropped
+      1 minute input rate 8 pkts/sec,  689 bytes/sec
+      1 minute output rate 7 pkts/sec,  861 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 9 pkts/sec,  894 bytes/sec
+      5 minute output rate 8 pkts/sec,  1542 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface Ethernet0/2 "swift", is up, line protocol is up
+  Hardware is i82546GB rev03, BW 100 Mbps
+        Auto-Duplex(Full-duplex), Auto-Speed(100 Mbps)
+        MAC address 001b.0ce2.469a, MTU 1500
+        IP address 192.168.244.1, subnet mask 255.255.255.0
+        14326554 packets input, 2914757876 bytes, 0 no buffer
+        Received 12037 broadcasts, 0 runts, 0 giants
+        0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+        0 L2 decode drops
+        14890989 packets output, 2987826809 bytes, 0 underruns
+        0 output errors, 0 collisions
+        0 late collisions, 0 deferred
+        input queue (curr/max blocks): hardware (1/0) software (0/0)
+        output queue (curr/max blocks): hardware (0/6) software (0/0)
+  Traffic Statistics for "swift":
+        14326554 packets input, 2611084577 bytes
+        14890989 packets output, 2679368480 bytes
+        12130 packets dropped
+      1 minute input rate 0 pkts/sec,  189 bytes/sec
+      1 minute output rate 0 pkts/sec,  149 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 1 pkts/sec,  359 bytes/sec
+      5 minute output rate 1 pkts/sec,  397 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface Ethernet0/3 "failover", is up, line protocol is up
+  Hardware is i82546GB rev03, BW 100 Mbps
+        Auto-Duplex(Full-duplex), Auto-Speed(100 Mbps)
+        Description: LAN Failover Interface
+        MAC address 001b.0ce2.469b, MTU 1500
+        IP address 10.20.0.1, subnet mask 255.255.255.0
+        16705866 packets input, 1542463032 bytes, 0 no buffer
+        Received 985 broadcasts, 0 runts, 0 giants
+        0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+        0 L2 decode drops
+        16705900 packets output, 1587027436 bytes, 0 underruns
+        0 output errors, 0 collisions
+        0 late collisions, 0 deferred
+        input queue (curr/max blocks): hardware (0/0) software (0/0)
+        output queue (curr/max blocks): hardware (0/3) software (0/0)
+  Traffic Statistics for "failover":
+        16705866 packets input, 1241757412 bytes
+        16705900 packets output, 1286292326 bytes
+        0 packets dropped
+      1 minute input rate 1 pkts/sec,  89 bytes/sec
+      1 minute output rate 1 pkts/sec,  92 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 1 pkts/sec,  89 bytes/sec
+      5 minute output rate 1 pkts/sec,  92 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface Management0/0 "dmz", is up, line protocol is up
+  Hardware is i82557, BW 100 Mbps
+        Auto-Duplex(Full-duplex), Auto-Speed(100 Mbps)
+        MAC address 001b.0ce2.469c, MTU 1500
+        IP address 192.168.219.1, subnet mask 255.255.255.0
+        35626045 packets input, 5253746628 bytes, 0 no buffer
+        Received 17285787 broadcasts, 0 runts, 0 giants
+        0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+        0 L2 decode drops
+        16394577 packets output, 3156794667 bytes, 0 underruns
+        0 output errors, 0 collisions, 0 interface resets
+        0 babbles, 0 late collisions, 0 deferred
+        0 lost carrier, 0 no carrier
+        input queue (curr/max blocks): hardware (128/128) software (0/30)
+        output queue (curr/max blocks): hardware (0/11) software (0/1)
+  Traffic Statistics for "dmz":
+        35531013 packets input, 4726805937 bytes
+        16426219 packets output, 2866498891 bytes
+        4265107 packets dropped
+      1 minute input rate 1 pkts/sec,  293 bytes/sec
+      1 minute output rate 1 pkts/sec,  226 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 1 pkts/sec,  222 bytes/sec
+      5 minute output rate 0 pkts/sec,  177 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+ENSBPASA1#
+
+
+
+ENSBPASA1# show route
+
+S    0.0.0.0 0.0.0.0 [1/0] via vpn1-2-nsrp, clients
+C    10.20.0.0 255.255.255.0 is directly connected, failover
+S    10.82.0.0 255.255.0.0 [1/0] via vpn3-int, clients
+S    swiftnet-nw 255.255.0.0 [1/0] via 192.168.244.30, swift
+C    192.168.202.0 255.255.255.0 is directly connected, sag
+C    192.168.219.0 255.255.255.0 is directly connected, dmz
+C    192.168.244.0 255.255.255.0 is directly connected, swift
+C    192.168.246.0 255.255.255.0 is directly connected, clients
+ENSBPASA1#
+
+ENSBPASA1# show xlat
+13 in use, 34 most used
+Global 192.168.219.25 Local sag-srv1
+Global 192.168.219.22 Local sag-test
+Global 192.168.219.20 Local sag-srv2
+Global 192.168.219.110 Local mgmt-srv1
+Global sag-srv1 Local sag-srv1
+Global sag-test Local sag-test
+Global sag-srv2 Local sag-srv2
+Global 192.168.246.22 Local sag-test
+Global 192.168.246.25 Local sag-srv1
+Global 192.168.246.20 Local sag-srv2
+Global 192.168.246.110 Local mgmt-srv1
+Global 192.168.246.30 Local swp-srvr-cluster
+Global 192.168.246.28 Local swp-srvr1
+ENSBPASA1#
+
+ENSBPASA1# show failover
+Failover On
+Failover unit Primary
+Failover LAN Interface: failover Ethernet0/3 (up)
+Unit Poll frequency 1 seconds, holdtime 15 seconds
+Interface Poll frequency 15 seconds
+Interface Policy 1
+Monitored Interfaces 4 of 250 maximum
+Version: Ours 7.0(6), Mate 7.0(6)
+Last Failover at: 12:15:33 PKT Jun 6 2012
+        This host: Primary - Active
+                Active time: 13920273 (sec)
+                slot 0: ASA5510 hw/sw rev (2.0/7.0(6)) status (Up Sys)
+                slot 1: empty
+                Interface sag (192.168.202.1): Normal
+                Interface clients (192.168.246.1): Normal
+                Interface swift (192.168.244.1): Normal
+                Interface dmz (192.168.219.1): Normal (Waiting)
+        Other host: Secondary - Failed
+                Active time: 0 (sec)
+                slot 0: ASA5510 hw/sw rev (2.0/7.0(6)) status (Up Sys)
+                slot 1: empty
+                Interface sag (192.168.202.2): Normal
+                Interface clients (192.168.246.2): Normal
+                Interface swift (192.168.244.2): Normal
+                Interface dmz (0.0.0.0): No Link (Waiting)
+
+Stateful Failover Logical Update Statistics
+        Link : Unconfigured.
+
+ENSBPASA1#
+
+
+

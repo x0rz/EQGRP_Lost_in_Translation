@@ -1,0 +1,60 @@
+<Commands>
+	<!--
+		Variables:
+			%COMMAND% - the name of the command
+			%ARGS% - the arguments passed in
+			
+		<Command> and <Args> each contain one of the following items:
+			<Value>:    Some static value, taken as is
+			<Null>:     Returns a null
+			<Argument>: Contains one of the following items
+				<Format>: A String that can contain the two variables above.
+				<Split>:  Does a string parsing based off of splitting the string.  Contains:
+					<String>:  A string formatted like the above <Format> string
+					<Regex>:   The split regular expression (ex: '=' inside foo=bar)
+					<Limit>:   The maximum number of splits to make
+					<Part>:    Which part to choose (0-based index)
+					<Default>: If there are not sufficient parts.  Ex:  Part 4 of the following array:  {foo, bar}
+				
+		
+	-->
+	<Command>
+		<Name>setuser</Name>
+		<Help>Usage: setuser &lt;user&gt;
+	Sets this console's current user to &lt;user&gt;</Help>
+		<Command>
+			<Value>set</Value>
+		</Command>
+		<Args>
+			<Argument>
+				<Format>user=%ARGS%</Format>
+			</Argument>
+		</Args>
+	</Command>
+	<Command>
+		<Name>unsetuser</Name>
+		<Help>Usage: unsetuser
+	Sets this console's current user to the default</Help>
+		<Command>
+			<Value>set</Value>
+		</Command>
+		<Args>
+			<Argument>
+				<Format>user=</Format>
+			</Argument>
+		</Args>
+	</Command>
+	<Command>
+		<Name>fg</Name>
+		<Help>Usage: fg &lt;id&gt;
+	Brings a command to the foreground</Help>
+		<Command>
+			<Value>foreground</Value>
+		</Command>
+		<Args>
+			<Argument>
+				<Format>%ARGS%</Format>
+			</Argument>
+		</Args>
+	</Command>
+</Commands>

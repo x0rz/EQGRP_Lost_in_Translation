@@ -1,0 +1,17 @@
+<Plugin macro="true">
+	<Name>System</Name>
+	<Class>ds.plugin.uber.UberPlugin</Class>
+	<Description>Basic Startup stuff</Description>
+	<Logo>Macros/SystemStartup/advancedsettings.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>false</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<AllowClose>true</AllowClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+	<InitArgs>-load=Macros/SystemStartup/SystemStartup.xml</InitArgs>
+	<InitArgs>-layout=scroll</InitArgs>
+</Plugin>

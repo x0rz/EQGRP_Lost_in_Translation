@@ -1,0 +1,25 @@
+<?xml version='1.0' ?>
+
+<Egg name='Load from resource (memory)'>
+
+    <Implant>
+	<Version major='1' minor='4'/>
+	<Version major='1' minor='5'/>
+	<Version major='1' minor='6'/>
+    </Implant>
+
+    <DeliverPayload>false</DeliverPayload>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='*' minor='*'>
+		<Implant>PC_Bootstrap_resource.egg</Implant>
+		<Lp>PC_LP_Bootstrap.dll</Lp>
+	    </Version>
+	</Platform>
+
+    </Windows>
+
+</Egg>

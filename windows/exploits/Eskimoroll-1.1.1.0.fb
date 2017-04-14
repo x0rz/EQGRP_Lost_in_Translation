@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<t:config id="b312630cfabfbb7572a55a75e213eff54be451e1"
+          name="Eskimoroll"
+          version="1.1.1"
+          configversion="1.1.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+    <t:touchlist>
+        <t:plugin name="Domaintouch"
+            displayname="Domain Touch"
+            description="Eskimoroll domain information touch">
+            <t:oparam name="DomainDns" value="DomainDns"/> 
+            <t:oparam name="DomainSid" value="DomainSid"/>
+            <t:oparam name="CredentialType" value="CredentialType"/> 
+            <t:oparam name="Credential" value="Credential"/>
+            <t:oparam name="Username" value="Username"/>
+        </t:plugin>
+    </t:touchlist>
+    
+</t:config>

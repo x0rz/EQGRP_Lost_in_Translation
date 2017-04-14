@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_DllLoad_Tasking.pyo' providerType='script'>
+
+	<Command name="DllLoad" id="0">
+	
+		<Help>Loads a given library and calls a given export.</Help>
+		
+		<Input>
+			<Option name='library' optional='false'>
+				<Help>The library to send and load.</Help>
+				
+				<Argument name='local_path_to_lib' data='library'/>
+			</Option>
+
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many library bytes to send at a time.</Help>
+			</Option>
+
+			<Option name='project' optional='true'>
+				<Argument name='name' data='project'/>
+				<Help>Only search in the given project if a full path is not specified</Help>
+			</Option>
+			
+			<Option name='nowait' optional='true'>
+				<Set data='nowait' value='true'/>
+				<Help>Do not wait for the DLL to be unloaded</Help>
+			</Option>
+
+			<Option name='export' optional='false' group='export'>
+				<Argument name='name' data='export'/>
+				<Help>Specify the export name</Help>
+			</Option>
+			
+			<Option name='ordinal' optional='false' group='export'>
+				<Argument name='number' data='ordinal'/>
+				<Help>Specify the export ordinal</Help>
+			</Option>
+
+			<Option name='noexport' optional='false' group='export'>
+				<Help>Do not call an export function (leave the DLL loaded)</Help>
+			</Option>
+
+			<Option name='id' optional='true'>
+				<Argument name='processId' data='pid'/>
+				<Help>Specify the process to load the DLL into [0=current (default)]</Help>
+			</Option>
+		</Input>
+		<Output>
+			<Data name='library' type='string'/>
+			<Data name='nowait' type='bool' default='false'/>
+			<Data name='chunksize' type='uint32_t' default='900000'/>
+			<Data name='project' type='string'/>
+			<Data name='export' type='string'/>
+			<Data name='ordinal' type='uint16_t' default='0'/>
+			<Data name='pid' type='uint32_t' default='0'/>
+		</Output>
+	</Command>
+</Plugin>

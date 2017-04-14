@@ -1,0 +1,22 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31174'>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='5' minor='*'>
+		<File>aduser_Implant.dll</File>
+	    </Version>
+	    <Version major='6' minor='*'>
+		<File>aduser_Implant.dll</File>
+	    </Version>
+	</Platform>
+
+    </Windows>
+
+</Plugin>

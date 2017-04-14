@@ -1,0 +1,18 @@
+darkskyline		script DarkSkyline\DarkSkyline.eps
+ds_install		script DarkSkyline\Install.eps tdip
+ds_uninstall		script DarkSkyline\Uninstall.eps tdip
+ds_load			driverload -name tdip
+ds_unload		driverunload -name tdip
+ds_verify		script DarkSkyline\VerifyInstall.eps tdip
+ds_running		script DarkSkyline\VerifyRunning.eps tdip
+ds_status		script DarkSkyline\GetStatus.eps tdip
+ds_getfilter		packetscan -name tdip -get
+ds_setfilter		script DarkSkyline\SetFilter.eps tdip
+ds_setmaxsize		script DarkSkyline\SetMaxFileSize.eps tdip
+ds_disable		packetscan -name tdip -control disable
+ds_enable		packetscan -name tdip -control enable
+ds_start		packetscan -name tdip -control start
+ds_stop			packetscan -name tdip -control stop
+ds_getcapture		script DarkSkyline\HandleCapture.eps tdip get
+ds_deletecapture	script DarkSkyline\HandleCapture.eps tdip delete
+ds_parsecapture		script DarkSkyline\ParseCapture.eps

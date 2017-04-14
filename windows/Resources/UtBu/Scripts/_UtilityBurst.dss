@@ -1,0 +1,127 @@
+#--------------------------------------------------------
+# File: UtilityBurst.dss
+#
+# Wrapper script for UtilityBurst tools
+#
+#--------------------------------------------------------
+@include "_LpHelperFunctions.dsi";
+@include "_Menu.dsi";
+@include "windows/_DriverIncludes.dsi";
+@include "_CommandLine.dsi";
+@include "_UtilityBurstFunctions.dsi";
+@include "_Xml.dsi";
+
+@echo off;
+
+string %menu, %params;
+
+if (!_ParseCommandLine($argc, $argv, %params))
+{
+	return false;
+}
+
+%params{'project'}		= "UtBu";
+if (_IsWindowsNt4())
+{
+	%params{'localName'}	= "mrxsmbmg_nt4.sys";
+}
+else
+{
+	%params{'localName'}	= "mrxsmbmg.sys";
+}
+%params{'driverName'}	= "mrxsmbmg";
+%params{'version'}		= GetProjectVersion();
+if (!defined(%params{'quiet'}))
+{
+	%params{'quiet'} 		= "false";
+}
+# defaults
+
+_RecordToolUse(%params{'project'}, %params{'version'});
+
+# create menu
+if (!(
+	_CreateMenu( %menu, %params{'version'},	%params{'hmenu'} ) && defined( %params{'hmenu'} ) &&
+	_SetHeader ( %menu, %params{'hmenu'},	"UtBuHeader" ) && 
+	_AddSection( %menu, %params{'hmenu'},	"Installation Commands", %params{'hsInstall'} ) && defined( %params{'hsInstall'} ) &&
+	(
+		_AddOption ( %menu, %params{'hsInstall'}, "Change driver name",			"ChangeDriverName"		) && 
+		_AddOption ( %menu, %params{'hsInstall'}, "Install tools",				"InstallTools"			) && 
+		_AddOption ( %menu, %params{'hsInstall'}, "Uninstall tools",			"UninstallTools"		) && 
+		_AddOption ( %menu, %params{'hsInstall'}, "Load driver",				"LoadDriver"			) && 
+		_AddOption ( %menu, %params{'hsInstall'}, "Unload driver", 				"UnloadDriver"			) && 
+		_AddOption ( %menu, %params{'hsInstall'}, "Verify Install", 			"VerifyInstall"		 	) && 
+		_AddOption ( %menu, %params{'hsInstall'}, "Verify driver is running",	"VerifyDriverIsRunning" ) && 
+		_AddOption ( %menu, %params{'hsInstall'}, "Check driver status",		"CheckDriverStatus"	 	)
+	)))
+{
+	echo("*** Unable to create %params{'project'} menu ***", ERROR);
+	return false;
+}
+
+if (defined( %params{'name'}))
+{
+	%params{'driverName'} = %params{'name'};
+}
+if (defined(%params{'action'}))
+{
+	if (defined(%params{'silent'}) && <bool>%params{'silent'})
+	{
+		@quiet on;
+		%params{'quiet'} = "true";
+	}
+	
+	bool $cont;
+	if (%params{'action'} == "INSTALL")
+	{
+		return InstallTools(%menu, %params, "", $cont);
+	}
+	else if (%params{'action'} == "UNINSTALL")
+	{
+		return UninstallTools(%menu, %params, "", $cont);
+	}
+	else if (%params{'action'} == "LOAD")
+	{
+		return LoadDriver(%menu, %params, "", $cont);
+	}
+	else if (%params{'action'} == "UNLOAD")
+	{
+		return UnloadDriver(%menu, %params, "", $cont);
+	}
+	else if (%params{'action'} == "VERIFYINSTALL")
+	{
+		return VerifyInstall(%menu, %params, "", $cont);
+	}
+	else if (%params{'action'} == "VERIFYRUNNING")
+	{
+		return VerifyDriverIsRunning(%menu, %params, "", $cont);
+	}
+	else if (%params{'action'} == "STATUS")
+	{
+		return CheckDriverStatus(%menu, %params, "", $cont);
+	}
+	else
+	{
+		return !_DisplayHelp();
+	}	
+}
+
+return _ExecuteMenu(%menu, %params{'hmenu'}, %params);
+
+#-----------------------------------------------------------------------------------------
+sub(string) GetProjectVersion()
+{
+	string $resDir;
+	if (_GetLpResourcesDirectory($resDir))
+	{
+		string $xmlFile = "$resDir/UtBu/Version/UtBu_Version.xml";
+		
+		_XmlElement @version;
+		if (_XmlReadFile($xmlFile, "Version", @version))
+		{
+			return @version.$text;
+		}
+	}
+	
+	return "UtBu 0.0.0.0";
+}

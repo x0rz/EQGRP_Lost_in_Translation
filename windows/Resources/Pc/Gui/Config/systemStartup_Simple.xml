@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<Plugin pluginClass="ddb.pc.plugin.helper.Helper" pluginName="PeddleCheap" visible="true">
+		<InitArgs></InitArgs>
+	</Plugin>
+
+</StartupConfig>

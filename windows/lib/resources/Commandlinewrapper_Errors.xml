@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config id="7e3cd2ac3c673ac75e9ea6ff5ddbfd8eceb3ffdc" configversion="1.0.1.0"
+    name="Commandlinewrapper" version="1.0.1"
+    xmlns="urn:trch" schemaversion="2.1.0">
+  <errors>
+      <errorcode name="COLI_ERROR_UNKNOWN" value="EDF_ERROR_UNKNOWN"
+          description=""/> 
+      <errorcode name="COLI_ERROR_NOMEM" value="EDF_ERROR_NOMEM"
+          description=""/> 
+      <errorcode name="COLI_ERROR_WRONG_CONFIG" value="17"
+          description="Incorrect configuration file passed to plugin"/> 
+      <errorcode name="COLI_ERROR_RENDEZVOUS" value="18"
+          description="Socket transfer error"/> 
+  </errors>
+</config>

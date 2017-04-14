@@ -1,0 +1,67 @@
+@include "_LpHelperFunctions.dsi";
+
+# Create a Dropbox if it doesn't exist
+sub CreateDropBox(IN string $dropboxName, OUT string $pathToDropbox) {
+	string $logsDir;
+	_GetLpLogsDirectory($logsDir);
+
+	if (!`local script windows\\dirwrapper.dss -args "$logsDir\\Dropbox"`) {
+		`local mkdir "$logsDir\\Dropbox"`;
+	}
+	
+	if (!`local script windows\\dirwrapper.dss -args "$logsDir\\Dropbox\\$dropboxName"`) {
+		`local mkdir "$logsDir\\Dropbox\\$dropboxName"`;
+	}
+
+	$pathToDropbox = "$logsDir\\Dropbox\\$dropboxName";
+
+}
+
+#copy a local file to the dropbox, giving it a new, specified name
+sub CopyLocalFileToDropbox(IN string $dropboxName, IN string $dstFileName, IN string $srcFile) {
+	string $pathToDropbox;
+	CreateDropBox($dropboxName, $pathToDropbox);
+
+	`local copy "$srcFile" "$pathToDropbox\\$dstFileName"`;
+
+}
+
+#Copy a local file to the dropbox, maintaining its existing name
+sub CopyLocalFileToDropbox(IN string $dropboxName, IN string $srcFile) {
+	string $path;
+	SplitPath($srcFile, $path);
+	#take off the .EP extension
+	string $name;
+	RegExSplit(".EP", $path[1], 0, $name);
+	CopyLocalFileToDropbox($dropboxName, $name[0], $srcFile);
+}
+
+#move a local file to dropbox, giving it a new, specified name
+sub MoveLocalFileToDropbox(IN string $dropboxName, IN string $dstFileName, IN string $srcFile) {
+	string $pathToDropbox;
+	CreateDropBox($dropboxName, $pathToDropbox);
+
+	`local move "$srcFile" "$pathToDropbox\\$dstFileName"`;
+
+}
+
+#Move a local file to the dropbox, maintaining its existing name
+sub MoveLocalFileToDropbox(IN string $dropboxName, IN string $srcFile) {
+	string $path;
+	SplitPath($srcFile, $path);
+	#take off the .EP extension
+	string $name;
+	RegExSplit(".EP", $path[1], 0, $name);
+	MoveLocalFileToDropbox($dropboxName, $name[0], $srcFile);
+}
+
+sub AppendFileInDropbox(IN string $dropboxName, IN string $fileName, IN string $lines) {
+	string $pathToDropbox;
+	CreateDropBox($dropboxName, $pathToDropbox);
+
+	WriteFile("$pathToDropbox\\$fileName", true, $lines);
+}
+
+sub AppendFileInDropbox(IN string $dropboxName, IN string $lines) {
+	AppendFileInDropbox($dropboxName, "default.txt", $lines);
+}

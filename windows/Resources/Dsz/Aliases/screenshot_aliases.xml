@@ -1,0 +1,26 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>screenshot</Name>
+		<ReplaceBeforeArgs>python Screenshot/_Screenshot.pyo -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -quiet</ReplaceAfterArgs>
+
+		<Help>screenshot</Help>
+		<Help>	  [-res [default|high|low|medium]]</Help>
+		<Help>		  Desired resolution</Help>
+		<Help>	  [-format [bmp|default|gif|jpeg|png]]</Help>
+		<Help>		  Desired file format</Help>
+		<Help>	  [-wnd &lt;handle&gt;]</Help>
+		<Help>		  Window to capture (entire desktop by default)</Help>
+		<Help>	  [-force]</Help>
+		<Help>		  Force window capture even if window is minimized</Help>
+		
+		<Options>
+			<Option>res</Option>
+			<Option>format</Option>
+			<Option>wnd</Option>
+			<Option>force</Option>
+		</Options>
+	</Alias>
+</Aliases>

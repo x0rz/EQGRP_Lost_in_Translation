@@ -1,0 +1,7 @@
+debug			lpsetenv -option debug -value
+storeplugins		lpsetenv -option storeplugins -value
+usefile			lpsetenv -option usefile -value
+pluginkey		lpsetenv -option pluginkey -value
+tab_completion		lpsetenv -option tab_completion -value
+setconsoleuser		user=0 lpsetenv -option _CONSOLE_USER -value
+unsetconsoleuser	user=0 lpsetenv -option _CONSOLE_USER -delete

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<StartupConfig>
+	<!-- script editor -->
+	<Plugin pluginClass="ddb.dsz.plugin.scripteditor.ScriptEditor" pluginName="Script Editor" />
+	<!-- variable pane -->
+	<Plugin pluginClass="ddb.dsz.plugin.logviewer.LogViewer" pluginName="Command Logs">
+		<InitArgs>-developer</InitArgs>
+	</Plugin>
+	<!-- validation pane -->
+	
+	<Plugin pluginClass="ddb.dsz.plugin.verifier.Verifier" pluginName="Verifier" platform="winnt">
+		<InitArgs>-developer</InitArgs>
+		<InitArgs>-maxDefault=25000000</InitArgs>
+	</Plugin>
+</StartupConfig>

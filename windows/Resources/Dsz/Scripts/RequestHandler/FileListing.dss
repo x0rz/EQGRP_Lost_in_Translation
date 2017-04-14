@@ -1,0 +1,94 @@
+@include "_RequestIncludes.dsi";
+@include "_CommandLine.dsi";
+@include "_Paths.dsi";
+#@echo off;
+
+string %params;
+
+if (!_ParseCommandLine($ARGC, $ARGV, %params, true)) {
+	echo "Unable to parse commandline";
+	return false;
+}
+
+# verify that we have one of full, path, or mask
+if (!defined(%params{'full'}) &&
+	!defined(%params{'path'}) &&
+	!defined(%params{'mask'})) {
+	echo "At least one of -full, -path, or -mask is required";
+	return false;
+}
+
+if defined(%params{'path'}) {
+	_CleanPath(%params{'path'});
+}
+
+if defined(%params{'full'}) {
+	_CleanPath(%params{'path'});
+}
+
+# verify that if full is defined, neither path or mask are
+if (defined(%params{'full'}) &&
+	(defined(%params{'path'}) || defined(%params{'mask'}))) {
+	echo "-full is incompatible with either -path or -mask";
+	return false;
+}
+
+string $command = 'dir ';
+if (defined(%params{'full'})) {
+	string $path = %params{'full'};
+	$command = "$command \"$path\"";
+} else if (defined(%params{'path'}) && defined(%params{'mask'})) {
+	
+	$command = "$command -path \"%params{'path'}\" -mask \"%params{'mask'}\"";
+	echo "%params{'path'}";
+} else {
+	if (defined(%params{'path'})) {
+		string $path = %params{'path'};
+		$command = "$command -path \"$path\"";
+	}
+	if (defined(%params{'mask'})) {
+		$command = "$command -mask \"%params{'mask'}\"";
+	}
+}
+
+if (defined(%params{'recursive'})) {
+	$command = "$command -recursive";
+}
+
+if (defined(%params{'time'})) {
+	string $time = %params{'time'};
+	$command = "$command -time $time";
+}
+
+if (defined(%params{'age'})) {
+	string $age = %params{'age'};
+	$command = "$command -age $age";
+}
+
+if (defined(%params{'after'})) {
+	string $after = %params{'after'};
+	$command = "$command -after \"$after\"";
+}
+
+if (defined(%params{'before'})) {
+	string $before = %params{'before'};
+	$command = "$command -after \"$before\"";
+}
+
+if (defined(%params{'max'})) {
+	string $max = %params{'max'};
+	$command = "$command -max $max";
+}
+
+if (defined(%params{'extra'})) {
+	string $extra = %params{'extra'};
+	$command = "$command $extra";
+}
+
+string $prefix = _GetUserPrefix();
+echo "$prefix$command";
+
+#_WaitForOpening();
+bool $bRet = `$prefix$command`;
+#_TaskFinished();
+return $bRet;

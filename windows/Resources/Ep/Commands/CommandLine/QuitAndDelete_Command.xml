@@ -1,0 +1,18 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='26' name='QuitAndDelete'>
+
+    <Help>Terminates the current connection.</Help>
+    <Help>Short Term Implant:</Help>
+    <Help>    The implant will attempt to delete itself.</Help>
+    <Help>Long Term Implant:</Help>
+    <Help>    The implant is not affected.</Help>
+
+    <Input/>
+    <Output/>
+
+  </Command>
+
+</Plugin>

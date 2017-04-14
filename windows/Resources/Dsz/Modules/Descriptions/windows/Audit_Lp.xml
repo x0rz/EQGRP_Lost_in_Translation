@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<Module name="Audit_Lp" id="411" script="Tasking/Mcl_Cmd_Audit_Tasking.pyo">
+
+	<Interfaces>
+		<Interface provider="0x0101000b" id='0x01c10032' />
+	</Interfaces>
+
+	<Dependencies>
+		<Remote>Audit_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file">i386-winnt-vc9/release/Audit_Lp.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

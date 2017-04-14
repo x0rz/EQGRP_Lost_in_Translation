@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_Objects_Tasking.pyo" providerType="script">
+	
+    <Command name="Objects" id="0">
+        <Help>Queries the Windows Object Manager</Help>
+
+        <Input>
+			<Option name='path' optional='true'>
+				<Help>Start the query from a deeper directory then root (i.e. \BaseNamedObjects)</Help>
+				
+				<Argument name='location' data='path'/>
+			</Option>
+
+			<Option name='recursive' optional='true'>
+				<Set data='recursive' value='true'/>
+			</Option>
+		</Input>
+
+        <Output>
+			<Data name='path' type='string'/>
+			<Data name='recursive' type='bool' default='false'/>
+		</Output>
+    </Command>
+	
+</Plugin>

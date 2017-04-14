@@ -1,0 +1,57 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>periodic</Name>
+		<ReplaceBeforeArgs>python windows\periodic.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: periodic [-h] [-f] [-i] [-n] [-p period] [ command to run ]
+--period is the time between each command run.
+  Time ranges (e.g. 5-25) will be randomized. Decimals are allowed.
+  You can specify the period as: 5, 5-10, 5-10m, 30s, 30-60s, 4h, 1-2h, etc.
+--foreground is useful for allowing you to see the output in your terminal
+--ignore-errors to not stop on an error from the child command, 
+  i.e. when a ping fails
+--count is the maximum number of times periodic should run your command
+--max-runtime is the maximum amount of time the periodic script will run 
+By default, periodic waits for each command to finish before starting the 
+  sleep timer. Use --no-wait for long running commands when you want to ensure 
+  they spawn at the specified period, no matter how long each command takes. 
+  Be careful when using this, you could really bog down the host or DSZ! 
+If your command string requires double-quotes, use single-quotes instead and I'll replace them:
+  e.g. periodic -p 1 log dir 'C:\Documents and Settings\joe\Desktop\*'
+   [-p, --period period] (Optional, default 10-15 minutes)
+	  The period at which to run the command
+   [-f, --foreground] (Optional, default False)
+      Don't background the main periodic command, keep output on the screen
+   [-i, --ignore-errors] (Optional, default False)
+      Don't stop on an error from the child command
+   [-n, --no-wait] (Optional, default False)
+      Don't wait for the command to finish, run each command asynchronously
+   [-c, --count] (Optional, default None)
+      Max number of times the command should run
+   [-t, --max-runtime] (Optional, default None)
+      Max runtime of the periodic command
+   [command string] (Optional)
+	  The DANDERSPRITZ command to run periodically
+If no arguments are supplied, the operator is prompted for the command to run at the default period. 
+Run with a -h for some example commands.
+</Help>
+<Options>
+    <Option>h</Option>
+    <Option>-help</Option>
+    <Option>p</Option>
+    <Option>-period</Option>
+    <Option>n</Option>
+    <Option>-no-wait</Option>
+    <Option>f</Option>
+    <Option>-foreground</Option>
+    <Option>i</Option>
+    <Option>-ignore-errors</Option>
+    <Option>c</Option>
+    <Option>-count</Option>
+    <Option>t</Option>
+    <Option>-max-runtime</Option>
+</Options>
+  </Alias>
+</Aliases>

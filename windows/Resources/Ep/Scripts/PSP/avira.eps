@@ -1,0 +1,85 @@
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+string $version;
+string $name = "";
+
+echo "Starting Avira configuration change check";
+@echo off;
+@record on;
+# Check Avira versions
+# Checking in decending order in case of upgrades
+if (`regquery -hive L -subkey "software\\avira\\antivir personaledition classic"`) {
+	echo "Current Version: Avira AntiVir Personal Edition Classic";
+		$version = "PersonalEdition Classic";
+		antivir($version, "");
+
+}else if (`regquery -hive L -subkey "software\\avira\\antivir personaledition premium"`) {
+	echo "Current Version: Avira AntiVir Personal Edition Premium";
+		$version = "PersonalEdition Premium";
+		antivir($version, "");
+
+}else if (`regquery -hive L -subkey "software\\avira\\antivir workstation"`) {
+	echo "Current Version: Avira AntiVir Workstation";
+		$version = "Workstation";
+		antivir($version, "");
+}else if (`regquery -hive L -subkey "software\\avira\\premium security suite"`) {
+	echo "Current Version: Avira AntiVir Premium Security Suite";
+		$version = "Premium Security Suite";
+		antivir($version, "");
+}else if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Avira AntiVir Desktop" -value DisplayVersion`) {
+		$version = getCmdData("value_data");
+		`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Avira AntiVir Desktop" -value DisplayName`;
+		$name = getCmdData("value_data");
+		antivir($version, $name);		
+}else {
+	echo "Current Version: Unknown!";
+	# We don't know what it is lets default to safe mode
+	safety();
+	if (prompt "Pull Avira registry information?") {
+		`background regquery -hive L -subkey "software\\avira" -recursive`;
+	} else {
+		echo "Please reconsider so we can fingerprint this...";
+	}
+}
+@record off;
+
+sub safety() {
+	SetEnv("NOPROCINFO", "TRUE");
+}
+
+sub antivir(IN string $version, IN string $name){
+	@record on;
+	#The struct is defined in PSPHelpers.epm
+	metaData @metaData;
+	#initialize the struct
+	init(@metaData);
+
+	if(@metaData.$history){
+		if(checkConfig("avira:$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+	
+	echo "Writing PSP Metadata information to pspInformation.txt";
+
+	# Don't have much to put here at the moment...	
+	@metaData.$vendor = "Avira";
+	if($name == ""){
+		@metaData.$product = "AntiVir";
+	} else {
+		@metaData.$product = $name;
+	}
+	@metaData.$version = $version;
+
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: @metaData.$product (@metaData.$version)";
+}
+

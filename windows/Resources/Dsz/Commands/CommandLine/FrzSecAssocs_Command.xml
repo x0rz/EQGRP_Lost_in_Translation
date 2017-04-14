@@ -1,0 +1,125 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x0101200b'>
+
+	<Command id='3' name='FrzSecAssocs'>
+
+		<Help>Manipulates FRZ security associations</Help>
+
+		<Input>
+			<Option name='list' optional='false' group='action'>
+				<Help>Display security associations</Help>
+				<Set data='action' value='0'/>
+
+				<Reject>keyexchange</Reject>
+				<Reject>keyupdate</Reject>
+				<Reject>verification</Reject>
+				<Reject>privacy</Reject>
+				<Reject>sequenceNumber</Reject>
+				<Reject>flagSequenceCycle</Reject>
+				<Reject>flagUseReplayProtection</Reject>				
+			</Option>
+			
+			<Option name='add' optional='false' group='action'>
+				<Help>Adds a security association</Help>
+				<Set data='action' value='1'/>
+
+				<Require>addresses</Require>
+				<Require>verification</Require>
+				<Require>privacy</Require>
+			</Option>
+
+			<Option name='delete' optional='false' group='action'>
+				<Help>Deletes a security association</Help>
+				<Set data='action' value='2'/>
+
+				<Require>addresses</Require>
+			</Option>
+
+			<Option name='createKeys' optional='false' group='action'>
+				<Help>Creates keys for a security association</Help>
+				<Set data='action' value='3'/>
+
+				<Require>addresses</Require>
+			</Option>
+			
+			<Option name='addresses' optional='true'>
+				<Help>Specify addresses</Help>
+				<Argument name='srcAddr' data='srcAddr'/>
+				<Argument name='dstAddr' data='dstAddr'/>
+			</Option>
+
+			<Option name='keyexchange' optional='true'>
+				<Help>Specify key exchange information</Help>
+				<Argument name='provider' data='keyExchangeProvider'/>
+				<Argument name='params' data='keyExchangeParams' optional='true'/>
+			</Option>
+
+			<Option name='keyupdate' optional='true'>
+				<Help>Specify key update information</Help>
+				<Argument name='provider' data='keyUpdateProvider'/>
+				<Argument name='params' data='keyUpdateParams' optional='true'/>
+			</Option>
+			
+			<Option name='verification' optional='true'>
+				<Help>Specify verification information</Help>
+				<Argument name='type' optional='true'>
+					<Value string='integrity'>
+						<Set data='verifyType' value='0'/>
+					</Value>
+					<Value string='authentication'>
+						<Set data='verifyType' value='1'/>
+					</Value>
+				</Argument>
+				<Argument name='provider' data='verifyProvider'/>
+				<Argument name='params' data='verifyParams' optional='true'/>
+			</Option>
+
+			<Option name='privacy' optional='true'>
+				<Help>Specify privacy information</Help>
+				<Argument name='provider' data='privacyProvider'/>
+				<Argument name='params' data='privacyParams' optional='true'/>
+			</Option>
+
+			<Option name='sequenceNumber' optional='true'>
+				<Help>Specify sequence number information</Help>
+				<Argument name='initial_value' data='sequenceFirst'/>
+				<Argument name='max_value' data='sequenceMax'/>
+			</Option>
+			
+			<Option name='flagReceive' optional='true'>
+				<Set data='flagReceive' value='true'/>
+			</Option>
+
+			<Option name='flagSequenceCycle' optional='true'>
+				<Set data='flagSequenceCycle' value='true'/>
+			</Option>
+
+			<Option name='flagUseReplayProtection' optional='true'>
+				<Set data='flagUseReplayProtection' value='true'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='action' type='uint8_t' default='0'/>
+			<Data name='srcAddr' type='cpaddr'/>
+			<Data name='dstAddr' type='cpaddr'/>
+			<Data name='keyExchangeProvider' type='uint32_t' default='0'/>
+			<Data name='keyExchangeParams' type='bytearray'/>
+			<Data name='keyUpdateProvider' type='uint32_t' default='0'/>
+			<Data name='keyUpdateParams' type='bytearray'/>
+			<Data name='verifyType' type='uint8_t'/>
+			<Data name='verifyProvider' type='uint32_t' default='0'/>
+			<Data name='verifyParams' type='bytearray'/>
+			<Data name='privacyProvider' type='uint32_t' default='0'/>
+			<Data name='privacyParams' type='bytearray'/>
+			<Data name='sequenceFirst' type='uint32_t' default='0'/>
+			<Data name='sequenceMax' type='uint32_t' default='0x7FFFFFFF'/>
+			<Data name='flagSequenceCycle' type='bool' default='false'/>
+			<Data name='flagReceive' type='bool' default='false'/>
+			<Data name='flagUseReplayProtection' type='bool' default='false'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

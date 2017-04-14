@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='ModuleToggle/_ModuleToggle.pyo' providerType='script'>
+
+	<Command name="ModuleToggle" id="0">
+		<Help>Changes implementation modules</Help>
+		
+		<Input>
+			<Option name="system">
+				<Help>The system to examine or change</Help>
+				<Argument name="name" data="systemName" />
+			</Option>
+
+			<Option name="list" optional="false" group="action">
+				<Help>Lists available systems, or available implementations if -system was specified</Help>
+				<Set data="action" value="1" />
+			</Option>
+
+			<Option name="set" optional="false" group="action">
+				<Help>Sets the implementation of a system</Help>
+				<Set data="action" value="2" />
+				<Argument name="impl" data="impl" />
+			</Option>
+
+			<Option name="register" optional="false" group="action">
+				<Help>Registers the implementations for a specified system</Help>
+				<Set data="action" value="3" />
+			</Option>
+
+			<Option name="silent">
+				<Help>Prevents output from being displayed</Help>
+				<Set data="silent" value="true" />
+			</Option>
+
+			<Option name="load">
+				<Help>Load the implementation</Help>
+				<Set data="load"	value="true" />
+			</Option>
+
+			<Option name="nofree">
+				<Help>Do not free any related implementations</Help>
+				<Set data="free" value="false" />
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name="systemName"		type="string"					/>
+			<Data name="action"			type="uint8_t"	default="0"		/>
+			<Data name="impl"			type="string"					/>
+			<Data name="silent"			type="bool"		default="false"	/>
+			<Data name="load"			type="bool"		default="false"	/>
+			<Data name="free"			type="bool"		default="true"	/>
+		</Output>
+	</Command>
+</Plugin>

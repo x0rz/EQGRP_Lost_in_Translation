@@ -1,0 +1,20 @@
+
+@include "_Versions.dsi";
+
+@echo off;
+
+string $os;
+if (!_GetOsFamily($os))
+{
+	echo("* Failed to get OS for uninstall", ERROR);
+	return false;
+}
+
+string $lines;
+if (!ReadFile("%_sgEnv{'script_path'}/$os/_Uninstall.dss", $lines))
+{
+	echo("* No uninstall script found for $os", ERROR);
+	return false;
+}
+
+return `script "%_sgEnv{'script_path'}/$os/_Uninstall.dss"`;

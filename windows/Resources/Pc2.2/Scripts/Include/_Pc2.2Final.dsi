@@ -1,0 +1,6 @@
+
+#----------------------------------------------------------------------------
+sub Finalize( IN string $payloadFile ) {
+	return `python Payload/_Pc2.2Prep.py -project Pc2.2 -args "-action disable -file \\"$payloadFile\\""`;
+}
+

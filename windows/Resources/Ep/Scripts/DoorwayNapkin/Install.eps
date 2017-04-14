@@ -1,0 +1,52 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of DoorwayNapkin tools
+#
+# Modifications:
+#  04/09/2004	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_GetSystemVersion.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+# check to make sure we're NT 4 Sp4 or higher
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (_GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows NT Sp4 or greater";
+    pause;
+} else if (($platformId == 1) || (($majorVersion == 4) && ($spMajorVersion < 4))) {
+    # 9x NT 4 Service pack 3 or less
+    echo "*** Target system is pre-NT Sp4. ***";
+    echo "    DoorwayNapkin is not compatible with this system";
+    return false;
+}
+
+ifnot (_DriverInstall($driver, "DoorwayNapkin", 2, 1)) {
+    return false;
+}
+
+# add extra registry key
+echo "Adding additional registry key";
+ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value DependOnService -type REG_MULTI_SZ -data "Tcpip"`) {
+    echo "    FAILED";
+    return false;
+} else {
+    echo "    SUCCESS";
+}
+
+return true;

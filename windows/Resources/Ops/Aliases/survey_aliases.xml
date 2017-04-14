@@ -1,0 +1,41 @@
+<?xml version='1.0' ?>
+<Aliases>
+		<Alias>
+		<Name>survey</Name>
+		<ReplaceBeforeArgs>python survey.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>usage: survey [-h] (-run [SURVEY] | -modify)
+              [-sections SECTION [SECTION ...]] [-override OVERRIDE]
+              [-exclude GROUP [GROUP ...]] [-include GROUP [GROUP ...]]
+              [-exclusions]
+optional arguments:
+  -h, -help            show this help message and exit
+  -run [SURVEY]        Run specified survey. Uses default if none specified.
+                        (Ops/Data/survey.xml)
+  -modify              Manipulate the settings for default survey.
+  -sections SECTION [SECTION ...]
+                        Sections for -run or -override.
+  -quiet               Suppress some framework messages, including the running
+                        commands list at the end.
+-modify options:
+  These options are only used with the -modify option.
+  -override OVERRIDE   Change the default survey file for all targets.
+  -exclude GROUP [GROUP ...]
+                        Adds the specified groups to the list of tasks to
+                        exclude when running survey configurations.
+  -include GROUP [GROUP ...]
+                        Removes the specified groups from the list of tasks to
+                        exclude when running survey configurations.
+  -exclusions          Print out a list of excluded survey groups.</Help>
+        <Options>
+            <Option>run</Option>
+            <Option>modify</Option>
+            <Option>sections</Option>
+            <Option>override</Option>
+            <Option>exclude</Option>
+            <Option>include</Option>
+            <Option>exclusions</Option>
+            <Option>quiet</Option>
+        </Options>
+	</Alias>
+</Aliases>

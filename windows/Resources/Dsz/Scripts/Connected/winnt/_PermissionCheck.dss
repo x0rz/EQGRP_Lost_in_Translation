@@ -1,0 +1,140 @@
+
+@include "_Arrays.dsi";
+@include "_VersionChecks.dsi";
+@include "windows/_Sid.dsi";
+
+@echo off;
+@quiet off;
+
+# try to determine localized name for System and Administrators
+string $system;
+_GetWellKnownSid("System", $system);
+string $admins;
+_GetWellKnownSid("Administrators", $admins);
+
+@record on;	    
+if (!`processinfo -minimal`)
+{
+	echo("* Failed to run process info", ERROR);
+   	return false;
+}
+@record off;
+
+string $user;
+if (GetCmdData("ProcessInfo::BasicInfo::User::Name", $user) && defined($user))
+{
+	if ($user == $system)
+	{
+		echo("User is SYSTEM", GOOD);
+		return true;
+	}
+}
+	
+string $groups;
+bool $useDeny;
+if (!GetCmdData("ProcessInfo::Groups::Group::Name", $groups) ||
+	!GetCmdData("ProcessInfo::Groups::Group::Attributes::GroupUseDeny", $useDeny))
+{
+	echo("* Failed to run get process information", ERROR);
+   	return false;
+}
+	
+for (int $i=0; $i < sizeof($groups); $i++)
+{
+	if ($groups[$i] == $admins)
+	{
+		if (!$useDeny[$i])
+		{
+			# already have admin
+			echo("User is ADMINISTRATOR", GOOD);
+			return true;
+		}
+		break;
+	}
+}
+	
+# if we got here, we need admin
+echo("The current process does not appear to have ADMINISTRATOR privileges", WARNING);
+echo("   (or has UAC enabled)", WARNING);
+if (prompt("Do you want to elevate?"))
+{
+	if (`getadmin`)
+	{
+		bool $rtn=true;
+		echo("");
+		echo("--Elevated to ADMINISTRATOR", GOOD);
+		
+		# adding privileges
+		if (_IsWindowsVistaOrGreater())
+		{
+			string $privileges;
+			_AppendString($privileges, "SeSecurityPrivilege");
+			_AppendString($privileges, "SeCreateGlobalPrivilege");
+			_AppendString($privileges, "SeLoadDriverPrivilege");
+			_AppendString($privileges, "SeImpersonatePrivilege");
+
+			# need to add the new permissions
+			for (int $i = 0; $i < sizeof($privileges); $i++)
+			{
+				if (`processmodify -privilege enabled_by_default -add -orig $privileges[$i]`)
+				{
+					echo("--Added permission '$privileges[$i]'", GOOD);
+				}
+				else
+				{
+					echo("--Failed to add permission '$privileges[$i]'", ERROR);
+					$rtn = false;
+				}
+			}
+			
+			# have to change into System Mandatory Level
+			string $currentLevel;
+			for (int $i = 0; $i < sizeof($groups); $i++)
+			{
+				if (RegexMatch(".* Mandatory Level", $groups[$i]))
+				{
+					$currentLevel = $groups[$i];
+					break;
+				}
+			}
+			if (!defined($currentLevel))
+			{
+				$rtn = false;
+			}
+			else if ($currentLevel != "System Mandatory Level")
+			{
+				$rtn = `processmodify -group -orig "$currentLevel" -new "System Mandatory Level"`;
+			}
+			
+			if ($rtn)
+			{
+				echo("--Setting privilege level to System Mandatory Level", GOOD);
+			}
+			else
+			{
+				echo("--Unable to Set privilege level to System Mandatory Level", ERROR);
+				$rtn = false;
+			}
+		}
+		
+		echo("");
+		return $rtn;
+	}
+	else
+	{
+		echo("");
+		echo("--Failed to elevate", ERROR);
+		echo("");
+		return false;
+	}
+}
+else
+{
+	echo("");
+	echo("--Not elevated", WARNING);
+	echo("");
+	return false;
+}
+
+# shouldn't get here
+return false;

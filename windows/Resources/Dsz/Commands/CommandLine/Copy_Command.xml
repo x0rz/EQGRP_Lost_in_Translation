@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Copy_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='Copy'>
+    
+		<Help>Copies a given file to the specified name</Help>
+		
+		<Input>
+			<Argument name='srcFile' optional='false' data='src'>
+				<Help>The file to be copied.</Help>
+			</Argument>
+			
+			<Argument name='dstFile' optional='false' data='dst'>
+				<Help>The location to which the file is to be copied.</Help>
+			</Argument>
+		</Input>
+		
+		<Output>
+			<Data name='src' type='string'/>
+			<Data name='dst' type='string'/>
+		</Output>
+	</Command>
+</Plugin>
+

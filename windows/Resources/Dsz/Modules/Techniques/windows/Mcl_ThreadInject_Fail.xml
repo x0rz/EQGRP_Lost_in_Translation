@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Technique name='Mcl_ThreadInject' id='121'>
+
+	<Implementation value='-1'/>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+
+	<Architecture type='x64'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+	
+</Technique>

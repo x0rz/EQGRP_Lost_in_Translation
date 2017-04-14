@@ -1,0 +1,11 @@
+@echo off;
+string $lastopdate;
+if ($argc > 1) {
+	$lastopdate=$argv[1];
+} else {
+	$lastopdate=GetInput("What was the last successful op date?");
+	echo "Last Op Date: $lastopdate";
+}
+`lpsetenv -option lastopdate -value "$lastopdate"`;
+@echo on;
+return `script simple3.eps`;

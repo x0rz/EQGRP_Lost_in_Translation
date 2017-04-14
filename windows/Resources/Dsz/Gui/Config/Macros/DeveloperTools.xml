@@ -1,0 +1,17 @@
+<Plugin macro="true">
+	<Name>Developer Tools</Name>
+	<Class>ds.plugin.uber.UberPlugin</Class>
+	<Description>A set of tools for a plugin or script developer</Description>
+	<Logo>Macros/DeveloperTools/advanced-directory.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>true</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<AllowClose>true</AllowClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+	<InitArgs>-load=Macros/DeveloperTools/plugins.xml</InitArgs>
+	<InitArgs>-layout=wrap</InitArgs>
+</Plugin>

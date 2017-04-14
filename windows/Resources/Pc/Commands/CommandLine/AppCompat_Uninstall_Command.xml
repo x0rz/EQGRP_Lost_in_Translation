@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_AppCompat_Tasking.pyo" providerType="script">
+
+    <Command name="appcompat_uninstall" id="1">
+    
+		<Help>Remove registry data installed via Application Compatibility method.</Help>
+
+		<Input>
+			<Option name='remotelibname' optional='false' group='name'>
+				<Argument name='value' data='remotelibname'/>
+			</Option>
+			<Option name='procname' optional='false' group='name'>
+				<Argument name='value' data='procname'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='procname' type='string'/>
+			<Data name='remotelibname' type='string'/>
+		</Output>
+    </Command>
+</Plugin>

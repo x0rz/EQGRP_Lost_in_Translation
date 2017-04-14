@@ -1,0 +1,89 @@
+@include "_Arrays.dsi";
+
+#----------------------------------------------------
+# _sqlOpen
+#	This subroutine opens up a database connection
+#----------------------------------------------------
+sub _sqlOpen(IN STRING $pathAndName, OUT INT $handle)
+{
+	#$a = 1;
+	bool $retVal = false;
+	@record on;
+		
+	if(`local database -open "$pathAndName"`) {
+		if(GetCmdData("resultitem::handle", $handle)) {
+			$retVal = true;
+		}
+	}
+	
+	
+	@record off;
+	return $retVal;
+}
+# END _sqlOpen
+
+
+
+#----------------------------------------------------
+# _sqlClose
+#	This subroutine closes a database connection
+#----------------------------------------------------
+sub _sqlClose(IN INT $handle)
+{
+	return `local database -close $handle`;
+}
+# END _sqlClose
+
+#----------------------------------------------------
+# _sqlExec
+#	This subroutine executes a database statement
+#	Don't forget to escape quotation marks
+#	- "string" should come in as \"string\"
+#----------------------------------------------------
+sub _sqlExec( IN INT $handle, IN STRING $sql, OUT string %tableResult )
+{
+	string $exec = "";
+	for( int $i=0; $i < sizeof($sql); $i++ ) {
+		if(strlen($exec) > 0) {
+			$exec = "$exec|";
+		}
+		$exec = "$exec$sql[$i]";
+	}
+
+
+	@record on;
+	bool $retVal = `local database -exec $handle "$exec"`;
+	@record off;
+	if( !$retVal ) {
+		return false;
+	}
+
+	string $columns;
+	object $rows;
+	
+	if( !( 
+			GetCmdData( "resultitem::column", 	$columns				) && defined( $columns					) &&
+			GetCmdData( "resultitem::row", 		$rows 					) && defined( $rows 					)
+	 ) ) {
+	 	# no data this time	 	
+		return true;
+	}
+	
+	_CopyArrayStrings( %tableResult{'columns'}, $columns );
+	
+	
+	for( int $i = 0; $i < sizeof( $rows ); $i++ ) {
+		for( int $j=0; $j < sizeof( $columns ); $j++ ) {
+			string $temp;
+			if( !( GetObjectData( $rows[$i], $columns[$j], $temp ) && defined( $temp ) ) ) {
+				return false;
+			}
+			%tableResult{$columns[$j]}[$i] = $temp;
+		}
+	}
+
+	return true;
+}
+# END sqlExec
+
+

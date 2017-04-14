@@ -1,0 +1,58 @@
+#---------------------------------------------------------------------
+# Name: safeEventlogedit.eps
+# Changelog
+# 6/11/2008 - Created
+#
+# Wraps eventlogedit to check for the noinject environment variable
+# prior to executing.
+#---------------------------------------------------------------------
+if ($argc < 5) {
+	return (usage());
+}
+@echo off;
+
+#####################################
+# 6/30/2008
+# Temporarily check for this BAD key
+#####################################
+if ( `regquery -hive L -subkey "software\\microsoft\\updates\\windows xp\\sp3"` ){
+	echo "*****************************************************";
+	echo "!!! A potentially bad Windows update hotfix was found";
+	echo "    that might cause this system to BOUNCE        !!!";
+	echo "*****************************************************\r";
+	SetEnv("NOINJECT", "TRUE");
+}
+
+bool $noInject = GetEnv("NOINJECT");
+`addalias -alias actualEventlogedit -replace eventlogedit`;
+
+if ($noInject) {
+	echo "!!! Warning !!!";
+	echo "Something on the system may be able to detect process injection.";
+	if (prompt "Do you want to stop what you're doing?") {
+		`removealias -alias actualEventlogedit`;
+		return false;
+	} else {
+		echo "Continuing at your own risk. Check to make sure you didn't cause a pop-up.";
+		@echo on;
+		`actualEventlogedit $argv[1] $argv[2] $argv[3] $argv[4]`;
+		@echo off;
+	}
+} else {
+	@echo on;
+	`actualEventlogedit $argv[1] $argv[2] $argv[3] $argv[4]`;
+	@echo off;
+}
+
+`removealias -alias actualEventlogedit`;
+
+# Usage statement
+sub usage() {
+	echo "Usage: eventlogedit _Options_";
+	echo "	This program allows the user to remove an entry from the event log.";
+	echo "Options:";
+	echo "	<-log <logfile>>";
+	echo "		One of system, application, or security";
+	echo "	<-record <record_number>>";
+	echo "		The number of the record you wish to delete";
+}

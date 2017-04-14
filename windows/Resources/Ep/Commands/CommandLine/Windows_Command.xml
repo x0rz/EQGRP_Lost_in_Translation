@@ -1,0 +1,51 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31404'>
+	<Command id='16' name='windows'>
+		<Help>Performs WindowStation/Desktop functions</Help>
+		<Input>
+			<Option name='list' optional='false' group='type'>
+				<Set data='type' value='1'/>
+				<Help>List the WindowStations and Desktops</Help>
+			</Option>
+			
+			<Option name='screenshot' optional='false' group='type'>
+				<Set data='type' value='2'/>
+				<Help>Take a screenshot of the given desktop</Help>
+			</Option>
+			
+			<Option name='close' optional='false' group='type'>
+				<Set data='type' value='3'/>
+				<Help>Attempts to close a given window</Help>
+				<Argument name='hWnd' data='hWnd'/>
+			</Option>
+			
+			<Option name='clickbutton' optional='false' group='type'>
+				<Set data='type' value='4'/>
+				<Help>Clicks a button with a given name on a specified window</Help>
+				<Argument name='hWnd' data='hWnd'/>
+				<Argument name='buttonText' data='buttonText'/>
+			</Option>
+			
+			<Option name='buttons' optional='false' group='type'>
+				<Set data='type' value='5'/>
+				<Help>List the buttons on a window</Help>
+				<Argument name='hWnd' data='hWnd'/>
+			</Option>
+			
+			<Option name='location' optional='true'>
+				<Argument name='windowstation' data='windowStation'/>
+				<Argument name='desktop' data='desktop'/>
+			</Option>
+			
+		</Input>
+		
+		<Output>
+			<Data name='type' type='uint8_t' default='0'/>
+			<Data name='windowStation' type='string'/>
+			<Data name='desktop' type='string'/>
+			<Data name='hWnd' type='uint32_t'/>
+			<Data name='buttonText' type='string'/>
+		</Output>
+	</Command>
+</Plugin>

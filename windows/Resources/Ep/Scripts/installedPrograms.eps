@@ -1,0 +1,183 @@
+#-------------------------------------------------------------------------------
+# File: installedPrograms.eps
+# Description: Using the Uninstall registry key, determine what software is installed
+#
+# v0.1 2008-04-02 Initial creation
+#-------------------------------------------------------------------------------
+
+@include "PerlFunctions.epm";
+
+int $i = 0;
+int $j = 0;
+string $fileData = '';
+@record on;
+@echo off;
+`log local run -command "perl -e \\"printf('\%-65s \%-25s \%-10s', 'Program Name', 'Version', 'InstallDate')\\"" -redirect`;
+@record off;
+@echo on;
+$fileData = GetCmdData("output");
+$fileData = "$fileData\r\n";
+bool $popupResults = true;
+string $skipped;
+string $noValues;
+
+#---------------------------------------------------------------------
+# By default, show popUp of results. Don't show if run with '-nopopup'
+#---------------------------------------------------------------------
+if( $ARGC > 1 ) {
+	if ( $argv[1] == "-nopopup") {
+		$popupResults = false;
+		@record on; @echo off;
+		`getdirectory -logs`;
+		@record off; @echo on;
+		string $logDir = GetCmdData("dir");
+		echo "Results can be found in $logDir\\installedPrograms.txt";
+	}
+}
+
+#------------------------------------
+# Get all the subkeys under Uninstall
+#------------------------------------
+@echo off;
+@record on;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\uninstall"`;
+@record off;
+@echo on;
+
+string $subkeys;
+string $reg_value;
+string $reg_value_data;
+string $DisplayName;
+string $InstallDate;
+string $DisplayVersion;
+bool $good;
+$subkeys = GetCmdData("subkey");
+
+#----------------------------------------------------------------
+# For each subkey (ie, each program that might be uninstalled)...
+#----------------------------------------------------------------
+while( $i < sizeof($subkeys) ) {
+	#-------------------------------------------------------------------------
+	# Ignore anything that matches KB, which is almost always Microsoft updates
+	#-------------------------------------------------------------------------
+	@case-sensitive on;
+	string $kb_parts = split("KB",$subkeys[$i]);
+	if ($kb_parts[0] == "") {
+		$skipped[sizeof($skipped)] = $subkeys[$i];
+		$i++;
+		continue;
+	}
+	@case-sensitive off;
+
+	@echo off;
+	@record on;
+	if(`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\uninstall\\$subkeys[$i]"`) {
+		$reg_value = GetCmdData("value");
+		$reg_value_data = GetCmdData("value_data");
+	} else {
+		echo "Couldn't get regquery for $subkeys[$i]";
+		break;
+	}
+	@record off;
+	@echo on;
+	$j = 0;
+	$DisplayName = 'Unknown';
+	$InstallDate = '?';
+	$DisplayVersion = 'Unknown';
+	$good = false;
+
+	#--------------------------------------------------------------------
+	# Check certain registry values, like Name, Install Date and Version.
+	# Skip those that are Updates or Hotfixes
+	#--------------------------------------------------------------------
+	#int $f = sizeof($reg_value);
+	#echo "$subkeys[$i] = $f";
+	while( $j < sizeof($reg_value) ) {
+		if ( $reg_value[$j] == "DisplayName" ) {
+			$DisplayName = $reg_value_data[$j];
+			@echo off;
+			bool $check_update;
+			Local_Grep("Update", $DisplayName, $check_update);
+			bool $check_hotfix;
+			Local_Grep("Hotfix", $DisplayName, $check_hotfix);
+			if($check_update || $check_hotfix) {
+				# skip it
+				$skipped[sizeof($skipped)] = "$subkeys[$i] = $DisplayName";
+				break;
+			} else {
+				$good = true;
+			}
+			@echo on;
+		}
+		if ( $reg_value[$j] == "InstallDate" ) {
+			$good = true;
+			$InstallDate = $reg_value_data[$j];
+		}
+		if ( $reg_value[$j] == "DisplayVersion" ) {
+			$good = true;
+			$DisplayVersion = $reg_value_data[$j];
+		}
+		$j++;
+	}
+	if($good) {
+		#-------------------------------------------------------------
+		# We have one we care about
+		# Add it to a string variable that we'll write to a file later
+		#-------------------------------------------------------------
+		string $tmp;
+		@record on;
+		@echo off;
+		`log local run -command "perl -e \\"printf('\%-65s \%-25s \%-10s', '$DisplayName', '$DisplayVersion', '$InstallDate')\\"" -redirect`;
+		@record off;
+		@echo on;
+		$tmp = GetCmdData("output");
+		$fileData = "$fileData\r\n$tmp";
+	}else{
+		#----------------------------------------------------------------
+		# This program didn't have the registry key info were looking for
+		#----------------------------------------------------------------
+		$noValues[sizeof($noValues)] = "$subkeys[$i]";
+	}
+
+	$i++;
+}
+
+#-----------------------------------------------
+# Print all the things that had no values and those we skipped
+#-----------------------------------------------
+$i = 0;
+$fileData = "$fileData\r\n\r\n_________Installed, but Name/Install Date/Version not found_________\r\n";
+while ($i < sizeof($noValues)) {
+	$fileData = "$fileData\r\n$noValues[$i]";
+	$i++;
+}
+$i = 0;
+$fileData = "$fileData\r\n\r\n_________________Skipped these (typically hotfixes)_________________\r\n";
+while ($i < sizeof($skipped)) {
+	$fileData = "$fileData\r\n$skipped[$i]";
+	$i++;
+}
+
+#-----------------------------------------------
+# We're done! Write everything to a file
+# then display it to the operator (if they want)
+#-----------------------------------------------
+@echo off;
+WriteFile("installedPrograms.txt", TRUE, $fileData);
+if($popupResults ) {
+	`local run -command "perl -e \\"exec('notepad installedPrograms.txt')\\"" -redirect`;
+}
+return true;
+
+#---------------------------------------------------------
+# An EP "grep", without calling `local run -command "perl"
+#---------------------------------------------------------
+Sub Local_Grep(IN String $string, IN String $pattern, OUT Bool $output) {
+	@case-sensitive on;
+	string $match_parts = split($pattern,$string);
+	if ($match_parts[0] == "") {
+		$output = true;
+	}
+	@case-sensitive off;
+	$output = false;
+}

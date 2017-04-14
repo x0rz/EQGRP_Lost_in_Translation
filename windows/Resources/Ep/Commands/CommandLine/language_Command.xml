@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31305'>
+
+  <Command id='16' name='language'>
+
+    <Help>Returns the current language.</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

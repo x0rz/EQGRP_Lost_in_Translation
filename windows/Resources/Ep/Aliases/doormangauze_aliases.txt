@@ -1,0 +1,8 @@
+doormangauze	script DoormanGauze\DoormanGauze.eps
+dg_install	script DoormanGauze\Install.eps ethip6
+dg_uninstall	script DoormanGauze\Uninstall.eps ethip6
+dg_load		driverload -name ethip6
+dg_unload	driverunload -name ethip6
+dg_verify	script DoormanGauze\VerifyInstall.eps ethip6
+dg_running	script DoormanGauze\VerifyRunning.eps ethip6
+dg_status	script DoormanGauze\GetStatus.eps ethip6

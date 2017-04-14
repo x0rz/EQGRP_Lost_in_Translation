@@ -1,0 +1,296 @@
+#--------------------------------------------------------
+# Converts a string date to and integer date
+# 0   1    2     3    4   5
+# MM, DD, YYYY, HH24, MI, SS
+#--------------------------------------------------------
+Sub _DateStringToInteger(IN string $stringDate, REF int $intDate) {
+	string $splitDateTime;
+	string $tempDate;
+	string $tempTime;
+
+	$splitDateTime = split(" ", $stringDate);
+
+	$tempDate = split("/", $splitDateTime[0]);
+	$tempTime = split(":", $splitDateTime[1]);
+
+	$intDate[0] = <int>$tempDate[0];
+	$intDate[1] = <int>$tempDate[1];
+	$intDate[2] = <int>$tempDate[2];
+	$intDate[3] = <int>$tempTime[0];
+	$intDate[4] = <int>$tempTime[1];
+	$intDate[5] = <int>$tempTime[2];
+
+	return true;
+}
+
+#--------------------------------------------------------
+# Ensure that the various pieces of the date field all have the necessary 0's (integer date-type to string date-type)
+# 0   1    2     3    4   5
+# MM, DD, YYYY, HH24, MI, SS
+#--------------------------------------------------------
+Sub _DateIntegerToString(REF string $stringDate, IN int $intDate) {
+	string $finalDateTime;
+
+	if ($intDate[0] < 10) {
+		$finalDateTime[0] = "0$intDate[0]";
+	} else {
+		$finalDateTime[0] = <string>$intDate[0];
+	}
+	if ($intDate[1] < 10) {
+		$finalDateTime[1] = "0$intDate[1]";
+	} else {
+		$finalDateTime[1] = <string>$intDate[1];
+	}
+	$finalDateTime[2] = <string>$intDate[2];
+	if ($intDate[3] < 10) {
+		$finalDateTime[3] = "0$intDate[3]";
+	} else {
+		$finalDateTime[3] = <string>$intDate[3];
+	}
+	if ($intDate[4] < 10) {
+		$finalDateTime[4] = "0$intDate[4]";
+	} else {
+		$finalDateTime[4] = <string>$intDate[4];
+	}
+	if ($intDate[5] < 10) {
+		$finalDateTime[5] = "0$intDate[5]";
+	} else {
+		$finalDateTime[5] = <string>$intDate[5];
+	}
+
+	$stringDate = "$finalDateTime[0]/$finalDateTime[1]/$finalDateTime[2] $finalDateTime[3]:$finalDateTime[4]:$finalDateTime[5]";
+
+	return true;
+}
+
+#--------------------------------------------------------
+# Compare 2 dates:
+#     0 = date1 < date2
+#     1 = date1 > date2
+#     2 = date1 = date2
+#--------------------------------------------------------
+Sub _DateCompare(IN string $date1, IN string $date2, REF int $result) {
+	string $splitDateTime1;
+	String $splitDateTime2;
+	string $tempDate1;
+	string $tempDate2;
+	string $tempTime1;
+	string $tempTime2;
+	string $finalDateTime1;
+	string $finalDateTime2;
+
+	$splitDateTime1 = split(" ", $date1);
+	$splitDateTime2 = split(" ", $date2);
+
+	$tempDate1 = split("/", $splitDateTime1[0]);
+	$tempDate2 = split("/", $splitDateTime2[0]);
+	$tempTime1 = split(":", $splitDateTime1[1]);
+	$tempTime2 = split(":", $splitDateTime2[1]);
+
+	$finalDateTime1 = "$tempDate1[2]$tempDate1[0]$tempDate1[1]$tempTime1[0]$tempTime1[1]$tempTime1[2]";
+	$finalDateTime2 = "$tempDate2[2]$tempDate2[0]$tempDate2[1]$tempTime2[0]$tempTime2[1]$tempTime2[2]";
+
+	if ($finalDateTime1 < $finalDateTime2) {
+		$result = 0;
+	} else if ($finalDateTime1 > $finalDateTime2) {
+		$result = 1;
+	} else {
+		$result = 2;
+	}
+	
+	return true;
+}
+
+#--------------------------------------------------------
+# Add offset to date1
+#    offsetType: hh24, mi
+#--------------------------------------------------------
+Sub _DateAddDST(REF string $date, IN int $startDay, IN int $startMonth, IN int $endDay, IN int $endMonth, IN int $bias, REF bool $result) {
+	string $DSTStartDateTime;
+	string $DSTEndDateTime;
+	int $tempGMTDateTime;
+	int $tempDate;
+	int $result1;
+	int $result2;
+
+	_DateStringToInteger($date, $tempGMTDateTime);
+	$tempDate[0] = $startMonth;
+	$tempDate[1] = $startDay;
+	$tempDate[2] = $tempGMTDateTime[2];
+	$tempDate[3] = 0;
+	$tempDate[4] = 0;
+	$tempDate[5] = 0;
+	_DateIntegerToString($DSTStartDateTime, $tempDate);
+	$tempDate[0] = $endMonth;
+	$tempDate[1] = $endDay;
+	$tempDate[3] = 23;
+	$tempDate[4] = 59;
+	$tempDate[5] = 59;
+	_DateIntegerToString($DSTEndDateTime, $tempDate);
+
+	_DateCompare($date, $DSTStartDateTime, $result1);
+	_DateCompare($date, $DSTEndDateTime, $result2);
+
+	if (($result1 > 0) && ($result2 == 0)) {
+		$result = true;
+		_DateAdd($date, "mi", $bias);
+	} else {
+		$result = false;
+	}
+
+	return true;
+}
+
+#--------------------------------------------------------
+# Add offset to date1
+#    offsetType: hh24, mi
+#--------------------------------------------------------
+Sub _DateAdd(REF string $date, IN string $offsetType, IN int $offset) {
+	string $splitDateTime;
+	string $tempDate;
+	string $tempTime;
+	int $convertDateTime;
+	int $minuteHolder;
+	int $hourHolder;
+	int $dayHolder;
+	int $monthHolder;
+	int $daysInMonth;
+	int $yearHolder;
+	bool $negativeFlag = false;
+	string $finalDateTime;
+
+	if ($offset < 0) {
+		$negativeFlag = true;
+	}
+
+	$splitDateTime = split(" ", $date);
+
+	$tempDate = split("/", $splitDateTime[0]);
+	$tempTime = split(":", $splitDateTime[1]);
+
+	$convertDateTime[0] = <int>$tempDate[0];
+	$convertDateTime[1] = <int>$tempDate[1];
+	$convertDateTime[2] = <int>$tempDate[2];
+	$convertDateTime[3] = <int>$tempTime[0];
+	$convertDateTime[4] = <int>$tempTime[1];
+	$convertDateTime[5] = <int>$tempTime[2];
+
+	if ($offsetType == "mi") {
+		$convertDateTime[4] += $offset;
+	} else if ($offsetType == "hh") {
+		$convertDateTime[3] += $offset;
+	} else if ($offsetType == "dd") {
+		$convertDateTime[1] += $offset;
+	} else if ($offsetType == "mm") {
+		$convertDateTime[0] += $offset;
+	} else if ($offsetType == "yy") {
+		$convertDateTime[2] += $offset;
+	}
+
+	# Minutes
+	$minuteHolder = $convertDateTime[4];
+	while (($minuteHolder < 0) || ($minuteHolder >= 60)) {
+		if ($negativeFlag) {
+			$minuteHolder += 60;
+			$convertDateTime[3]--;
+		} else {
+			$minuteHolder -= 60;
+			$convertDateTime[3]++;
+		}
+	}
+	$convertDateTime[4] = $minuteHolder;
+	
+	# Hours
+	$hourHolder = $convertDateTime[3];
+	while (($hourHolder < 0) || ($hourHolder >= 24)) {
+		if ($negativeFlag) {
+			$hourHolder += 24;
+			$convertDateTime[1]--;
+		} else {
+			$hourHolder -= 24;
+			$convertDateTime[1]++;
+		}
+	}
+	$convertDateTime[3] = $hourHolder;
+
+	# Days
+	if (($convertDateTime[0] == 1) || ($convertDateTime[0] == 3) || ($convertDateTime[0] == 5) ||
+	    ($convertDateTime[0] == 7) || ($convertDateTime[0] == 8) || ($convertDateTime[0] == 10) ||
+	    ($convertDateTime[0] == 12)) {
+		$daysInMonth = 31;
+	} else if ($convertDateTime[0] == 2) {
+		$daysInMonth = 28;
+	} else {
+		$daysInMonth = 30;
+	}
+
+	$dayHolder = $convertDateTime[1];
+	if ($negativeFlag) {
+		while ($dayHolder <= 0) {
+			$convertDateTime[0]--;
+
+			if ($convertDateTime[0] == 0) {
+				$convertDateTime[0] = 12;
+			}
+
+			if (($convertDateTime[0] == 1) || ($convertDateTime[0] == 3) || ($convertDateTime[0] == 5) ||
+			    ($convertDateTime[0] == 7) || ($convertDateTime[0] == 8) || ($convertDateTime[0] == 10) ||
+			    ($convertDateTime[0] == 12)) {
+				$daysInMonth = 31;
+			} else if ($convertDateTime[0] == 2) {
+				$daysInMonth = 28;
+			} else {
+				$daysInMonth = 30;
+			}
+
+			$dayHolder += $daysInMonth;
+		}
+		$convertDateTime[1] = $dayHolder;
+	} else {
+		while ($dayHolder > $daysInMonth) {
+			echo "Day: $dayHolder";
+			$dayHolder -= $daysInMonth;
+			$convertDateTime[0]++;
+
+			if ($convertDateTime[0] == 13) {
+				$convertDateTime[0] = 1;
+			}
+
+			if (($convertDateTime[0] == 1) || ($convertDateTime[0] == 3) || ($convertDateTime[0] == 5) ||
+			    ($convertDateTime[0] == 7) || ($convertDateTime[0] == 8) || ($convertDateTime[0] == 10) ||
+			    ($convertDateTime[0] == 12)) {
+				$daysInMonth = 31;
+			} else if ($convertDateTime[0] == 2) {
+				$daysInMonth = 28;
+			} else {
+				$daysInMonth = 30;
+			}
+		}
+		$convertDateTime[1] = $dayHolder;
+
+		if ($convertDateTime[1] == 0) {
+			$convertDateTime[1] = 1;
+		}
+	}
+
+	# Months
+	$monthHolder = $convertDateTime[0];
+	while (($monthHolder < 0) || ($monthHolder >= 13)) {
+		if ($negativeFlag) {
+			$monthHolder += 13;
+			$convertDateTime[2]--;
+		} else {
+			$monthHolder -= 13;
+			$convertDateTime[2]++;
+		}
+	}
+	$convertDateTime[0] = $monthHolder;
+
+	if ($convertDateTime[0] == 0) {
+		$convertDateTime[0] = 1;
+	}	
+
+	_DateIntegerToString($date, $convertDateTime);
+
+	return true;
+}

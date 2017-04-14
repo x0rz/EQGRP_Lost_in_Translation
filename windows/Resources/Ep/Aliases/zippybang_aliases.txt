@@ -1,0 +1,3 @@
+zippybang	script ZippyBang/ZippyBang.eps
+pulist		script ZippyBang/pulist.eps
+uptime		script ZippyBang/uptime.eps

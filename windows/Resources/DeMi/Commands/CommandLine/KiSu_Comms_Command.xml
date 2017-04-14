@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_KisuComms_Tasking.pyo" providerType="script">
+
+	<Command name="kisu_list" id="0">
+        <Help>List KiSu instances</Help>
+		<Input>
+		</Input>
+		<Output>
+		</Output>
+    </Command>
+
+	<Command name="kisu_connect" id="1">
+        <Help>Set the default KiSu instance id for communication and check for connectivity</Help>
+		<Input>
+			<Option name="type" optional="false" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="false" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+		</Input>
+		<Output>
+			<Data name="instance" type="uint32_t"/>
+			<Data name="type" type="string"/>
+		</Output>
+    </Command>
+
+	<Command name="kisu_disconnect" id="2">
+        <Help>Clear the default KiSu instance id for communication.</Help>
+		<Input>
+		</Input>
+		<Output>
+		</Output>
+    </Command>
+
+    <Command name="kisu_config" id="3">
+        <Help>List configuration for the given KiSu instance</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="checksum" optional="true">
+				<Help>Perform checksum on the modules in the store</Help>
+				<Set data="checksum" value="true"/>
+			</Option>
+		</Input>
+		<Output>
+			<Data name="instance" type="uint32_t" default="0"/>
+			<Data name="type" type="string"/>
+			<Data name="checksum" type="bool" default="false"/>
+		</Output>
+    </Command>
+
+	<Command name="kisu_addmodule" id="4">
+		<Help>Adds a module to the KiSu module store</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="id" optional="false">
+				<Help>The module id</Help>
+				<Argument name="moduleId" data="moduleId"/>
+			</Option>
+
+			<Option name="flags" optional="false">
+				<Help>Flags for the module for add.  Multiple flags must be separated with a '|'.</Help>
+				<Help>Available flags are:</Help>
+				<Help>    boot_start</Help>
+				<Help>    system_start</Help>
+				<Help>    auto_start</Help>
+				<Help>    kernel_driver</Help>
+				<Help>    user_mode</Help>
+				<Help>    system_mode</Help>
+				<Help>    service_key</Help>
+				<Help>    encrypted</Help>
+				<Help>    compressed</Help>
+				<Help>    demand_load</Help>
+				<Help>    auto_start_once</Help>
+				<Argument name="flagValues" optional="false" data="moduleFlags"/>
+			</Option>
+
+			<Option name="name" optional="false">
+				<Help>Module name for add</Help>
+				<Argument name="name" data="moduleName"/>
+			</Option>
+
+			<Option name="localFile" optional="false">
+				<Help>Specifies the local file to upload</Help>
+				<Argument name="file" data="localFile"/>
+			</Option>
+
+			<Option name="project" optional="true">
+				<Help>Only search in the given project is a full path is not specified</Help>
+				<Argument name="name" data="project"/>
+			</Option>
+
+			<Option name="chunkSize" optional="true">
+				<Argument name="bytes" data="chunkSize"/>
+			</Option>
+
+			<Option name="order" optional="true">
+				<Help>Order of module for add</Help>
+				<Argument name="#" optional="false" data="moduleOrder"/>
+			</Option>
+			
+			<Option name="process" optional="true">
+				<Help>Process in which to inject the added module</Help>
+				<Argument name="name" optional="false" data="processName"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="localFile"		type="string"/>
+			<Data name="moduleId"		type="uint32_t"/>
+			<Data name="moduleOrder"	type="uint32_t"/>
+			<Data name="moduleFlags"	type="string" default="encrypted|compressed"/>
+			<Data name="moduleName"		type="string"/>
+			<Data name="processName"	type="string"/>
+			<Data name="chunkSize"		type="uint32_t" default="900000"/>
+			<Data name="project"		type="string" default="DeMi"/>
+		</Output>
+	</Command>
+
+	<Command name="kisu_deletemodule" id="5">
+		<Help>Deletes a module from the KiSu module store</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="id" optional="false">
+				<Help>The module id</Help>
+				<Argument name="moduleId" data="moduleId"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="moduleId"		type="uint32_t"/>
+		</Output>
+	</Command>
+
+	<Command name="kisu_readmodule" id="6">
+		<Help>Reads a module from the KiSu module store</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="id" optional="false">
+				<Help>The module id</Help>
+				<Argument name="moduleId" data="moduleId"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="moduleId"		type="uint32_t"/>
+		</Output>
+	</Command>
+
+	<Command name="kisu_loaddriver" id="7">
+		<Help>Loads a driver by its module id</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="id" optional="false">
+				<Help>The module id</Help>
+				<Argument name="moduleId" data="moduleId"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="moduleId"		type="uint32_t"/>
+		</Output>
+	</Command>
+
+	<Command name="kisu_freedriver" id="8">
+		<Help>Unloads a driver by its module id</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="id" optional="false">
+				<Help>The module id</Help>
+				<Argument name="moduleId" data="moduleId"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="moduleId"		type="uint32_t"/>
+		</Output>
+	</Command>
+
+	<Command name="kisu_loadmodule" id="9">
+		<Help>Attempts to load a module (not driver) by its module id</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="id" optional="false">
+				<Help>The module id</Help>
+				<Argument name="moduleId" data="moduleId"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="moduleId"		type="uint32_t"/>
+		</Output>
+	</Command>
+
+	<Command name="kisu_freemodule" id="10">
+		<Help>Attempts to free a module (not driver) by its module handle</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="handle" optional="false">
+				<Help>The module handle</Help>
+				<Argument name="moduleHandle" data="moduleHandle"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="moduleHandle"	type="uint64_t"/>
+		</Output>
+	</Command>
+
+	<Command name="kisu_processload" id="11">
+		<Help>Loads the KiSu store into a particular process.</Help>
+		<Help>Autoload modules with that process name will load into it.</Help>
+		<Help>KiSu can only be loaded into a process once, so act wisely.</Help>
+		<Input>
+			<Option name="type" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="true" group="instance">
+				<Help>Specifies the KiSu instance id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="id" optional="false">
+				<Help>The process id</Help>
+				<Argument name="processId" data="processId"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance"		type="uint32_t"/>
+			<Data name="type"			type="string"/>
+			<Data name="processId"		type="uint32_t"/>
+		</Output>
+	</Command>
+</Plugin>

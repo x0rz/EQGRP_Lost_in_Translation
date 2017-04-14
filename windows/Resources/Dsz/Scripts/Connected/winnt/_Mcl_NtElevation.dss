@@ -1,0 +1,77 @@
+
+@include "_Versions.dsi";
+@echo off;
+
+bool $rtn = true;
+echo("Registering Mcl_NtElevation options");
+if (`moduletoggle -register -system Mcl_NtElevation -silent`)
+{
+	echo("    SUCCESS", GOOD);
+}
+else
+{
+	echo("    FAILED", ERROR);
+	$rtn = false;
+}
+
+if (!IsLocal())
+{
+	echo("Setting Mcl_NtElevation Type");
+	
+	string $arch, $compiledArch;
+	_GetArch($arch);
+	_GetCompiledArch($compiledArch);
+
+	# determine default based on arch/os
+	string $type;
+	if ($arch == "x64")
+	{
+		# x64
+		if ($compiledArch == "i386")
+		{
+			if (_IsWindowsVistaOrGreater())
+			{
+				$type = "EpMe_GrSa_Wow64";
+			}
+			else
+			{
+				$type = "EpMo_GrSa_Wow64";
+			}
+		}
+		else
+		{
+			if (_IsWindowsVistaOrGreater())
+			{
+				$type = "EpMe_GrSa";
+			}
+			else
+			{
+				$type = "EpMo_GrSa";
+			}
+		}
+	}
+	else
+	{
+		# x86
+		if (_IsWindowsVistaOrGreater())
+		{
+			$type = "EpMe_GrSa";
+		}
+		else
+		{
+			$type = "EpMo_GrSa";
+		}
+	}
+
+	if (!`ModuleToggle -set $type -system Mcl_NtElevation -silent -nofree`)
+	{
+		echo("    FAILED", ERROR);
+		$rtn = false;
+	}
+	else
+	{
+		echo("    $type", GOOD);
+	}
+}
+
+return $rtn;

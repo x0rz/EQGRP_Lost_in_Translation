@@ -1,0 +1,9 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+<-type <current|all|user>>
+    What type of query
+[-user <user>]
+    The particular user to query (only valid with -type user)
+[-verbose]
+    Print additional information

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_Handles_Tasking.pyo" providerType="script">
+    <Command name="Handles" id="0">
+    
+        <Help>List, Duplicate and Close Process Handles</Help>
+
+        <Input>
+			<Option name="list" optional="true" group="action">
+				<Help>Display Handles for one or all processes</Help>
+				<Set data="action" value="0"/>
+			</Option>
+			
+			<Option name="duplicate" optional="true" group="action">
+				<Help>Duplicate a handle from one process into current process</Help>
+				<Argument name="handleId" data="handleValue"/>
+				<Require>id</Require>
+				<Reject>all</Reject>
+				<Set data="action" value="1"/>
+			</Option>
+			
+			<Option name="close" optional="true" group="action">
+				<Help>Close a specific handle within a process</Help>
+				<Argument name="handleId" data="handleValue"/>
+				<Require>id</Require>
+				<Reject>all</Reject>
+				<Set data="action" value="2"/>
+			</Option>
+			
+			<Option name="id">
+				<Help>List/Act on handles for a particular process id.</Help>
+				<Argument name="processId" data="procid"/>
+			</Option>
+			
+			<Option name="all">
+				<Help>Return all available handle information.</Help>
+				<Set data="all" value="true"/>
+			</Option>
+			
+			<Option name="memory" optional="true">
+				<Help>The number of bytes to use for open handle list (default=250k)</Help>
+				<Argument name="#" data="memory" />
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name="action"			type="uint8_t"	default="0"/>
+			<Data name="handleValue"	type="uint64_t"	default="0"/>
+			<Data name="procid"			type="uint32_t"	default="0"/>
+			<Data name="all"			type="bool"		default="false"/>
+			<Data name="memory"			type="uint32_t"	default="256000"/>
+        </Output>
+    </Command>
+</Plugin>

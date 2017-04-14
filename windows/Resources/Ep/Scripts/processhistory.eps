@@ -1,0 +1,264 @@
+#--------------------------------------------------------
+# File: ProcessHistory.eps
+#
+# Script compares current processes against 
+#--------------------------------------------------------
+@echo off;
+@case-sensitive on;
+
+#--------------------------------------------------------
+# Get Post Processing IP
+#--------------------------------------------------------
+@record on;
+`getdirectory -logs`;
+@record off;
+string $logPath = GetCmdData("Dir");
+$logPath = "$logPath\\..";
+
+string $temp = split("\\", $logPath);
+string $postProcessingIP = $temp[1];
+
+#--------------------------------------------------------
+# Get Preps Path
+#--------------------------------------------------------
+@record on;
+`getdirectory -resources`;
+@record off;
+string $prepsPath = GetCmdData("Dir");
+$prepsPath = "$prepsPath\\..\\preps";
+
+#--------------------------------------------------------
+# Figure Out Which Preps Directory to use
+#--------------------------------------------------------
+@record on;
+`local dir * -path "$prepsPath" -max 0`;
+@record off;
+string $inodeName = GetCmdData("name");
+bool $isDir = GetCmdData("isDir");
+
+if (sizeOf($inodeName) <= 2) {
+	echo "No Preps located in $prepsPath";
+	return false;
+}
+
+echo "";
+echo "Preps Available:\n";
+echo "  0. exit";
+int $counter = 2;
+int $counter2 = 1;
+while ($counter < sizeof($inodeName)) {
+	if ($isDir[$counter]) {
+		echo "  $counter2. $inodeName[$counter]";
+		$counter2++;
+	}
+	$counter++;
+}
+echo "";
+int $menuOption = GetInput("What is the current project");
+
+if ($menuOption == 0) {	return true; }
+
+#--------------------------------------------------------
+# Search through all hostinfo files for the target IP for processes and store them in memory
+#--------------------------------------------------------
+string $processList;
+string $firstSeen;
+string $lastSeen;
+string $processDate;
+
+$menuOption++;
+string $OSType = "w";
+string $finalPath = "$prepsPath\\$inodeName[$menuOption]\\$postProcessingIP$OSType";
+
+undef($inodeName);
+undef($isDir);
+
+@record on;
+ifnot (`local dir *hostinfo* -path $finalPath -max 0`) {
+	echo "";
+	echo "$finalPath doesn't exist";
+	return false;
+}
+@record off;
+
+#Pull the file date out of the name
+$inodeName = GetCmdData("name");
+$counter = 0;
+int $tempDate;
+while ($counter < sizeof($inodeName)) {
+	$temp = split(".", $inodeName[$counter]);
+	$processDate[$counter] = $temp[0];
+	$counter++;
+}
+
+$counter = 0;
+string $fileData;
+string $line;
+while ($counter < sizeof($inodeName)) {
+	ReadFile("$finalPath\\$inodeName[$counter]", $fileData);
+	foreach $line ($fileData) {
+		string $processName = split("Program Running:", $line);
+		if (defined($processName[1])) {
+			int $listSize = sizeOf($processList);
+			$counter2 = 0;
+			while ($counter2 < $listSize) {
+				if ($processName[1] == $processList[$counter2]) {
+					$lastSeen[$counter2] = $processDate[$counter];						
+					break;
+				}
+				$counter2++;
+			}
+
+			if ($counter2 == $listSize) {
+				$processList[$counter2] = $processName[1];
+				$firstSeen[$counter2] = $processDate[$counter];
+				$lastSeen[$counter2] = $processDate[$counter];
+			}
+		}
+	}
+	$counter++;
+}
+
+undef($fileData);
+
+#--------------------------------------------------------
+# Sort the Process List
+#--------------------------------------------------------
+int $totalSize = sizeOf($processList);
+int $loopEnd = $totalSize;
+int $loop2End;
+$counter = 0;
+$counter2;
+int $nextCounter2;
+string $tempName;
+string $tempFirst;
+string $tempLast;
+
+$loopEnd--;
+while ($counter < $loopEnd) {
+	$counter2 = 0;
+	$loop2End = $loopEnd;
+	$loop2End -= $counter;
+	while ($counter2 < $loop2End) {
+		$nextCounter2 = $counter2;
+		$nextCounter2++;
+		if ($processList[$nextCounter2] < $processList[$counter2]) {
+			$tempName = $processList[$counter2];
+			$processList[$counter2] = $processList[$nextCounter2];
+			$processList[$nextCounter2] = $tempName;
+
+			$tempFirst = $firstSeen[$counter2];
+			$firstSeen[$counter2] = $firstSeen[$nextCounter2];
+			$firstSeen[$nextCounter2] = $tempFirst;
+
+			$tempLast = $lastSeen[$counter2];
+			$lastSeen[$counter2] = $lastSeen[$nextCounter2];
+			$lastSeen[$nextCounter2] = $tempLast;
+		}
+		$counter2++;
+	}
+	$counter++;						
+}
+
+#--------------------------------------------------------
+# Compare all the current processes to the process history
+#--------------------------------------------------------
+@record on;
+`processlist`;
+@record off;
+string $currentProcessList = GetCmdData("name");
+string $currentFirstSeen;
+string $currentLastSeen;
+$counter = 0;
+while ($counter < sizeof($currentProcessList)) {
+	$counter2 = 0;
+	while ($counter2 < sizeof($processList)) {
+		if ($currentProcessList[$counter] == $processList[$counter2]) {
+			ifnot (defined($currentFirstSeen[$counter])) {
+				$currentFirstSeen[$counter] = $firstSeen[$counter2];
+			}
+			$currentLastSeen[$counter] = $lastSeen[$counter2];
+			break;
+		} 
+
+		$counter2++;
+	}
+
+	if ($counter2 == sizeOf($processList)) {
+			$currentFirstSeen[$counter] = " !! NEW !!  ";
+			$currentLastSeen[$counter] = " !! NEW !! ";
+	}
+
+	$counter++;
+}
+
+undef($processList);
+undef($firstSeen);
+undef($lastSeen);
+
+#--------------------------------------------------------
+# Sort the Current ProcessList by LastSeen
+#--------------------------------------------------------
+$totalSize = sizeOf($currentProcessList);
+$loopEnd = $totalSize;
+$loop2End;
+$counter = 0;
+$counter2;
+$nextCounter2;
+$tempName;
+$tempFirst;
+$tempLast;
+
+$loopEnd--;
+while ($counter < $loopEnd) {
+	$counter2 = 0;
+	$loop2End = $loopEnd;
+	$loop2End -= $counter;
+	while ($counter2 < $loop2End) {
+		$nextCounter2 = $counter2;
+		$nextCounter2++;
+		if ($currentLastSeen[$nextCounter2] < $currentLastSeen[$counter2]) {
+			$tempName = $currentProcessList[$counter2];
+			$currentProcessList[$counter2] = $currentProcessList[$nextCounter2];
+			$currentProcessList[$nextCounter2] = $tempName;
+
+			$tempFirst = $currentFirstSeen[$counter2];
+			$currentFirstSeen[$counter2] = $currentFirstSeen[$nextCounter2];
+			$currentFirstSeen[$nextCounter2] = $tempFirst;
+
+			$tempLast = $currentLastSeen[$counter2];
+			$currentLastSeen[$counter2] = $currentLastSeen[$nextCounter2];
+			$currentLastSeen[$nextCounter2] = $tempLast;
+		}
+		$counter2++;
+	}
+	$counter++;						
+}
+
+#--------------------------------------------------------
+# Output Processes
+#--------------------------------------------------------
+int $columnSize = 25;
+string $padding;
+$counter = 0;
+echo "";
+echo "Process Name              First Seen            Last Seen";
+echo "-----------------------------------------------------------------------";
+while ($counter < sizeof($currentProcessList)) {
+	$counter2 = strlen($currentProcessList[$counter]);
+	$padding = "";
+	while ($counter2 < $columnSize) {
+		$padding = "$padding ";
+		$counter2++;
+	}
+	
+	echo "$currentProcessList[$counter]$padding First: $currentFirstSeen[$counter]   Last: $currentLastSeen[$counter]";		
+	$counter++;
+}
+
+undef($currentProcessList);
+undef($currentFirstSeen);
+undef($currentLastSeen);
+
+
+return true;

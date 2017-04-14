@@ -1,0 +1,47 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsWindowsNt4
+#	Returns the whether the current target is Windows Nt4
+#----------------------------------------------------
+sub _IsWindowsNt4()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major;
+			if (_GetOsVersion($major)) {
+				return ($major == 4);
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsNt4
+
+#----------------------------------------------------
+# _IsWindowsNt4Local
+#	Returns the whether the local os is Windows Nt4
+#----------------------------------------------------
+sub _IsWindowsNt4Local()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major;
+			if (_GetOsVersionLocal($major)) {
+				return ($major == 4);
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsNt4Local

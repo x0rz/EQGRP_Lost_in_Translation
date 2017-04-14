@@ -1,0 +1,56 @@
+#-------------------------------------------------------------------------------
+# _FindProcessOnList
+#	Finds the given process name on the list
+# Params:
+#	IN  STRING name - process name
+#	OUT INT    ids  - process id (possibly a list)
+#-------------------------------------------------------------------------------
+Sub _FindProcessOnList(IN string $name, OUT INT $ids)
+{
+
+    string $listNames;
+    int $listIds;
+    if (_GetProcessList($listIds, $listNames)) {
+	int $onIndex=0;
+	int $i=0;
+	while ($i < sizeof($listNames)) {
+	    if ($listNames[$i] == $name) {
+		$ids[$onIndex] = $listIds[$i];
+		$onIndex++;
+	    }
+	    $i++;
+	}
+
+	if ($onIndex > 0) {
+	    # found a process
+	    return true;
+	}
+    }
+
+    # no matching process found
+    return false;
+
+} /* END _FindProcessOnList */
+
+#-------------------------------------------------------------------------------
+# _GetProcessList
+#	Retrieves the process list on the remote system
+# Params:
+#	ids - list of process ids
+#	names - list of process names
+#-------------------------------------------------------------------------------
+Sub _GetProcessList(OUT INT $ids, OUT string $names)
+{
+
+    @echo off;
+    @record on;
+    ifnot (`processlist`) {
+	return false;
+    }
+    @record off;
+
+    $ids = GetCmdData("id");
+    $names = GetCmdData("name");
+    return true;
+
+} /* END _GetProcessList */

@@ -1,0 +1,113 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='22' name='Wrappers'>
+
+		<Help>Lists or modifies the LP command wrappers</Help>
+
+		<Input>
+			<Option name='list' optional='true' group='action'>
+				<Help>List the command wrapper scripts</Help>
+				
+				<Set data='action' value='0'/>
+
+				<Argument name='cmd' data='command' optional='true'/>
+				
+				<Reject>script</Reject>
+				<Reject>project</Reject>
+			</Option>
+
+			<Option name='register' optional='true' group='action'>
+				<Help>Register a command wrapper script.</Help>
+
+				<Set data='action' value='1'/>
+
+				<Argument name='cmd' data='command'/>
+				<Argument name='script_arg' data='script_arg' optional='true'/>
+
+				<Require>script</Require>
+			</Option>
+			
+			<Option name='unregister' optional='true' group='action'>
+				<Help>Unregister a command wrapper script.</Help>
+				
+				<Set data='action' value='2'/>
+
+				<Argument name='cmd' data='command'/>
+				
+				<Require>script</Require>
+			</Option>
+			
+			<Option name='location' optional='true' group='location'>
+				<Help>The alias destination (general)</Help>
+				<Help>    all     = local and remote</Help>
+				<Help>    local   = local (LP) only</Help>
+				<Help>    remote  = Any remote destination</Help>
+				<Help>    current = The default destination</Help>
+				<Argument name='location' data='location'>
+					<Value string='all'>
+						<Set data='location' value='1'/>
+					</Value>
+					<!-- "both" is the same as "all" and is available 
+						 for backwards compatibility reasons -->
+					<Value string='both'>
+						<Set data='location' value='1'/>
+					</Value>
+					<Value string='local'>
+						<Set data='location' value='2'/>
+					</Value>
+					<Value string='remote'>
+						<Set data='location' value='3'/>
+					</Value>	
+					<Value string='current'>
+						<Set data='location' value='4'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='destination' optional='true' group='location'>
+				<Set data='location' value='4'/>
+				<Argument name='address' data='address'/>
+				<Help>If specified, the specific destination for the alias</Help>
+			</Option>
+			
+			<Option name='pre' optional='true' group='wrapperType'>
+				<Set data='wrapperType' value='1'/>
+				<Help>Call the given script prior to running the command.</Help>
+			</Option>
+
+			<Option name='post' optional='true' group='wrapperType'>
+				<Set data='wrapperType' value='2'/>
+				<Help>Call the given script after running the command.  A post-command</Help>
+				<Help>script must either complete or go to the background quickly.</Help>
+			</Option>
+
+			<Option name='script' optional='true'>
+				<Help>The script to call.</Help>
+				
+				<Argument name='pyScript' data='script'/>
+
+				<Require>pre</Require>
+			</Option>
+
+			<Option name='project' optional='true'>
+				<Help>Sets the script project</Help>
+				<Argument name='projectDir' data='project'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='action' type='uint8_t' default='0'/>
+			<Data name='location' type='uint8_t' default='0'/>
+			<Data name='command' type='string'/>
+			<Data name='script' type='string'/>
+			<Data name='project' type='string'/>
+			<Data name='wrapperType' type='uint8_t'/>
+			<Data name='address' type='cpaddr'/>
+			<Data name='script_arg' type='string'/>
+		</Output>
+
+  </Command>
+
+</Plugin>

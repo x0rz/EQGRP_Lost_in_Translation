@@ -1,0 +1,58 @@
+#--------------------------------------------------------
+# File: UpgradeExe.eps
+#
+# Wrapper script to change upgrade the exe
+#
+# Modifications:
+#  08/05/2003	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if (($argc != 3) && ($argc != 4)) {
+    echo "Usage: $argv[0] <driverName> <remoteExeName> [localExe]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = $argv[2];
+string $localExe;
+if ($argc == 4) {
+    $localExe = $argv[3];
+}
+
+# check if the EXE is running
+@record on;
+int $pid = 0;
+if (`dp_getprocessid -name $driver`) {
+    $pid = GetCmdData("id");
+}
+
+if ($pid != 0) {
+    # terminate the exe
+    echo "Terminating running exe (pid $pid)";
+    ifnot (`dp_terminateprocess -name $driver`) {
+	pause "    FAILED to terminate exe";
+    } else {
+	echo "    TERMINATED";
+    }
+}
+
+# update the exe
+echo "Updating exe";
+ifnot (`script UpdateExe.eps $driver $exeName "$localExe"`) {
+    pause "Failed to update EXE";
+} else {
+    echo "    UPDATED";
+}
+
+# restart the exe
+echo "Restarting exe";
+ifnot (`dp_restartprocess -name $driver`) {
+    pause "    FAILED to restart exe";
+} else {
+    echo "    RESTARTED";
+}
+
+# we're done...
+return true;

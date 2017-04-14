@@ -1,0 +1,19 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>mcafee</Name>
+		<ReplaceBeforeArgs>python lib\ops\psp\mcafee.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>Usage: mcafee [--survey [--target IP]]</Help>
+		<Help> </Help>
+		<Help>Args:</Help>
+		<Help>	--survey, -s: Performs two recursive registry queries (HKLM\Software\McAfee and HKLM\Software\Network Associates) and parses the results to determine what McAfee products are installed and what settings they have (if possible)</Help>
+		<Help>	--target, -t: IP address defining the target of the mcafee survey (if it is not the local box)</Help>
+	</Alias>
+	<Alias>
+		<Name>mcafee-epo</Name>
+		<ReplaceBeforeArgs>python lib\ops\psp\mcafee-epo.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>Usage: mcafee-epo  (Menu Driven McAfee ePO Tool)</Help>
+	</Alias>
+</Aliases>

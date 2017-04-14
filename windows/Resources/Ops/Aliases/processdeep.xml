@@ -1,0 +1,13 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>processdeep</Name>
+		<Location>Remote</Location>
+		<ReplaceBeforeArgs>python Lib/ops/survey/processdeep.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>Usage:
+	processdeep
+Executes: python Lib/ops/survey/processdeep.py -project Ops
+Runs process deep.</Help>
+	</Alias>
+</Aliases>

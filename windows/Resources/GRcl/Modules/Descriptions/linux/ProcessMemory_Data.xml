@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="ProcessMemory_DataHandler" id="1503">
+    <Interfaces>
+        <Interface provider="0x01010067" id="0x01c10034">
+            <DataHandler>25146</DataHandler>
+        </Interface>
+    </Interfaces>
+    <Dependencies/>
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+    <Architecture type="i386">
+        <Platform family="linux">
+            <Version other="*" minor="5+" major="2">
+                <File loadtype="file">i386-linux-gcc/release-glibc2.5/ProcessMemory_LpData.so</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

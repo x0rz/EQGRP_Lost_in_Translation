@@ -1,0 +1,29 @@
+@echo off;
+@include "_Versions.dsi";
+
+bool $rtn = true;
+echo("Registering Mcl_NtNativeApi options");
+if (`moduletoggle -register -system Mcl_NtNativeApi -silent`)
+{
+	echo("    SUCCESS", GOOD);
+}
+else
+{
+	echo("    FAILED", ERROR);
+	$rtn = false;
+}
+
+if (_IsWindows())
+{
+	echo("Setting Mcl_NtNativeApi Type");
+	if (!`moduletoggle -set Win32 -system Mcl_NtNativeApi -silent -nofree`)
+	{
+		echo("    FAILED", ERROR);
+		$rtn = false;
+	}
+	else
+	{
+		echo("    WIN32", GOOD);
+	}
+}
+return $rtn;

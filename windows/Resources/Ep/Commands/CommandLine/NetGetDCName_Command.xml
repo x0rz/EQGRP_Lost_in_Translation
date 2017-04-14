@@ -1,0 +1,28 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31385'>
+
+  <Command id='16' name='netgetdcname'>
+
+    <Help>Retrieves the primary domain controller for the given domain or</Help>
+    <Help>current machine.</Help>
+
+    <Input>
+	<Option name='remote' optional='true'>
+	    <Argument name='server' data='remote'/>
+	    <Help>The server to query.  Must be a PDC.</Help>
+	</Option>
+
+	<Option name='domain' optional='true'>
+	    <Argument name='name' data='domain'/>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='remote' type='string'/>
+	<Data name='domain' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

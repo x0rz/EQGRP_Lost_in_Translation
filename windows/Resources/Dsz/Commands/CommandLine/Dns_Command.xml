@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_Dns_Tasking.pyo' providerType='script'>
+    <Command name="Dns" id="0">
+
+        <Help>Performs several types of DNS operations.</Help>
+
+		<Input>
+			<Option name="query" optional="true" group="type">
+				<Set data='type' value='0' />
+				<Argument name="hostname" data="target" optional="false" />
+				<Argument name="protocol" optional="true">
+					<Value string="ipv4">
+						<Set data="protocol" value="1"/>
+					</Value>
+					<Value string="ipv6">
+						<Set data="protocol" value="2"/>
+					</Value>
+				</Argument>
+				<Help>Query the DNS server for the information about the given hostname</Help>
+			</Option>
+
+			<Option name="reverse" optional="true" group="type">
+				<Set data='type' value='1' />
+				<Argument name="ip" data="target" optional="false" />
+				<Help>Query the DNS server for the information about the given IP</Help>
+			</Option>
+
+			<Option name="zone" optional="true" group="type">
+				<Set data='type' value='2' />
+				<Argument name="domain" data="target" optional="false" />
+				<Help>Attempt to perform a zone transfer (ie, get all DNS information) for</Help>
+				<Help>the given domain.</Help>
+			</Option>
+
+			<Option name="dns" optional="false" group="actiontype">
+				<Argument name="serverIp" data="dnsServer" optional="false" />
+				<Help>DNS server to query</Help>
+				<Require>query</Require>
+				<Require>zone</Require>
+				<Require>reverse</Require>
+			</Option>
+
+			<Option name="cache" optional="false" group="actiontype">
+				<Help>Act on the local DNS cache</Help>
+				<Require>display</Require>
+				<Require>flush</Require>
+			</Option>
+
+			<Option name="display" optional="true" group="cacheaction">
+				<Set data='type' value='3'/>
+			</Option>
+
+			<Option name="flush" optional="true" group="cacheaction">
+				<Set data='type' value='4'/>
+				<Argument name="name" optional="true" data="target">
+					<Help>The entry to flush.  (All entries if no name is given)</Help>
+				</Argument>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint8_t'/>
+			<Data name='dnsServer' type='ipaddr'/>
+			<Data name='target' type='string'/>
+			<Data name='protocol' type='uint8_t' default='0'/>
+		</Output>
+		
+	</Command>
+</Plugin>

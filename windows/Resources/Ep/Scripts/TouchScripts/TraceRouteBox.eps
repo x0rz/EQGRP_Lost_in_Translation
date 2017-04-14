@@ -1,0 +1,73 @@
+bool $ok = true;
+string $cmd = "";
+
+#######################################################################
+$cmd = "traceroute -ip $argv[1]";
+#echo "\n---------- TraceRouteBox : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+
+echo "\n\t$cmd";
+
+int $traceHop = GetCmdData("traceHop");
+string $traceIP = GetCmdData("traceIP");
+int $traceTTL = GetCmdData("traceTTL");
+int $traceCode = GetCmdData("traceCode");
+int $traceTime = GetCmdData("traceTime");
+string $traceName = GetCmdData("traceName");
+int $traceErr = GetCmdData("traceErr");
+
+int $prevhop = 0;
+string $previp = "";
+int $newaddr = 0;
+string $code = "";
+string $output= "";
+
+if (defined($traceHop[0]) == false)
+{
+	echo "$cmd, script variables were not defined.";
+	return false;
+}
+else
+{
+	int $i = 0;
+	while ($i < sizeof($traceHop)) 
+	{
+		$newaddr = 0;
+		ifnot ($prevhop == $traceHop[$i]) {$newaddr = 1;}
+		else { ifnot ($previp == $traceIP[$i]) {$newaddr = 1;}}
+		$prevhop == $traceHop[$i];
+		ifnot ($traceIP[$i] == "***TIMEOUT***") {$previp == $traceIP[$i];}
+
+		if ($newaddr == 1)
+		{
+			$output = "\t\tHop $traceHop[$i] - $traceIP[$i]";
+			if ($traceTTL[$i] == 0) { echo "$output";}
+			else {echo "$output (TTL $traceTTL[$i])";}
+		}
+		ifnot($traceTTL[$i] == 0) 
+		{
+			$code = "  ** UNDEFINED ** ";
+			if ($traceCode[$i] == 0)  {$code = "ECHO REPLY        ";}
+			if ($traceCode[$i] == 3)  {$code = "DEST UNREACHABLE  ";}
+			if ($traceCode[$i] == 8)  {$code = "ECHO REQUEST      ";}
+			if ($traceCode[$i] == 11) {$code = "TIME_EXCEEDED     ";}
+			if ($traceCode[$i] == 32) {$code = "ICMP ECHO DATA LEN";}
+			echo "\t\t\t$code - $traceTime[$i] ms";
+		}
+		$i++;
+	}
+}
+if ($traceErr == 1) {echo "\t\tTraceroute complete"; return true;}
+else {return false;}
+
+
+
+
+
+
+
+

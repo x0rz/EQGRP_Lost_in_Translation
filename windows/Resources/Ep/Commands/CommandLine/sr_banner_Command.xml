@@ -1,0 +1,62 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31406'>
+
+  <Command id='16' name='sr_banner'>
+
+    <Help>Connects to a host on a given port and optionally retrieves a banner.</Help>
+    <Help>Uses the StingRay driver if it is available.</Help>
+
+    <Input>
+      <Option name='ip' optional='false'>
+	<Argument name='ip_addr' data='ip_addr' />
+	<Help>The IP address of the target machine</Help>
+      </Option>
+
+      <Option name='tcp' optional='true' group='main'>
+	<Set data='protocol' value='1' />
+	<Help>Connect using tcp.</Help>
+      </Option>
+      <Option name='udp' optional='true' group='main'>
+	<Set data='protocol' value='2' />
+	<Help>Connect using UDP.</Help>
+      </Option>
+      <Option name='icmp' optional='true' group='main'>
+	<Set data='protocol' value='3' />
+	<Help>Connect using icmp.</Help>
+      </Option>
+
+      <Option name='port' optional='true'>
+	<Argument name='port_num' data='port' />
+	<Help>The port to which to connect</Help>
+      </Option>
+
+      <Option name='wait' optional='true'>
+	<Argument name='nsecs' data='wait' />
+	<Help>How long, in seconds, to wait for a valid response from the selected port.</Help>
+      </Option>
+
+      <Option name='send' optional='true'>
+	<Argument name='...' data='...' />
+	<Help>The data to send</Help>
+      </Option>
+
+      <Option name='broadcast' optional='true'>
+	<Set data='broadcast' value='true' />
+	<Help>Send broadcast datagrams</Help>
+      </Option>
+
+    </Input>
+    <Output>
+
+      <Data name='ip_addr'   type='string'/>
+      <Data name='protocol'  type='uint8_t'  default='1'/>
+      <Data name='port'      type='uint16_t' default='0'/>
+      <Data name='wait'      type='uint32_t' default='10'/>
+      <Data name='...'       type='string'/>
+      <Data name='broadcast' type='bool'     default='false' />
+    </Output>
+
+  </Command>
+
+</Plugin>

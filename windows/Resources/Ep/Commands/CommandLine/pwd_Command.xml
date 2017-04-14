@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31307'>
+
+  <Command id='16' name='pwd'>
+
+    <Help>Returns your current directory.</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

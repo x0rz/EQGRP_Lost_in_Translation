@@ -1,0 +1,28 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31374'>
+
+  <Command id='16' name='aduser'>
+
+    <Help>Lists the details of a user from the Active Directory, or lists all users details with -all option</Help>
+
+    <Input>
+      <Option name='user' optional='false' group='options'>
+        <Argument name="name" optional="false" data="user" />
+        <Help>list details for one user</Help>
+      </Option>	
+      <Option name='all' optional='false' group='options' />
+      <Option name='pagesize' optional='true'>
+	<Argument name='entries' data='pageSize'/>
+        <Help>Sets the number of entries used per page.  Only used if -all option is specified.</Help>
+      </Option>
+    </Input>
+
+    <Output>
+	<Data name='user' type='string' />
+	<Data name='pageSize' type='uint32_t' default='1000'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

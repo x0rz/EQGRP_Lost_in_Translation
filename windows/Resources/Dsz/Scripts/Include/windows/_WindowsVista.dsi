@@ -1,0 +1,92 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsWindowsVista
+#	Returns the whether the current target is Windows Vista
+#----------------------------------------------------
+sub _IsWindowsVista()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return (($major == 6) && ($minor == 0));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsVista
+
+#----------------------------------------------------
+# _IsWindowsVistaLocal
+#	Returns the whether the local os is Windows Vista
+#----------------------------------------------------
+sub _IsWindowsVistaLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return (($major == 6) && ($minor == 0));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsVistaLocal
+
+#----------------------------------------------------
+# _IsWindowsVistaOrGreater
+#	Returns the whether the current target is Windows Vista or greater
+#----------------------------------------------------
+sub _IsWindowsVistaOrGreater()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major;
+			if (_GetOsVersion($major)) {
+				return ($major >= 6);
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsVistaOrGreater
+
+#----------------------------------------------------
+# _IsWindowsVistaOrGreaterLocal
+#	Returns the whether the local os is Windows Vista or greater
+#----------------------------------------------------
+sub _IsWindowsVistaOrGreaterLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major;
+			if (_GetOsVersionLocal($major)) {
+				return ($major >= 6);
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindowsVistaOrGreaterLocal

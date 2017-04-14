@@ -1,0 +1,64 @@
+@include "_GetDirectory.epm";
+@include "GenericFunctions.epm";
+#This function will write the given message to a file in the format of:
+#MARKER_filePreFix_MM_DD_YYYY.txt. 
+#It will be written to the top level IP folder:
+#d:\1.1.1.1\MARKER_filePreFix_MM_DD_YYYY.txt
+#It is the responsibility of the caller to ensure the suplied prefix is unique
+sub setMarker(IN string $filePreFix, IN string $message){
+	@echo off;
+	@record on;
+	`local time`;
+	string $date = GetCmdData("remotedate");
+	string $dateSplit = split("/",$date);
+	#string concatination hack. 
+	string $under = "_";
+	string $cleanedDate = "$dateSplit[0]$under$dateSplit[1]$under$dateSplit[2]";
+
+	`getdirectory -logs`;
+	string $toParse = GetCmdData("dir");
+	string $parsed = split("\\",$toParse);
+	string $driveLetter = $parsed[0];
+	string $IP = $parsed[1];
+
+	ifnot(WriteFile("$driveLetter\\$IP\\MARKER_$filePreFix$under$cleanedDate.txt",TRUE,$message)){
+		echo "\r!!!In function setMarker, could not create the output file!!!\r";
+		return false;
+	}
+	return true;
+}
+
+#This function will check to see if it can locate a marker in the preps directory
+#returns true if it finds one. I bet you can guess what happens if it doesn't...
+sub checkMarker(IN string $filePreFix, OUT string $markerName){
+	@record on;
+	@echo off;
+	string $projectName;
+	getProjName($projectName);
+	#we have the project name
+	#now get the preps dir
+	string $prepsDir;
+	_GetLpResourcesDirectory($prepsDir);
+	string $toBreak = split("\\",$prepsDir);
+	$prepsDir = "$toBreak[0]\\$toBreak[1]\\preps";
+	#now, which IP do we care about?
+	string $IP;
+	_GetLpLogsDirectory($IP);
+	string $toParse = split("\\",$IP);
+	$IP = $toParse[1];
+	string $IPw = "w";
+	$IP = "$IP$IPw";
+	#finally ready to check
+	@record off;
+	@record on;
+	`local dir MARKER_$filePreFix* -path $prepsDir\\$projectName\\$IP`;
+	string $name = GetCmdData("name");
+	if(sizeof($name)>0){
+		#something matched the prefix
+		$markerName = $name;
+		return true;
+	}else{
+		return false;
+	}	
+}
+

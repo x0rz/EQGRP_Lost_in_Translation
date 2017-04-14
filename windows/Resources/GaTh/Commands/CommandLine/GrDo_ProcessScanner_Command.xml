@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin provider="0x01010072" interface="0x01c10032">
+    <Command name="GrDo_ProcessScanner" id="0">
+        <Input>
+			<Option name='hidden' optional='true' >
+				<Set data='hidden' value='true'/>
+				<Help>Look for hidden processes</Help>
+			</Option>
+			<Option name='scanPE' optional='true' >
+				<Help>Scan PE header of each loaded module</Help>
+				<Help>Use scanPE full to get full PE header</Help>
+				<Help>(defaults to none)</Help>
+
+				<Argument name='scanPE'>
+					<Value string='none'>
+						<Set data='scanPE' value='0'/>
+					</Value>
+					<Value string='minimal'>
+						<Set data='scanPE' value='1'/>
+					</Value>
+					<Value string='full'>
+						<Set data='scanPE' value='2'/>
+					</Value>
+				</Argument>				
+				
+			</Option>
+			
+			<Option name='openFile' optional='true' >
+				<Help>Open the corresponding file for each module</Help>
+				<Help>This will be compared to the PE header.  </Help>
+				<Help>(defaults to none, use yes to display all results)</Help>
+
+				<Argument name='openFile'>
+					<Value string='none'>
+						<Set data='openFile' value='0'/>
+					</Value>
+					<Value string='yes'>
+						<Set data='openFile' value='1'/>
+					</Value>
+					<Value string='only'>
+						<Set data='openFile' value='2'/>
+					</Value>
+				</Argument>				
+				
+			</Option>
+						
+			<Option name='checkRWX' optional='true' group='memcheck'>
+				<Set data='checkRWX' value='true'/>
+				<Help>Check for RWX memory that is not in a loaded module</Help>
+			</Option>
+			<Option name='checkRX' optional='true' group='memcheck'>
+				<Set data='checkRX' value='true'/>
+				<Help>Check for RX memory that is not in a loaded module</Help>
+			</Option>
+			<Option name='injected' optional='true' >
+				<Set data='injected' value='true'/>
+				<Help>Look for injected modules (module name does not exist on disk)</Help>
+			</Option>
+			<Option name='elevate' optional='true' >
+				<Set data='elevate' value='true'/>
+				<Help>Attempt to elevate to open processes (if necessary)</Help>
+			</Option>
+			<Option name='id' optional='true' >
+				<Argument name='processID' data='processID'/>
+				<Help>Process ID to scan (if not given, all processes will be scanned)</Help>
+			</Option>
+			<Option name='ignore' optional='true'>
+				<Argument name='processIgnoreList' data='processIgnoreList'/>
+				<Help>List of processes that should be ignored and not scanned</Help>
+				<Help>Processes are seperated by ; with no space and should start and end with a ;</Help>
+				<Help>example ;avp.exe;firewall.exe; --check is not case sensitive</Help>
+			</Option>
+			<Option name='throttle' optional='true' >
+				<Set data='throttle' value='true'/>
+				<Help>Throttle execution to minimize CPU load</Help>
+			</Option>		
+			
+		</Input>
+		<Output>
+			<Data name='hidden'		type='bool' default='false'/>
+			<Data name='injected'	type='bool' default='false'/>
+			<Data name='scanPE'		type='uint8_t' default='0'/>
+			<Data name='openFile'	type='uint8_t' default='0'/>
+			<Data name='checkRWX'	type='bool' default='false'/>
+			<Data name='checkRX'	type='bool' default='false'/>
+			<Data name='elevate'	type='bool' default='false'/>
+			<Data name='throttle'	type='bool' default='false'/>
+			<Data name='processID'	type='uint32_t' default='0'/>
+			<Data name='processIgnoreList' type='string'/>
+		</Output>
+    </Command>
+</Plugin>

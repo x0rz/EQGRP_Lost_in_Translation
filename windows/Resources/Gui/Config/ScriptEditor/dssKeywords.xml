@@ -1,0 +1,91 @@
+<Keywords>
+
+	<!-- 
+		So, here are the keywords.
+		type can be a number from 1 to 10.  6, 7, and 8 correspond
+		to KEYWORD1/2/3, which is really the only things you should
+		mess with.
+		KEYWORD1 - core language features
+		KEYWORD2 - function calls
+		KEYWORD3 
+	 -->
+
+	<!-- flow control -->
+	<Keyword type="6">if</Keyword>
+	<Keyword type="6">else</Keyword>
+	<Keyword type="6">while</Keyword>
+	<Keyword type="6">for</Keyword>
+	<Keyword type="6">break</Keyword>
+	<Keyword type="6">continue</Keyword>
+	<Keyword type="6">return</Keyword>
+	
+	<!-- build in functions -->
+	<Keyword type="7">addcmddata</Keyword>
+	<Keyword type="7">callsub</Keyword>
+	<Keyword type="7">clearcmddata</Keyword>
+	<Keyword type="7">defined</Keyword>
+	<Keyword type="7">deleteenv</Keyword>
+	<Keyword type="7">echo</Keyword>
+	<Keyword type="7">endcmddata</Keyword>
+	<Keyword type="7">filecheck</Keyword>
+	<Keyword type="7">filegetdirs</Keyword>
+	<Keyword type="7">filegetfiles</Keyword>
+	<Keyword type="7">filemkdir</Keyword>
+	<Keyword type="7">getcmddata</Keyword>
+	<Keyword type="7">getcmddatasize</Keyword>
+	<Keyword type="7">getenv</Keyword>
+	<Keyword type="7">getinput</Keyword>
+	<Keyword type="7">getkeys</Keyword>
+	<Keyword type="7">getobjectdata</Keyword>
+	<Keyword type="7">gettimestamp</Keyword>
+	<Keyword type="7">gotobackground</Keyword>
+	<Keyword type="7">islocal</Keyword>
+	<Keyword type="7">pause</Keyword>
+	<Keyword type="7">prompt</Keyword>
+	<Keyword type="7">promptcommand</Keyword>
+	<Keyword type="7">readfile</Keyword>
+	<Keyword type="7">regexmatch</Keyword>
+	<Keyword type="7">regexsplit</Keyword>
+	<Keyword type="7">regexsub</Keyword>
+	<Keyword type="7">setenv</Keyword>
+	<Keyword type="7">sizeof</Keyword>
+	<Keyword type="7">sleep</Keyword>
+	<Keyword type="7">splitpath</Keyword>
+	<Keyword type="7">startcmddata</Keyword>
+	<Keyword type="7">storecmddata</Keyword>
+	<Keyword type="7">strcat</Keyword>
+	<Keyword type="7">strlen</Keyword>
+	<Keyword type="7">undef</Keyword>
+	<Keyword type="7">undefkey</Keyword>
+	<Keyword type="7">writefile</Keyword>
+	
+	<!-- data stuff -->
+	<Keyword type="8">true</Keyword>
+	<Keyword type="8">false</Keyword>
+	<Keyword type="8">bool</Keyword>
+	<Keyword type="8">int</Keyword>
+	<Keyword type="8">object</Keyword>
+	<Keyword type="8">string</Keyword>
+	<Keyword type="8">struct</Keyword>
+	<Keyword type="8">&lt;BOOL&gt;</Keyword>
+	<Keyword type="8">&lt;INT&gt;</Keyword>
+	<Keyword type="8">&lt;STRING&gt;</Keyword>
+	
+	<!-- controls stuff -->
+	<Keyword type="6">@case-sensitive</Keyword>
+	<Keyword type="6">@disablewow64</Keyword>
+	<Keyword type="6">@echo</Keyword>
+	<Keyword type="6">@hex</Keyword>
+	<Keyword type="6">@quiet</Keyword>
+	<Keyword type="6">@include</Keyword>
+	<Keyword type="6">@record</Keyword>
+	<Keyword type="6">@regex-global</Keyword>
+	<Keyword type="6">on</Keyword>
+	<Keyword type="6">off</Keyword>
+	
+	<!-- subroutine stuff -->
+	<Keyword type="6">sub</Keyword>
+	<Keyword type="6">in</Keyword>
+	<Keyword type="6">out</Keyword>
+	<Keyword type="6">ref</Keyword>
+</Keywords>

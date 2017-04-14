@@ -1,0 +1,15 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>pc_connect</Name>
+		<ReplaceBeforeArgs>local stopaliasing pc_connect</ReplaceBeforeArgs>
+		<ReplaceAfterArgs></ReplaceAfterArgs>
+	</Alias>
+	
+	<Alias>
+		<Name>pc_listen</Name>
+		<ReplaceBeforeArgs>local stopaliasing pc_listen</ReplaceBeforeArgs>
+		<ReplaceAfterArgs></ReplaceAfterArgs>
+	</Alias>
+</Aliases>

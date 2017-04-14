@@ -1,0 +1,85 @@
+
+@include "_VersionChecksWindows.dsi";
+
+#-------------------------------------------------------------------------------
+# _GetSystemPath
+#	Retrieves the remote system path (ie C:\Windows\System32)
+# Params:
+#	path - The location of the Windows system directory
+#-------------------------------------------------------------------------------
+Sub _GetSystemPath(OUT string $path)
+{
+
+	string $root, $sys;
+	if (_GetSystemPaths($root, $sys))
+	{
+		$path = "$root\\$sys";
+		return true;
+	}
+	
+	return false;
+
+}	/* END _GetSystemPath */
+
+#-------------------------------------------------------------------------------
+# _GetSystemPaths
+#	Retrieves the remote system paths
+# Params:
+#	root - The location of the Windows directory
+#	system - The name of the system file in the windows directory
+#-------------------------------------------------------------------------------
+Sub _GetSystemPaths(OUT string $root, OUT string $system)
+{
+
+    string $local="";
+    if (IsLocal()) {
+		$local = "_local";
+    }
+    
+    bool $haveDirs;
+    GetEnv("$local\_sysDirsSet", $haveDirs);
+    if (defined($haveDirs) && $haveDirs) {
+	
+		# already got the dirs
+		if (GetEnv("$local\_sysDirRoot", $root) && 
+			GetEnv("$local\_sysDirSystem", $system))
+		{
+			# got both values
+			return true;
+		}
+	}
+	
+	# didn't get values (either because they were never set or an error occured
+		
+	# have to get the directories
+	string $key;
+	if (_IsWindows9x()) {
+		$key = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion";
+		$system = "SYSTEM";
+	} else {
+		$key = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+		$system = "SYSTEM32";
+	}
+		
+	@echo off;
+	@record on;
+	if (!`registryquery -hive L -key "$key" -value SystemRoot`) {
+		# failed to get information
+		return false;
+	}
+	@record off;
+	@echo on;
+	
+	if (!GetCmdData("key::value::value", $root) || !defined($root) || !defined($system)) {
+		# didn't get directories
+		return false;
+	}
+
+	bool $set = true;
+	if (!SetEnv("$local\_sysDirRoot", $root)) { $set = false; }
+	if (!SetEnv("$local\_sysDirSystem", $system)) { $set = false; }
+	SetEnv("$local\_sysDirsSet", "$set");
+
+    return true;
+
+} /* END _GetSystemPaths */

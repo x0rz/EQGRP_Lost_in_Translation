@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31304'>
+ <Command id='16' name='fileperms'>
+
+  <Help>Checks the permissions on a given file.</Help>
+
+  <Input>
+
+   <Option name='file' optional='false'>
+    <Argument name='name' data='file'/>
+   </Option>
+
+   <!-- deprecated / ignored options -->
+   <Option name='verbose' optional='true'/>
+
+  </Input>
+
+  <Output>
+   <Data name='file' type='string'/>
+  </Output>
+
+ </Command>
+</Plugin>

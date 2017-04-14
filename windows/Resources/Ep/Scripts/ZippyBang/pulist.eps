@@ -1,0 +1,100 @@
+#------------------------------------------------------
+# File:	Pulist.eps
+#
+# Performs remote process list, if possible (a la pulist.exe)
+#
+# Modifications:
+#	03/23/06	Created.
+#	04/15/08	Modified to allow local pulist
+#			and integration with elist.  Also
+#			added parent process ID.
+#------------------------------------------------------
+
+@echo off;
+
+# We can have 1 or 0 arguments.  If the arg is a ?, the user wants the syntax!
+if ( ( $argc > 2 ) || ( ($argc == 2) && ($argv[1] == "?" ) ) ) {
+	echo "Usage: $argv[0] [targetMachine]\r\n";
+	return false;
+}
+
+# This is passed around as a REF parameter into many of the functions
+# making it a structure makes the calling of functions easier
+
+# add \\ to	the	target name	if none	specified
+
+string $targetString = "-local" ;
+
+if( $argc == 1 ) {
+	$targetString = "-local" ;
+}
+else if( $argc == 2 ){
+	string $target = Split("\\\\", $argv[1]);
+	if (sizeof($target)	> 1) {
+		$target	= "\\\\$target[1]";
+	} else {
+		$target	= "\\\\$target[0]";
+	}
+	if ($target	== "\\\\") {
+		echo "Invalid target ($target)";
+		return false;
+	}
+	echo "Getting process list for $target\n";
+
+	$targetString = "-remote $target" ;
+}
+else {
+	echo "Unknown number of parameters" ;
+	return false ;
+}
+
+@record on;
+bool $res = `xml performance $targetString -data Process -bare`;
+@record off;
+
+ifnot($res) {
+	echo "Unable to get performance data\n";
+	return false;
+}
+
+string $systemName = GetCmdData("systemName");
+string $objects    = GetCmdData("ObjectType");
+
+int $processIDIndex = 230;
+int $parentIDIndex = 1410 ;
+# find the process item (should be 230)
+
+string $processes = GetCmdData("$processIDIndex\_Instance");
+
+string $process 	= "" ;
+string $outputString 	= "" ;
+
+foreach $process ($processes) {
+	string $counter = GetCmdData("$processIDIndex\_$process\_Counter");
+	int $cnt = 784;
+	string $procId = GetCmdData("$processIDIndex\_$process\_$cnt\_value");
+	string $parentID = GetCmdData( "$processIDIndex\_$process\_$parentIDIndex\_value" ) ;
+
+	if($process == "_Total") {
+		continue;
+	}
+
+	$outputString = "$outputString$process,$procID,$parentID:" ;
+	SetCmdData(STRING, "process", $process);
+	SetCmdData(INT, "id", <int>$procId);
+}
+
+string $dir = GetEnv("RESOURCESDIR");
+string $broke = split("\\",$dir);
+string $driveLetter = $broke[0];
+
+@echo off;
+@record on;
+`local run -command "cmd /c echo $outputString | perl $driveLetter\\OPSDisk\\Resources\\EP\\Scripts\\ZippyBang\\elist-checker.pl" -redirect` ;
+@record off;
+@echo on;
+
+string $output =  GetCmdData("output");
+echo $output;
+
+return true;

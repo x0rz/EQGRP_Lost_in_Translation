@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_RegistryQuery_Tasking.pyo' providerType='script'>
+
+	<Command name="RegistryQuery" id="0">
+	
+		<Help>Returns registry keys and/or values</Help>
+		
+		<Input>
+			
+			<Option name="hive" optional="false">
+				<Help>Which hive to use</Help>
+				<Help>U - HKEY_USERS</Help>
+				<Help>L - HKEY_LOCAL_MACHINE</Help>
+				<Help>C - HKEY_CURRENT_USER</Help>
+				<Help>G - HKEY_CURRENT_CONFIG</Help>
+				<Help>R - HKEY_CLASSES_ROOT</Help>
+				
+				<Argument name="h" optional="false">
+					<Value string="U">
+						<Set data="hive" value="1" />
+					</Value>
+					<Value string="L">
+						<Set data="hive" value="2" />
+					</Value>
+					<Value string="C">
+						<Set data="hive" value="3" />
+					</Value>
+					<Value string="G">
+						<Set data="hive" value="4" />
+					</Value>
+					<Value string="R">
+						<Set data="hive" value="5" />
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='key' optional='true'>
+				<Help>The key to query. If no key is given, the root of the hive given.</Help>
+				<Argument name='name' data='key' />
+			</Option>
+			
+			<Option name='value' optional='true'>
+				<Help>A specific registry value to query.</Help>
+				<Argument name='name' data='value' />
+			</Option>
+
+      <Option name='after' optional='true'>
+        <Help>Only display keys modified after the given date.</Help>
+        <Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+        <Argument name='date' data='after'/>
+      </Option>
+
+      <Option name='before' optional='true'>
+				<Help>Only display keys modified before the given date</Help>
+				<Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+				<Argument name='date' data='before'/>
+			</Option>
+			
+			<Option name='recursive' optional='true'>
+				<Set data='recursive' value='true' />
+			</Option>
+			
+			<Option name='target' optional='true'>
+				<Argument name='machine' data='remote' />
+			</Option>
+			
+			<Option name='wow64' optional='true' group='wow'>
+				<Help>On 64-bit Windows, work on the 64-bit Software keys</Help>
+				<Set data="wowtype" value="1" />
+			</Option>
+			
+			<Option name='wow32' optional='true' group='wow'>
+				<Help>On 64-bit Windows, work on the 32-bit Software keys</Help>
+				<Set data="wowtype" value="2" />
+			</Option>
+			
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many bytes to queue before returning data.</Help>
+			</Option>
+			
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+
+		</Input>
+		
+		<Output>
+			<Data name='hive' type='uint8_t' />
+			<Data name='recursive' type='bool' default='false' />
+			<Data name='key' type='string' />
+			<Data name='value' type='string' />
+			<Data name='before' type='datetime'/>
+			<Data name='after' type='datetime'/>
+			<Data name='remote' type='string' />
+			<Data name='wowtype' type='uint8_t' />
+			<Data name='chunksize' type='uint32_t' default='65536'/>
+			<Data name='method'    type='string'/>
+		</Output>
+		
+	</Command>
+</Plugin>

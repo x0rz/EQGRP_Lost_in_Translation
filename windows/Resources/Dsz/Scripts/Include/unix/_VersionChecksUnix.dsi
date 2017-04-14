@@ -1,0 +1,49 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsUnix
+#	Returns whether the current target is Unix
+#----------------------------------------------------
+sub _IsUnix()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os))
+	{
+		if ($os != "winnt" &&
+			$os != "win9x")
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsUnix
+
+#----------------------------------------------------
+# _IsUnixLocal
+#	Returns whether the local os is Unix
+#----------------------------------------------------
+sub _IsUnixLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os))
+	{
+		if ($os != "winnt" &&
+			$os != "win9x")
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsUnixLocal
+
+

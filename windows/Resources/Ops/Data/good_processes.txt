@@ -1,0 +1,3 @@
+svchost.exe,SYSPATH
+explorer.exe,SYSTEMROOT
+services.exe,SYSPATH

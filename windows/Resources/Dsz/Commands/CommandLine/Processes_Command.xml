@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Processes_Tasking.pyo' providerType='script'>
+
+    <Command id="0" name="Processes">
+
+        <Input>
+			<Option name='list' optional='false' group='type'>
+				<Set data='type' value='0'/>
+				<Help>Retrieve the current process list</Help>
+			</Option>
+			
+			<Option name='monitor' optional='false' group='type'>
+				<Set data='type' value='1'/>
+				<Set data='minimal' value='true'/>
+				<Help>Monitor the process list for differences</Help>
+				<Argument name='delay' data='delay' optional='true'>
+					<Help>Delay between checks (default=5s)</Help>
+				</Argument>
+			</Option>
+			
+			<Option name='minimal' optional='true'>
+				<Set data='minimal' value='true'/>
+				<Help>Do not perform additional process information queries</Help>
+			</Option>
+			
+			<Option name='ignore' optional='true'>
+				<Help>Processes that should not be returned</Help>
+				<Argument name='name1' data='name1' optional='false'/>
+				<Argument name='name2' data='name2' optional='true'/>
+				<Argument name='name3' data='name3' optional='true'/>
+				<Argument name='name4' data='name4' optional='true'/>
+				<Argument name='name5' data='name5' optional='true'/>
+				<Argument name='name6' data='name6' optional='true'/>
+				<Argument name='name7' data='name7' optional='true'/>
+				<Argument name='name8' data='name8' optional='true'/>
+				<Argument name='name9' data='name9' optional='true'/>
+			</Option>
+
+			<Option name="target" optional="true">
+				<Argument name="serverName" data="serverName" optional="false"/>
+				<Help>Get processes from specified, remote machine (The machine name must being with \\ for Windows NT)</Help>
+			</Option>
+		</Input>
+		
+        <Output>
+			<Data name='type'		type='uint8_t'/>
+			<Data name='minimal'	type='bool' default='false'/>
+			<Data name='delay'		type='time' default='5s'/>
+			<Data name='name1'		type='string'/>
+			<Data name='name2'		type='string'/>
+			<Data name='name3'		type='string'/>
+			<Data name='name4'		type='string'/>
+			<Data name='name5'		type='string'/>
+			<Data name='name6'		type='string'/>
+			<Data name='name7'		type='string'/>
+			<Data name='name8'		type='string'/>
+			<Data name='name9'		type='string'/>
+			<Data name='serverName'	type='string'/>
+		</Output>
+        
+    </Command>
+    
+</Plugin>

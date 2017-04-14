@@ -1,0 +1,42 @@
+<ContextMenu>
+
+	<!--
+		acceptable substitutes are:
+		{id},
+		{name},
+		{path},
+		{fullpath}
+	-->
+	<Entry live="true" replay="true">
+		<Verify>false</Verify>
+		<Label>Get</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>get</Line>
+			<Line>id={id}</Line>
+			<Line>path={path}</Line>
+			<Line>name={name}</Line>
+			<Line>bytes={bytes}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Verify>false</Verify>
+		<Label>Search</Label>
+		<Action>
+			<Line>search</Line>
+			<Line>-searchRoot={pid}</Line>
+			<Line>-shownow</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Verify>false</Verify>
+		<Label>Browse in another window</Label>
+		<Action>
+			<Line>browse</Line>
+			<Line>-initial={pid}</Line>
+			<Line>-shownow</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry></ContextMenu>

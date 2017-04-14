@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:trch"
+        id="b7bc209584db8d06d97dd5a6fa8b2453a93aa94a"
+        name="Zippybeer"
+        version="1.0.2"
+        configversion="1.0.2.0"
+        schemaversion="1.0.0">
+    <inputparameters> 
+      <parameter name="NetworkTimeout" description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout." type="S16">
+        <default>60</default>
+      </parameter>
+      <parameter name="TargetIp" description="Target IP Address" type="IPv4"/>
+      <parameter name="TargetPort" description="Port used by the SMTP service" type="TcpPort"><default>445</default></parameter>
+      
+      <!-- Common (credential-related) parameters -->
+      <paramchoice name="CredentialType" description="Password, password hash, ticket, etc">
+        <paramgroup name="UsernamePassword" description="Unicode encoded credentials">
+          <parameter name="Username" description="Username entered as hex bytes (in Unicode)" type="Buffer"/>
+          <parameter name="Credential" description="Unicode password entered as hex bytes (in Unicode)" type="Buffer"/>
+          <parameter name="Domain" description="Account domain (leave blank if local login)" type="Buffer" required="false"/>
+        </paramgroup>
+        <paramgroup name="PasswordHash" description="NTLM password hash">
+          <parameter name="Username" description="Username entered as hex bytes (in Unicode)" type="Buffer"/>
+          <parameter name="Credential" description="Hash of user/machine password entered as hex bytes" type="Buffer"/>
+          <parameter name="Domain" description="Account domain (leave blank if local login)" type="Buffer" required="false"/>
+        </paramgroup>
+        
+        <!-- KERBEROS -->
+        <paramgroup name="Kerberos" description="Kerberos ticket for target machine">
+          <parameter name="TargetNetbiosName" description="NetBIOS name of the target machine" type="Buffer"/>
+          <parameter name="TargetDcIp" description="Domain Controller's IP address" type="IPv4"/>
+          <parameter name="TargetDcKerberosPort" description="Port used by the Kerberos service" type="TcpPort">
+            <default>88</default>
+          </parameter>
+		  <parameter name="TargetDcSMBPort" description="Port used by the Kerberos service for SMB" type="TcpPort">
+            <default>445</default>
+          </parameter>
+          <parameter name="UseESRO" description="Escelate privileges to domain admin using ESRO" type="Boolean" />
+          <parameter name="Username" description="Name of the user who owns the Kerberos ticket (in Unicode)" type="Buffer"/>
+          <paramchoice name="KerbCredentialType" description="Password, password hash">
+            <paramgroup name="Password" description="Password">
+              <parameter name="Credential" description="Unicode password entered as hex bytes (in Unicode)" type="Buffer"/>
+            </paramgroup>
+            <paramgroup name="PasswordHash" description="NTLM password hash">
+              <parameter name="Credential" description="Unicode password entered as hex bytes (in Unicode)" type="Buffer"/>
+            </paramgroup>
+          </paramchoice>
+          
+        </paramgroup>
+        <paramgroup name="DAPU" description="DAPU-installed target">
+          <parameter name="PrivateKey" description="Private key from the public/private key pair associated with the DAPU instance" type="Buffer">
+		    <default>0702000000a40000525341320008000001000100c1599868e3165b338818f5db5cf4621ccb1b9db8a1207999dee761565577ce5b867695a3c60cf0ad968e6d84ca17a593b258747e1087726b88132c7754a2252e93ee848333871aa2a8580eacaaa04316fe1e479685a36d723844f0d0726bbfc86d0030c58bcdb23421ac74d111c2c8cd68802ba3d4cae158d38f9e4451534a5dcd101e3f85e67b7b54ae8015ea444e13de4f24bcd5e7721f499c7186b11b5e8f3db1e6936de8bcf0199e42011e3b1a813cbc1d6a9c3f18319a8fc7f17194a61dbeadc7521a22dd92f22e8d390ab0ef2ebe76ead87e051b3ed50700c13fec2dc533974f1e58b29c29f9defe97c9052fabf31353e4de2adca7c5febec2878f89dad38fe8f0d2805dc4ad8cd5ede11ac0cd6d8123f18ed8cadfd9bcfedc084230873e73e54574a32eed44a0e73ed296b5300d20d88e0b9d61c21d9a725a5cfa174db948a349c0a6c217d80c1eb2c185acf74269e5aa8889014a1945e5ac818d89b8ea3221e447f1f500381a5762ef33ae255bfa56436daefb648aa51ba1d3d3e5fb9b87ab122459d12880eef0bab976f45aae1325a2f9c62c2a9ce9a878a3577e83fbe1b9bf1e9b0804f941f55b4af98b2349b3433b34eb5b141c49e76f39d13412a3a9ef2b10a49912a00436ae32d414b0c2b356b8c5337295af35504d847d9bce53457a327c3b6b073dbb45513ee40abc1229592048f6bdeadc0a6150f7a618deb16f92b9682a1cb6ab4ff02ea3d9f1086b773798995d5d079fd3e1bcf38dee3a80ba598e700c57d1eb354a68ebe8f6a3cb6bc385e3c3cfaea7f7f5435f9fb8851eaca97bace9fe3cfb7c93ad64e90a01a01319a4ec2cef2a156d92599f729e9510bd96feac56ed8e3317eebe66ef66d495f468dc625da527a2dd4582d4ca56e61543d732d1bda9b8dfc22c09f45ccb0410ce3ed7f8837af6ce7b8f6db166a8f702f0f95ce5701e77d2d4d0fe74578d25c45d16930523508d60b743d304b9aba8dace7b5c1ff027a2a74642b5fb8b437edec6a4045f1dc64e00514ff376dfcf29f6ef51448e0301186a8c569b80c2f03d1cf48c790dabe161b624fd19a4d0aed1381b11ecdec46e50bf3a5f5219c9b2a23d92bec66a5e3e0791d3e4b9a47d3a451150ba0cb8aaccc6ce9e9f48ec10348b4cfb6700132bdf8022c3bbd4fb53093c177d78d89c78119aa4993e3e3368a4ea7711446400e48a1c1d2ee4e1cb5ae96010fe135b0788a929755d9b926503672c20efce13086642eef287fff6efabebb63d814e60d892f54b65db640bd69214a07b8443d98d94fbb2abc96b93bcca6c71e18291c425e5deb1428dd182596fc2e1d77a89404db7c9fe0af5412bf9cab3b07d7c12070414dbdcba73423db5d5e221eab8a354c7e859b14f67f79baf1294628b65b478537f87af7300dd97048c01d260c91b7ac38150894aeb66f8b66423197e1aa7641bf85204cfbe139191d14393635b51cc0c3c1f6a4fd1aa931c2a3f5f65df046d75b800c9c671df457ce5931397342b119ac31047796007cbcd4e6d9809cb92e2595565d9aea8909786983477ec1f776f1ec563e0cc48204e0b2bf8b8672f0070b9714065567ac83c936f909307bae1d68b814500be6d9135d2348b6d</default>
+	      </parameter>
+        </paramgroup>
+      </paramchoice>
+	  <parameter name="TabCompletion" 
+				 description="Enable tab completion in the interface (causes higher data usage)" 
+				 hidden="true" 
+				 type="Boolean" >
+		<default>False</default>
+	  </parameter>
+    </inputparameters>
+	
+    <redirection>
+      <local name="Target SMB Tunnel"
+	       protocol="TCP"
+           listenaddr="TargetIp"
+           listenport="TargetPort"
+           destaddr="TargetIp"
+           destport="TargetPort"
+           closeoncompletion="true"/>
+      <local name="KDC Kerberos Tunnel"
+	       protocol="TCP"
+           listenaddr="TargetDcIp"
+           listenport="TargetDcKerberosPort"
+           destaddr="TargetDcIp"
+           destport="TargetDcKerberosPort"
+           closeoncompletion="true"/>
+      <local name="KDC SMB Tunnel"
+	       protocol="TCP"
+           listenaddr="TargetDcIp"
+           listenport="TargetDcSMBPort"
+           destaddr="TargetDcIp"
+           destport="TargetDcSMBPort"
+           closeoncompletion="true"/>
+  </redirection>
+</config>

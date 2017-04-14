@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25015' script='DataHandlers/Mcl_Cmd_Mkdir_DataHandler.pyo'>
+</DataHandler>

@@ -1,0 +1,21 @@
+string $syspath = GetEnv("SYSPATH");
+string $f1 = "$syspath\\internat32.exe";
+string $f2 = "$syspath\\sbool\\msadp32.exe";
+string $f3 = "$syspath\\Internat.dll";
+
+@record on;
+`dir $f1`;
+int $size_f1 = GetCmdData("size");
+`dir $f2`;
+int $size_f2 = GetCmdData("size");
+`dir $f3`;
+int $size_f3 = GetCmdData("size");
+
+@record off;
+
+
+if (prompt "SIG7 was detected.  Do you want to grab the files? \n $f1, size: $size_f1 \n $f2, size: $size_f2 \n $f3, size: $size_f3)") {
+	`get $f1`;
+	`get $f2`;
+	`get $f3`;
+}

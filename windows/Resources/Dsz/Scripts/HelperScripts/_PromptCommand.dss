@@ -1,0 +1,33 @@
+
+@quiet off;
+
+if ($argc < 2)
+{
+    echo "Usage: $argv[0] <cmd_to_prompt> [cmd_arg1] ...";
+    echo "    Adds a prompt before a command is run";
+	return false;
+}
+
+string $fullCmd = $argv[1];
+for (int $i=2; $i < sizeof($argv); $i++)
+{
+	if (RegExMatch("[ \t]", $argv[$i]))
+	{
+		$fullCmd = "$fullCmd \"$argv[$i]\"";
+	}
+	else
+	{
+		$fullCmd = "$fullCmd $argv[$i]";
+	}
+}
+
+if (!prompt("Do you want to run '$fullCmd'?"))
+{
+	return false;
+}
+else
+{
+	bool $rtn = `stopaliasing $fullCmd`;
+	@echo off;
+	return $rtn;
+}

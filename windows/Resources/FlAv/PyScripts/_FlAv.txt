@@ -1,0 +1,15 @@
+# any line that begins with a '#' is discarded as a comment
+
+# FLAV commandline
+[-action <INSTALL|UNINSTALL|UPGRADE|VERIFYINSTALL|VERIFYRUNNING|LOAD|STATUS>]
+	Do the specific action, rather than show a menu
+[-driver <name>]
+	Sets the driver name
+[-silent]
+	Do not display anything
+[-quiet]
+	Do not ask questions
+[-verbose]
+	Be verbose
+[-method <DSZ|DEMI>]
+	Which method to use?

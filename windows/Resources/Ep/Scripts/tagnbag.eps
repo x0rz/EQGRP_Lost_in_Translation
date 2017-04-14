@@ -1,0 +1,36 @@
+bool $showUsage = false;
+bool $success = true;
+string $target;
+
+if ($argc <= 1) {
+    $showUsage = true;
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else {
+    $target=$argv[1];
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <target>";
+	echo "  traceroute to target; if windows, run windowsexplore.eps";
+    return $success;
+}
+
+@record on;
+if (`traceroute -ip $target`) {
+	int $traceTTL=GetCmdData("traceTTL");
+	int $lastIndex=sizeof($traceTTL);
+	$lastIndex--;
+	# get the arp if it's only one hop away
+	if ($lastIndex==0) {
+		`script arp.eps`;
+	}
+	int $TTL=$traceTTL[$lastIndex];
+	if (($TTL > 64) && ($TTL <= 128)) {
+		# probably a windows box
+		`script windowsexplore.eps $target`;
+	}
+}
+@record off;
+
+return $success;

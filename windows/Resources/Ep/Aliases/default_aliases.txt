@@ -1,0 +1,11 @@
+rm		del
+cp		copy
+mv		move
+ls		dir
+ps		processlist
+time		remotelocaltime
+load		loadplugin
+free		freeplugin
+epredirect	redirect %ep_cmd_args% -nodes 40
+whereami	local pwd
+runassystem	script RunAsSystem.eps

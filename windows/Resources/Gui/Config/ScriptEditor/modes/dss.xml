@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE MODE SYSTEM "xmode.dtd">
+
+<MODE>
+    <PROPS>
+        <PROPERTY NAME="commentStart" VALUE="/*" />
+        <PROPERTY NAME="commentEnd" VALUE="*/" />
+        <PROPERTY NAME="lineComment" VALUE="#" />
+        <PROPERTY NAME="wordBreakChars" VALUE=",+-=&lt;&gt;/?^&amp;*" />
+
+        <!-- Auto indent -->
+        <PROPERTY NAME="indentOpenBrackets" VALUE="{" />
+        <PROPERTY NAME="indentCloseBrackets" VALUE="}" />
+        <PROPERTY NAME="indentNextLine"
+            VALUE="\s*(((if|while)\s*\(|else\s*|else\s+if\s*\(|for\s*\(.*\))[^{;]*)" />
+        <PROPERTY NAME="lineUpClosingBracket" VALUE="true" />
+    </PROPS>
+    <RULES ESCAPE="\"
+        IGNORE_CASE="TRUE"
+        HIGHLIGHT_DIGITS="TRUE"
+        DIGIT_RE="(0x[[:xdigit:]]+[lL]?|[[:digit:]]+(e[[:digit:]]*)?[lLdDfF]?)">
+
+        <!-- C style comment -->
+        <SPAN TYPE="COMMENT1">
+            <BEGIN>/*</BEGIN>
+            <END>*/</END>
+        </SPAN>
+
+        <SPAN TYPE="LITERAL1" NO_LINE_BREAK="TRUE">
+            <BEGIN>"</BEGIN>
+            <END>"</END>
+        </SPAN>
+        <SPAN TYPE="LITERAL1" NO_LINE_BREAK="TRUE">
+            <BEGIN>'</BEGIN>
+            <END>'</END>
+        </SPAN>
+
+	<!-- Exec -->
+	<SPAN TYPE="KEYWORD3" DELEGATE="EXEC">
+		<BEGIN>`</BEGIN>
+		<END>`</END>
+	</SPAN>
+	
+	<!-- Variables -->
+	<SEQ_REGEXP HASH_CHAR="$" TYPE="KEYWORD2">\$(?:#|\w)+</SEQ_REGEXP>
+	<SEQ_REGEXP HASH_CHAR="%" TYPE="KEYWORD2">\$(?:#|\w)+</SEQ_REGEXP>
+	
+
+        <EOL_SPAN TYPE="COMMENT2">#</EOL_SPAN>
+        <SEQ TYPE="OPERATOR">=</SEQ>
+        <SEQ TYPE="OPERATOR">&gt;=</SEQ>
+        <SEQ TYPE="OPERATOR">&lt;=</SEQ>
+        <SEQ TYPE="OPERATOR">+=</SEQ>
+        <SEQ TYPE="OPERATOR">-=</SEQ>
+        <SEQ TYPE="OPERATOR">/=</SEQ>
+
+        <SEQ TYPE="OPERATOR">*=</SEQ>
+        <SEQ TYPE="OPERATOR">&gt;</SEQ>
+        <SEQ TYPE="OPERATOR">&lt;</SEQ>
+        <SEQ TYPE="OPERATOR">%=</SEQ>
+        <SEQ TYPE="OPERATOR">&amp;&amp;</SEQ>
+        <SEQ TYPE="OPERATOR">||</SEQ>
+        <SEQ TYPE="OPERATOR">^</SEQ>
+        <SEQ TYPE="OPERATOR">~</SEQ>
+        <SEQ TYPE="OPERATOR">}</SEQ>
+        <SEQ TYPE="OPERATOR">{</SEQ>
+        
+        <MARK_PREVIOUS TYPE="FUNCTION">::</MARK_PREVIOUS>
+        
+        <MARK_PREVIOUS AT_WHITESPACE_END="TRUE"
+            EXCLUDE_MATCH="TRUE"
+            TYPE="LABEL">:</MARK_PREVIOUS>
+
+        <!-- Function calls -->
+        <MARK_PREVIOUS TYPE="FUNCTION" EXCLUDE_MATCH="TRUE">(</MARK_PREVIOUS>
+
+        <KEYWORDS>
+			<!-- KEYWORD1 = dark green --> <!-- commands -->
+			<!-- KEYWORD2 = regular green --> <!-- control -->
+			<!-- KEYWORD3 = blue --> <!-- variable -->
+            <KEYWORD3>bool</KEYWORD3>
+            <KEYWORD2>break</KEYWORD2>
+            <KEYWORD2>continue</KEYWORD2>
+            <KEYWORD2>foreach</KEYWORD2>
+            <KEYWORD1>defined</KEYWORD1>
+            <KEYWORD1>echo</KEYWORD1>
+            <KEYWORD2>else</KEYWORD2>
+            <KEYWORD3>false</KEYWORD3>
+            <KEYWORD1>getcmddata</KEYWORD1>
+            <KEYWORD1>getenv</KEYWORD1>
+            <KEYWORD1>getinput</KEYWORD1>
+            <KEYWORD2>if</KEYWORD2>
+            <KEYWORD2>ifnot</KEYWORD2>
+            <KEYWORD1>in</KEYWORD1>
+            <KEYWORD3>int</KEYWORD3>
+            <KEYWORD1>islocal</KEYWORD1>
+            <KEYWORD1>keys</KEYWORD1>
+            <KEYWORD1>on</KEYWORD1>
+            <KEYWORD1>off</KEYWORD1>
+            <KEYWORD1>out</KEYWORD1>
+            <KEYWORD1>pause</KEYWORD1>
+            <KEYWORD2>prompt</KEYWORD2>
+            <KEYWORD1>readfile</KEYWORD1>
+            <KEYWORD1>ref</KEYWORD1>
+            <KEYWORD2>return</KEYWORD2>
+            <KEYWORD1>setcmddata</KEYWORD1>
+            <KEYWORD1>setenv</KEYWORD1>
+            <KEYWORD1>sizeof</KEYWORD1>
+            <KEYWORD1>sleep</KEYWORD1>
+            <KEYWORD1>split</KEYWORD1>
+            <KEYWORD1>splitpath</KEYWORD1>
+            <KEYWORD3>string</KEYWORD3>
+            <KEYWORD1>struct</KEYWORD1>
+            <KEYWORD2>sub</KEYWORD2>
+            <KEYWORD3>true</KEYWORD3>
+            <KEYWORD1>undef</KEYWORD1>
+            <KEYWORD2>while</KEYWORD2>
+            <KEYWORD1>writefile</KEYWORD1>
+            <KEYWORD1>@case-sensitive</KEYWORD1>
+            <KEYWORD1>@echo</KEYWORD1>
+            <KEYWORD1>@hex</KEYWORD1>
+            <KEYWORD1>@include</KEYWORD1>
+            <KEYWORD1>@record</KEYWORD1>
+        </KEYWORDS>
+    </RULES>
+</MODE>
+

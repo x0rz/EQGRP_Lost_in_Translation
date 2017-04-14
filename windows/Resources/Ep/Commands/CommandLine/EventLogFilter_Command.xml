@@ -1,0 +1,63 @@
+<?xml version='1.0' ?>
+<Plugin id='31416'>
+	<Command id='16' name='eventlogfilter'>	
+	
+ 		<Help>Allows user to filter event log entries based on specific criteria. User can specify event ID, username, or messge username.</Help> 		
+	
+		<Input>
+		
+			<Option name='num' optional='false'>
+				<Help>The number of entries to parse. A value of zero will result in all entries being parsed. Parsing will cease once the first 1000 records are found unless the 'max' keyword is used.</Help>
+				<Argument name="numrecords" data="num" />
+			</Option>			
+
+			<Option name='id' optional='true'>
+			    <Help>The Event ID on which to filter. Default = No filtering.</Help>
+			    <Argument name='id1' data='id' />
+			</Option>		
+			
+							
+			<Option name='log' optional='true'>
+				<Help>The event log to search. Default = Security</Help>
+				<Argument name="logname" data="log" />
+			</Option>	
+			
+					
+		    <Option name='hdrusername' optional='true'>
+			    <Help>Username on which to filter. Default = No filtering.</Help>
+			    <Argument name='hdrname' data='hdrusername' />
+			</Option>
+			
+			<Option name='msgusername' optional='true'>
+			    <Help>Username in message on which to filter. Default = No filtering.</Help>
+			    <Argument name='msgname' data='msgusername' />
+			</Option>
+			
+			<Option name='startrecord' optional='true'>
+			    <Help>Record with which to begin filtering. Default = Most recent record.</Help>
+			    <Argument name='startrecnum' data='startrecord' />
+			</Option>
+			
+			<Option name='brief' optional='true'>
+				<Help>Flag indicating that insertion strings should not be returned. Default = Display strings.</Help>
+				<Set data='brief' value='true' />
+			</Option>
+			
+			<Option name='max' optional='true'>
+			    <Help>Maximum entries returned from the target. Default=1000. A value of 0 will result in all possible entries returned. It is recommended that a value of 0 not be used due to the fact that a large database could result in an excessive number of entries being parsed and cause a slowdown in the speed and memory usage of the LP.</Help>
+			    <Argument name='maxreturned' data='max' />
+			</Option>
+			
+		</Input>
+		<Output>		    
+		    <Data name='num' type='uint32_t'/>		    
+		    <Data name='id' type='uint32_t' default='0'/>
+		    <Data name='startrecord' type='uint32_t' default='0' />
+		    <Data name='max' type='uint32_t' default='1000' />
+		    <Data name='brief' type='bool' default='false' />		    
+			<Data name='log' type='string' default='security' />			
+			<Data name='hdrusername' type='string'  />	
+			<Data name='msgusername' type='string' />			
+		</Output> 
+	</Command>
+</Plugin>

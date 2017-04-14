@@ -1,0 +1,63 @@
+##############################################
+#                                            #
+# PSP Script: Rising                         #
+#                                            #
+##############################################
+
+#RISING Script. Rising 2005 to 2009
+#15-April-2009- Version 1
+
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+#The struct is defined in PSPHelpers.epm
+metaData @metaData;
+#initialize the struct
+init(@metaData);
+
+#We know this much already
+@metaData.$vendor = "Rising";
+@metaData.$product = "Antivirus";
+
+@echo on;
+@record on;
+echo "Starting Rising configuration check\r";
+#you need two echo off's here to supress the display of text to the screen. 
+@echo off;
+@echo off;
+if(`regquery -hive L -subkey "software\\rising\\ris" -value version`){
+	@metaData.$version = GetCmdData("value_data"); 
+}else if(`regquery -hive L -subkey "software\\rising\\rav" -value version`){ 
+	@metaData.$version = GetCmdData("value_data"); 
+} else {
+	@metaData.$version = "Unknown";
+}
+
+string $risingv = split('\\.', @metaData.$version);
+if ($risingv[0] == "21") {
+	echo "They are running Rising Antivirus 2009 (@metaData.$version)";
+}
+else if ($risingv[0] == "20") {
+	echo "They are running Rising Antivirus 2008 (@metaData.$version)"; 
+}
+else if ($risingv[0] == "19") {
+	echo "They are running Rising Antivirus 2007 (@metaData.$version)"; 
+}
+else if ($risingv[0] == "18") {
+	echo "They are running Rising Antivirus 2006 (@metaData.$version)"; 
+}
+else if ($risingv[0] == "17") {
+	echo "They are running Rising Antivirus 2005 (@metaData.$version)"; 
+}
+else {
+	echo "Unable to determine Rising Antivirus version!";
+}
+
+
+@record off;
+@echo on;
+if(writeMetaData(@metaData)){
+	echo "Wrote meta data to disk\r";
+}else{
+	echo "\rERROR. could not write meta data to disk. ERROR\r";
+}

@@ -1,0 +1,122 @@
+#-------------------------------------------------------------------------------
+# File: symantec.eps
+# Created: 4/26/10
+# Created with functionality to determine specific Symantec versions.
+# Revised: 11/01/11 - added functionality to determine specific version of Symantec Endpoint Protection.
+#-------------------------------------------------------------------------------
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+metaData @metadata;
+init(@metadata);
+@metadata.$vendor = "Symantec";
+
+
+echo "Starting Symantec Product check\n";
+
+string $reg_Value_Data = "";
+string $parts;
+string $temp;
+string $vendor = "Symantec";
+string $product ="";
+string $version = "";
+string $majorVersion = "";
+string $boo = "";
+int $len = 0;
+int $index = 0;
+@record on;
+@echo off;
+if (`regquery -hive L -subkey "software\\Symantec\\Norton Antivirus" -value CurrentVersion`) {
+	$reg_Value_Data = GetCmdData("value_data");
+$parts = split("\\", $reg_Value_Data);
+	
+#	$boo = $reg_Value_Data;
+	substr($boo,0,2,$boo);
+	#echo $boo;
+	if ( $boo == "8" ) {
+	#echo $boo;
+		substr($reg_Value_Data,1,2,$boo);
+	#echo $boo;
+	}
+	else {
+		substr($reg_Value_Data,0,2,$boo);
+	}
+	$reg_Value_Data = "$boo";
+	if ( $reg_Value_Data == "8" ) {
+		#Norton_Antivirus_2002(#@metadata);
+		$product = "Norton Antivirus";
+		$version = "2002";
+	}
+	else if ( $reg_Value_Data == "12" ) {
+		#Norton_InternetSecurity_2006(#@metadata);
+		$product = "Norton Antivirus";
+		$version = "2006";
+	}
+	else if ( $reg_Value_Data == "14" ) {
+		#Norton_InternetSecurity_2007(#@metadata);
+		$product = "Norton Antivirus";
+		$version = "2007";
+	}
+	else if  ( $reg_Value_Data == "15" ) {
+		#Norton_Internet_Security_2008(#@metadata);
+		$product = "Norton Antivirus";
+		$version = "2008";
+	}
+} else if (`regquery -hive l -subkey "software\\symantec\\symantec endpoint protection\\currentversion" -value PRODUCTNAME`)
+{
+	$reg_Value_Data = GetCmdData("value_data");
+	$product = $reg_Value_Data;
+	(`regquery -hive l -subkey "software\\symantec\\symantec endpoint protection\\currentversion" -value PRODUCTversion`);
+	$reg_Value_Data = GetCmdData("value_data");
+	$version = $reg_Value_Data;
+	
+	
+	
+}
+
+else if (`regquery -hive l -subkey "software\\symantec\\symantec endpoint protection\\smc" -value productversion`)
+{
+	$product = "Endpoint Protection";
+	$version = GetCmdData("value_data");
+}
+	
+ else if (`regquery -hive L -subkey "software\\Symantec\\InstalledApps" -value "Norton Internet Security"`) {
+$reg_Value_Data = GetCmdData("value_data");
+	$parts = split("\\", $reg_Value_Data);
+	$len = sizeof($parts);
+	$len -= 1;
+	$temp = split(".", $parts[$len]);
+	$version = $temp[0];
+	if ($version == "17") {
+		$product = "Norton Internet Security";
+		$version = "2010";
+	} else if ($version == "16") {
+		$product = "Norton Internet Security";
+		$version = "2009";
+	}
+}
+
+@metadata.$vendor = $vendor;
+@metadata.$product = $product;
+@metadata.$version = $version;
+
+echo "Current Version:  $vendor $product $version\n";
+
+if ($version == "") {
+	echo "Can't find any shortcut method to get this, bailing to old symantec script (checking uninstall keys)";
+	`script PSP\\symantec_old.eps`;
+	return true;
+}
+@echo on;
+@record off;
+echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n! Scripted PSP configuration checks for dangerous settings not complete.\n! Check manually and operate at your own risk.\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+
+SetEnv("NOPROCINFO", "TRUE");
+
+writeMetaData(@metadata);
+return true;
+
+#### Update PSP Metadata
+
+
+	

@@ -1,0 +1,23 @@
+
+sub _GetRegistryValues(IN string $hive, IN string $key, OUT string %values)
+{
+	@echo off;
+	string $cmd = "registryquery -hive $hive -key \"$key\"";
+
+	@record on;
+	if( !`$cmd` ) { return false; }
+	@record off;
+	
+	string $value;
+	string $name;
+	#if(!GetCmdData("key::value::value", $value)  || !GetCmdData("key::value::name", $name))
+	if(!GetCmdData("key::value::name", $name)) { return false; }
+	if(!GetCmdData("key::value::value", $value)) { return false; }
+
+	for(int $i=0; $i<sizeof($name); $i++)
+	{
+		%values{'$name[$i]'} = $value[$i];
+		#echo "$name[$i]: $value[$i]";
+	}
+	return true;
+}

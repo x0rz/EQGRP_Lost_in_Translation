@@ -1,0 +1,47 @@
+# Called from simple.eps
+
+bool $showUsage = false;
+bool $success = true;
+bool $ask = false;
+string $datefrom;
+
+if ($argc <= 1) {
+    $showUsage = true;
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else {
+    $datefrom=$argv[1];
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <from date|'all'> [<path>] [<mask>]";
+	echo "  use 'all' as the date to get all files";
+    return $success;
+}
+
+string $path="*";
+if ($argc > 2) {
+	$path=$argv[2];
+}
+
+string $mask="*";
+if ($argc > 3) {
+	$mask=$argv[3];
+}
+
+bool $date=true;
+if ($datefrom == "all") {
+	$date=false;
+}
+
+if ($date == false) {
+	$success=`log dir $mask -path $path -recursive -max 0`;
+} else {
+	$success=`log dir $mask -path $path -recursive -max 0 -after $datefrom`;
+}
+if ($success) {
+	echo "Completed doc survey since $datefrom";
+	`local run -command "perl E:/tools/breakoutSurvey.pl" -redirect breakoutSurvey`;
+}
+
+return $success;

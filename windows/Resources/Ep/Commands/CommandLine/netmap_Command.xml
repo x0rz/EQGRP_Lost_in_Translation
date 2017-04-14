@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31358'>
+
+  <Command id='16' name='netmap'>
+
+    <Help>Enumerates the domains and servers visible to the target machine.</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

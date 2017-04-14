@@ -1,0 +1,166 @@
+#-------------------------------------------------------------------------------
+# File: cleanDirtyFiles.eps
+# Description: Checks for old eggs failed copygets, malware.eps and failed EMTH
+# cleanups.
+#
+#-------------------------------------------------------------------------------
+
+# EGG SIZES (Add egg sizes as they change)
+int $eggSize;
+$eggSize[0] = 40960;
+#$eggSize[1] = 29969;
+#$eggSize[2] = 28672;
+
+string $tempDir = GetEnv("TEMPPATH");
+string $system32Dir = GetEnv("SYSPATH");
+string $systemRoot = GetEnv("SYSTEMROOT");
+string $systemDrive = split("\\", $systemRoot);
+string $progFilesDir = "$systemDrive\\Program Files\\Common Files\\System";
+#string $progFilesDir = "C:\\Program Files\\Common Files\\System";
+
+
+
+
+echo "------------------------------------------------------------------------";
+echo "CHECKING FOR REMNANTS OF PREVIOUS OPS";
+echo "------------------------------------------------------------------------\n";
+
+# CHECK FOR FAILED COPYGETS 
+echo "------------------------------------------------------------------------";
+echo "Checking for possible failed copygets";
+echo "------------------------------------------------------------------------";
+if(checkFile("at*.tmp", $tempDir)){
+	echo "!!! Found remnant copyget !!!\n";
+}
+echo "\n";
+
+# CHECK FOR FAILED MALWARE.EPS
+echo "------------------------------------------------------------------------";
+echo "Checking for possible failed malware.eps";
+echo "------------------------------------------------------------------------";
+if(checkFile("cmdl16.exe", $system32Dir)) {
+	echo "!!! Found remnant cmdl16.exe !!!\n";
+}
+echo "\n";
+
+# CHECK FOR FAILED EP CLEANUP BATCH FILE
+echo "------------------------------------------------------------------------";
+echo "Checking for EP cleanup batch file";
+echo "------------------------------------------------------------------------";
+if(checkFile("*~.bat", $system32Dir)) {
+	echo "!!! Found remnant batch file !!!\n";
+}
+
+if(checkFile("*~.bat", $progFilesDir)) {
+	echo "!!! Found remnant batch file !!!\n";
+}
+echo "\n";
+
+
+# CHECK FOR POST-EMTH Remnants if XP SP2
+if ((GetEnv("OSMAJOR") == 5) && (GetEnv("OSMINOR") == 1) && ((GetEnv("SPMAJOR") == 3) || (GetEnv("SPMAJOR") == 2))) { 
+echo "------------------------------------------------------------------------";
+echo "Checking for failed EMTH cleanup (file expected if EMTH since last boot)";
+echo "------------------------------------------------------------------------";
+if(checkFile("mofd.dll.tmp", "$system32Dir\\wbem")) {
+	echo "!!! Found remnant EMTH files !!!\n";
+}
+
+if(checkFile("mofd.dll.old", "$system32Dir\\wbem")) {
+	echo "!!! Found remnant EMTH files !!!\n";
+}
+
+if(checkFile("winsta.exe", "$system32Dir")) {
+	echo "!!! Found remnant EMTH files !!!\n";
+}
+echo "\n";
+}
+
+#GET CURRENT PROCESS
+@echo off;
+@record on;
+`processinfo`;
+@record off;
+@echo on;
+
+string $currentProcessName = GetCmdData("module_name");
+
+checkDirForEgg($eggSize, $system32Dir, $currentProcessName);
+checkDirForEgg($eggSize, $progFilesDir, $currentProcessName);
+
+echo "------------------------------------------------------------------------";
+echo "PC is currently running under $currentProcessName[0]";
+echo "------------------------------------------------------------------------";
+echo "See an egg here that isn't yours? Check it out.\n";
+echo "Positively verify files before cleaning anything.\n";
+echo "------------------------------------------------------------------------";
+
+############################################################
+# subroutine to check for files
+#############################################################
+sub checkFile(IN string $filenameToCheck, IN string $pathToCheck)
+{
+	int $tempSize = 0;
+	@record on;
+	`dir "$filenameToCheck" -path "$pathToCheck" -max 0`;
+	@record off;
+	@echo off;
+	$tempSize = GetCmdData("size");
+	@echo on;
+	if(defined($tempSize)) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+############################################################
+# subroutine to check for files
+#############################################################
+sub checkDirForEgg(REF int $eggSizeList, IN string $pathToCheck, REF string $currentProcess)
+{
+
+	# RUN THE DIR
+	@echo off;
+	@record on;
+	`dir *.exe -path "$pathToCheck" -max 0`;
+	@record off;
+	@echo on;
+
+	# GET CMD VALUES
+	int $sizes = GetCmdData("size");
+	string $filenames = GetCmdData("name");
+
+	# SEARCH DIR FOR EGG SIZE
+	echo "----------------------------------------------------------------------";
+	echo "Checking for possible PC eggs left in $pathToCheck";
+	echo "----------------------------------------------------------------------";
+	echo "Possible PC eggs: \n";
+	int $numHits = 0;
+	int $eggCounter=0;
+	int $fileCounter=0;
+	int $numEggSizes = sizeof($eggSizeList);
+	string $grepstring;
+	@echo off;
+	while ($eggCounter < $numEggSizes) {
+		$fileCounter=0;
+		while ($fileCounter < sizeof($filenames)) {
+			if($sizes[$fileCounter] == $eggSizeList[$eggCounter]) {
+				@record on;
+				`grep -mask "$fileNames[$fileCounter]" -path "$pathToCheck" -pattern :AAAAAAAA`;
+				@record off;
+				$grepString = GetCmdData("file_name");
+				if(defined($grepString)) {
+					echo "!!! Found egg $grepString !!!\n";		
+					$numHits++;
+				}
+			}
+			$fileCounter++;
+		}
+		$eggCounter++;
+	}
+
+	if ($numHits == 0) {
+		echo "No eggs found in $pathToCheck\n";
+	}
+}

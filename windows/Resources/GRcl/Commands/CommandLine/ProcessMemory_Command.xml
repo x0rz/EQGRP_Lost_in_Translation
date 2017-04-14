@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin provider='0x01010067' interface='0x01c10032' >
+	<Command name="ProcessMemory" id="0">
+        <Help>Query a processes memory space, or extract memory regions from a process.</Help>
+
+        <Input>
+            <Option name='pid' optional='false' group='commnad'>
+                <Argument name='#' data='pid' />
+                <Help> The pid of the process to query/extract memory.</Help>
+            </Option>
+
+            <Option name='query' optional='true' group='command'>
+                <Set data='command' value='0' />
+                <Help>querymem takes a process ID and queries its entire address space</Help>
+                <Help>for information on every region of memory contained within.</Help>
+                
+                <Argument name='filter' data='filter' optional='true'>
+                    <Help>Bitmask defining which types of memory regions to query.</Help>
+                    <Help>Default=0xFFFFFFFF</Help>
+                </Argument>
+            </Option>
+
+            <Option name='extract' optional='true' group='command'>
+                <Set data='command' value='1' />
+                <Help>extractmem takes a start address and and a length and returns a</Help>
+                <Help>buffer containing the memory from that range within the queried</Help>
+                <Help>process.</Help>
+
+                <Argument name='baseaddr' data='baseaddr'/>
+                <Argument name='length' data='length'/>
+            </Option>
+        </Input>
+
+        <Output>
+            <Data name='command' type='uint8_t' default='0' />
+            <Data name='pid' type='uint32_t' default='0' />
+            <Data name='filter' type='uint32_t' default='0xFFFFFFFF' />
+            <Data name='baseaddr' type='uint64_t' default='0' />
+            <Data name='length' type='uint32_t' default='0' />
+        </Output>
+    </Command>
+</Plugin>

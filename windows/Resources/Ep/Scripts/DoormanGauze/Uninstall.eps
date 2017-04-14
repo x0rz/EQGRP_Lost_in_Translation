@@ -1,0 +1,20 @@
+#--------------------------------------------------------
+# File: Uninstall.eps
+#
+# Wrapper script for Uninstall of DoormanGauze tools
+#
+# Modifications:
+#  07/13/2005	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+return _DriverUninstall($driver);

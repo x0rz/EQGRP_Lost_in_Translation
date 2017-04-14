@@ -1,0 +1,13 @@
+# any line that begins with a '#' is discarded as a comment
+
+# commandline
+[-enable]
+    Enable PSP avoidance
+[-disable]
+    Disable PSP avoidance
+[-no_drni]
+    Do not enable/disable DRNI
+[-no_dswi]
+    Do not enable/disable DSWI
+[-use_bh]
+    Enable use of BH with DSWI

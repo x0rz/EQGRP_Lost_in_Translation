@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<Plugin pluginClass="ddb.dsz.plugin.requesthandler.RequestReceiver" pluginName="Requests">
+		<InitArgs>-max=100</InitArgs>
+		<InitArgs>-delay=1500</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.mirror.LiveMirror" pluginName="Reflection">
+	</Plugin>
+</StartupConfig>

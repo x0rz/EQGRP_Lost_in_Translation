@@ -1,0 +1,21 @@
+[paths]
+sharedpython = D:\DSZOpsDisk\Resources\Ops\PyScripts
+dszopsroot = D:\DSZOpsDisk
+tmp = D:\DSZOpsDisk\tmp
+dszresources = D:\DSZOpsDisk\Resources
+dszops = D:\DSZOpsDisk\Resources\Ops
+dszpyscripts = D:\DSZOpsDisk\Resources\Ops\PyScripts
+
+[hosts]
+ftp = 10.0.139.12
+
+[imps]
+username = imps
+password = EECPEHJ2le#Zxd
+
+[fast]
+username = fast
+password = xnLZY#jL9yDotq
+
+[exes]
+winzip = C:\progra~1\winzip\wzzip.exe

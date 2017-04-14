@@ -1,0 +1,23 @@
+<ContextMenu>
+	<Entry>
+		<Verify>false</Verify>
+		<Label>Search containing folder</Label>
+		<Action>
+			<Line>search</Line>
+			<Line>-searchRoot={pid}</Line>
+			<Line>-shownow</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Verify>false</Verify>
+		<Label>Open containing folder</Label>
+		<Action>
+			<Line>browse</Line>
+			<Line>-initial={pid}</Line>
+			<Line>-shownow</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+
+</ContextMenu>

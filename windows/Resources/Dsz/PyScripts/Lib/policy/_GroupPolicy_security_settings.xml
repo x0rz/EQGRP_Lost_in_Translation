@@ -1,0 +1,1418 @@
+<Security>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Restricted Groups</Path>
+	<Name>Restricted Groups</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>*</RegistryKey>
+	<RebootRequired></RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\System Services</Path>
+	<Name>System Services</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>*</RegistryKey>
+	<RebootRequired></RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object.</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Registry</Path>
+	<Name>Registry</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>*</RegistryKey>
+	<RebootRequired></RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\File System</Path>
+	<Name>File System</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>*</RegistryKey>
+	<RebootRequired></RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit logon events</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditaccountlogon</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit account management</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditaccountmanage</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit directory service access</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditdsaccess</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit account logon events</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditlogonevents</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Retention method for application log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditlogretentionperiod</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Retention method for security log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditlogretentionperiod</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Retention method for system log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditlogretentionperiod</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit object access</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditobjectaccess</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit policy change</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditpolicychange</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit privilege use</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditprivilegeuse</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit process tracking</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditprocesstracking</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Audit Policy</Path>
+	<Name>Audit system events</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>auditsystemevents</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Password Policy</Path>
+	<Name>Store passwords using reversible encryption for all users in the domain</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>cleartextpassword</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Accounts: Administrator account status</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>enableadminaccount</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Accounts: Guest account status</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>enableguestaccount</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Force logoff when logon hours expire</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>forcelogoffwhenhourexpire</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Devices: Unsigned driver installation behavior</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\driver signing!policy</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Recovery console: Allow automatic administrative logon </Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\setup\recoveryconsole!securitylevel</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Require restart of recovery console</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Recovery console: Allow floppy copy and access to all drives and all folders</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\setup\recoveryconsole!setcommand</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Require restart of recovery console</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Devices: Restrict CD-ROM access to locally logged-on user only</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\winlogon!allocatecdroms</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Devices: Allowed to format and eject removable media</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\winlogon!allocatedasd</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Devices: Restrict floppy access to locally logged-on user only</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\winlogon!allocatefloppies</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Number of previous logons to cache (in case domain controller is not available)</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\winlogon!cachedlogonscount </RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Require Domain Controller authentication to unlock workstation</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\winlogon!forceunlocklogon</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: This setting applies to Windows 2000 computers, but it is not available through the Security Configuration Manager tools on these computers."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Prompt user to change password before expiration</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\winlogon!passwordexpirywarning</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Smart card removal behavior</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows nt\currentversion\winlogon!scremoveoption</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Only LogOff is required for W2K, XP and W2K3 computers.  In Vista, start/restart the scpolicysvc will work or LogOff"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Behavior of the elevation prompt for administrators in Admin Approval Mode</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!consentpromptbehavioradmin</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Behavior of the elevation prompt for standard users</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!consentpromptbehavioruser</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Do not require CTRL+ALT+DELETE</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!disablecad</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Do not display last user name</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!dontdisplaylastusername</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive Logon: Display user information when session is locked</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!dontdisplaylockeduserid</RegistryKey>
+	<RebootRequired></RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Detect application installations and prompt for elevation</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!enableinstallerdetection</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Run all administrators in Admin Approval Mode</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!enablelua</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Only elevate UIAccess applications that are installed in secure locations</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!enablesecureuiapaths</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Allow UIAccess applications to prompt for elevation without using the secure desktop.</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!enableuiadesktoptoggle</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Virtualize file and registry write failures to per-user locations</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!enablevirtualization</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Admin Approval Mode for the Built-in Administrator account</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!filteradministratortoken</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Message title for users attempting to logon</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!legalnoticecaption</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Message text for users attempting to logon</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!legalnoticetext</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Switch to the secure desktop when prompting for elevation</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!promptonsecuredesktop</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Interactive logon: Require smart card</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!scforceoption</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: This setting will apply to any computers running Windows 2000 through changes in the registry, but the security setting is not viewable through the Security Configuration Manager tool set."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Shutdown: Allow system to be shut down without having to log on</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!shutdownwithoutlogon</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Requires logoff</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Devices: Allow undock without having to log on</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!undockwithoutlogon</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Only elevate executables that are signed and validated</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system!validateadmincodesignatures</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Configure encryption types allowed for Kerberos</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\software\microsoft\windows\currentversion\policies\system\kerberos\parameters!supportedencryptiontypes</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>System Cryptography: Force strong key protection for user keys stored on the computer</Name>
+	<SupportedOn>Windows Server 2003</SupportedOn>
+	<RegistryKey>hklm\software\policies\microsoft\cryptography!forcekeyprotection</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments>"Requires reboot with CNG on Vista; Does not require reboot with CAPI on Vista; Does not require reboot on XP, 2003 with CAPI"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>DCOM: Machine Access Restrictions in Security Descriptor Definition Language (SDDL) syntax</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\policies\microsoft\windows nt\dcom!machineaccessrestriction</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>DCOM: Machine Launch Restrictions in Security Descriptor Definition Language (SDDL) syntax</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\software\policies\microsoft\windows nt\dcom!machinelaunchrestriction</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>System settings: Use Certificate Rules on Windows Executables for Software Restriction Policies</Name>
+	<SupportedOn>Windows Server 2003</SupportedOn>
+	<RegistryKey>hklm\software\policies\microsoft\windows\safer\codeidentifiers!authenticodeenabled</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Audit: Audit the accesss of global system objects</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!auditbaseobjects</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Audit: Shut down system immediately if unable to log security audits</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!crashonauditfail</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Do not allow storage of credentials or .NET Passports for network authentication</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!disabledomaincreds</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Let Everyone permissions apply to anonymous users</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!everyoneincludesanonymous</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>"System cryptography: Use FIPS compliant algorithms for encryption, hashing, and signing"</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!fipsalgorithmpolicy</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Sharing and security model for local accounts</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!forceguest</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: This setting only affects computers running Windows XP Professional which are not joined to a domain.This policy will have no impact on computers running Windows 2000. For more information, search for ""Security Setting Descriptions"" in the Win"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Audit: Audit the use of Backup and Restore privilege</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!fullprivilegeauditing</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Accounts: Limit local account use of blank passwords to console logon only</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!limitblankpassworduse</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: LAN Manager authentication level</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!lmcompatibilitylevel</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: This setting can affect the ability of computers running Windows 2000 Server, Windows 2000 Professional, Windows XP Professional, and the Windows Server 2003 family to communicate with computers running Windows NT 4.0 and earlier over the netwo"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>System objects: Default owner for objects created by members of the Administrators group</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!nodefaultadminowner</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>This policy does not exist on Vista</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Do not store LAN Manager hash value on next password change</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!nolmhash</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: Windows 2000 Service Pack 2 (SP2) and above offer compatibility with authentication to previous versions of Windows, such as Microsoft Windows NT 4.0.This setting can affect the ability of computers running Windows 2000 Server, Windows 2000 Pr"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Do not allow anonymous enumeration of SAM accounts and shares</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!restrictanonymous</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Do not allow anonymous enumeration of SAM accounts</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!restrictanonymoussam</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: This policy has no impact on domain controllers. For more information, search for ""Security Settings Descriptions"" in the Windows Server 2003 Help."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Audit: Force audit policy subcategory settings (Windows Vista or later) to override audit policy category settings</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!scenoapplylegacyauditpolicy</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain controller: Allow server operators to schedule tasks</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!submitcontrol</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments>Restart of service might be sufficient</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Allow Local System to use computer identity for NTLM</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa!usemachineid</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Allow LocalSystem NULL session fallback</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\msv1_0!allownullsessionfallback</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Restrict NTLM: Audit Incoming NTLM Traffic</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\msv1_0!auditreceivingntlmtraffic</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Restrict NTLM: Add remote server exceptions for NTLM authentication</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\msv1_0!clientallowedntlmservers</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Minimum session security for NTLM SSP based (including secure RPC) clients</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\msv1_0!ntlmminclientsec</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Warning: This setting will apply to any computers running Windows 2000 through changes in the registry but the security setting will not be viewable through the Security Configuration Manager tool set. For more information, search for ""Security Setting De"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Minimum session security for NTLM SSP based (including secure RPC) servers</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\msv1_0!ntlmminserversec</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Warning: This setting will apply to any computers running Windows 2000 through changes in the registry but the security setting will not be viewable through the Security Configuration Manager tool set. For more information, search for ""Security Setting De"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Restrict NTLM: Incoming NTLM traffic</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\msv1_0!restrictreceivingntlmtraffic</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Restrict NTLM: Outgoing NTLM traffic to remote servers</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\msv1_0!restrictsendingntlmtraffic</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Allow PKU2U authentication requests to this computer to use online identities.</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\lsa\pku2u!allowonlineid</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Devices: Prevent users from installing printer drivers</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\print\providers\lanman print services\servers!addprinterdrivers</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"For the policy change to take effect, the spooler service needs to be stopped/restarted, but the system does not have to be rebooted."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Remotely accessible registry paths</Name>
+	<SupportedOn>Windows XP SP2</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\securepipeservers\winreg\allowedexactpaths!machine</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Important: The Network access: Remotely accessible registry paths security setting that appears on computers running Windows XP corresponds to the Network access: Remotely accessible registry paths and subpaths security policy setting on members of the Wi</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Remotely accessible registry paths and subpaths</Name>
+	<SupportedOn>Windows Server 2003</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\securepipeservers\winreg\allowedpaths!machine</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: On Windows XP, this security setting was called ""Network access: Remotely accessible registry paths."" If you configure this setting on a member of the Windows Server 2003 family that is joined to a domain, this setting is inherited by computers"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>"System objects: Strengthen default permissions of internal system objects (e.g., Symbolic Links) "</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\session manager!protectionmode</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>System objects: Require case insensitivity for non-Windows subsystems</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\session manager\kernel!obcaseinsensitive</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Shutdown: Clear virtual memory pagefile</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\session manager\memory management!clearpagefileatshutdown</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments>Vista does NOT require reboot</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>System settings: Optional subsystems</Name>
+	<SupportedOn>Windows Server 2003</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\control\session manager\subsystems!optional</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network server: Amount of idle time required before suspending session</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!autodisconnect</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network server: Disconnect clients when logon hours expire</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!enableforcedlogoff</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network server: Digitally sign communications (if client agrees)</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!enablesecuritysignature</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Named Pipes that can be accessed anonymously</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!nullsessionpipes</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Restrict anonymous access to Named Pipes and Shares</Name>
+	<SupportedOn>Windows Server 2003</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!nullsessionshares</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Shares that can be accessed anonymously</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!nullsessionshares </RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network server: Digitally sign communications (always)</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!requiresecuritysignature</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments>"Important: For this policy to take effect on computers running Windows 2000, server-side packet signing must also be enabled. For more information, search for ""Security Settings Descriptions"" in the Windows Server 2003 Help."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network server: Server SPN target name validation level</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanserver\parameters!smbservernamehardeninglevel</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network client: Send unencrypted password to third-party SMB servers</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanworkstation\parameters!enableplaintextpassword</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network client: Digitally sign communications (if server agrees) </Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanworkstation\parameters!enablesecuritysignature</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Microsoft network client: Digitally sign communications (always)</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\lanmanworkstation\parameters!requiresecuritysignature</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments>"Important: For this policy to take effect on computers running Windows 2000, client-side packet signing must also be enabled. For more information, search for ""Security Settings Descriptions"" in the Windows Server 2003 Help."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: LDAP client signing requirements</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\ldap!ldapclientintegrity</RegistryKey>
+	<RebootRequired>Yes</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Restrict NTLM: Audit NTLM authentication in this domain</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!auditntlmindomain</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Restrict NTLM: Add server exceptions in this domain</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!dcallowedntlmservers</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain member: Disable machine account password changes</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!disablepasswordchange</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain member: Maximum machine account password age</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!maximumpasswordage</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: This setting applies to Windows 2000 computers, but it is not available through the Security Configuration Manager tools on these computers. "</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain controller: Refuse machine account password changes</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!refusepasswordchange</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain member: Digitally encrypt or sign secure channel data (always)</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!requiresignorseal</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Important: In order to take advantage of this policy on member workstations and servers, all domain controllers that constitute the members domain must be running Windows NT 4.0 Service Pack 6 or higher. In order to take advantage of this policy on doma"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain member: Require strong (Windows 2000 or later) session key</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!requirestrongkey</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network security: Restrict NTLM:  NTLM authentication in this domain</Name>
+	<SupportedOn>"Windows 7, Windows Server 2008 R2"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!restrictntlmindomain</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain member: Digitally encrypt secure channel data (when possible)</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!sealsecurechannel</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain member: Digitally sign secure channel data (when possible) </Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\netlogon\parameters!signsecurechannel</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Domain controller: LDAP server signing requirements</Name>
+	<SupportedOn>Windows Server 2003?</SupportedOn>
+	<RegistryKey>hklm\system\currentcontrolset\services\ntds\parameters!ldapserverintegrity</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Account Lockout Policy</Path>
+	<Name>Account lockout threshold</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>lockoutbadcount</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Account Lockout Policy</Path>
+	<Name>Account lockout duration</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>lockoutduration</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Network access: Allow anonymous SID/Name translation</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>lsaanonymousnamelookup</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Kerberos Policy</Path>
+	<Name>Maximum tolerance for computer clock synchronization</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maxclockskew</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>clients will get the new setting after a maximum of 8 hours but for DCs to assign these new settings a Gpupdate /force is required or waiting for the usual 5 minutes when the SCE engine assigns all modified settings.</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Maximum application log size</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maximumlogsize</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Maximum security log size</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maximumlogsize</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Note: This setting does not appear in the Local Computer Policy object. Important: Modifying this setting may affect compatibility with clients, services, and applications. For compatibility information about this setting, see the ""Event Log: Maximum sec"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Maximum system log size</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maximumlogsize</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Password Policy</Path>
+	<Name>Maximum password age</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maximumpasswordage</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Kerberos Policy</Path>
+	<Name>Maximum lifetime for user ticket renewal</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maxrenewage</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>clients will get the new setting after a maximum of 8 hours but for DCs to assign these new settings a Gpupdate /force is required or waiting for the usual 5 minutes when the SCE engine assigns all modified settings.</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Kerberos Policy</Path>
+	<Name>Maximum lifetime for service ticket</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maxserviceage</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>clients will get the new setting after a maximum of 8 hours but for DCs to assign these new settings a Gpupdate /force is required or waiting for the usual 5 minutes when the SCE engine assigns all modified settings.</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Kerberos Policy</Path>
+	<Name>Maximum lifetime for user ticket</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>maxticketage</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>clients will get the new setting after a maximum of 8 hours but for DCs to assign these new settings a Gpupdate /force is required or waiting for the usual 5 minutes when the SCE engine assigns all modified settings.</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Password Policy</Path>
+	<Name>Minimum password age</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>minimumpasswordage</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Password Policy</Path>
+	<Name>Minimum password length</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>minimumpasswordlength</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Accounts: Rename administrator account</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>newadministratorname</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Security Options</Path>
+	<Name>Accounts: Rename guest account</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>newguestname</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Password Policy</Path>
+	<Name>Password must meet complexity requirement</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>passwordcomplexity</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Password Policy</Path>
+	<Name>Enforce password history</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>passwordhistorysize</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Account Policies\Account Lockout Policy</Path>
+	<Name>Reset lockout counter after</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>resetlockoutcount</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments></Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Prevent local guests group from accessing application log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>restrictguestaccess</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Notes: This setting does not appear in the Local Computer Policy object.This security setting affects only computers running Windows 2000, Windows Server 2003, and Windows XP."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Prevent local guests group from accessing security log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>restrictguestaccess</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Notes: This setting does not appear in the Local Computer Policy object. This security setting affects only computers running Windows 2000, Windows Server 2003, and Windows XP. A user must possess the Manage auditing and security log user right to acces"</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Prevent local guests group from accessing system log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>restrictguestaccess</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Note: This setting does not appear in the Local Computer Policy object.                                           This security setting affects only computers running Windows 2000, Windows Server 2003, and Windows XP."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Retain application log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>retentiondays</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Notes: This setting does not appear in the Local Computer Policy object. A user must possess the Manage auditing and security log user right to access the security log. "</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Retain security log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>retentiondays</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Notes: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Security Settings\Event Log</Path>
+	<Name>Retain system log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>retentiondays</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Note: This setting does not appear in the Local Computer Policy object. </Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Replace a process level token</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seassignprimarytokenprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Generate security audits</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seauditprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Backup files and directories</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sebackupprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Log on as a batch job</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sebatchlogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Note: In Windows 2000 Server, Windows 2000 Professional, Windows XP Professional, and the Windows Server 2003 family, the Task Scheduler automatically grants this right as necessary."</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Bypass traverse checking</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sechangenotifyprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Create global objects</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>secreateglobalprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Create a pagefile</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>secreatepagefileprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Create permanent shared objects</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>secreatepermanentprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Create Symbolic Links</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>secreatesymboliclinkprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Create a token object</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>secreatetokenprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Debug programs</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sedebugprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Deny log on as a batch job</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sedenybatchlogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Deny log on locally</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sedenyinteractivelogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Deny access to this computer from the network</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sedenynetworklogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Deny log on through Remote Desktop Services</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sedenyremoteinteractivelogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Deny log on as a service</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sedenyservicelogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Enable computer and user accounts to be trusted for delegation</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seenabledelegationprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Impersonate a client after authentication</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seimpersonateprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Increase scheduling authority</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seincreasebasepriorityprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Adjust memory quotas for a process</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seincreasequotaprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Increase a process working set</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>seincreaseworkingsetprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Allow log on locally</Name>
+	<SupportedOn>Windows Server 2003</SupportedOn>
+	<RegistryKey>seinteractivelogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Log on locally</Name>
+	<SupportedOn>Windows XP SP2</SupportedOn>
+	<RegistryKey>seinteractivelogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>"Note: See also the corresponding Windows Server 2003 Allow log on locally policy setting, earlier in this worksheet. "</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Load and unload device drivers</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seloaddriverprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Lock pages in memory</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>selockmemoryprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Add workstations to a domain</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>semachineaccountprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Perform volume maintenance tasks</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>semanagevolumeprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Access this computer from the network</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>senetworklogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Profile single process</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seprofilesingleprocessprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Modify an object label</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>serelabelprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Allow log on through Remote Desktop Services</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seremoteinteractivelogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Force shutdown from a remote system</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seremoteshutdownprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Restore files and directories</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>serestoreprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Manage auditing and security log</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sesecurityprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Log on as a service</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seservicelogonright</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Shut down the system</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seshutdownprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Synchronize directory service data</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sesyncagentprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Modify firmware environment values</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sesystemenvironmentprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Profile system performance</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sesystemprofileprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Change the system time</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>sesystemtimeprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Take ownership of files or other objects</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>setakeownershipprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Act as part of the operating system</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>setcbprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Change the time zone</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>setimezoneprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Access Credential Manager as a trusted caller</Name>
+	<SupportedOn>"Windows Vista, Windows Server 2008"</SupportedOn>
+	<RegistryKey>setrustedcredmanaccessprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\User Rights Assignment</Path>
+	<Name>Remove computer from docking station</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>seundockprivilege</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>Logoff required</Comments>
+</Setting>
+<Setting>
+	<Path>Computer Configuration\Windows Settings\Local Policies\Kerberos Policy</Path>
+	<Name>Enforce user logon restrictions</Name>
+	<SupportedOn>"Windows XP SP2, Windows Server 2003"</SupportedOn>
+	<RegistryKey>ticketvalidateclient</RegistryKey>
+	<RebootRequired>No</RebootRequired>
+	<Comments>clients will get the new setting after a maximum of 8 hours but for DCs to assign these new settings a Gpupdate /force is required or waiting for the usual 5 minutes when the SCE engine assigns all modified settings.</Comments>
+</Setting>
+</Security>

@@ -1,0 +1,34 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='7' name='LpGetEnv'>
+
+		<Help>Gets the environment options (or just the given one)</Help>
+
+		<Input>
+			<Option name='name' optional='true'>
+				<Argument name='name' data='name'/>
+				<Help>The environment variable to display</Help>
+			</Option>
+			
+			<Option name='any' optional='true' group='address'>
+				<Set data='any' value='true'/>
+				<Help>Show matching variables for any address</Help>
+			</Option>
+			
+			<Option name='destination' optional='true' group='address'>
+				<Argument name='address' data='address'/>
+				<Help>If specified, the destination address for the environment variable</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='name' type='string'/>
+			<Data name='any' type='bool' default='false'/>
+			<Data name='address' type='cpaddr'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

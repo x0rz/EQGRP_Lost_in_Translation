@@ -1,0 +1,50 @@
+#####################################################################
+####  getPrivs.eps
+####  check for sufficient privileges and attempt JUMPUP if possible
+####  Created: 4/27/2007
+#####################################################################
+@include "_Processes.dsi";
+
+@echo off;
+
+if (_IsProcessRunningAsSystem(0))
+{
+	echo "";
+	echo "Ok, system...Moving on...";
+	echo "";
+	SetEnv("Ops_alreadyPriv", "true");
+	return true;
+}
+
+if (_IsProcessInAdminGroup(0))
+{
+	echo "";
+	echo "You have Administrator rights! Moving on...";
+	echo "";
+	SetEnv("Ops_alreadyPriv", "true");
+	return true;
+}
+
+#if we've gotten here, that means that we are not system or admin (should have returned by now)
+SetEnv("Ops_alreadyPriv", "false");
+
+echo("", WARNING);
+echo("We're not the Admin or System...", WARNING);
+echo("", WARNING);
+if (!prompt("Grant local Administrator rights to current process?"))
+{
+	echo("I'm guessing you have a reason for not elevating", ERROR);
+	return false;
+}
+
+bool $doJump = true;
+
+if (!`getadmin`)
+{
+	echo("Failed to grant Administrator rights to your privilege.  Hope you know what you're doing!", ERROR);
+	return false;
+
+}
+
+# if it gets here, then getadmin is running
+return true;

@@ -1,0 +1,57 @@
+#  cangetout.dss
+#  --------------------------------------
+#   Quick script which tries to connect to microsoft.com and 
+#   yahoo.com.  If the script fails, it returns a failure.
+#
+
+string $ip;
+string $name;
+
+if (sizeof($argv) > 2 ) {
+	echo "Usage:  cangetout.dss [IP Address]";
+	echo "    [IP address optional.  If none given, yahoo and microsoft are used";
+	echo "    ";
+}
+else if ($argc == 2)
+{
+	$ip[0] = $argv[1];
+	$name = "custom IP";
+	
+}
+else
+{
+	$ip[0]="207.46.192.254";
+	$name[0]="www.microsoft.com";
+
+	$ip[1]="209.191.93.52";
+	$name[1]="www.yahoo.com";
+}
+
+@echo off;
+
+bool $canGetOut=false;
+int $i=0;
+bool $banner_worked;
+
+
+# Check to see if you can touch outgoing web
+while ($i<sizeof($ip)) {
+	echo "RUNNING:  banner -ip $ip[$i] -port 80 -wait 0 -send GET / HTTP/1.0\\r\\n\\r\\n";
+	$banner_worked = `banner -ip $ip[$i] -port 80 -wait 0 -send "GET / HTTP/1.0\\r\\n\\r\\n"`;
+	
+	if ($banner_worked == false) {
+		echo "Couldn't touch web for $ip[$i] ($name[$i])";
+	} 
+	else 
+	{
+		$canGetOut=true;
+		echo "Target is able to touch $ip[$i]";
+		$i=sizeof($ip);
+	}
+
+	$i++;
+}
+@echo on;
+return $canGetOut;
+
+

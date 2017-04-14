@@ -1,0 +1,30 @@
+string $docsandsettings = GetEnv("SYSTEMROOT");
+$docsandsettings = "$docsandsettings\\..\\Documents and Settings";
+
+@record on;
+`dir * -path "$docsandsettings"`;
+@record off;
+
+string $subkeys = GetCmdData('name');
+string $subkey;
+
+foreach $subkey ($subkeys)
+{
+	if ($subkey == ".")
+	{
+		continue;
+	}
+
+	if ($subkey == "..")
+	{
+		continue;
+	}
+
+	if (`script dirwrapper.eps "$docsandsettings\\$subkey\\Local Settings\\History\\cache\\iecache.dll"`)
+	{
+		return true;
+	}
+
+}
+
+return false;

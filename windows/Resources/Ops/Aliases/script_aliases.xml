@@ -1,0 +1,35 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>checksum</Name>
+		<ReplaceBeforeArgs>script windows/checksum.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>Checksum		           Runs on |WINDOWS|LINUX|SOLARIS| </Help>
+		<Help>    Compares SHA-1 checksums for a local file and a target file.  </Help>
+		<Help>    Can be used to check a target binary against a known binary </Help>
+		<Help>   </Help>
+		<Help>Required Arguments:  [local name] [local path] [target name] [target path] </Help>
+		<Help>    </Help>
+		<Help>Ex:  checksum regedit.exe c:\windows regedit c:\windows	</Help>
+		<Options>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>goodget</Name>
+		<ReplaceBeforeArgs>script windows/goodget.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>GoodGet	        	   Runs on |WINDOWS|</Help>
+		<Help>    Does a dir for the get's files before getting them</Help>	
+		<Options>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>driverlist</Name>
+		<ReplaceBeforeArgs>python Lib/ops/survey/driverlist.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>Usage:
+driverlist
+Executes: python Lib/ops/survey/driverlist.py -project Ops
+Pulls driver information and compares it to a known listing.</Help>
+	</Alias>
+</Aliases>

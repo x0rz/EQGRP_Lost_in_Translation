@@ -1,0 +1,80 @@
+#------------------------------------------------------
+# File:	EmtpyKeg.eps
+#
+# Performs EmptyKeg Process Listing
+#
+# Modifications:
+#	03/23/07	Created.
+#
+#------------------------------------------------------
+
+string $version = "EmptyKeg 1.0.0.1";
+
+echo " ";
+#echo "--------------------";
+#echo "$version";
+#echo "--------------------";
+#echo " ";
+
+
+if ($argc != 2)	{
+	echo "Usage: $argv[0] <targetMachine>\r\n";
+	return false;
+} else if ($argv[1]	== "?")	{
+	echo "Usage: $argv[0] <targetMachine>\r\n";
+	return false;
+}
+
+string $target = Split("\\\\", $argv[1]);
+
+if (sizeof($target)	> 1) {
+	$target	= "\\\\$target[1]\\root\\cimv2";
+} else {
+	$target	= "\\\\$target[0]\\root\\cimv2";
+}
+if ($target	== "\\\\") {
+	echo "Invalid target ($target)";
+	return false;
+}
+
+@echo off;
+@record on;
+ifnot (`wmi -target $target -plist`) {
+	echo "Unable to fetch process list for $target";
+	return false;
+}
+@record off;
+
+echo "Fetching remote process listing for $target";
+echo " ";
+
+int $PIDS = GetCmdData("PID");
+string $Paths = GetCmdData("Path");
+string $Processes = GetCmdData("Process");
+
+int $i			= 0;
+string $outputString 	= "" ;
+
+# For each process we got...
+while ( $i < sizeof($PIDS) ) {
+
+	# Build the string by adding the info for this process to it.
+	$outputString = "$outputString$Processes[$i],$PIDS[$i],$Paths[$i];" ;
+	$i++;
+}
+
+string $dir = GetEnv("RESOURCESDIR");
+string $broke = split("\\",$dir);
+string $driveLetter = $broke[0];
+
+@record on ;
+@echo off ;
+`log local run -command "cmd /c echo $outputString | perl $driveLetter\\OPSDisk\\Resources\\EP\\Scripts\\EmptyKeg\\wmi_plist-checker.pl" -redirect` ;
+@echo on ;
+@record off ;
+
+string $output =  GetCmdData("output");
+echo $output;
+
+return true;
+

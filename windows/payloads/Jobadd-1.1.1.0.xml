@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<t:config id="a5bea0eec8aae4f98ded80f551b4a6931a89a639"
+          name="Jobadd"
+          version="1.1.1"
+          configversion="1.1.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+          
+  <t:inputparameters>
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds)"
+                 type="S16"
+                 default="60"/>
+    <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by the atsvc service"
+                 type="TcpPort"
+                 binding="//service[name='smb']/port"
+                 default="445"/>
+
+    <t:parameter name="Command"
+                 description="Executable command being scheduled on the target machine"
+                 type="UString"/>
+    <t:parameter name="Hour"
+                 description="Scheduled hour(s) to start command"
+                 type="U32"
+                 default="0"/>
+    <t:parameter name="Minute"
+                 description="Scheduled minute(s) to start command"
+                 type="U32"
+                 default="1"/>
+
+    <t:paramchoice name="Mode" 
+                   description="Determine the remote AT scheduling type"
+                   default="Offset">
+        <t:paramgroup name="Offset" 
+                      description="Hour:Minute relative to current time"/>
+        <t:paramgroup name="Absolute" 
+                      description="Hour:Minute as a time of day in local timezone"/>
+    </t:paramchoice>
+      
+    <t:paramchoice name="AuthLevel" 
+                   description="RPC authentication level"
+                   default="None">
+        <t:paramgroup name="Default" 
+                      description="Default level for RPC service"/>
+        <t:paramgroup name="None" 
+                      description="No authentication"/>
+        <t:paramgroup name="Connect"
+                      description="Authenticates connection setup only"/>
+        <t:paramgroup name="Call" 
+                      description="Authenticates RPC call only"/>
+        <t:paramgroup name="Packet" 
+                      description="Validate packet sender"/>
+        <t:paramgroup name="Integrity" 
+                      description="Packet level integrity"/>
+        <t:paramgroup name="Privacy" 
+                      description="Packet level encryption"/>
+    </t:paramchoice>
+    
+    <t:paramchoice name="CredentialType" 
+                   description="Password, password hash, ticket, etc">
+        <t:paramgroup name="UnicodeCreds" 
+                      description="Unicode encoded credentials">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Unicode password entered as hex bytes (in Unicode)"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="PasswordHash" 
+                      description="NTLM password hash">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Hash of user/machine password entered as hex bytes"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="MachineHash"
+                      description="Credentials for the domain computer, obtained from lsadump">
+            <t:parameter name="Username"
+                         description="Machine's name, with trailing '$' character, in UNICODE"
+                         type="UString"/>
+            <t:parameter name="Password"
+                         description="Machine hash obtained from lsadump, entered as HEX bytes."
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="KerberosTicket"
+                      description="Kerberos ticket for target machine">
+            <t:parameter name="Username"
+                         description="Name of the user who owns the Kerberos ticket (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="DomainDns"
+                         description="DNS name of the domain being exploited (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="KerberosTicket"
+                         description="Kerberos ticket with necessary privileges"
+                         type="UString"/>
+            <t:parameter name="SessionKey"
+                         description="Encryption key used in the Kerberos ticket"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="KerberosFile"
+                      description="Kerberos ticket from disk">
+            <t:parameter name="TicketFile"
+                         description="Local file holding Kerberos ticket"
+                         type="LocalFile"/>
+        </t:paramgroup>
+    </t:paramchoice>
+  </t:inputparameters>
+
+  <t:outputparameters>
+    <t:paramchoice name="CredentialType" 
+                   description="Password, password hash, ticket, etc">
+        <t:paramgroup name="UnicodeCreds" 
+                      description="Unicode encoded credentials">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Unicode password entered as hex bytes (in Unicode)"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="PasswordHash" 
+                      description="NTLM password hash">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Hash of user/machine password entered as hex bytes"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="MachineHash"
+                      description="Credentials for the domain computer, obtained from lsadump">
+            <t:parameter name="Username"
+                         description="Machine's name, with trailing '$' character, in UNICODE"
+                         type="UString"/>
+            <t:parameter name="Password"
+                         description="Machine hash obtained from lsadump, entered as HEX bytes."
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="KerberosTicket"
+                      description="Kerberos ticket for target machine">
+            <t:parameter name="Username"
+                         description="Name of the user who owns the Kerberos ticket (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="DomainDns"
+                         description="DNS name of the domain being exploited (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="KerberosTicket"
+                         description="Kerberos ticket with necessary privileges"
+                         type="UString"/>
+            <t:parameter name="SessionKey"
+                         description="Encryption key used in the Kerberos ticket"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="KerberosFile"
+                      description="Kerberos ticket from disk">
+            <t:parameter name="TicketFile"
+                         description="Local file holding Kerberos ticket"
+                         type="LocalFile"/>
+        </t:paramgroup>
+    </t:paramchoice>
+  </t:outputparameters>
+
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='smb']/port"
+              closeoncompletion="true"/>
+  </t:redirection>
+
+  <t:logic>
+      <t:or>
+        <t:os family="windows" name="Windows 2000"/>
+        <t:os family="windows" name="Windows XP"/>
+        <t:os family="windows" name="Windows 2003"/>
+        <t:os family="windows" name="Windows 2003 R2"/>
+        <t:os family="windows" name="Windows Vista"/>
+        <t:os family="windows" name="Windows 2008"/>
+        <t:os family="windows" name="Windows 7"/>
+        <t:os family="windows" name="Windows 2008 R2"/>
+      </t:or>
+  </t:logic>
+</t:config>

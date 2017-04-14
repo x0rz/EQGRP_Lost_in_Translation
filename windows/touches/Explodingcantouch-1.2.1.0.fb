@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<t:config id="7e5ee9eb8c26f761d71e890a84e220cbe6274312"
+          name="Explodingcantouch"
+          version="1.2.1"
+          configversion="1.2.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+  <t:touchlist>
+      <t:plugin name="Iistouch"
+                displayname="IIS Touch"
+                description="Touch to get Target OS"
+                postmessage="Check IIS version and WebDav">
+                <t:ivparam name="TargetPort" value="TargetPort"/>
+                <t:ivparam name="TargetIp" value="TargetIp"/>
+                <t:ivparam name="Protocol" value="Protocol"/>
+                <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+                <t:oparam name="Target" value="Target"/>
+                <t:oparam name="Protocol" value="Protocol"/>
+      </t:plugin>
+      <t:plugin name="Explodingcantouch"
+                displayname="ExplodingCan Touch"
+                description="Determine the length of the path for IIS"
+                postmessage="ExplodingCan requires the length of the IIS path">
+                <t:ivparam name="TargetPort" value="TargetPort"/>
+                <t:ivparam name="TargetIp" value="TargetIp"/>
+                <t:ivparam name="Protocol" value="Protocol"/>
+                <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+		    <t:ivparam name="hostString" value="localhost"/>
+		    <t:ivparam name="maxSizeToCheck" value="maxSizeToCheck"/>
+		    <t:oparam name="IISPathSize" value="IISPathSize"/>
+      </t:plugin>
+  </t:touchlist>
+</t:config>

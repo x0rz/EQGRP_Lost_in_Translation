@@ -1,0 +1,38 @@
+reg_boot_description 		regquery -hive L -subkey "SOFTWARE\Microsoft\Windows NT\CurrentVersion\WOW\boot.description"
+reg_crashdump 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Control\CrashControl -value DumpFile
+reg_crashcontrol 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Control\CrashControl
+reg_crypto 			regquery -hive L -subkey SOFTWARE\Microsoft\Cryptography
+reg_default_environment 	regquery -hive U -subkey .DEFAULT\Environment
+reg_default_international 	regquery -hive U -subkey ".DEFAULT\Control Panel\International"
+reg_dg_hook			regquery -hive L -subkey "SYSTEM\CurrentControlSet\Control\Class\{4D36E972-E325-11CE-BFC1-08002BE10318}"
+reg_environment 		regquery -hive C -subkey environment
+reg_eventlog 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Services\EventLog
+reg_filesystem 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Control\FileSystem
+reg_hive 			regquery -hive L -subkey SYSTEM\CurrentControlSet\Control\hivelist
+reg_ie_crypto 		regquery -hive L -subkey "SOFTWARE\Microsoft\Internet Explorer\AdvancedOptions\CRYPTO"
+reg_inetinfo 		regquery -hive L -subkey SOFTWARE\Microsoft\INetStp
+reg_interfaces 		regquery -hive L -subkey System\CurrentControlSet\Services\TcpIp\Parameters\Interfaces
+reg_international 		regquery -hive C -subkey "Control Panel\International"
+reg_move_delay		regquery -hive L -subkey "SYSTEM\CurrentControlSet\control\session manager"
+reg_netbios 		regquery -hive L -subkey "SOFTWARE\Microsoft\NetBIOS\CurrentVersion"
+reg_netmon1.2 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Services\bh
+reg_netmon1.2_ 		regquery -hive L -subkey SOFTWARE\Microsoft\bh\CurrentVersion
+reg_netmon2.0 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Services\NM
+reg_netmon2.0_ 		regquery -hive L -subkey SOFTWARE\Microsoft\nm\CurrentVersion
+reg_printers 		regquery -hive C -subkey Printers\Connections
+reg_profilelist 		regquery -hive L -subkey SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList
+reg_rpc 			regquery -hive L -subkey SOFTWARE\Microsoft\Rpc
+reg_rpclocator 		regquery -hive L -subkey SOFTWARE\Microsoft\RPCLOCATOR\CurrentVersion
+reg_softice 			regquery -hive L -subkey SOFTWARE\NuMega\SoftICE
+reg_system_certificates 	regquery -hive L -subkey SOFTWARE\Microsoft\SystemCertificates
+reg_system_environment 	regquery -hive L -subkey "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+reg_system_resources 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Control\SystemResources
+reg_time_zone 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Control\TimeZoneInformation
+reg_user_environment 		regquery -hive U -subkey {user SACL code}\environment
+reg_user_crypto 		regquery -hive U -subkey {user SACL code}\Software\Microsoft\Cryptography\UserKeys
+reg_visualstudio 		regquery -hive L -subkey SOFTWARE\Microsoft\DevStudio
+reg_windows 		regquery -hive L -subkey SOFTWARE\Microsoft\Windows\CurrentVersion
+reg_windowsNT 		regquery -hive L -subkey SOFTWARE\Microsoft\Windows NT\CurrentVersion
+reg_w3svclog 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Services\W3SVC\Parameters -value LogFileDirectory
+reg_w3svc	 		regquery -hive L -subkey SYSTEM\CurrentControlSet\Services\W3SVC
+reg_software		regquery -hive L -subkey software

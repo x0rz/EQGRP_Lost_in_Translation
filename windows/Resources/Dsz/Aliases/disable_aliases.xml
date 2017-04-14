@@ -1,0 +1,13 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>disable</Name>
+		<ReplaceBeforeArgs>script HelperScripts/_DisableCommand.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>disable &lt;command&gt; [location] [reason]</Help>
+		<Help>    Disable a given command</Help>
+		<Help>	  [location] can be: Current, Both, Local, Remote</Help>
+	</Alias>
+</Aliases>

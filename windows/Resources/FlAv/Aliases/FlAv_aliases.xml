@@ -1,0 +1,69 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>flav_install</Name>
+		<ReplaceBeforeArgs>python _FlAv.py -args "-action INSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>flav_install</Help>
+		<Help>    Installs FlAv</Help>
+	</Alias>
+	<Alias>
+		<Name>flav_uninstall</Name>
+		<ReplaceBeforeArgs>python _FlAv.py -args "-action UNINSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>flav_uninstall</Help>
+		<Help>    Uninstalls FlAv</Help>
+	</Alias>
+	<Alias>
+		<Name>flav_upgrade</Name>
+		<ReplaceBeforeArgs>python _FlAv.py -args "-action UPGRADE </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>flav_upgrade</Help>
+		<Help>    Upgrades FlAv</Help>
+	</Alias>
+	<Alias>
+		<Name>flav_load</Name>
+		<ReplaceBeforeArgs>python _FlAv.py -args "-action LOAD </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>flav_load</Help>
+		<Help>    Loads FlAv</Help>
+	</Alias>
+	<Alias>
+		<Name>flav_verifyInstall</Name>
+		<ReplaceBeforeArgs>python _FlAv.py -args "-action VERIFYINSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>flav_verifyInstall</Help>
+		<Help>    Verifies FlAv is installed</Help>
+	</Alias>
+	<Alias>
+		<Name>flav_verifyRunning</Name>
+		<ReplaceBeforeArgs>python _FlAv.py -args "-action VERIFYRUNNING </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>flav_verifyInstall</Help>
+		<Help>    Verifies FlAv is running</Help>
+	</Alias>
+	<Alias>
+		<Name>flav_status</Name>
+		<ReplaceBeforeArgs>python _FlAv.py -args "-action STATUS </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>flav_status</Help>
+		<Help>    Gets FlAv status</Help>
+	</Alias>
+	<Alias>
+		<Name>FlewAvenue</Name>
+		<ReplaceBeforeArgs>python _FlAv.py</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>FlAv</Help>
+		<Help>    Runs the FlAv management script</Help>
+	</Alias>
+</Aliases>	
+		

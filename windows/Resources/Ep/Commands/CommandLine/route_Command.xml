@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31367'>
+
+  <Command id='16' name='route'>
+
+    <Help>Returns the route table</Help>
+
+    <Input>
+     <Option name="verbose" optional="true">
+      <Help>Ignored</Help>
+     </Option>
+     <Option name="buffer" optional="true">
+      <Argument name="size_in_bytes" optional="false" />
+      <Help>Ignored</Help>
+     </Option>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

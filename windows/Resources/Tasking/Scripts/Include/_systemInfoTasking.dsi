@@ -1,0 +1,38 @@
+sub _systeminfoTasking(IN STRING $systeminfoTxtFile, OUT STRING $machineInfoCmd, OUT STRING $taskID, OUT STRING $targetID) {
+	echo "\nProcessing $systeminfoTxtFile";
+	string $lines;
+	string $taskIDStr;
+	string $targetIDStr;
+	if (!ReadFile ($systeminfoTxtFile, $lines)) {
+		return false;
+	}
+	for (int $i=0; $i < sizeof($lines); $i++) {
+		string $line = $lines[$i];
+
+		# TargetID is required
+		if (RegexMatch("TargetID", $line)) {
+			RegExSplit(" ", $line, 2, $targetIDStr);
+			$targetID = $targetIDStr[1];
+		}
+
+		# TaskID is required
+		if (RegexMatch("TaskID", $line)) {
+			RegExSplit(" ", $line, 2, $taskIDStr);
+			$taskID = $taskIDStr[1];
+		}
+	}
+
+	$machineInfoCmd[0] = "systemversion";
+	$machineInfoCmd[1] = "packages";
+
+	# Still need machine name -- read hostinfo file?
+	# string $hostinfo;
+	#string $hostLines;
+	#string $host;
+	#if (!ReadFile ($hostinfo, $hostLines) {
+	#	return false;
+	#}
+	#$host = $hostLines[0];
+
+	return true;
+}

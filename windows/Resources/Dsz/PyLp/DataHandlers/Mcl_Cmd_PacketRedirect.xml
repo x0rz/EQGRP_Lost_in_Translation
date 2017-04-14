@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25108' script='DataHandlers/Mcl_Cmd_PacketRedirect_DataHandler.pyo'>
+</DataHandler>

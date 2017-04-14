@@ -1,0 +1,34 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>reg_move_delay</Name>
+		<ReplaceBeforeArgs>registryquery -hive l -key "SYSTEM\CurrentControlSet\control\session manager"</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+	<Alias>
+		<Name>pfroadd</Name>
+		<ReplaceBeforeArgs>python windows\regmove.py -args "-a </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>pfroadd [filename]
+Adds a new entry to the PendingFileRenameOperations key for deletion.  This script will check
+to make sure the file you are trying to delete is on target and that it is not already in the key.
+Arguments: [filename]
+	The filename to add to the key.  If using this alias, you must use the short form of the name.</Help>
+	</Alias>
+	<Alias>
+		<Name>pfroremove</Name>
+		<ReplaceBeforeArgs>python windows\regmove.py -args "-r </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>pfroremove [filename]
+Removes the given entry from the PendingFileRenameOperations key.  
+Arguments: [filename]
+	The name of the entry to remove.  If using this alias, you must use the short form of the name.</Help>
+	</Alias>
+	<Alias>
+		<Name>pfroquery</Name>
+		<ReplaceBeforeArgs>python windows\regmove.py -args "-q </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>pfroquery
+Parses the PendingFileRenameOperations value and shows the user what moves/deletes are currently pending</Help>
+	</Alias>
+</Aliases>

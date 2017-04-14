@@ -1,0 +1,1 @@
+select count(*) from user_db_links

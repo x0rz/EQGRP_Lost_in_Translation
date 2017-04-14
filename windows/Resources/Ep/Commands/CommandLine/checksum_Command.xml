@@ -1,0 +1,78 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31330'>
+
+  <Command id='16' name='checksum'>
+
+    <Help>Returns a list of checksums of files specified by the mask and path</Help>
+
+    <Input>
+      <Option name='mask' optional='false'> 
+        <Argument name='mask' optional='false' data='mask'/>
+	<Help>The mask for files to scan for</Help>
+      </Option>
+
+      <Option name='recursive' optional='true'>
+	<Set data='recursive' value='true'/>
+      </Option>
+
+      <Option name='path' optional='true'>
+	<Argument name='pathname' data='path'/>
+	<Help>Do a dir listing from a directory other than the current one.</Help>
+	<Help>If '*' do a dir listing of all directories on all fixed drives</Help>
+      </Option>
+
+      <Option name='max' optional='true'>
+	<Argument name='number' data='max'/>
+	<Help>Continue to return listings up to the number specified.  If zero,</Help>
+	<Help>return all listings.  If not specified, return all.</Help>
+      </Option>
+
+      <Option name='time' optional='true'>
+	<Help>Time type to use in after/before/age and display</Help>
+	<Help>(defaults to modified)</Help>
+
+	<Argument name='type'>
+	    <Value string='accessed'>
+		<Set data='timetype' value='1'/>
+	    </Value>
+	    <Value string='modified'>
+		<Set data='timetype' value='2'/>
+	    </Value>
+	    <Value string='created'>
+		<Set data='timetype' value='3'/>
+	    </Value>
+	</Argument>
+      </Option>
+
+      <Option name='age' optional='true'>
+	<Help>Only display files that are at most 'hours' old</Help>
+	<Argument name='hours' data='age'/>
+      </Option>
+
+      <Option name='after' optional='true'>
+	<Help>Only display files with timestamps after the given date</Help>
+	<Argument name='MM/DD/YYYY' data='after'/>
+      </Option>
+
+      <Option name='before' optional='true'>
+	<Help>Only display files with timestamps before the given date</Help>
+	<Argument name='MM/DD/YYYY' data='before'/>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='mask'      type='string' default='*'/>
+      <Data name='recursive' type='bool' default='false'/>
+      <Data name='path'      type='string'/>
+      <Data name='max'       type='uint32_t' default='100'/>
+      <Data name='timetype'  type='uint32_t' default='1'/>
+      <Data name='after'     type='string'/>
+      <Data name='before'    type='string'/>
+      <Data name='age'       type='uint8_t' default='0'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

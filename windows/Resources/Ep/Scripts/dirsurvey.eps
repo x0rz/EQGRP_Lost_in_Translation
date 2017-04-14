@@ -1,0 +1,27 @@
+#-------------------------------------------------------------------------------
+# File: dirsurvey.eps
+# Description: Does a dir; the only thing different is the name
+#
+#-------------------------------------------------------------------------------
+
+bool $badParams = false;
+
+string $args="";
+string $arg;
+
+int $i=1;
+while ($i < sizeof($argv)) {
+	$arg=split(" ", $argv[$i]);
+	ifnot ($arg == $argv[$i]) {
+		$arg="\"$argv[$i]\"";
+	}
+	if ($args == "") {
+		$args=$arg;
+	} else {
+		$args="$args $arg";
+	}
+	$i++;
+}
+
+bool $success=`dir $args`;
+return $success;

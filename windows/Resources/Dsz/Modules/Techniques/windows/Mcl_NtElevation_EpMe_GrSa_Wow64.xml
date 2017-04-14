@@ -1,0 +1,16 @@
+<?xml version='1.0' ?>
+
+<Technique name='Mcl_NtElevation_EpMe_GrSa_Wow64' id='131'>
+
+	<Implementation value='0'/>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+			<Version major='5' minor='1+' other='*'/>
+			<Version major='6' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+
+</Technique>

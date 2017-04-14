@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module id="416" name="Copy_Lp" script="Tasking/Mcl_Cmd_Copy_Tasking.pyo">
+
+	<Interfaces/>
+	
+	<Dependencies>
+		<Remote>Copy_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version major="*" minor="*" other="*">
+				<File loadtype='file'/>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

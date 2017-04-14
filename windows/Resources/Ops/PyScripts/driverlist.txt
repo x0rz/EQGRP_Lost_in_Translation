@@ -1,0 +1,19 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+[-maxage <age>]
+    Default age is 1h. Accepts seconds, minutes, hours, days, weeks, years. (Ex: 2h10m50s)
+[-nominimal]
+    Do not use -minimal when running the drivers -list (dangerous)
+[-nohashes]
+    Do not run the hashing functions to get our wonderful hashes
+[-showall]
+    Show all drivers. By default, ISO_HASH items are excluded
+[-autofreshscan <userid> [GATH]]
+    Automatically freshscan UNIDENTIFIED drivers. Requires userid, GATH optional
+[-nofreshscan]
+    Disable the freshscan prompt for UNIDENTIFIED drivers at the end of the script
+[-verbose]
+    Enable helpful output messages that state the progress of the script
+[-wait]
+    Instead of running hashhunter, run the dir's from within the script

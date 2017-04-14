@@ -1,0 +1,304 @@
+#-----------------------------------------------------------------------------
+#  Do a scan on the specified IP
+#-----------------------------------------------------------------------------
+
+# valid types (and their info)
+string $validTypes;
+string $descriptions;
+string $ports;
+string $protocols;
+bool $broadcasts;
+
+#SCAN SETTING START
+$validTypes[0] = "winl";
+$descriptions[0] = "Scan for windows boxes";
+$protocols[0] = "UDP";
+$ports[0] = "137";
+$broadcasts[0] = TRUE;
+
+$validTypes[1] = "winn";
+$descriptions[1] = "Scan for windows names";
+$protocols[1] = "UDP";
+$ports[1] = "137";
+$broadcasts[1] = FALSE;
+
+$validTypes[2] = "xwin";
+$descriptions[2] = "Scan for Xwin folks";
+$protocols[2] = "UDP";
+$ports[2] = "177";
+$broadcasts[2] = FALSE;
+
+$validTypes[3] = "time";
+$descriptions[3] = "Scan for NTP  folks";
+$protocols[3] = "UDP";
+$ports[3] = "123";
+$broadcasts[3] = FALSE;
+
+$validTypes[4] = "rpc";
+$descriptions[4] = "Scan for RPC  folks";
+$protocols[4] = "UDP";
+$ports[4] = "111";
+$broadcasts[4] = FALSE;
+
+$validTypes[5] = "snmp1";
+$descriptions[5] = "Scan for SNMP version";
+$protocols[5] = "UDP";
+$ports[5] = "161";
+$broadcasts[5] = FALSE;
+
+$validTypes[6] = "snmp2";
+$descriptions[6] = "Scan for Sol  version";
+$protocols[6] = "UDP";
+$ports[6] = "161";
+$broadcasts[6] = FALSE;
+
+$validTypes[7] = "echo";
+$descriptions[7] = "Scan for echo hosts";
+$protocols[7] = "UDP";
+$ports[7] = "7";
+$broadcasts[7] = FALSE;
+
+$validTypes[8] = "time2";
+$descriptions[8] = "Scan for daytime hosts";
+$protocols[8] = "UDP";
+$ports[8] = "13";
+$broadcasts[8] = FALSE;
+
+$validTypes[9] = "tftp";
+$descriptions[9] = "Scan for tftp hosts";
+$protocols[9] = "UDP";
+$ports[9] = "69";
+$broadcasts[9] = FALSE;
+
+$validTypes[10] = "tday";
+$descriptions[10] = "Scan for daytime hosts";
+$protocols[10] = "TCP";
+$ports[10] = "13";
+$broadcasts[10] = FALSE;
+
+$validTypes[11] = "ident";
+$descriptions[11] = "Scan ident";
+$protocols[11] = "TCP";
+$ports[11] = "113";
+$broadcasts[11] = FALSE;
+
+$validTypes[12] = "mail";
+$descriptions[12] = "Scan mail";
+$protocols[12] = "TCP";
+$ports[12] = "25";
+$broadcasts[12] = FALSE;
+
+$validTypes[13] = "ftp";
+$descriptions[13] = "Scan ftp";
+$protocols[13] = "TCP";
+$ports[13] = "21";
+$broadcasts[13] = FALSE;
+
+$validTypes[14] = "t_basic";
+$descriptions[14] = "Scan TCP port";
+$protocols[14] = "TCP";
+$ports[14] = "0";
+$broadcasts[14] = FALSE;
+
+$validTypes[15] = "http";
+$descriptions[15] = "Scan web";
+$protocols[15] = "TCP";
+$ports[15] = "80";
+$broadcasts[15] = FALSE;
+
+$validTypes[16] = "netbios";
+$descriptions[16] = "Does not work";
+$protocols[16] = "UDP";
+$ports[16] = "138";
+$broadcasts[16] = FALSE;
+
+$validTypes[17] = "dns";
+$descriptions[17] = "Scan for DNS";
+$protocols[17] = "UDP";
+$ports[17] = "53";
+$broadcasts[17] = FALSE;
+
+$validTypes[18] = "ripv1";
+$descriptions[18] = "Scan for RIP v1";
+$protocols[18] = "UDP";
+$ports[18] = "520";
+$broadcasts[18] = FALSE;
+
+$validTypes[19] = "ripv2";
+$descriptions[19] = "Scan for RIP v2";
+$protocols[19] = "UDP";
+$ports[19] = "520";
+$broadcasts[19] = FALSE;
+
+$validTypes[20] = "lpr";
+$descriptions[20] = "Scan for lpr";
+$protocols[20] = "TCP";
+$ports[20] = "515";
+$broadcasts[20] = FALSE;
+
+$validTypes[21] = "miniserv";
+$descriptions[21] = "Scan for Redflag Web";
+$protocols[21] = "UDP";
+$ports[21] = "10000";
+$broadcasts[21] = FALSE;
+
+$validTypes[22] = "win_scan";
+$descriptions[22] = "Get windows version";
+$protocols[22] = "TCP";
+$ports[22] = "139";
+$broadcasts[22] = FALSE;
+
+$validTypes[23] = "telnet";
+$descriptions[23] = "Banner Telnet";
+$protocols[23] = "TCP";
+$ports[23] = "23";
+$broadcasts[23] = FALSE;
+
+$validTypes[24] = "finger";
+$descriptions[24] = "Banner finger";
+$protocols[24] = "TCP";
+$ports[24] = "79";
+$broadcasts[24] = FALSE;
+
+$validTypes[25] = "ssl";
+$descriptions[25] = "Scan for SSL stuff";
+$protocols[25] = "TCP";
+$ports[25] = "443";
+$broadcasts[25] = FALSE;
+
+$validTypes[26] = "ssh";
+$descriptions[26] = "Scan for SSH version";
+$protocols[26] = "TCP";
+$ports[26] = "22";
+$broadcasts[26] = FALSE;
+
+$validTypes[27] = "snmp3";
+$descriptions[27] = "Finnish Test Case SNMP";
+$protocols[27] = "UDP";
+$ports[27] = "161";
+$broadcasts[27] = FALSE;
+
+$validTypes[28] = "dtuname";
+$descriptions[28] = "DT uname test";
+$protocols[28] = "TCP";
+$ports[28] = "6112";
+$broadcasts[28] = FALSE;
+
+$validTypes[29] = "answer";
+$descriptions[29] = "Answerbook test";
+$protocols[29] = "TCP";
+$ports[29] = "8888";
+$broadcasts[29] = FALSE;
+
+$validTypes[30] = "brpc";
+$descriptions[30] = "Larger RPC dump";
+$protocols[30] = "UDP";
+$ports[30] = "111";
+$broadcasts[30] = FALSE;
+
+$validTypes[31] = "x11";
+$descriptions[31] = "X11 test";
+$protocols[31] = "TCP";
+$ports[31] = "6000";
+$broadcasts[31] = FALSE;
+
+$validTypes[32] = "xfont";
+$descriptions[32] = "X font server test";
+$protocols[32] = "TCP";
+$ports[32] = "7100";
+$broadcasts[32] = FALSE;
+
+$validTypes[33] = "printer";
+$descriptions[33] = "Printer Test";
+$protocols[33] = "TCP";
+$ports[33] = "9100";
+$broadcasts[33] = FALSE;
+
+$validTypes[34] = "printerid";
+$descriptions[34] = "";
+$protocols[34] = "TCP";
+$ports[34] = "9100";
+$broadcasts[34] = FALSE;
+
+#SCAN SETTING STOP
+
+int $scanType=-1;
+   
+if ($argc < 3) {
+	echo "Usage: $argv[0] <type of scan> <IP to scan>";
+	echo "You provided $argc arguments";
+	echo "Valid types: ";
+	int $j=0;
+	while ($j < sizeof($validTypes)) {
+		echo "$validTypes[$j]   $descriptions[$j]";
+		$j++;
+	}
+
+	return false;
+}
+
+string $type=$argv[1];
+string $target = $argv[2];
+
+int $i=0;
+while ($i < sizeof($validTypes)) {
+	if ($type == $validTypes[$i]) {
+		$scanType=$i;
+	}
+	$i++;
+}
+
+if ($scanType == -1) {
+  # type not found
+  echo "\r\n***Invalid type***\r\n";
+  return false;
+}
+
+string $port=$ports[$scanType];
+string $protocol=$protocols[$scanType];
+string $description=$descriptions[$scanType];
+bool $broadcast=$broadcasts[$scanType];
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+
+# set up redirector
+ifnot (`redirect -maxpacketsize 35000 -$protocol -lplisten $port -target $target $port`) {
+	echo "* $argv[0]: Unable to set up redirector (redirect -maxpacketsize 35000 -$protocol -lplisten $port -target $target $port)";
+	return false;
+}
+@echo on;
+
+echo "$description ($type scan) on $target (using $protocol port $port)";
+
+# do scan
+ifnot (`log local run -command "$ScriptsDir\\..\\..\\..\\Resources\\Ops\\Tools\\scanner.exe $type 127.0.0.1" -redirect scan_$target-$type`) {
+	echo "* $argv[0]: Scanner failed";
+	# close redirector
+	@echo off;
+	ifnot (`stop redirect -contains "$protocol -lplisten $port"`) {
+		echo "* $argv[0]: Unable to stop redirector";
+		return false;
+	}	
+	return false;
+}
+if ($broadcast) {
+	`script arp.eps`;
+}
+@echo off;
+
+# close redirector
+ifnot (`stop redirect -contains "$protocol -lplisten $port"`) {
+	echo "* $argv[0]: Unable to stop redirector";
+	return false;
+}	
+
+return true;

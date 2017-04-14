@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Modifed 3/16/05 -->
+<xs:schema elementFormDefault="qualified" xmlns="urn:ddb:expandingpulley" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:EP="urn:ddb:expandingpulley" targetNamespace="urn:ddb:expandingpulley">
+	<xs:include schemaLocation="commonDefs.xs" />
+	<xs:element name="Data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="Autoload">
+						<xs:complexType>
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+							<xs:attribute name="plugin" type="xs:int" />
+							<xs:attribute name="type" type="xs:string" />
+							<xs:attribute name="usefile" type="xs:boolean" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="TargetVersion">
+						<xs:complexType>
+							<xs:attribute name="platform" type="xs:int" />
+							<xs:attribute name="minor" type="xs:int" />
+							<xs:attribute name="major" type="xs:int" />
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+							<xs:attribute name="build" type="xs:int" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="SessionKey" type="InfoType" />
+					<xs:element name="ImplantVersion" type="InfoType" />
+					<xs:element name="ListeningPostVersion" type="InfoType" />
+					<xs:element name="Info" type="InfoType" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="Instance">
+						<xs:complexType>
+							<xs:attribute name="id" type="xs:string" />
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CommandStart">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="background" type="xs:string" />
+									<xs:attribute name="index" type="xs:int" />
+									<xs:attribute name="lptimestamp" type="xs:dateTime" />
+									<xs:attribute name="request" type="xs:int" />
+									<xs:attribute name="parent" type="xs:int" default="-1" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CommandXml">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="lptimestamp" type="xs:dateTime" />
+									<xs:attribute name="request" type="xs:int" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CommandChannel">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="lptimestamp" type="xs:dateTime" />
+									<xs:attribute name="request" type="xs:int" />
+									<xs:attribute name="first" type="xs:int" />
+									<xs:attribute name="second" type="xs:int" />
+									<xs:attribute name="type" type="xs:string" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CommandEnd">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="index" type="xs:int" />
+									<xs:attribute name="lptimestamp" type="xs:dateTime" />
+									<xs:attribute name="request" type="xs:int" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Error" type="InfoType" />
+					<xs:element name="Warning" type="InfoType" />
+					<xs:element name="Timestamp">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:dateTime">
+									<xs:attribute name="lptimestamp" type="xs:dateTime" />
+									<xs:attribute name="type" type="xs:string" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Quit">
+						<xs:complexType>
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="UserInput" type="InfoType" />
+					<xs:element name="RotateLog" type="InfoType" />
+					<xs:element name="CtrlC">
+						<xs:complexType>
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Background">
+						<xs:complexType>
+							<xs:attribute name="index" type="xs:int" />
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+							<xs:attribute name="request" type="xs:int" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Break">
+						<xs:complexType>
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+						</xs:complexType>
+					</xs:element>					
+					<xs:element name="MemoryLeak">
+						<xs:complexType>
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+							<xs:attribute name="command" type="xs:int" />
+							<xs:attribute name="size" type="xs:int" />
+							<xs:attribute name="address" type="feHex" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="CommandLog">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="lptimestamp" type="xs:dateTime" />
+									<xs:attribute name="request" type="xs:int" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Debug">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="lptimestamp" type="xs:dateTime" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Exception">
+						<xs:complexType>
+							<xs:attribute name="location" type="xs:string" />
+							<xs:attribute name="id" type="xs:int" />
+							<xs:attribute name="lptimestamp" type="xs:dateTime" />
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="Alias">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="lptimestamp" type="xs:dateTime"/>
+								</xs:extension>
+							</xs:simpleContent>	
+						</xs:complexType>
+					</xs:element>
+				</xs:choice>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="InfoType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="lptimestamp" type="xs:dateTime" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

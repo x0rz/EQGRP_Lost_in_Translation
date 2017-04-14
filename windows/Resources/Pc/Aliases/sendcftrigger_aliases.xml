@@ -1,0 +1,22 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>trigger</Name>
+		<ReplaceBeforeArgs>script _SendCFTrigger.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+
+		<Help>trigger</Help>
+		<Help>    Sends a PC 2.x trigger</Help>
+	</Alias>
+	
+	<Alias>
+		<Name>trigger_old</Name>
+		<ReplaceBeforeArgs>script _OldTrigger.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc</ReplaceAfterArgs>
+
+		<Help>trigger</Help>
+		<Help>    Sends a PC 1.x trigger</Help>
+	</Alias>
+</Aliases>	
+		

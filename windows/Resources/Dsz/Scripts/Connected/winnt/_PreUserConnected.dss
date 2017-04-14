@@ -1,0 +1,11 @@
+
+@echo off;
+@quiet off;
+
+bool $rtn = true;
+
+# make sure we have admin privileges
+`script Connected/winnt/_PermissionCheck.dss -project Dsz`;
+
+return $rtn;
+

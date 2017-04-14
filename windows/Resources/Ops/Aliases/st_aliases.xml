@@ -1,0 +1,12 @@
+<?xml version='1.1' ?>
+<Aliases>
+	<Alias>
+		<Name>ST</Name>
+		<ReplaceBeforeArgs>python st.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>ST</Help>
+		<Help>    Install SentryTribe 1.14</Help>
+		<Options>
+		</Options>
+	</Alias>
+</Aliases>

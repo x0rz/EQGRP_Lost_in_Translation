@@ -1,0 +1,167 @@
+#--------------------------------------------------------
+# File: DraftyPlan.eps
+#
+# Wrapper script for DraftyPlan tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#  03/30/2004	Updated for EP 3.0
+#--------------------------------------------------------
+@echo off;
+
+# defaults
+string $driverName = "pdresy";
+string $version = "DraftyPlan 1.3.1";
+
+# commands
+int $installCmdsStart = 1;
+int $normalCmdsStart = 8;
+string $commands;
+$commands[0] = "Quit";
+
+# start of "install" commands
+$commands[1]  = "Change driver name";
+$commands[2]  = "Install tools";
+$commands[3]  = "Uninstall tools";
+$commands[4]  = "Load the driver";
+$commands[5]  = "Unload the driver";
+$commands[6]  = "Verify install";
+$commands[7]  = "Verify tools are running";
+
+# start of "config" commands
+$commands[8]  = "Get running process id";
+$commands[9]  = "Clear running process id";
+$commands[10] = "Terminate running process";
+$commands[11] = "Change executable";
+$commands[12] = "Start executable";
+
+while (true) {
+    echo "\r\n\r\n";
+    echo "$version\r\n";
+
+    # Print the current configuration
+    echo "Current Configuration:";
+    echo "\tDriver name : $driverName";
+    echo "";
+
+    # print the command list
+    int $i=0;
+    while ($i < sizeof($commands)) {
+	if ($i == $installCmdsStart) {
+	    echo "";
+	    echo "Installation commands:";
+	} else if ($i == $normalCmdsStart) {
+	    echo "";
+	    echo "Config / Control commands";
+	}
+	echo "($i). $commands[$i]";
+	$i++;
+    }
+
+    echo "";
+    int $choice = GetInput("Enter the desired option");
+    if ($choice == 0) {
+	# quit
+	return true;
+    } else if ($choice == 1) {
+	# Change driver name
+	echo "Current driver name = '$driverName'";
+	$driverName = GetInput("Enter new driver name");
+    } else if ($choice == 2) {
+	# install driver
+	if (`script DraftyPlan\\Install.eps $driverName`) {
+	    echo "INSTALL SUCCESS";
+	    echo "";
+	    echo "NOTE: The driver has not been loaded";
+	} else {
+	    echo "**** INSTALL FAILED ****";
+	}
+    } else if ($choice == 3) {
+	# uinstall driver
+	if (`script DraftyPlan\\Uninstall.eps $driverName`) {
+	    echo "UNINSTALL SUCCESS";
+	} else {
+	    echo "**** UNINSTALL FAILED ****";
+	}
+    } else if ($choice == 4) {
+	# load the driver
+	if (prompt "Load the driver ($driverName)?") {
+	    @echo on;
+	    `driverload -name $driverName`;
+	    @echo off;
+	}
+    } else if ($choice == 5) {
+	# unload the driver
+	if (prompt "Unload the driver ($driverName)?") {
+	    @echo on;
+	    `driverunload -name $driverName`;
+	    @echo off;
+	}
+    } else if ($choice == 6) {
+	# verify install
+	if (`script DraftyPlan\\VerifyInstall.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO VERIFY INSTALL ****";
+	}
+    } else if ($choice == 7) {
+	# verify install
+	if (`script DraftyPlan\\VerifyRunning.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO VERIFY TOOLS ARE RUNNING ****";
+	    echo "";
+	    echO "NOTE: If the machine has just booted, the exe will not";
+	    echo "      begin running until 3 minutes after the driver is loaded.";
+	}
+
+	### CONFIG / CONTROL COMMANDS ###
+
+    } else if ($choice == 8) {
+	# get the current process id
+	@echo on;
+	`dp_getprocessid -name $driverName`;
+	@echo off;
+    } else if ($choice == 9) {
+	# clear the current process id
+	if (prompt "Clear the current process id?") {
+	    @echo on;
+	    `dp_clearprocessid -name $driverName`;
+	    @echo off;
+	}
+    } else if ($choice == 10) {
+	# terminate the current process
+	if (prompt "Terminate the executable?") {
+	    @echo on;
+	    `dp_terminateprocess -name $driverName`;
+	    @echo off;
+	}
+    } else if ($choice == 11) {
+	# update exe
+	if (`script DraftyPlan\\UpdateExe.eps $driverName`) {
+	    echo "UPDATE SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO UPDATE EXECUTABLE ****";
+	}
+
+    } else if ($choice == 12) {
+	# restart the exe
+	if (prompt "Restart the executable?") {
+	    @echo on;
+	    if (`dp_restartprocess -name $driverName`) {
+		echo "\r\n\r\n*** The exe may not start for 3 minutes if the machine has booted recently ***\r\n\r\n";
+	    }
+	    @echo off;
+	}
+
+	### CONFIG / CONTROL COMMANDS ###
+
+    } else {
+	# invalid choice
+	echo "*** Invalid choice ***";
+    }
+
+    pause;
+}
+
+return true;

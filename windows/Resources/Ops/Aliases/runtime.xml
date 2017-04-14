@@ -1,0 +1,14 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>runtime</Name>
+		<Location>Remote</Location>
+		<ReplaceBeforeArgs>python runtime.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>Usage:
+	runtime &lt;command&gt;
+Executes: python runtime.py -project Ops -args "&lt;command&gt;"
+Times how long it takes to execute &lt;command&gt;. The script will assemble the
+command from multiple arguments, so there is no need to enter escaping-hell.</Help>
+	</Alias>
+</Aliases>

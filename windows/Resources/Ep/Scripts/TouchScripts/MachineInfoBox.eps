@@ -1,0 +1,67 @@
+bool $ok = true;
+string $cmd = "";
+string $tabs = "\t\t\t";
+
+@echo off;
+#######################################################################
+$cmd = "machineinfo $argv[1]";
+#echo "\n---------- MachineInfoBox : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+@echo on;
+
+echo "\n\t\t$cmd";
+ifnot($ok) {echo "$tabs$cmd, failed to obtain requested information"; return false;} 
+else
+{
+
+	string $os_version = GetCmdData("os_version");
+	string $os_type = GetCmdData("os_type");
+	string $os_modifier = GetCmdData("os_modifier");
+	string $browser = GetCmdData("browser");
+	bool $netware_server = GetCmdData("netware_server");
+	bool $sql_server = GetCmdData("sql_server");
+	bool $time_source = GetCmdData("time_source");
+	bool $appletalk = GetCmdData("appletalk");
+	bool $novell = GetCmdData("novell");
+	bool $printq_server = GetCmdData("printq_server");
+	bool $dialin_server = GetCmdData("dialin_server");
+	bool $domain_member = GetCmdData("domain_member");
+	bool $unix_services = GetCmdData("unix_services");
+	bool $cluster = GetCmdData("cluster");
+	bool $terminal_server = GetCmdData("terminal_server");
+	bool $dce = GetCmdData("dce");
+
+	if (defined($os_version[0]) == false)
+	{
+		echo "$cmd, script variables were not defined.";
+		pause;
+	}
+	else
+	{
+		echo "$tabs  os_version:\t $os_version";
+		echo "$tabs     os_type:\t $os_type";
+		echo "$tabs os_modifier:\t $os_modifier";
+		echo "$tabs     browser:\t $browser\n";
+
+		echo "$tabs netware_server:\t $netware_server";
+		echo "$tabs     sql_server:\t $sql_server";
+		echo "$tabs    time_source:\t $time_source";
+		echo "$tabs      appletalk:\t $appletalk";
+		echo "$tabs         novell:\t $novell";
+		echo "$tabs  printq_server:\t $printq_server";
+		echo "$tabs  dialin_server:\t $dialin_server";
+		echo "$tabs  domain_member:\t $domain_member";
+		echo "$tabs  unix_services:\t $unix_services";
+		echo "$tabs        cluster:\t $cluster";
+		echo "$tabs[0]terminal_server:\t $terminal_server";
+		echo "$tabs            dce:\t $dce";
+	}
+}
+return true;
+
+
+
+

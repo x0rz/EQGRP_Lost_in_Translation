@@ -1,0 +1,103 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='2' name='Aliases'>
+
+		<Help>Lists or modifies the LP aliases</Help>
+
+		<Input>
+			<Option name='list' optional='true' group='action'>
+				<Set data='action' value='0'/>
+				<Help>If no location is specified "all" is assumed.</Help>
+				<Reject>replace</Reject>
+				<Reject>options</Reject>
+				<Reject>help</Reject>
+			</Option>
+			<Option name='add' optional='true' group='action'>
+				<Set data='action' value='1'/>
+				<Help>If no location is specified "current" is assumed.</Help>
+				<Require>alias</Require>
+				<Require>replace</Require>
+			</Option>
+			
+			<Option name='delete' optional='true' group='action'>
+				<Set data='action' value='2'/>
+				<Help>If no location is specified "current" is assumed.</Help>
+				<Require>alias</Require>
+				<Reject>replace</Reject>
+				<Reject>options</Reject>
+				<Reject>help</Reject>
+			</Option>
+			
+			<Option name='alias' optional='true' group='aliasdata'>
+				<Argument name='command' data='command'/>
+				<Help>The cmd to alias</Help>
+			</Option>
+			
+			<Option name='replace' optional='true'>
+				<Argument name='value' data='replace'/>
+				<Help>The value to substitute for the aliased command.  Use the string %cmd_args% to</Help>
+				<Help>place the command arguments in the alias.  If %cmd_args% is not found, the</Help>
+				<Help>command arguments will be placed after any alias arguments.</Help>
+			</Option>
+
+			<Option name='options' optional='true'>
+				<Argument name='alias_options' data='options'/>
+				<Help>Space separated list of alias options</Help>
+			</Option>
+			
+			<Option name='location' optional='true' group='location'>
+				<Help>The alias destination (general)</Help>
+				<Help>    all     = local and remote</Help>
+				<Help>    local   = local (LP) only</Help>
+				<Help>    remote  = Any remote destination</Help>
+				<Help>    current = The default destination</Help>
+				<Argument name='location' data='location'>
+					<Value string='all'>
+						<Set data='location' value='1'/>
+					</Value>
+					<!-- "both" is the same as "all" and is available 
+						 for backwards compatibility reasons -->
+					<Value string='both'>
+						<Set data='location' value='1'/>
+					</Value>
+					<Value string='local'>
+						<Set data='location' value='2'/>
+					</Value>
+					<Value string='remote'>
+						<Set data='location' value='3'/>
+					</Value>	
+					<Value string='current'>
+						<Set data='location' value='4'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='destination' optional='true' group='location'>
+				<Set data='location' value='4'/>
+				<Argument name='address' data='address'/>
+				<Help>If specified, the specific destination for the alias</Help>
+			</Option>
+			
+			<Option name='help' optional='true'>
+				<Argument name='statement' data='help'/>
+				<Help>The alias help statement.</Help>
+				<Help></Help>
+				<Help>NOTE: This option is only used when adding an alias.</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='action' type='uint8_t' default='0'/>
+			<Data name='location' type='uint8_t' default='0'/>
+			<Data name='command' type='string'/>
+			<Data name='replace' type='string'/>
+			<Data name='help' type='string'/>
+			<Data name='address' type='cpaddr'/>
+			<Data name='options' type='string'/>
+		</Output>
+
+  </Command>
+
+</Plugin>

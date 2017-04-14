@@ -1,0 +1,129 @@
+#-------------------------------------------------------------------------------
+# File: UninstallExe.eps
+#
+# Description: Performs a level4 uninstall for the exe version
+#
+# Modifications:
+#	08/15/05	Created
+#-------------------------------------------------------------------------------
+@include "_FileExists.epm";
+@include "_GetDirectory.epm";
+@include "_GetSystemPaths.epm";
+@include "_VersionChecks.epm";
+
+@echo off;
+
+if (_IsTargetNtFamily()) {
+
+    # NT Family
+    return UninstallFromNt();
+    
+} else {
+
+    # 9x Family
+    return UninstallFrom9x();
+
+}
+
+#-------------------------------------------------------------------------------
+sub UninstallFrom9x()
+{
+
+    bool $success = true;
+
+    string $remoteName = "NETWR.EXE";
+    string $drvName = "VNETWR";
+    
+    string $system;
+    string $root;
+    ifnot (_GetSystemPaths($root, $system)) {
+	echo "* Unable to get system directory";
+	return false;
+    }
+    string $fullPath = "$root\\$system";
+
+    # remove the driver key
+    echo "Removing driver registry key";
+    if (`regdelkey -hive L -key SYSTEM\\CurrentControlSet\\Services\\VxD\\$drvName -recursive`) {
+	echo "    SUCCESS";
+    } else {
+	echo "    FAILED";
+	$success = false;
+    }
+
+    echo "Checking for driver and exe";
+    bool $driverFound = _FileExists("$drvName.VXD", $fullPath);
+    bool $exeFound = _FileExists("$remoteName", $fullPath);
+    if (($driverFound == false) && ($exeFound == false)) {
+	echo "    NEITHER FOUND";
+	return true;
+    }
+
+    # found something to delete -- create the WININIT.INI file
+    string $iniFile;
+    ifnot (_GetLpLogsDirectory($iniFile)) {
+	echo "* Failed to get log directory for WININIT.INI file.  Unable to mark files for deletion";
+	$success = false;
+    }
+
+    # remove any previous local instance of the ini file
+    `local del PC_UNINSTALL_WININIT.INI -path "$iniFile"`;
+
+    # write the deletion file
+    bool $writeOfIni = true;
+    echo "Writing wininit.ini file for file deletion";
+    $iniFile = "$iniFile\\PC_UNINSTALL_WININIT.INI";
+    ifnot (WriteFile($iniFile, false, "\r\n[rename]")) {
+	$writeOfIni = false;
+    } else {
+	if ($driverFound) {
+	    ifnot (WriteFile($iniFile, true, "NULL=$fullPath\\$drvName.VXD")) {
+		$writeOfIni = false;
+	    }
+	}
+	if ($exeFound) {
+	    ifnot (WriteFile($iniFile, true, "NULL=$fullPath\\$remoteName")) {
+		$writeOfIni = false;
+	    }
+	}
+    }
+
+    if ($writeOfIni == true) {
+	echo "    SUCCESS";
+	
+	# check for existance
+	if (_FileExists("WININIT.INI", $root)) {
+	    echo "*** $root\\WININIT.INI already exists. ***";
+	    echo "";
+	    echo "Add lines in $iniFile to $root\\WININIT.INI by hand";
+	    $success = false;
+	} else {
+	    # upload ini file
+	    echo "Uploading WININIT.INI";
+	    if (`put "$iniFile" -name "$root\\WININIT.INI" -permanent`) {
+		echo "    UPLOADED";
+	    } else {
+		echo "    FAILED";
+		echo "";
+		echo "*** Mark files for deletion by hand ***";
+		$success = false;
+	    }
+	}
+    } else {
+	echo "    FAILED";
+    }
+
+    return $success;
+
+}
+# END UninstallFrom9x
+
+#-------------------------------------------------------------------------------
+sub UninstallFromNt()
+{
+
+    return `dp_uninstall`;
+
+}
+# END InstallOnNt
+

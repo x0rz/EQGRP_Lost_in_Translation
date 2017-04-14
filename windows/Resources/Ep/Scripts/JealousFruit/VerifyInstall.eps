@@ -1,0 +1,122 @@
+#--------------------------------------------------------
+# File: VerifyInstall.eps
+#
+# Wrapper script for verify install of DarkSkyline tools
+#
+# Modifications:
+#  11/26/2002	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = "memss.exe";
+
+@record on;
+
+# get the root directory
+string $systemroot;
+
+if (`regquery -hive L -subkey "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion" -value SystemRoot`) {
+    $systemroot = GetCmdData("enum_keyvalue_data");
+}
+
+ifnot (defined($systemroot[0])) {
+    echo "* Unable to determine system root";
+    return false;
+}
+
+bool $valid = true;
+
+echo "Checking for key";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $valid = false;
+}
+
+echo "Checking for key/ErrorControl";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value ErrorControl`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 4) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "00000000") {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+echo "Checking for key/Start";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value Start`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 4) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "00000003") {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+echo "Checking for key/Type";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value Type`) {
+    # got key -- check value
+    bool $valueGood = false;
+    int $type = GetCmdData("enum_keyvalue_type");
+    if ($type == 4) {
+	string $data = GetCmdData("enum_keyvalue_data");
+	if ($data == "00000001") {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+echo "Checking for $driver.sys";
+if (`dir $driver.sys -path "$systemroot\\system32\\drivers"`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED";
+    $valid = false;
+}
+
+# we're done...
+return $valid;

@@ -1,0 +1,488 @@
+@include "_Menu.dsi";
+@include "_Processes.dsi";
+@include "_DatabaseIncludes.dsi";
+@include "_SQLiteIncludes.dsi";
+@include "Ops_GenericFunctions.dsi";
+@include "_StringIncludes.dsi";
+
+#struct used to handle the Meta Data 
+struct Ops_pspMetaData
+{
+	string $ip;
+	string $ipw;
+	string $mac;
+	string $vendor;
+	string $product;
+	string $version;
+	string $installDate;
+	string $defUpdates;
+	string $logFile;
+	string $quarantine;
+	string $information;
+	string $projectName;
+	string $driveLetter;
+	string $prepsDir;
+	string $logdir;
+	bool $history;
+}
+
+#This function should be called right after instantiating a metaData struct.
+#We will fill in as much information as we can to reduce the number of function calls
+sub Ops_pspInit(REF Ops_pspMetaData @metaData)
+{
+	Ops_pspMyIP(@metaData.$ip,@metaData.$ipw);
+	Ops_pspGetPathInfo(@metaData.$driveLetter,@metaData.$prepsDir);
+	Ops_pspGetProjectName(@metaData);
+	Ops_pspGetHistory(@metaData);
+	
+	# Things we can't get yet, set to ""
+	@metaData.$vendor = "ERROR";
+	@metaData.$product = "NTR";
+	@metaData.$version = "NTR";
+	@metaData.$installDate = "NTR";
+	@metaData.$defUpdates = "NTR";
+	@metaData.$logFile = "NTR";
+	@metaData.$quarantine = "NTR";
+	@metaData.$information = "NTR";
+
+	# we also want the MAC Address from the target
+	@echo off;
+	
+	string %emptyResult;
+	string %tableResults;
+	string $logDir;
+	GetEnv("_LOGPATH", $logDir);
+	@metaData.$logdir = $logDir;
+	
+	int $dbHandle;
+	_sqlOpen("$logDir\\target.db", $dbHandle);
+	_sqlExec( $dbHandle, "select MAC, IP from interface", %tableResults );
+	string $mac;
+	string $ip;
+	_CopyArrayStrings( $mac, %tableResults{'MAC'} );
+	_CopyArrayStrings( $ip, %tableResults{'IP'} );
+	# If we don't find a match default to this
+	string $firstMac = "00-00-00-00-00-00";
+	for (int $i = 0; $i < sizeof($ip); $i++) {
+		if ($ip[$i] == @metaData.$ip) {
+			$firstMac = $mac[$i];
+		}
+	}
+	@metaData.$mac = $firstMac;
+	return true;
+}
+
+# returns the drive letter from the LP environment variable. Includes the :
+# Also returns path to preps with the assumption it is located under \preps
+sub Ops_pspGetPathInfo(OUT string $driveLetter, OUT string $prepsDir)
+{
+	string $dir;
+	Ops_GetResourcePath($dir);
+	
+	$prepsDir = "$dir/preps";
+	_NormalizePath($prepsDir, _IsWindowsLocal());
+	
+	if (_IsUnixLocal())
+	{
+		$driveLetter = "";
+	}
+	else
+	{
+		$driveLetter = $prepsDir;
+		RegExSub("^([a-zA-Z]:).*", "\$1", $driveLetter);
+	}
+	return true;
+}
+
+# checks to see if there is an existing pspConfig.txt file for the project in quesion.
+sub Ops_pspGetHistory(REF Ops_pspMetaData @metaData)
+{
+	if (FileCheck("@metaData.$prepsDir/@metaData.$projectName/@metaData.$ipw/pspConfig.txt"))
+	{
+		@metaData.$history = true;
+	}
+	else
+	{
+		@metaData.$history = false;
+	}
+	return true;
+}
+
+# This function creates the meta data file in the correct XML Schema
+sub Ops_pspWriteMetaData(IN Ops_pspMetaData @metaData)
+{
+	string $toWrite = "";
+	$toWrite = "<psp>\n<ip>@metaData.$ip</ip>\n";
+	$toWrite = "$toWrite<mac>@metaData.$mac</mac>\n";
+	$toWrite = "$toWrite<vendor>@metaData.$vendor</vendor>\n";
+	$toWrite = "$toWrite<product>@metaData.$product</product>\n";
+	$toWrite = "$toWrite<version>@metaData.$version</version>\n";
+	$toWrite = "$toWrite<installDate>@metaData.$installDate</installDate>\n";
+	$toWrite = "$toWrite<defUpdates>@metaData.$defUpdates</defUpdates>\n";
+	$toWrite = "$toWrite<logFile>@metaData.$logFile</logFile>\n";
+	$toWrite = "$toWrite<quarantine>@metaData.$quarantine</quarantine>\n";
+	$toWrite = "$toWrite<information>@metaData.$information</information>\n</psp>";
+
+	string $file = "@metaData.$logdir/pspInformation.txt";
+	_NormalizePath($file, _IsWindowsLocal());
+	FileMkdir("@metaData.$logdir");
+	
+	if (!WriteFile($file, TRUE, $toWrite))
+	{
+		echo("\n!!!Function Ops_pspWriteMetaData could not write $file to local disk!!!\n", ERROR);
+		return false;
+	}
+	
+	return true;
+}
+
+#This function opens the XML results file
+sub Ops_pspOpenMetaData(IN Ops_pspMetaData @metaData)
+{
+	string $toWrite = "<pspInformation>\n";
+	
+	string $file = "@metaData.$logdir/pspInformation.txt";
+	_NormalizePath($file, _IsWindowsLocal());
+	FileMkdir("@metaData.$logdir");
+	
+	if (!WriteFile($file, TRUE, $toWrite))
+	{
+		echo("\n!!!Function Ops_pspOpenMetaData could not write $file to local disk!!!\n", ERROR);
+		return false;
+	}
+	
+	return true;
+}
+
+# This function closes the XML results file
+sub Ops_pspCloseMetaData(IN Ops_pspMetaData @metaData)
+{
+	string $toWrite = "</pspInformation>\n";
+	
+	string $file = "@metaData.$logdir/pspInformation.txt";
+	_NormalizePath($file, _IsWindowsLocal());
+	FileMkdir("@metaData.$logdir");
+	
+	if (!WriteFile($file, TRUE, $toWrite))
+	{
+		echo("\n!!!Function Ops_pspCloseMetaData could not write $file to local disk!!!\n", ERROR);
+		return false;
+	}
+	
+	return true;
+}
+
+# Called to compare historic config versus the running config
+# Argument 1 is a string that represents the currently running PSP config
+# Argument 2 is the IP the target is post-processed under
+sub Ops_pspCheckConfig(IN string $currentValue, IN Ops_pspMetaData @metaData)
+{
+	#we still want to write the current config to disk. do that now
+	Ops_pspCreateConfig($currentValue, @metaData);
+	
+	#paranoia check
+	if (!FileCheck("@metaData.$prepsDir/@metaData.$projectName/@metaData.$ipw/pspConfig.txt"))
+	{
+		echo("\n\n!!!In function Ops_pspCheckConfig", ERROR);
+		echo("The file @metaData.$prepsDir/@metaData.$projectName/@metaData.$ipw/pspConfig.txt doesn't appear to exist.\n", ERROR);
+		echo("This shouldn't happen!", ERROR);
+		return false;
+	}
+	
+	string $PSPHistory = "";
+	if (!ReadFile("@metaData.$prepsDir/@metaData.$projectName/@metaData.$ipw/pspConfig.txt", $PSPHistory))
+	{
+		echo("\n\n!!!In function Ops_pspCheckConfig", ERROR);
+		echo("Can't read @metaData.$prepsDir/@metaData.$projectName/@metaData.$ipw/pspConfig.txt", ERROR);
+		echo("Makes comparing values difficult!", ERROR);
+		return false;
+	}
+	else
+	{
+		for (int $i=0; $i < sizeof($PSPHistory); $i++)
+		{
+			if ($PSPHistory[$i] == $currentValue)
+			{
+				return true;
+			}
+		}
+		# They have changed something!
+		return false;
+	}
+}
+
+# This function should be called when the target has no pspConfig.txt file
+# Argument 1 is a string that represents the currently running PSP config
+# Argument 2 is the IP the target is post-processed under
+sub Ops_pspCreateConfig(IN string $currentValue, IN Ops_pspMetaData @metaData)
+{
+	if (!WriteFile("@metaData.$logdir/pspConfig.txt", TRUE, $currentValue))
+	{
+		echo("\n!!!In function Ops_pspCreateConfig", ERROR);
+		echo("Could not write current PSP settings to local disk!!!", ERROR);
+		return false;
+	}
+	#echo "Just wrote data to @metaData.$logdir/pspConfig.txt";
+	return true;
+}
+
+#Determine the IP the target is post-processed under
+#Returns the IP in the first variable
+#Returns the IP with w appended in the second variable
+#The second is needed because of string limitations in EP
+sub Ops_pspMyIP(OUT string $IP, OUT string $IPw)
+{
+	string $dir = %_sgEnv{"log_path"};
+	string $temp;
+	SplitPath($dir, $temp);
+	$IP = $temp[1];
+	_SubString($IP, 0, 1, $temp);
+	if ($temp == 'z') {
+		_SubString($IP, 1, $IP);
+	}
+	$IPw = "w";
+	$IPw = "$IP$IPw";
+	return true;
+}
+
+#This function will determine the project name from the preps directory
+#If they have two folders in the preps directory, we make them choose which one they want
+#We return the project name
+sub Ops_pspGetProjectName(REF Ops_pspMetaData @metaData)
+{
+	GetEnv("OPS_PROJECTNAME", @metaData.$projectName);
+}
+
+# Compares the processlist against the elist in an effort to identify running PSPs
+# For each found PSP, we check to see if a corresponding script exists
+# Those that do are placed in the first variable, toRun
+# All others are returned in toCreate
+# Use of hash removes duplicate entries
+sub Ops_pspCheckProcList (REF string %toRun, REF string %toCreate, IN string $driveLetter)
+{
+	#-----------------------------------
+	# Get the processlist
+	#-----------------------------------
+	string $names;
+	# This uses processlist -list, using database instead
+	#_GetProcessList($ids, $names);
+	
+	string %emptyResult;
+	string %tableResults;
+	string $logDir;
+	GetEnv("_LOGPATH", $logDir);
+	string $date;
+	GetEnv("Ops_Date", $date);
+	
+	int $dbHandle;
+	_sqlOpen("$logDir\\target.db", $dbHandle);
+	# Potential for historical false positives in case of upgrades to other products.
+	# Individual scripts should be able to tell if something isn't installed though.
+	_sqlExec( $dbHandle, "select NAME from processlist", %tableResults );
+	_sqlClose( $dbHandle );
+	_CopyArrayStrings( $names, %tableResults{'NAME'} );
+	#-----------------------------------
+	# Get the directories
+	#-----------------------------------
+	string $dataDir;
+	Ops_GetDataPath($dataDir);
+	string $scriptDir;
+	Ops_GetScriptsPath($scriptDir);
+	
+	# string %procData;
+	# string $lines;
+	# if (ReadFile("$dataDir/elist.txt", $lines))
+	# {
+		# for (int $i=0; $i < sizeof($lines); $i++)
+		# {
+			# string $parts;
+			# if (RegExSplit(":", $lines[$i], 2, $parts) && 
+				# defined($parts) && (sizeof($parts) == 2))
+			# {
+				# string $desc = $parts[1];
+				# RegExSub("^\\s*(.*)\$", "\$1", $desc);
+				# %procData{$parts[0]} = $desc;
+			# }
+		# }	
+	# }
+	
+	string $resDir;
+	string %procData;
+	_GetLpResourcesDirectory($resDir);
+	@record on;
+	# python script is a workaround - 'database' plugin fails to return the data,
+	# but writes the XML log, and runs for an absurd amount of time on this query.
+	# This is much faster, and the data is actually returned to the script.
+	if (!`python windows/sqliteWorkaround.py -project Ops -args "\\"$resDir\\Ops\\Databases\\SimpleProcesses.db\\" \\"SELECT name, comment FROM ProcessInformation WHERE type = \\\\"SECURITY_PRODUCT\\\\"\\""`) {
+		echo("!!! Failed to query elist information; checkpsp will now declare that it sees no known PSPs! !!!", ERROR);
+	} else {
+		string $procnames;
+		string $proccomments;
+		GetCmdData("row::column0", $procnames);
+		GetCmdData("row::column1", $proccomments);
+		for (int $i = 0; $i < sizeof($procnames); $i++) {
+			%procData{$procnames[$i]} = $proccomments[$i];
+		}
+	}
+	@record off;
+	
+	#------------------------------------------------------
+	# For each process, get it's description from elist.txt
+	#------------------------------------------------------
+	for (int $i=0; $i < sizeof($names); $i++)
+	{
+		if (!defined(%procData{$names[$i]}))
+		{
+			# no match
+			continue;
+		}
+		
+		#----------------------------------------
+		# See if the description is in between !!!
+		#----------------------------------------
+		string $psp;
+		if (RegExMatch("^!!! (.*) !!!\$", %procData{$names[$i]}, $psp))
+		{
+			# Get first word as the name of the script
+			# E.g. !!! Windows Defender !!! = windows
+			string $psp_pieces;
+			RegExSplit(" ", $psp, 0, $psp_pieces);
+			$psp = $psp_pieces[0];
+
+			#--------------------------------
+			#If exists, place in toRun
+			#--------------------------------
+			@regex-global on;
+			RegExSub("A-Z", "a-z", $psp);
+			@regex-global off;
+			if (FileCheck("$scriptDir/windows/PSP/$psp.dss"))
+			{
+				%toRun{'$psp'} = "$psp.dss";
+			}
+			else
+			{
+				%toCreate{'$psp'} = $psp;
+			}
+		}
+	}
+	
+	return true;
+}
+
+# Takes a hash of PSP's that were identified as running and we have a script for
+# Simply kicks off each script in turn
+sub Ops_pspRunList(IN string %toRun)
+{
+	
+	bool $rtn=true;
+	string $keys;
+	if (GetKeys(%toRun, $keys) && defined($keys))
+	{
+		for (int $i=0; $i < sizeof($keys); $i++)
+		{
+			if (!`script windows/PSP/%toRun{$keys[$i]} -project Ops`)
+			{
+				$rtn = false;
+			}
+		}
+	}
+	return $rtn;
+}
+
+# Takes a hash of PSP's that were identified as running and we DO NOT have a script for
+# Simply show this information on the screen
+sub Ops_pspCreateList(IN string %toCreate, IN Ops_pspMetaData @metaData)
+{
+	bool $rtn=true;
+	string $keys;
+	if (GetKeys(%toCreate, $keys) && defined($keys))
+	{
+		echo("I noticed these PSPs running, but there are no scripts implemented yet:", WARNING);
+		for (int $i=0; $i < sizeof($keys); $i++)
+		{
+			@metaData.$vendor = $keys[$i];
+			if (!Ops_pspWriteMetaData(@metaData))
+			{
+				$rtn = false;
+			}
+			echo("$keys[$i]", WARNING);
+		}
+	}
+	echo("\n", WARNING);
+	return $rtn;
+}
+
+# values = the values from the subkey that you are looking for
+# ret = return values (in an array)
+# error = do you want to halt on query errors
+sub Ops_pspReg_query(IN string $subkey, IN string $search_values, OUT string $ret, IN bool $error)
+{
+	string $values;
+	string $value;
+	string $value_data;
+	bool $got_error = false;
+	int $i=0;
+	int $j=0;
+	@record on;
+	if(`registryquery -hive L -key "$subkey"`)
+	{
+		GetCmdData("Key::Value::Name", $values);
+		GetCmdData("Key::Value::Value", $value_data);
+		
+		int $size = sizeof($values);
+		int $size_search = sizeof($search_values);
+		
+		if($size_search > $size)
+		{
+			$got_error = true;
+		}
+
+
+		for (int $i=0; $i < sizeof($search_values); $i++)
+		{
+			bool $found_value=false;
+			for (int $j=0; $j < sizeof($values); $j++)
+			{
+				if ($values[$j] == $search_values[$i])
+				{
+					$ret[$i] = $value_data[$j];
+					$found_value = true;
+					break;
+				}
+			}
+			
+			if (!$found_value)
+			{
+				echo("ERROR: Did not find value \"$value\" in subkey \"$subkey\"", ERROR);
+				$got_error = true;
+				break;
+			}
+		}
+	}
+	else
+	{
+		if($error)
+		{
+			echo("", ERROR);
+			echo("Cannot query \"$subkey\".", ERROR);
+			echo("registryquery -hive L -key \"$subkey\"\n", ERROR);
+			if (prompt("Continue"))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+	@record off;
+
+	if ($got_error)
+	{
+		$ret = "ERROR!!!";
+		return false;
+	}
+
+	return true;
+}

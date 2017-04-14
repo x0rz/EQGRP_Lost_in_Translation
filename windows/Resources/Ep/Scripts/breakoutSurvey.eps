@@ -1,0 +1,13 @@
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+`local run -command "perl $ScriptsDir/../../../tools/breakoutSurvey.pl" -redirect breakoutSurvey`;

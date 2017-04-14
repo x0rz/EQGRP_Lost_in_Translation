@@ -1,0 +1,42 @@
+#--------------------------------------------------------
+# File: EnableAuditing.eps
+#
+# This script attempts to re-enable auditing
+#
+# Modifications:
+#  05/25/01	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+echo "This script attempts to re-enable auditing";
+ifnot (prompt "Do you want to continue with this script?") {
+    return false;
+}
+
+echo "Stopping any \"Audit\" channels";
+if (`stop audit`) {
+    echo "    STOPPED";
+} else {
+    echo "    NONE STOPPED";
+}
+
+echo "Stopping any \"ModifyAudit\" channels";
+if (`stop modifyaudit`) {
+    echo "    STOPPED";
+} else {
+    echo "    NONE STOPPED";
+}
+
+# give EP some time to clear out the channel list
+sleep 100;
+
+echo "\r\n\r\n";
+@echo on;
+
+`channels`;
+`remotechannels`;
+
+echo "\r\n\r\n";
+echo "If any audit related channels remain running, this script has failed";
+return true;

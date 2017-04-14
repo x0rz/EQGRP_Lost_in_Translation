@@ -1,0 +1,44 @@
+@record on;
+`queryeventlogs`;
+# TODO: get max record names
+int $lastSystemEventNum;
+int $firstSystemEventNum;
+
+int $numSystemEvents=20;
+
+int $prevSystemEventNum=$lastSystemEventNum;
+for (int $i=0; $i<$numSystemEvents; $i++) {
+	$prevSystemEventNum--;
+}
+if ($prevSystemEventNum < $firstSystemEventNum) {
+	$prevSystemEventNum=$firstSystemEventNum;
+}
+
+`queryeventrecord -log System -start $prevSystemEventNum -end $lastSystemEventNum`;
+
+# TODO: get text data results, grep for LpaSrv
+
+int $ESanEventNum;
+
+`eventlogedit -log System -record $ESanEventNum`;
+
+`queryeventrecord -recnum $ESanEventNum`;
+
+`getnetaddr`;
+
+string $IP;
+$IP=GetInput("What IP address did you connect from?");
+
+# prompt for IP address (default to currently connected one)
+
+`dir ex*.log -path C:\winnt\system32\logfiles\w3svc1`;
+
+# get the most recent two files
+
+# grep for IP address
+
+if (`grep -mask $filename -pattern $IP`) {
+	# do logedit to remove IP address
+	`logedit -file $filename -pattern $IP
+
+@record off; 

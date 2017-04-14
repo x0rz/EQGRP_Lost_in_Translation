@@ -1,0 +1,21 @@
+<ShellMap>
+	<System adjustableFormat="true">
+		<PlatformRegex>winnt</PlatformRegex>
+		<CommandLine>cmd.exe /q</CommandLine>
+	</System>
+	<System enableUser="true">
+		<PlatformRegex>linux</PlatformRegex>
+		<CommandLine>/bin/sh</CommandLine>
+		<InitialCommand>histsize=0</InitialCommand>
+	</System>
+	<System enableUser="true">
+		<PlatformRegex>linux_se</PlatformRegex>
+		<CommandLine>/bin/sh</CommandLine>
+		<InitialCommand>histsize=0</InitialCommand>
+	</System>
+	<System enableUser="true">
+		<PlatformRegex>solaris</PlatformRegex>
+		<CommandLine>/bin/sh</CommandLine>
+		<InitialCommand>histsize=0</InitialCommand>
+	</System>
+</ShellMap>

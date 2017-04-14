@@ -1,0 +1,17 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>arparp</Name>
+		<ReplaceBeforeArgs>python windows/arparp.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>    Queries the ARP Cache and shows the IP, MAC, and description  </Help>
+		<Help>    of the NIC, based on the OUI. Could be used to help determine </Help>
+		<Help>    the OS of a remote system. Optional argument can be used to query </Help>
+		<Help>    any MAC address. </Help>
+		<Help> </Help>
+		<Help>Optional Arguments:  [MAC ADDRESS] </Help>
+		<Help>    </Help>
+		<Help>Ex:  arparp	</Help>
+		<Help>     arparp 00-09-BF-32-33-44	</Help>
+	</Alias>
+</Aliases>

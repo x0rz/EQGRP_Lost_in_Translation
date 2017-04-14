@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin provider="0x0101006A" interface="0x01c10032">
+    <Command name="Papercut" id="0">
+        <Help>Operations on a file opened by another process</Help>
+        <Input>
+			<Option optional='false' name='get' group='action'>
+				<Set data='action' value='1'/>
+				<Help>Retrieve a file opened by another process</Help>
+				<Reject>duration</Reject>
+				<Reject>range</Reject>
+			</Option>
+			
+			<Option optional='false' name='lock' group='action'>
+				<Set data='action' value='2'/>
+				<Help>Lock the end of a file</Help>
+				<Reject>chunksize</Reject>
+				<Reject>name</Reject>
+			</Option>
+			
+			<Option optional='false' name='trim' group='action'>
+				<Set data='action' value='3' />
+				<Help>Trim/truncate the file</Help>
+				<Reject>duration</Reject>
+				<Reject>chunksize</Reject>
+				<Reject>name</Reject>
+			</Option>
+			
+			<Option optional='false' name='mapped' group='action'>
+				<Set data='action' value='4' />
+				<Help>Checks if the file is memory mapped</Help>
+				<Reject>duration</Reject>
+				<Reject>chunksize</Reject>
+				<Reject>range</Reject>
+				<Reject>name</Reject>
+			</Option>
+			
+			
+			
+			<Option optional='false' name='procId'>
+				<Argument optional='false' data='procId' name="#"/>
+				<Help>Process ID</Help>
+			</Option>
+			
+			<Option optional='false' name='handle'>
+				<Argument optional='false' data='handle' name="#"/>
+				<Help>File handle</Help>
+			</Option>
+			
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many bytes to read from the file at a time.</Help>
+			</Option>
+			
+			<Option optional='true' name='elevate'>
+				<Help>Attempt to elevate to open process</Help>
+				<Set value='true' data='elevate'/>
+			</Option>
+			
+			<Option optional='true' name='duration'>
+				<Argument optional='false' data='duration' name='#'/>
+				<Help>Amount of time file is locked</Help>
+				<Require>lock</Require>
+			</Option>
+			
+			<Option name='name' optional='true'>
+				<Argument name='localPrefix' data='prefix'/>
+				<Help>The prefix for any local files.</Help>
+			</Option>
+			
+			<Option optional='true' name='range'>
+				<Help>Start - byte offset to start trim from</Help>
+				<Help>End - if unspecified will remove to end of file</Help>
+				<Argument name='start' data='start'/>
+				<Argument optional='true' name='end' data='end' />
+			</Option>
+			
+		</Input>
+        <Output>
+			<Data type='uint8_t'	name='action'		default='0' />
+			<Data type='uint32_t' 	name='procId' 		default='0' />
+			<Data type='uint32_t' 	name='handle' 		default='0' />
+			<Data type='uint32_t' 	name='chunksize' 	default='131072' />
+			<Data type='bool' 		name='elevate' 		default='false' />
+			<Data type='time'		name='duration'		default='5m' />
+			<Data type='uint64_t'	name='start'		default='0' />
+			<Data type='uint64_t'	name='end'			default='0' />
+			<Data name='prefix'		type='string'/>
+		</Output>
+    </Command>
+</Plugin>

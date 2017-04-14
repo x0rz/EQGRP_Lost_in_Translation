@@ -1,0 +1,29 @@
+﻿<?xml version='1.0'?>
+
+<Plugin id="31398">
+
+  <Command id="16" name="arpscan">
+  
+    <Help>Sends ARP packets for a given range of IP addresses</Help>
+    
+    <Input optionprefix="-">
+      <Option name="delay" optional="true">
+        <Help>Delay between ARPs</Help>
+        <Argument name="milliseconds" data="delay"/>
+      </Option>
+      <Option name="range" optional="false">
+        <Help>The range of IP addresses to query.</Help>
+        <Argument name="start_ip" data="startIp" optional="false"/>
+        <Argument name="end_ip" data="endIp" optional="true"/>
+      </Option>
+    </Input>
+    
+    <Output>
+      <Data name="delay" type="uint32_t" default="10"/>
+      <Data name="startIp" type="string"/>
+      <Data name="endIp" type="string"/>
+    </Output>
+    
+  </Command>
+  
+</Plugin>

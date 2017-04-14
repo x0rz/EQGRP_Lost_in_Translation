@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<t:config id="2207e94cf3dca3559c5711a307a3f84aafa6247c"
+          name="Educatedscholar"
+          version="1.0.0"
+          configversion="1.0.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:touchlist>
+    <t:plugin name="Rpctouch"
+        displayname="RPC Touch"
+        postmessage="EDSC requires target OS">
+        <t:ivparam name="TargetPort" value="TargetPort"/>
+        <t:ivparam name="TargetIp" value="TargetIp"/>
+        <t:iparam name="Protocol" value="SMB"/>
+        <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+        <t:oparam name="Target" value="Target"/>
+        <t:oparam name="Protocol" value="Protocol"/>
+    </t:plugin>
+    <t:plugin name="Educatedscholartouch"
+        displayname="EDSC Vulnerability Touch"
+        postmessage="EDSC exploits a public vulnerability">
+        <t:ivparam name="TargetPort" value="TargetPort"/>
+        <t:ivparam name="TargetIp" value="TargetIp"/>
+        <t:ivparam name="Protocol" value="Protocol"/>
+    </t:plugin>
+  </t:touchlist>
+</t:config>

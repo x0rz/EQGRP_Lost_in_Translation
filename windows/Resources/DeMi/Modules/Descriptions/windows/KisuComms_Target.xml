@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="KisuComms_Target" id="316">
+    <Interfaces>
+        <Interface provider="0x01011074" id="0x01010031"/>
+    </Interfaces>
+ 
+	<Dependencies>
+    </Dependencies>
+    
+    <Lp>Yes</Lp>
+    <Target>Yes</Target>
+
+    <Architecture type="i386">
+        <Platform family="winnt">
+			<Version major="5" minor="0" other="*">
+                <File loadtype="file">i386-winnt-vc9s/release/KisuComms_Target_2000.dll</File>
+                <File loadtype="memory">i386-winnt-vc9s/release/KisuComms_Target_2000.dll</File>
+            </Version>
+            <Version major="5" minor="1+" other="*">
+                <File loadtype="file">i386-winnt-vc9s/release/KisuComms_Target.dll</File>
+                <File loadtype="memory">i386-winnt-vc9s/release/KisuComms_Target.dll</File>
+            </Version>
+			<Version major="6" minor="*" other="*">
+                <File loadtype="file">i386-winnt-vc9s/release/KisuComms_Target.dll</File>
+                <File loadtype="memory">i386-winnt-vc9s/release/KisuComms_Target.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+    <Architecture type="x64">
+        <Platform family="winnt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">x64-winnt-vc9s/release/KisuComms_Target.dll</File>
+                <File loadtype="memory">x64-winnt-vc9s/release/KisuComms_Target.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

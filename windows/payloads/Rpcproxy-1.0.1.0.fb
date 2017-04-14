@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<t:config id="f7472d0e4697b56e13e1f4baf438d50675d860e0"
+          name="Rpcproxy"
+          version="1.0.1"
+          configversion="1.0.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+	  <t:consolemode value="new"/>
+</t:config>

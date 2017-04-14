@@ -1,0 +1,109 @@
+#--------------------------------------------------------
+# File: VerifyInstall.eps
+#
+# Wrapper script for verify install of DarkSkyline tools
+#
+# Modifications:
+#  11/26/2002	Created.
+#  02/03/2004	Updated to use DriverIncludes
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+ifnot (_DriverVerifyInstall($driver, 2, 1)) {
+    return false;
+}
+
+#--------------------------------------
+# perform extra checks on registry data
+#--------------------------------------
+bool $valid = true;
+
+@record on;
+bool $driverRunning = false;
+string $filter;
+int $adapterFilter;
+if (`packetscan -name $driver -get`) {
+    # driver running
+    $driverRunning = true;
+    $filter = GetCmdData("filter");
+    $adapterFilter = GetCmddata("adapterFilter");
+}
+
+# check for filter
+echo "Checking filter registry value";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value options`) {
+    # got key -- check value
+    bool $valueGood = false;
+    string $type = GetCmdData("value_type");
+    if ($type == "REG_BINARY") {
+	if ($driverRunning) {
+	    string $data = GetCmdData("value_data");
+	    if ($data == $filter) {
+		$valueGood = true;
+	    } else {
+		$valueGood = false;
+	    }
+	} else {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	if ($driverRunning) {
+	    echo "    PASSED";
+	} else {
+	    echo "    PASSED CONDITIONALLY (driver not running)";
+	}
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+# check the adapter filter
+echo "Checking adapter filter registry value";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value tag`) {
+    # got key -- check value
+    bool $valueGood = false;
+    string $type = GetCmdData("value_type");
+    if ($type == "REG_DWORD") {
+	if ($driverRunning) {
+	    string $data = GetCmdData("value_data");
+	    $data = "0x$data";
+	    if (<int>$data == $adapterFilter) {
+		$valueGood = true;
+	    }
+	} else {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	if ($driverRunning) {
+	    echo "    PASSED";
+	} else {
+	    echo "    PASSED CONDITIONALLY (driver not running)";
+	}
+    } else {
+	echo "    FAILED (value is bad)";
+	$valid = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $valid = false;
+}
+
+# we're done...
+return $valid;

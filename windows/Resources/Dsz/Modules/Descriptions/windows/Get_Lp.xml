@@ -1,0 +1,26 @@
+<?xml version='1.0' ?>
+<Module id='407' name='Get_Lp'>
+
+	<Interfaces>
+		<Interface id='0x01c10032' provider='0x01010007' />
+	</Interfaces>
+
+	<Dependencies>
+		<Local>Get_Data</Local>
+		<Remote>Get_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type='i386'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'>i386-winnt-vc9/release/Get_Lp.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

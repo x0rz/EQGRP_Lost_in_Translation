@@ -1,0 +1,14 @@
+#####################################################
+#      Check for ESH patch
+#####################################################
+@echo off;
+if (`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion\\hotfix\\KB2286198"` || `regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\uninstall\\KB2286198"`) {
+	echo "";
+	echo "********************************************************************";
+	echo "* ALERT: EASYHOOKUP PATCH FOUND!                                   *";
+	echo "********************************************************************";
+	echo "";
+} else {
+	echo "GOOD: No ESH patch found.";
+}
+@echo on;

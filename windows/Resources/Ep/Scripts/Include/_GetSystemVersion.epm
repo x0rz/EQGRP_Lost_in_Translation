@@ -1,0 +1,129 @@
+#-------------------------------------------------------------------------------
+# _GetSystemVersion (platform id only)
+#	Retrieves the remote system version
+# Params:
+#	platformId - The OS platform ID (0=Win32s | 1=Win9x | 2=WinNt family)
+#-------------------------------------------------------------------------------
+Sub _GetSystemVersion(OUT int $platformId)
+{
+
+    int $majorVersion;
+    int $minorVersion;
+    int $buildNumber;
+    int $spMajorVersion;
+    int $spMinorVersion;
+    int $platformType;
+    return _GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, 
+			     $spMajorVersion, $spMinorVersion, $platformType);
+
+} /* END _GetSystemVersion (platform id only) */
+
+#-------------------------------------------------------------------------------
+# _GetSystemVersion (major, minor and platform id only)
+#	Retrieves the remote system version
+# Params:
+#	majorVersion - The OS major version
+#	minorVersion - The OS minor version
+#	platformId - The OS platform ID (0=Win32s | 1=Win9x | 2=WinNt family)
+#-------------------------------------------------------------------------------
+Sub _GetSystemVersion(OUT int $majorVersion, OUT int $minorVersion, OUT int $platformId)
+{
+
+    int $buildNumber;
+    int $spMajorVersion;
+    int $spMinorVersion;
+    int $platformType;
+    return _GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, 
+			     $spMajorVersion, $spMinorVersion, $platformType);
+
+} /* END _GetSystemVersion (platform id only) */
+
+#-------------------------------------------------------------------------------
+# _GetSystemVersion
+#	Retrieves the remote system version
+# Params:
+#	majorVersion - The OS major version
+#	minorVersion - The OS minor version
+#	buildNumber - The OS build number
+#	platformId - The OS platform ID (0=Win32s | 1=Win9x | 2=WinNt family)
+#	spMajorVersion - The OS Service pack major version (valid on NT Sp4 and higher only)
+#	spMinorVersion - The OS Service pack major version (valid on NT Sp4 and higher only)
+#-------------------------------------------------------------------------------
+Sub _GetSystemVersion(OUT int $majorVersion, OUT int $minorVersion, OUT int $buildNumber,
+		     OUT int $platformId, OUT int $spMajorVersion, OUT int $spMinorVersion)
+{
+
+    int $platformType;
+    return _GetSystemVersion($majorVersion, $minorVersion, $buildNumber,
+			     $platformId, $spMajorVersion, $spMinorVersion, $platformType);
+
+} /* END _GetSystemVersion */
+
+#-------------------------------------------------------------------------------
+# _GetSystemVersion
+#	Retrieves the remote system version
+# Params:
+#	majorVersion - The OS major version
+#	minorVersion - The OS minor version
+#	buildNumber - The OS build number
+#	platformId - The OS platform ID (0=Win32s | 1=Win9x | 2=WinNt family)
+#	spMajorVersion - The OS Service pack major version (valid on NT Sp4 and higher only)
+#	spMinorVersion - The OS Service pack major version (valid on NT Sp4 and higher only)
+#	platformType - The OS platform type (1=pro | 2=domain controller | 3=server)
+#-------------------------------------------------------------------------------
+Sub _GetSystemVersion(OUT int $majorVersion, OUT int $minorVersion, OUT int $buildNumber,
+                      OUT int $platformId, OUT int $spMajorVersion, OUT int $spMinorVersion,
+                      OUT int $platformType)
+{
+
+    string $local="";
+    if (IsLocal()) {
+	$local = "_local";
+    }
+    bool $haveVersion = GetEnv("$local\_sysVersionSet");
+    if ($haveVersion) {
+
+	# already got the system version
+	$majorVersion = GetEnv("$local\_sysVerMajor");
+	$minorVersion = GetEnv("$local\_sysVerMinor");
+	$buildNumber = GetEnv("$local\_sysBuild");
+	$platformId = GetEnv("$local\_sysPlatformId");
+	$spMajorVersion = GetEnv("$local\_sysSPMajor");
+	$spMinorVersion = GetEnv("$local\_sysSPMinor");
+	$platformType = GetEnv("$local\_sysPlatformType");
+
+    } else {
+
+	# need to get the system version
+	@echo off;
+	@record on;
+	ifnot (`systemversion`) {
+	    # command failed
+	    return false;
+	}
+	@record off;
+	@echo on;
+
+	$majorVersion = GetCmdData("sysVerMajor");
+	$minorVersion = GetCmdData("sysVerMinor");
+	$buildNumber = GetCmdData("sysBuild");
+	$platformId = GetCmdData("sysPlatformId");
+	$spMajorVersion = GetCmdData("sysSPMajor");
+	$spMinorVersion = GetCmdData("sysSPMinor");
+	$platformType = GetCmdData("sysProduct");
+
+	# record the version information for later use
+	bool $set = true;
+	ifnot (SetEnv("$local\_sysVerMajor", "$majorVersion")) { $set = false; }
+	ifnot (SetEnv("$local\_sysVerMinor", "$minorVersion")) { $set = false; }
+	ifnot (SetEnv("$local\_sysBuild", "$buildNumber")) { $set = false; }
+	ifnot (SetEnv("$local\_sysPlatformId", "$platformId")) { $set = false; }
+	ifnot (SetEnv("$local\_sysSPMajor", "$spMajorVersion")) { $set = false; }
+	ifnot (SetEnv("$local\_sysSPMinor", "$spMinorVersion")) { $set = false; }
+	ifnot (SetEnv("$local\_sysPlatformType", "$platformType")) { $set = false; }
+	SetEnv("$local\_sysVersionSet", "$set");
+    }
+   
+    return true;
+
+} /* END _GetSystemVersion */

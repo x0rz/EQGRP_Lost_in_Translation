@@ -1,0 +1,8 @@
+# any line that begins with a '#' is discarded as a comment
+
+# commandline
+[-verbose]
+    Makes this script run in verbose mode
+[-tasking <file>]
+	The location of the tasking (default:  ../TaskedCmds/)
+	Use a full path

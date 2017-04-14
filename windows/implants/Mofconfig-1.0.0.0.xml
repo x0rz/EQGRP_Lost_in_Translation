@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<t:config id="f3e5259c1024c871792e73dd9632909eb795b902"
+          name="Mofconfig"
+          version="1.0.0"
+          configversion="1.0.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+    <t:parameter name="MOFFile"
+                 description="MOF File Template"
+                 type="LocalFile"
+                 default="start_dll.mof"/>
+    <t:parameter name="MOFCompiler"
+                 description="Local MOF compiler"
+                 type="LocalFile"
+                 default="C:\windows\system32\wbem\mofcomp.exe"/>
+    <t:parameter name="OutputFile"
+                 description="MOF File Output"
+                 type="String"
+                 default="nnetcfg.mof"/>
+    <t:parameter name="RemoteMOFPath"
+                 description="Where to write MOF file on target"
+                 type="String"
+                 default="\windows\system32\wbem\.\mof\nnetcfg.mof"/>
+    <t:parameter name="RemoteDLLPath"
+                 description="Where to write DLL file on target"
+                 type="String"
+                 default="\windows\system32\wbem\wbemess2.tlb"/>
+    <t:parameter name="RemoteMOFTriggerPath"
+                 description="Where to write MOF Trigger file on target"
+                 type="String"
+                 default="\windows\system32\wbem\.\mof\evntprv.mof"/>
+
+  </t:inputparameters>
+  <t:outputparameters>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="ConfiguredPayload"/>
+    <t:parameter name="ConfiguredMOF"
+                 description="The contract fulfilled by this plugin"
+                 type="LocalFile"/>
+    <t:parameter name="RemoteMOFPath"
+                 description="Where to write MOF file on target"
+                 type="String"/>
+    <t:parameter name="RemoteDLLPath"
+                 description="Where to write DLL file on target"
+                 type="String"/>
+    <t:parameter name="RemoteMOFTriggerPath"
+                 description="Where to write MOF trigger file on target"
+                 type="String"/>
+  </t:outputparameters>
+</t:config>

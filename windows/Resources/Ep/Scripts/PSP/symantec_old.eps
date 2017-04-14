@@ -1,0 +1,349 @@
+#-------------------------------------------------------------------------------
+# File: symantec.eps
+# Created: 2/5/09
+# Added generic functionality to determine symantec versions.
+# Updated 3/11/10, Changed NAV_New() function to change the order of the PSPHelper metadata.  This will remove lots of overhead from our script.
+# Updated 3/17/10, Updated NAV_New() to get rid of non-PSP Symantec uninstall information.
+#-------------------------------------------------------------------------------
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+int $i = 0;
+int $j = 0;
+string $skipped;
+
+#------------------------------------
+# Get all the subkeys under Uninstall
+#------------------------------------
+
+@echo off;
+@record on;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\uninstall"`;
+@record off;
+
+string $subkeys;
+string $query;
+string $version;
+$subkeys = GetCmdData("subkey");
+
+#----------------------------------------------------------------
+# For each subkey (ie, each program that might be uninstalled)...
+#----------------------------------------------------------------
+@case-sensitive off;
+while( $i < sizeof($subkeys) ) {
+	#-------------------------------------------------------------------------
+	# Ignore anything that might not be Symantec
+	#-------------------------------------------------------------------------
+	string $sym_keys = split("{",$subkeys[$i]);
+	if ($sym_keys[0] == "") {
+		$skipped[sizeof($skipped)] = $subkeys[$i];
+		$query = "software\\microsoft\\windows\\currentversion\\uninstall\\$subkeys[$i]";
+		if(NAV_New($query)) {
+			return true;
+		}
+		$i++; 
+		continue;
+	}	
+	if ($subkeys[$i] == "NAV") {
+		$query = "software\\microsoft\\windows\\currentversion\\uninstall\\$subkeys[$i]";
+		if(NAV_New($query)) {
+			return true;
+		}
+		$i++; 
+		continue;
+	}
+	$sym_keys = split("Symantec",$subkeys[$i]);
+	if ($sym_keys[0] == "") {
+		$skipped[sizeof($skipped)] = $subkeys[$i];
+		$query = "software\\microsoft\\windows\\currentversion\\uninstall\\$subkeys[$i]";
+		if(NAV_New($query)) {
+			return true;
+		}
+		$i++; 
+		continue;
+	}
+	$sym_keys = split("Norton",$subkeys[$i]);
+	if ($sym_keys[0] == "") {
+		$skipped[sizeof($skipped)] = $subkeys[$i];
+		$query = "software\\microsoft\\windows\\currentversion\\uninstall\\$subkeys[$i]";
+		if(NAV_New($query)) {
+			return true;
+		}
+		$i++; 
+		continue;
+	}
+	$i++;
+}
+#####################
+# Begin Legacy Block
+#####################
+if (`regquery -hive L -subkey "software\\symantec\\norton antivirus nt\\install\\7.50"`) {
+	echo "Current Version: Symantec Antivirus 7.5";
+	$version = "7.50";
+	NAV75($version);
+} else if (`regquery -hive L -subkey "software\\symantec\\norton antivirus\\8.0"`) {
+	$version = "8.0";
+	NAV75($version);
+} else if (`regquery -hive L -subkey "software\\symantec\\norton antivirus"`) {
+	reg_query("software\\symantec\\norton antivirus", "version", $version);
+	NAV($version);
+} else if (`regquery -hive L -subkey "software\\symantec\\symantec antivirus nt\\install\\7.50"`) {
+	echo "Current Version: Symantec Antivirus 7.5";
+	$version = "7.50";
+	NAV75($version);
+} else {
+	echo "Current Version: Unknown!";
+	# We don't know what it is lets default to safe mode
+	safety();
+	`background regquery -hive L -subkey "software\\symantec" -recursive`;
+	# Added for tracking purposes
+	NAV_UNK("Unknown");
+}
+@case-sensitive on;
+
+##############################################
+# Pulls recent product information from GUIDs
+##############################################
+sub NAV_New(IN string $query) {
+	@record on;
+	string $temp;
+	string $fullData;
+	string $fullVals;
+	
+	string $searchVals;
+	$searchVals[0] = "Publisher";
+	$searchVals[1] = "DisplayVersion";
+	$searchVals[2] = "DisplayName";
+	$searchVals[3] = "InstallDate";
+	reg_query($query, $searchVals, $temp);
+
+	####################################
+	# Get things published by Symantec
+	####################################
+	ifnot($temp[0] == "Symantec Corporation" || $temp[0] == "Symantec" || $temp[0] == "Norton") {
+		return false;
+	}
+
+	#####################################################################
+	# Get rid of things published by Symantec that are clearly not PSP's
+	# We'll filter by "dirty words" that shouldn't be in PSP descriptions
+	# Todo: remove "Exchange Server Scanner" and "Symantec Mail Security for Microsoft Exchange"
+	# We do want to log these two if they are the real PSP we flagged in the process list, but otherwise not.
+	# Maybe fix the elist or checkPSP to be smarter about this?
+	#####################################################################
+	string $disps = split(" ", $temp[2]);
+	string $disp;
+	foreach $disp ($disps) {
+		if ($disp == "Ghost" || $disp == "Backup"|| $disp == "PartitionMagic" || $disp == "ccCommon" || $disp == "LiveUpdate" || $disp == "pcAnywhere") {
+			return false;
+		}
+	}
+
+	################################################
+	# Changed location of init(@metadata) info
+	################################################
+	metaData @metaData;
+	init(@metaData);
+	@metaData.$vendor = $temp[0];
+	safety();
+	################################################
+	# This can be cleaned up here a little more.
+	################################################
+	@metaData.$version = $temp[1];
+	@metaData.$product = $temp[2];
+	@metaData.$installDate = $temp[3];
+
+	if(@metaData.$history){
+		if(checkConfig("symantec:@metaData.$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Writing PSP Metadata information to pspInformation.txt";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: @metaData.$product (@metaData.$version)";
+	return true;
+}
+
+#######################################
+# For Norton AV 9.0, 12.0, 14.0, 15.0
+# Tested: 9.0, 12.0, 14.0, 15.0
+#######################################
+sub NAV(IN string $version) {
+	@record on;
+	#The struct is defined in PSPHelpers.epm
+	metaData @metaData;
+	#initialize the struct
+	init(@metaData);
+
+	# Some of these could be bad so lets run in safe mode
+	safety();
+
+	if(@metaData.$history){
+		if(checkConfig("symantec:$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+	# Pulling some metadata as best as I can
+	echo "Writing PSP Metadata information to pspInformation.txt";
+	
+	@metaData.$vendor = "Symantec";
+	if (`regquery -hive L -subkey "software\\symantec\\norton antivirus" -value "ProductName"`) {
+		@metaData.$product = GetCmdData("value_data");
+	} else if (`regquery -hive L -subkey "software\\symantec\\symsetup\\norton antivirus" -value "ProductName"`) { 
+		@metaData.$product = GetCmdData("value_data");
+	}
+	@metaData.$version = $version;
+
+	# TODO: Can we get this information?
+	#@metaData.$installDate;
+	
+	`regquery -hive L -subkey "software\\symantec\\norton antivirus\\liveupdate\\cmdlines\\cmdline1" -value "ProductVersion"`;
+	@metaData.$defUpdates = GetCmdData("value_data");
+	
+	if (`regquery -hive L -subkey "software\\symantec\\installedapps" -value "CommonClient Data"`) {
+		@metaData.$logFile = GetCmdData("value_data");
+	} else if (`regquery -hive L -subkey "software\\symantec\\installedapps" -value "Common Client Data"`) {
+		@metaData.$logFile = GetCmdData("value_data");
+	}
+	if (`regquery -hive L -subkey "software\\symantec\\norton antivirus\\Quarantine" -value QuarantinePath`) {
+		@metaData.$quarantine = GetCmdData("value_data");
+	} else if (`regquery -hive L -subkey "software\\symantec\\installedapps" -value SRTSPQuarantine`) {
+		@metaData.$quarantine = GetCmdData("value_data");
+	}
+	
+	# None needed....
+	#@metaData.$information;
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: @metaData.$product (@metaData.$version)";
+}
+
+sub NAV75(IN string $version) {
+	@record on;
+	#The struct is defined in PSPHelpers.epm
+	metaData @metaData;
+	#initialize the struct
+	init(@metaData);
+
+	if(@metaData.$history){
+		if(checkConfig("symantec:$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+	
+	echo "Writing PSP Metadata information to pspInformation.txt";
+
+	# Don't have much to put here at the moment...	
+	@metaData.$vendor = "Symantec";
+	@metaData.$product = "Norton Antivirus";
+	@metaData.$version = $version;
+
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: @metaData.$product (@metaData.$version)";
+}
+
+sub NAV_UNK(IN string $version) {
+	@record on;
+	#The struct is defined in PSPHelpers.epm
+	metaData @metaData;
+	#initialize the struct
+	init(@metaData);
+
+	if(@metaData.$history){
+		if(checkConfig("symantec:$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+	
+	echo "Writing PSP Metadata information to pspInformation.txt";
+
+	# Don't have much to put here at the moment...	
+	@metaData.$vendor = "Symantec";
+	@metaData.$product = "Unknown";
+	@metaData.$version = $version;
+
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: @metaData.$product (@metaData.$version)";
+}
+
+#----------------------------------------------------------------
+# Runs a reg query searching for a specific subkey and returning 
+# a value.
+# values = the values from the subkey that you are looking for
+# ret = return values (in an array)
+# error = do you want to halt on query errors
+# returns true if found and false if it doesn't find the key
+#----------------------------------------------------------------
+sub reg_query(IN string $subkey, IN string $search_values, OUT string $ret)
+{
+	string $values;
+	string $value;
+	string $value_data;
+	int $i=0;
+	int $j=0;
+
+	@record on;
+	if(`regquery -hive L -subkey "$subkey"`)
+	{
+		$values = GetCmdData("value");
+		$value_data = GetCmdData("value_data");
+		
+		string $search_value;		
+		foreach $search_value ($search_values)	
+		{
+			$j = 0;
+			foreach $value ($values)
+			{
+				if($value == $search_value)
+				{
+					$ret[$i] = $value_data[$j];
+				}
+				$j++;
+			}
+			$i++;
+		}
+
+
+		
+
+
+		ifnot(defined($ret)) {
+			$ret = "NTR";
+		}
+		return true;
+	} else {
+		return false;
+	}
+
+}
+
+sub safety() {
+	SetEnv("NOPROCINFO", "TRUE");
+}

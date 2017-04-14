@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+<Module id='403' name='Cd_Lp' script="Tasking/Mcl_Cmd_Cd_Tasking.pyo">
+
+	<Interfaces/>
+	
+	<Dependencies>
+		<Remote>Cd_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type='i386'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'/>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

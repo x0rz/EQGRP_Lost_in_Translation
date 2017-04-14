@@ -1,0 +1,45 @@
+@include "_DatabaseIncludes.dsi";
+
+#-----------------------------------------------------#
+sub _sqliteGetTables( IN int $handle, OUT string $tables ) {
+	string %tableResults;
+	if( !(
+			_sqlExec( $handle, "Select * from sqlite_master", %tableResults ) && defined( %tableResults{'tbl_name'} )
+	) ) {
+		return false;
+	}
+	_CopyArrayStrings( $tables, %tableResults{'tbl_name'} );
+
+	return true;
+}
+
+#-------------------------------------------------------------------------------
+sub _sqliteCreateTable( IN int $handle, IN string $name, IN string $fields, IN string $constraints ) {
+	string $sql = "";
+	StrCat( $sql, "CREATE TABLE $name" );
+	string $columns = "";
+	string %temp;
+	for( int $i=0; $i < sizeof( $fields ); $i++ ) {
+		if( strlen( $columns ) > 0 ) {
+			StrCat( $columns, ", $fields[$i]" );
+		} else {
+			$columns = $fields[$i];
+		}
+	}
+	
+	if( !defined( $constraints ) ) {
+		$constraints = "";
+	} else if( strlen( $constraints ) > 0 ) {
+		$constraints = ", $constraints";
+	}
+	StrCat( $sql, " ($columns$constraints)" );
+	if( !(
+			_sqlExec( $handle, "$sql", %temp )
+	) ) {
+		echo "_sqlExec failed";
+		return false;
+	}
+	
+	return true;
+}
+

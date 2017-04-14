@@ -1,0 +1,71 @@
+#-------------------------------------------------------------------------------
+# _Copy###
+#	Copies on array into another
+#-------------------------------------------------------------------------------
+Sub _CopyArrayStrings( OUT string $outputArray, IN string $inputArray )
+{
+	for( int $index = 0; $index < sizeof( $inputArray ); $index++ ) {
+		$outputArray[$index] = $inputArray[$index];
+	}
+
+	return true;
+}
+
+Sub _CopyArrayBoolean( OUT bool $outputArray, IN bool $inputArray )
+{
+	for( int $index = 0; $index < sizeof( $inputArray ); $index++ ) {
+		$outputArray[$index] = $inputArray[$index];
+	}
+
+	return true;
+}
+
+Sub _CopyArrayInteger( OUT int $outputArray, IN int $inputArray )
+{
+	for( int $index = 0; $index < sizeof( $inputArray ); $index++ ) {
+		$outputArray[$index] = $inputArray[$index];
+	}
+
+	return true;
+}
+
+#-------------------------------------------------------------------------------
+# _Append###
+#	Appends an item to the end of an array
+#-------------------------------------------------------------------------------
+sub _AppendString( REF string $array, IN string $item ) {
+	if (!defined($item)) {
+		return false;
+	}
+	int $index = 0;
+	if( defined( $array ) ) {
+		$index = sizeof( $array );
+	}
+	$array[$index] = $item;
+	return true;
+}
+
+sub _AppendBoolean( REF bool $array, IN bool $item ) {
+	if (!defined($item)) {
+		return false;
+	}
+	int $index = 0;
+	if( defined( $array ) ) {
+		$index = sizeof( $array );
+	}
+	$array[$index] = $item;
+	return true;
+}
+
+sub _AppendInteger( REF int $array, IN int $item ) {
+	if (!defined($item)) {
+		return false;
+	}
+	int $index = 0;
+	if( defined( $array ) ) {
+		$index = sizeof( $array );
+	}
+	$array[$index] = $item;
+	return true;
+}
+

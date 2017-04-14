@@ -1,0 +1,13 @@
+
+@include "_VersionChecks.dsi";
+@include "_CommandModification.dsi";
+
+if (_IsWindows())
+{
+	return `python Connected/Connected.py -project Ops`;
+}
+else
+{
+	# Unix
+	return true;
+}

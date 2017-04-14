@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<t:config id="36d1ffadd2b385b2a8a5498a6e05825e8ab97825"
+          name="Erraticgophertouch"
+          version="1.0.1"
+          configversion="1.0.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+    <!-- All plugins that accept a callback must have the Callback* parameters
+     listed below, or their equivalents. -->
+     <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"
+                 binding="//identifier"/>
+
+    <t:parameter name="TargetPort"
+                 description="Port used by the MSRPC service. Typically 445 (SMB), 139 not available for ERGO"
+                 type="TcpPort"
+                 default="445"
+                 binding="//service[name='msrpc']/port"/>
+
+  </t:inputparameters>
+
+  <t:outputparameters>
+    <t:parameter name="DimsvcEnabled" type="Boolean" description=""/>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="Touch"/>
+  </t:outputparameters>
+
+  <t:redirection>
+    <t:local protocol="TCP"
+             listenaddr="TargetIp"
+             listenport="TargetPort"
+             destaddr="//identifier"
+             destport="//service[name='msrpc']/port"
+             closeoncompletion="true"/>
+  </t:redirection>
+</t:config>

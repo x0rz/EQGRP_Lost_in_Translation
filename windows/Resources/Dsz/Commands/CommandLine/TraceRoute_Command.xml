@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_Traceroute_Tasking.pyo' providerType='script'>
+
+    <Command name="Traceroute" id="0">
+
+		<Help>Performs a traceroute to a given host.</Help>
+
+        <Input>
+			<Argument name='destination' data='addr'>
+				<Help>The target for the traceroute</Help>
+			</Argument>
+			
+			<Option name='icmp' optional='true' group='protocol'>
+				<Set data='prot' value='0' />
+				<Help>Use ICMP protocol when sending packets (default).</Help>
+			</Option>
+			<Option name='udp' optional='true' group='protocol'>
+				<Set data='prot' value='1' />
+				<Help>Use UDP protocol when sending packets.</Help>
+			</Option>
+			<Option name='tcp' optional='true' group='protocol'>
+				<Set data='prot' value='2' />
+				<Help>Use TCP protocol when sending packets.</Help>
+			</Option>
+			
+			<Option name='maxhops' optional='true'>
+				<Argument name='maxttl' data='maxttl' />
+				<Help>Sets the maximum number of hops (default=30).</Help>
+			</Option>
+			<Option name='timeout' optional='true'>
+				<Argument name='timeout' data='timeout' />
+				<Help>Sets the timeout value in seconds (default=10s).</Help>
+			</Option>
+			<Option name='queries' optional='true'>
+				<Argument name='queries' data='queries' />
+				<Help>Sets the number of packets sent per hop (default=1).</Help>
+			</Option>
+			<Option name='srcport' optional='true'>
+				<Argument name='srcport' data='srcport' />
+				<Help>Sets the port when UDP/TCP is used (default=random).</Help>
+			</Option>
+			<Option name='dstport' optional='true'>
+				<Argument name='dstport' data='dstport' />
+				<Help>Sets the port when UDP/TCP is used (default=3235).</Help>
+			</Option>
+			<Option name='source' optional='true'>
+				<Argument name='source' data='source' />
+				<Help>Specifies the source address to use when using UDP/TCP.</Help>
+			</Option>
+			
+			<Option name="driver" optional="true">
+				<Help>Specify the driver device name</Help>
+				<Argument name="name" data="driverName" optional="false" />
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name='prot' type='uint8_t' default='0' />
+			<Data name='maxttl' type='uint8_t' default='30' />
+			<Data name='queries' type='uint8_t' default='1' />
+			<Data name='srcport' type='uint16_t' default='0' />
+			<Data name='dstport' type='uint16_t' default='3235' />
+			<Data name='timeout' type='time' default='10s' />
+			<Data name='source' type='ipaddr' />
+			<Data name='addr' type='string' />
+			<Data name='driverName' type='string'/>
+        </Output>
+    </Command>
+</Plugin>

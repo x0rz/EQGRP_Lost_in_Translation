@@ -1,0 +1,27 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+<-action <list|pick|configure|disable>>
+    Action to perform on payload
+[-type <payload_type>]
+    The type of payload (level3, level4)
+[-arch <arch>]
+    The payload architecture
+[-os <os>]
+    The payload OS
+[-bintype <type>]
+    The binary type (sharedlib, exe)
+[-extra <extraInfo>]
+    Extra payload information
+[-verbose]
+    Print additional information
+[-utilityburst]
+    Configure with utilityburst support
+[-driver <name>]
+    Sets the driver name
+[-process <name>]
+    Sets the process name
+[-info <name>]
+    Sets the extra info area
+[-file <file>]
+	The payload file for the -disable option

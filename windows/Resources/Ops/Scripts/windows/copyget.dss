@@ -1,0 +1,217 @@
+#-------------------------------------------------------------------------------
+# File: copyget.eps
+# Description: Copies a file to a temporary location and then pulls it back
+#
+#-------------------------------------------------------------------------------
+@include "_File.dsi";
+@include "Ops_GenericFunctions.dsi";
+
+int $MAXATTEMPTS = 10;
+
+@echo off;
+
+string $ScriptsDir;
+bool $verboseFlag = false;
+string $fileToGet = "";
+string $temppath = "";
+string $tempfile= "at";
+string $tempextension = "";
+string $curpath= "";
+bool $success = true;
+
+### Get the scripts Dir and Temp Dir
+Ops_GetScriptsPath($ScriptsDir);
+Ops_GetTempPath($tempPath);
+
+############################################################
+# Parse the command line options
+############################################################
+if ($argc == 1)
+{
+	$argv[1] = "-help";
+}
+else
+{
+	$fileToGet = $argv[1];
+	if ($fileToGet == "?")
+	{
+		$argv[1] = "-help";
+	}
+}
+
+int $counter = 1;
+string $temp;
+string $commandLineOption;
+while (defined($argv[$counter]))
+{
+	RegExSplit("-", $argv[$counter], 0, $temp);
+	$counter++;
+	
+	if (defined($temp[1]))
+	{
+		$commandLineOption = $temp[1];
+
+		if (($commandLineOption == "h") || ($commandLineOption == "help") || ($commandLineOption == "?"))
+		{
+			echo "\nUsage: $argv[0] <file to get> _Options_";
+			echo "  Does a copy/get, copying the file to the temporary directory";
+			echo "  and deleting it afterwards";
+			echo "\nOptions:";
+			echo "  [-temppath <pathname>]";
+			echo "     Temporary directory to copy file into.  Default = $temppath";
+			echo "  [-tempfile <filename>]";
+			echo "     Temporary file name.  Default = $tempfile";
+			#echo "  [-verbose or -v]";
+			return true;
+		}
+		else if (($commandLineOption == "v") || ($commandLineOption == "verbose"))
+		{
+			$verboseFlag = true;			
+		}
+		else
+		{
+			if (defined($argv[$counter]))
+			{
+				if ($commandLineOption == "temppath")
+				{
+					$temppath = "$argv[$counter]";
+				}
+				else if ($commandLineOption == "tempfile")
+				{
+					$tempfile = $argv[$counter];
+				}
+
+				$counter++;
+			}
+			else
+			{
+				echo "OPTION $temp[1] requires data (-h for help)";
+				return true;
+			}
+		}
+	}
+}
+
+if ($verboseFlag)
+{
+	@echo on;
+}
+
+############################################################
+# Get the direcory of the file to use in the -realpath option of the get command
+############################################################
+string $origFilename;
+SplitPath($fileToGet, $origFilename);
+if ($origFilename[0] == "")
+{
+	@record on;
+	if (`pwd`)
+	{
+		GetCmdData("CurrentDirectory::Path", $curpath);
+	}
+	else
+	{
+		echo "Error getting current working directory...";
+		return false;
+	}
+	@record off;
+}
+else
+{
+	$curpath = $origFilename[0];
+}
+
+############################################################
+# Break off the file extension if the filename has one
+############################################################
+string $tempFileName;
+RegExSplit("\\.", $tempfile, 0, $tempFileName);
+$counter = sizeof($tempFileName);
+$counter--;
+if ($counter != 0)
+{
+	$tempextension = $tempFileName[$counter];
+}
+else
+{
+	$tempextension = "tmp";
+}
+$tempfile = $tempfilename;
+
+############################################################
+# Ensure that the $tempfile doesn't exist and increment the name if it does
+############################################################
+int $tempnum=0;
+while (_FileExists("$tempfile$tempnum.$tempextension", $temppath))
+{
+	$tempnum++;
+}
+$tempfile="$tempfile$tempnum.$tempextension";
+
+############################################################
+# Copy the file to the temporary directory and then get it
+############################################################
+echo "Copying $fileToGet -> $temppath\\$tempfile";
+if (`copy "$fileToGet" "$temppath\\$tempfile"`)
+{
+	############################################################
+	# Get the filesize to output to the user
+	############################################################
+	@record on;
+	`dir "$fileToGet"`;
+	@record off;
+	int $fileSize;
+	GetCmdData("DirItem::FileItem::Size", $fileSize);
+
+	############################################################
+	# Need to add a foreground since we are deleting the remote
+	# file once the get completes
+	############################################################
+	echo "";
+	echo "Downloading $temppath\\$tempfile .. $fileSize bytes";
+	@record on;
+	if (`foreground get -mask "$tempfile" -path "$temppath" -realpath "$curpath\\$origFilename[1]"`)
+	{
+		int $size;
+		string $localGetFile, $dir, $name;
+		if (GetCmdData("LocalGetDirectory::Path", $dir) && defined($dir) &&
+			GetCmdData("FileLocalName::LocalName", $name) && defined($name))
+		{
+			$localGetFile = "%_sgEnv{'log_path'}/$dir/$name";
+			_NormalizePath($localGetFile, _IsWindowsLocal());
+		}
+		GetCmdData("FileStart::Size", $size);
+		
+		############################################################
+		# Set the variables, so this looks generally like a normal get
+		############################################################
+		StartCmdData("LocalGetDirectory");
+		AddCmdData("Path", $dir);
+		EndCmdData();
+		StoreCmdData();
+		
+		StartCmdData("FileStart");
+		AddCmdData("Size", $size);
+		AddCmdData("LocalName", $name);
+		EndCmdData();
+		StoreCmdData();
+
+		$success=true;
+		echo "";
+		#echo "\nSuccessful CopyGet (currently in \"$curpath\"): \"$fileToGet\" => \"$temppath\\$tempfile\" (local \"$newFileName\")";
+		echo("Successful CopyGet of $fileToGet", GOOD);
+	}
+	@record off;
+	if (!`delete -file "$temppath/$tempfile"`)
+	{
+		echo("!! Could not delete file !!", ERROR);
+		pause;
+	}
+}
+else
+{
+	echo("Could not copy $fileToGet to $temppath\\$tempfile", ERROR);
+	return false;
+}
+
+return $success;

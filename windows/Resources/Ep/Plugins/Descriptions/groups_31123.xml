@@ -1,0 +1,20 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31123'>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='*' minor='*'>
+		<File>groups_Implant.dll</File>
+	    </Version>
+	</Platform>
+
+
+    </Windows>
+
+</Plugin>

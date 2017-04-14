@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:trch"
+        id="92a761c29b946aa458876ff78375e0e28bc8acb0"
+        name="Namedpipetouch"
+        version="2.0.0"
+        configversion="2.0.0.0"
+        schemaversion="2.0.0">
+  <inputparameters>
+<!-- All plugins that perform blocking network calls must have a NetworkTimeout
+     parameter or its equivalent -->
+    <parameter name="NetworkTimeout"
+               description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+               type="S16">
+      <default>60</default>
+    </parameter>
+    <parameter name="TargetIp"
+               description="Target IP Address"
+               type="IPv4"/>
+    <parameter name="TargetPort"
+               description="Port used by the SMB or NBT service"
+               type="TcpPort">
+      <default>445</default>
+    </parameter>
+
+    <paramchoice name="Protocol" description="SMB (default port 445) or NBT (default port 139)">
+      <default>SMB</default>
+      <paramgroup name="SMB" description="">
+        <parameter name="UsingNbt" description="Boolean stating to use Nbt or not" type="Boolean" hidden="true">
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="NBT" description="">
+        <parameter name="UsingNbt" description="Boolean stating to use Nbt or not" type="Boolean" hidden="true">
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+    </paramchoice>
+
+    <!--
+      Below is the list of named pipes. The list follows python list syntax ( comma delimited, single quotes around each string ).
+      When adding a new named pipe to the list, also add an entry describing what that pipe represents in the DescList.
+      
+      The Pipes are associated with their description by index. When adding a new entry, group it with similar entries and ensure
+      that the description lines up with the pipe name
+      
+      The program will group similar names together to make the output more readable, so it is advantageous to have the same
+      description for new pipes if it is detecting a similar thing.
+      
+      The pipes are listed alphabetically. First OS standard pipes, followed by PSP pipes
+    -->
+    <parameter name="PipeList"
+                 description="List of Pipes to check for"
+                 type="String"
+                 format="List"
+                 hidden="true">
+      <!--Must be on the same line...new version of EDF is very finnicky, makes this much less readable :(-->
+      <!--no extra spaces, new lines, nothing. Plugin will fail in validate parameters if this list isn't parsed correctly-->
+      <value>['\PIPE\browser','\PIPE\lsarpc','\PIPE\spoolss','\PIPE\360OnAccessGet','\PIPE\360OnAccessSet','\PIPE\aswUpdSv','\PIPE\afwCallbackPipe2','\PIPE\afwCallbackPipe2','\PIPE\aswUpdSv','\PIPE\_pspuser_780_AVGIDSMONITOR.EXE_9d97da47-8de1-4699-b3da-9eafb262f2a4','\PIPE\AVG7B14C58C-E30D-11DB-B553-F88A56D89593','\PIPE\AvgFwS8.WDCommunicationPipe1','\PIPE\AvgFwS8.WDCommunicationPipe2','\PIPE\AvgTrayPipeName000176','\PIPE\AvgTrayPipeName0001761','\PIPE\AvgTrayPipeName0001762','\PIPE\AvgFwS8.WDCommunicationPipe','\PIPE\_pspuser_3620_AVGIDSMONITOR.EXE_9fde9445-f261-4985-a056-fb033d1a64cd','\PIPE\AVG-CHJW-0B47172B-B945-42f8-AA88-8D4F98F660DB','\PIPE\AVG-CHJW-C81C2B71-E0F0-44cb-B6A7-15999D0F539A','\PIPE\AvgFw.WDCommunicationPipe','\PIPE\AvgFw.WDCommunicationPipe1','\PIPE\AvgFw.WDCommunicationPipe2','\PIPE\AvgTrayPipeName000840','\PIPE\AvgTrayPipeName0008401','\PIPE\AvgTrayPipeName0008402','\PIPE\AvgUIPipeName002788','\PIPE\AvgUIPipeName0027881','\PIPE\AvgUIPipeName0027882','\PIPE\AveSvc_EngineDienst200705311802','\PIPE\AveSvc_EngineService2008','\PIPE\avguard01','\PIPE\AVSCAN_REP_000000000000c883','\PIPE\AVWebCatServer0','\PIPE\AVWebGuardServer','\PIPE\AVWebProtServer0','\PIPE\SERVERPIPENAME','\PIPE\AveSvc_EngineService2008','\PIPE\bdantiphishing','\PIPE\bdantiphishing','\PIPE\bdantispam','\PIPE\EXTREG','\PIPE\LIVESRV','\PIPE\MIDASCOMM_SERVER','\PIPE\VSSERV','\PIPE\__fships_hook_server__','\PIPE\__fships_injector__','\PIPE\rcn_18871562230061','\PIPE\rcn_47843719166','\PIPE\rcn_49140823412','\PIPE\rcn_491711751329','\PIPE\rcn_50406860721','\PIPE\rcn_507341306237','\PIPE\rcn_51109653602','\PIPE\rcn_520781201855','\PIPE\rcn_520932065562','\PIPE\rcn_520932267096','\PIPE\rcn_522811486723','\PIPE\rcn_530461792332','\PIPE\rcn_53156781683','\PIPE\rcn_564531165073','\PIPE\rcn_580461750377','\PIPE\rcn_621562061643','\PIPE\rcn_637501693024','\PIPE\rcn_63750782962','\PIPE\rcn_647032361703','\PIPE\rcn_655781047893','\PIPE\rcn_655931694327','\PIPE\rcn_662811357824','\PIPE\rcn_67953938451','\PIPE\rcn_682651449794','\PIPE\rcn_685151921711','\PIPE\nai_vseconsole01','\PIPE\nai_vseconsole01','\PIPE\Symantec_{F9698F61-2E57-469B-B29B-1EFB17827356}_{0C55C096-0F1D-4F28-AAA2-85EF591126E7}','\PIPE\Symantec Core LC','\PIPE\Symantec_{586D4B8E-3DBB-4E4O-9A7E-4670F760FAC4}_{0C55C096-0F1D-4F28-AAA2-85EF591126E7}','\PIPE\Symantec_{EF903280-DA47-4C1B-99F8-EC15E7900956}_{0C55C096-0F1D-4F28-AAA2-85EF591126E7}','\PIPE\acsipc_server','\PIPE\pavfnlpc','\PIPE\Global\PNMIPC_SH_IPT-WebProxy','\PIPE\pavfnlpc','\PIPE\PavTPU\TPK_Event_1504','\PIPE\Sophos@BOPSv3','\PIPE\NP2970625197SRV','\PIPE\vmware-usbarbpipe']</value>
+    </parameter>
+    <parameter name="DescList"
+                 description="List of Descriptions corresponding to pipes"
+                 type="String"
+                 format="List"
+                 hidden="true">
+      <value>['OS Pipe: computer browser','OS Pipe: lsass rpc','OS Pipe: print spooler','360 Safe','360 Safe','alwil Avast professional 4.8 Avast Internet Security v5.0','Avast Internet Security 5.0','Avast Internet Security 5.0','Avast pro 4.8 or Avast IS v5.0','AVG IS 8.5','AVG IS 8.5','AVG IS 8.5','AVG IS 8.5','AVG IS 8.5','AVG IS 8.5','AVG IS 8.5','AVG IS 8.5-9.0','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','AVG IS 9.0.646','avira antivirus personal edition premium v7.06, avira premium security suite v7','avira premium sec suite  v8','avira premium sec suite  v8','avira premium sec suite  v8','avira premium sec suite  v8','avira premium sec suite  v8','avira premium sec suite  v8','avira premium sec suite  v8','Avira premium security suite v8','BitDefender 2010 v13','BitDefender TotalSec 2010 v13.0.11','BitDefender TotalSec 2010 v13.0.11','BitDefender TotalSec 2010 v13.0.11','BitDefender TotalSec 2010 v13.0.11 Bit Defender Total Security 2009','BitDefender TotalSec 2010 v13.0.11 Bit Defender Total Security 2009','BitDefender TotalSec 2010 v13.0.11 Bit Defender Total Security 2009','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','FSecure 2010','McAfee 8.7i','McAfee 8.7i','Norton Internet Security 2010','Norton IS 2008','Norton360 v4; Norton IS 2009; Norton IS 2010; Norton 360 v4','Norton360 v4','Outpost Security Suite Pro 2009 v6.5','Panda IS 2010 v15','Panda IS 2010 v15','Panda IS 2010 v15','Panda IS 2010 v15','Sophos 9.0','TrendMicro IS 2010 v17.50','VMWare Host']</value>
+    </parameter>
+  </inputparameters>
+
+  
+  <redirection>
+     <local protocol="TCP"
+            listenaddr="TargetIp"
+            listenport="TargetPort"
+            destaddr="TargetIp"
+            destport="TargetPort"
+            closeoncompletion="true"/>
+     <remote protocol="TCP"
+             listenaddr="CallbackIp"
+             listenport="CallbackPort"
+             destport="CallbackLocalPort"/>
+  </redirection>
+
+  <logic>
+    <service name="smtp">
+      <bindtopath name="TargetPort" path="//service[name='smtp']/port"/>
+    </service>
+    <bindtopath name="TargetIp" path="//identifier"/>
+  </logic>
+</config>

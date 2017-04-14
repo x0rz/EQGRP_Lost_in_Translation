@@ -1,0 +1,94 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsWindows2003
+#	Returns the whether the current target is Windows 2003
+#----------------------------------------------------
+sub _IsWindows2003()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return (($major == 5) && ($minor == 2));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2003
+
+#----------------------------------------------------
+# _IsWindows2003Local
+#	Returns the whether the local os is Windows 2003
+#----------------------------------------------------
+sub _IsWindows2003Local()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return (($major == 5) && ($minor == 2));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2003Local
+
+#----------------------------------------------------
+# _IsWindows2003OrGreater
+#	Returns the whether the current target is Windows 2003 or greater
+#----------------------------------------------------
+sub _IsWindows2003OrGreater()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return ((($major == 5) && ($minor >= 2)) ||
+						($major > 5));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2003OrGreater
+
+#----------------------------------------------------
+# _IsWindows2003OrGreaterLocal
+#	Returns the whether the local os is Windows 2003 or greater
+#----------------------------------------------------
+sub _IsWindows2003OrGreaterLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return ((($major == 5) && ($minor >= 2)) ||
+						($major > 5));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows2003OrGreaterLocal

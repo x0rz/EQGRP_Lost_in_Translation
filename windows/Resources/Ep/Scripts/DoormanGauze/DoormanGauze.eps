@@ -1,0 +1,140 @@
+#--------------------------------------------------------
+# File: DoormanGauze.eps
+#
+# Wrapper script for DoormanGauze tools
+#
+# Modifications:
+#  07/13/2005	Created.
+#--------------------------------------------------------
+@include "_RecordToolUse.epm";
+
+@echo off;
+
+# defaults
+string $driverName = "ethip6";
+string $version = "DoormanGauze 1.0.4.1";
+
+_RecordToolUse("DoormanGauze", $version);
+
+# commands
+int $installCmdsStart = 1;
+string $commands;
+$commands[0] = "Quit";
+
+# start of "install" commands
+$commands[1] = "Change driver name";
+$commands[2] = "Install tools";
+$commands[3] = "Uninstall tools";
+$commands[4] = "Load driver";
+$commands[5] = "Unload driver";
+$commands[6] = "Verify install";
+$commands[7] = "Verify driver is running";
+$commands[8] = "Check driver status";
+
+while (true) {
+    echo "\r\n\r\n";
+    echo "$version\r\n";
+
+    # Print the current configuration
+    echo "Current Configuration:";
+    echo "\t Driver Name : $driverName";
+    echo "";
+
+    # print the command list
+    int $i=0;
+    while ($i < sizeof($commands)) {
+	if ($i == $installCmdsStart) {
+	    echo "";
+	    echo "Installation commands:";
+	}
+	echo "($i). $commands[$i]";
+	$i++;
+    }
+
+    echo "";
+    int $choice = GetInput("Enter the desired option");
+    if ($choice == 0) {
+
+	# quit
+	return true;
+
+    } else if ($choice == 1) {
+
+	# Change driver name
+	echo "Current driver name = '$driverName'";
+	$driverName = GetInput("Enter new driver name");
+
+    } else if ($choice == 2) {
+
+	# install driver
+	if (`script DoormanGauze\\Install.eps $driverName`) {
+	    echo "INSTALL SUCCESS";
+	    echo "";
+	    echo "NOTE: The driver has not been loaded";
+	} else {
+	    echo "**** INSTALL FAILED ****";
+	}
+
+    } else if ($choice == 3) {
+
+	# uinstall driver
+	if (`script DoormanGauze\\Uninstall.eps $driverName`) {
+	    echo "UNINSTALL SUCCESS";
+	    echo "";
+	    echo "**** NOTE: The capture file must be deleted seperately ****";
+	} else {
+	    echo "**** UNINSTALL FAILED ****";
+	}
+
+    } else if ($choice == 4) {
+
+	# load the driver
+	if (prompt "Load the driver ($driverName)?") {
+	    @echo on;
+	    `driverload -name $driverName`;
+	    @echo off;
+	}
+
+    } else if ($choice == 5) {
+
+	# unload the driver
+	if (prompt "Unload the driver ($driverName)?") {
+	    @echo on;
+	    `driverunload -name $driverName`;
+	    @echo off;
+	}
+
+    } else if ($choice == 6) {
+
+	# verify install
+	if (`script DoormanGauze\\VerifyInstall.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO VERIFY INSTALL ****";
+	}
+
+    } else if ($choice == 7) {
+
+	# verify install
+	if (`script DoormanGauze\\VerifyRunning.eps $driverName`) {
+	    echo "VERIFICATION SUCCESSFULL";
+	} else {
+	    echo "**** UNABLE TO VERIFY DRIVER IS RUNNING ****";
+	}
+
+    } else if ($choice == 8) {
+
+	# get status
+	ifnot (`script DoormanGauze\\GetStatus.eps $driverName`) {
+	    echo "**** UNABLE TO GET DRIVER STATUS ****";
+	}
+
+    } else {
+	# invalid choice
+	echo "*** Invalid choice ***";
+    }
+
+    pause;
+}
+
+return true;

@@ -1,0 +1,16 @@
+<Plugin id="22">
+	<Name>TargetDetails</Name>
+	<Class>ddb.dsz.plugin.targetdetails.TargetDetails</Class>
+	<Description>Collects the details of the targets</Description>
+	<Logo>images/anti_spam.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>true</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>false</UserClose>
+	<CanClose>false</CanClose>
+	<VerifyClose>true</VerifyClose>
+	<SpawnDetached>true</SpawnDetached>
+</Plugin>

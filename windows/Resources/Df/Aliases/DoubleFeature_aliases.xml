@@ -1,0 +1,9 @@
+<Aliases>
+	<Alias>
+		<Name>doublefeature</Name>
+		<Location>Remote</Location>
+		<ReplaceBeforeArgs>log=DoubleFeature_ python doublefeature.py -project Df -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>Runs the DoubleFeature interactive script.</Help>
+	</Alias>
+</Aliases>

@@ -1,0 +1,25 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31380'>
+
+  <Command id='16' name='lotusnotesmailusers'>
+
+    <Help>Lists Lotus Notes mail users, their mail database, and their internet address</Help>
+
+    <Input>
+      <Option name='db' optional='true'>
+        <Argument name='dbfilename' data='dbfile'/>
+        <Help>Provide the name of the Lotus Notes Public Name and Address database.</Help>
+	<Help>By default, this is names.nsf. However, the file could have been</Help>
+        <Help>renamed or a copy made because the original was in use.</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='dbfile' type='string' default='names.nsf'/>
+    </Output>
+
+  </Command>
+
+</Plugin>
+

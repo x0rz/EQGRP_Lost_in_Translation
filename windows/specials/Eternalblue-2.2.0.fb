@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<t:config id="0f38f55b6a88feccfb846d3d10ab4687e652e63e"
+          name="Eternalblue"
+          version="2.2.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+    <package>
+        <arch name="x86-Windows">
+            <base>eteb-2.dll</base>
+            <core>etebCore-2.x86.dll</core>
+        </arch>
+        <arch name="x64-Windows">
+            <core>etebCore-2.x64.dll</core>
+        </arch>
+    </package>
+</t:config>

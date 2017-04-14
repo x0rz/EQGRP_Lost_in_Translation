@@ -1,0 +1,29 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31353'>
+
+  <Command id='16' name='eventlogedit'>
+
+    <Help>This program allows the user to remove an entry from the event log.</Help>
+
+    <Input>
+      <Option name='log' optional='false'>
+	<Argument name='logfile' data='logname'/>
+	<Help>One of system, application, or security</Help>
+      </Option>
+
+      <Option name='record' optional='false'>
+	<Argument name='record_number' data='recnum'/>
+	<Help>The number of the record you wish to delete</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='logname' type='string'/>
+      <Data name='recnum' type='uint32_t' default='0'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<t:config id="b0cec9189bbf3c41c3991a08a1f96b68b5ed0127"
+          name="Worldclienttouch"
+          version="1.0.1"
+          configversion="1.0.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+
+<!-- Parameters for the connection to target -->
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds).  Use 0 for no timeout."
+                 type="S16"
+                 default="60"/>
+
+<!-- Parameters for the target machine -->
+    <t:parameter name="TargetIp"
+                 description="Target IPv4 Address (dot notation)"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Target Port Number"
+                 type="TcpPort"
+                 binding="//service[name='http']/port"/>    <!--  Replace this with a parameter choice -->
+
+<!-- Parameters for the WorldClient server -->
+    <t:parameter name="ExpectedProtocol"
+                 description="WorldClient protocol (http, https)"
+                 type="String"/>
+<!--
+    <t:paramchoice name="ExpectedProtocol"
+                   description="WorldClient protocol (http, https)"
+                   default="http" >
+        <t:paramgroup name="http"  description=""><t:parameter name="http"  description="" type="String" value="http" hidden="true"/></t:paramgroup>
+        <t:paramgroup name="https" description=""><t:parameter name="https" description="" type="String" value="http" hidden="true"/></t:paramgroup>
+    </t:paramchoice>
+-->
+    <t:parameter name="ExpectedDomain"
+                 description="WorldClient IPv4 Address (dot notation)"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="ExpectedPort"
+                 description="WorldClient Port Number"
+                 type="TcpPort"
+                 binding="//service[name='http']/port"/>    <!--  Replace this with a parameter choice -->
+
+<!-- Parameters for the target account -->
+    <t:parameter name="TargetAcctDomain"
+                 description="Target account email domain"
+                 type="String"/>
+    <t:parameter name="TargetAcctUsr"
+                 description="Target account username"
+                 type="String"/>
+    <t:parameter name="TargetAcctPwd"
+                 description="Target account password"
+                 type="String"/>
+
+<!-- List of supported version numbers -->
+	<t:parameter name="SupportedVersions"
+				 description="List of strings of supported WorldClient version numbers"
+				 type="String"
+				 format="List"
+				 hidden="true"
+				 value="['9.5.2',
+                         '9.6.0',
+                         '9.6.1',
+                         '9.6.2',
+                         '9.6.3',
+                         '9.6.4',
+                         '9.6.5',
+                         '9.6.6',
+                        '10.0.0',
+                        '10.0.1',
+                        '10.0.2',
+                        '10.0.3',
+                        '10.0.4',
+                        '10.0.5',
+                        '10.1.0',
+                        '10.1.1',
+                        '10.1.2']"/>
+
+<!-- List of versions which respond with HTTP "Server" header -->
+	<t:parameter name="ServerHeaderVersions"
+				 description="List of strings of WorldClient versions which respond with the Server header"
+				 type="String"
+				 format="List"
+				 hidden="true"
+				 value="['9.5.2',
+                         '9.6.0',
+                         '9.6.1',
+                         '9.6.2',
+                         '9.6.3',
+                         '9.6.4',
+                         '9.6.5',
+                         '9.6.6',
+                        '10.0.0',
+                        '10.0.1',
+                        '10.0.2',
+                        '10.0.3',
+                        '10.0.4',
+                        '10.0.5']"/>
+
+<!-- List of versions which have the "limited free" option -->
+	<t:parameter name="PossiblyLimitedVersions"
+				 description="List of strings of WorldClient versions with the limited free option"
+				 type="String"
+				 format="List"
+				 hidden="true"
+				 value="['10.0.0',
+                         '10.0.1',
+                         '10.0.2',
+                         '10.0.3',
+                         '10.0.4',
+                         '10.0.5',
+                         '10.1.0',
+                         '10.1.1',
+                         '10.1.2']"/>
+
+  </t:inputparameters>
+<!--
+  <t:outputparameters>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="StagedUpload"/>
+  </t:outputparameters>
+-->
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='http']/port"
+              closeoncompletion="true"/>
+     <t:remote protocol="TCP"
+               listenaddr="CallbackIp"
+               listenport="CallbackPort"
+               destport="CallbackLocalPort"/>
+  </t:redirection>
+</t:config>

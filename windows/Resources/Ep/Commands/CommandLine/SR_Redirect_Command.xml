@@ -1,0 +1,107 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31408'>
+
+  <Command id='16' name='sr_redirect'>
+
+    <Help>Provides a VPN-like capability to forward packets using the StingRay driver.</Help>       
+
+    <Input>
+	<Option name='tcp' optional='false' group='listentype'>
+	    <Set data='listenProtocol' value='1'/>
+	    <Set data='targetProtocol' value='1'/>
+	    <Help>Use TCP/IP as the redirection protocol</Help>
+	</Option>
+	<Option name='udp' optional='false' group='listentype'>
+	    <Set data='listenProtocol' value='2'/>
+	    <Set data='targetProtocol' value='2'/>
+	    <Help>Use UDP/IP as the redirection protocol</Help>
+	</Option>
+	<Option name='protocols' optional='false' group='listentype'>
+	    <Argument name='listentype'>
+		<Value string='tcp'>
+		  <Set data='listenProtocol' value='1'/>
+		</Value>
+		<Value string='udp'>
+		  <Set data='listenProtocol' value='2'/>
+		</Value>
+	    </Argument>
+	    <Argument name='targettype'>
+		<Value string='tcp'>
+		  <Set data='targetProtocol' value='1'/>
+		</Value>
+		<Value string='udp'>
+		  <Set data='targetProtocol' value='2'/>
+		</Value>
+	    </Argument>
+	</Option>
+
+	<Option name='lplisten' optional='false' group='listenLocation'>
+	    <Set data='lplisten' value='true'/>
+    	    <Argument name='port' data='listenport'/>
+	    <Help>Listen for new connections on the LP-side.</Help>
+	</Option>
+	<Option name='implantlisten' optional='false' group='listenLocation'>
+	    <Set data='lplisten' value='false'/>
+    	    <Argument name='port' data='listenport'/>
+	    <Help>Listen for new connections on the Implant-side.</Help>
+	</Option>
+
+	<Option name='target' optional='false'>
+    	    <Argument name='addr' data='targetAddr'/>
+    	    <Argument name='destPort' data='targetDstPort'/>
+    	    <Argument name='srcPort' data='targetSrcPort' optional='true'/>
+	    <Help>The address / port to which data should be forwarded.</Help>
+	    <Help>NOTE: Data is always forwarded to the side opposite where the listening port is.</Help>
+	</Option>
+
+	<Option name='bind' optional='true'>
+	    <Argument name='addr' data='bindAddr'/>		
+	    <Help>Address to which the listening port should bind (defaults to 0.0.0.0).</Help>
+	</Option>
+
+	<Option name='compress' optional='true'>
+	    <Set data='compress' value='true'/>
+	    <Help>Compress the data while sending between EP and Implant.  If the</Help>
+	    <Help>stream that you are redirecting has already been encrypted or</Help>
+	    <Help>compressed then you do not want to use this option.</Help>
+	</Option>
+
+	<Option name='notify' optional='true'>
+	    <Set data='notify' value='true'/>
+	    <Help>Send notification of target connection success / failure to</Help>
+	    <Help>connecting sockets.</Help>
+	</Option>
+
+	<Option name='nodes' optional='true'>
+	    <Argument name='maxNodes' data='maxNodes'/>
+	    <Help>Sets the maximum number of buffered nodes allowed (0=no limit).</Help>
+	    <Help>If this parameter is not specified, 0 is used.</Help>
+	</Option>
+
+	<Option name='maxPacketSize' optional='true'>
+	    <Argument name='bytes' data='maxPacketSize'/>
+	    <Help>Sets the maximum size (in bytes) for recv/send calls.  This is of</Help>
+	    <Help>particular interest for datagram (ie, UDP) redirection.  If no value</Help>
+	    <Help>is specified, a default of 550 bytes is used.</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='listenProtocol' type='uint8_t'/>
+	<Data name='targetProtocol' type='uint8_t'/>
+	<Data name='lplisten' type='bool'/>
+	<Data name='listenport' type='uint16_t'/>
+	<Data name='targetAddr' type='string'/>
+	<Data name='targetDstPort' type='uint16_t'/>
+	<Data name='targetSrcPort' type='uint16_t' default='0'/>
+	<Data name='bindAddr' type='string' default='0.0.0.0'/>
+	<Data name='compress' type='bool' default='false'/>
+	<Data name='notify' type='bool' default='false'/>
+	<Data name='maxNodes' type='uint32_t' default='0'/>
+	<Data name='maxPacketSize' type='uint16_t' default='550'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

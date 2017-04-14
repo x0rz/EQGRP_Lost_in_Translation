@@ -1,0 +1,82 @@
+#-------------------------------------------------------------------------------
+# _Add
+#	Adds two numbers and returns the result ($one + $two)
+#-------------------------------------------------------------------------------
+Sub _Add(IN int $one, IN int $two, OUT int $result)
+{
+    $result = $one;
+    $result += $two;
+    return true;
+}
+Sub(Int) _Add(IN int $one, IN int $two)
+{
+    int $tmp = $one;
+    $tmp += $two;
+    return $tmp;
+}
+
+#-------------------------------------------------------------------------------
+# _Subtract
+#	Returns the difference between two numbers ($one - $two)
+#-------------------------------------------------------------------------------
+Sub _Subtract(IN int $one, IN int $two, OUT int $result)
+{
+    $result = $one;
+    $result -= $two;
+    return true;
+}
+Sub(Int) _Subtract(IN int $one, IN int $two)
+{
+    int $tmp = $one;
+    $tmp -= $two;
+    return $tmp;
+}
+
+#-------------------------------------------------------------------------------
+# _Multiply
+#	Returns the multiplication of two numbers ($one * $two)
+#-------------------------------------------------------------------------------
+Sub _Multiply(IN int $one, IN int $two, OUT int $result)
+{
+    $result = $one;
+    $result *= $two;
+    return true;
+}
+Sub(Int) _Multiply(IN int $one, IN int $two)
+{
+	int $tmp = $one;
+    $tmp *= $two;
+    return $tmp;
+}
+
+#-------------------------------------------------------------------------------
+# _Divide
+#	Returns the (integer) division of two numbers as well as 
+#	the remainder ($one / $two)
+#-------------------------------------------------------------------------------
+Sub _Divide(IN int $one, IN int $two, OUT int $result, OUT int $remainder)
+{
+	if ($two == 0) {
+		return false;
+	}
+    $result = $one;
+    $result /= $two;
+    $remainder = $one;
+    $remainder %= $two;
+    return true;
+}
+Sub _Divide(IN int $one, IN int $two, OUT int $result)
+{
+	if ($two == 0) {
+		return false;
+	}
+    $result = $one;
+    $result /= $two;
+    return true;
+}
+Sub(Int) _Divide(IN int $one, IN int $two)
+{
+    int $tmp = $one;
+    $tmp /= $two;
+    return $tmp;
+}

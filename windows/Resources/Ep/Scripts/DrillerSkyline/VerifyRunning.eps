@@ -1,0 +1,20 @@
+#--------------------------------------------------------
+# File: VerifyRunning.eps
+#
+# Wrapper script to verify DrillerSkyline tools are running
+#
+# Modifications:
+#  12/12/2006	Stole from DS
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+return _DriverVerifyRunning($driver);

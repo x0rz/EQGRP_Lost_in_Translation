@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<survey-config version="2">
+    <section name="env-setup">
+        <command prompt="false">systemversion</command>
+        <task module="ops.cmd.safetychecks" name="Load handlers"><args>load</args></task>
+    </section>
+    <section name="pre-danger">
+        <task module="ops.survey.ps" name="Process list"><args>--full-list --start-monitor</args></task>
+        <task module="ops.survey.uptime" name="Uptime" />
+        <task module="ops.survey.auditing" name="Auditing status check"><args>--status-only --maxage 3600</args></task>
+        <task module="ops.survey.driverlist" name="Driver list"><args>-nofreshscan</args></task>
+        <task module="ops.survey.software" name="Software check" />
+        <task module="ops.survey.services" name="Services list" />
+    </section>
+    <section name="danger-checks">
+        <task module="ops.survey.avcheck" name="PSP check" />
+        <task module="ops.survey.auditing" name="Audit dorking"><args>--maxage 3600</args></task>        
+        <task module="ops.survey.persistence" name="Persistence check" />
+    </section>
+    <section name="informational">
+		<task module="ops.survey.osinfo" name="OS info" marker="ops::osinfo" />
+		<task module="ops.survey.meminfo" name="Memory info" marker="ops::meminfo" />
+        <task module="ops.survey.diffhour" name="Differential hour" marker="ops::diffhour" />
+    </section>
+</survey-config>

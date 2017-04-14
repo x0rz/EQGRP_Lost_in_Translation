@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin provider="0x01010071" interface="0x01c10032">
+    <Command name="GrDo_FileScanner" id="0">
+        <Help>Scan target file.</Help>
+		<Input>
+			<Argument name='path_and_mask' optional='true' data='path_and_mask'/>
+
+			<Option name='mask' optional='true'>
+				<Argument name='filemask' data='mask'/>
+			</Option>
+
+			<Option name='path' optional='true'>
+				<Help>Do a dir listing from a directory other than the current one.</Help>
+				<Help>If '*' do a dir listing of all directories on all fixed drives</Help>
+
+				<Argument name='path' data='path'/>
+			</Option>
+
+			<Option name='selecttests' optional='true'>
+				<Help>Select which tests should be run (default is for all tests to be run)</Help>
+				<Help>k - check signature</Help>
+				<Help>f - Check resources for embedded MZ and/or encrypted data</Help>
+				<Help>G - DotNet Check</Help>
+				<Help>H - check for packing</Help>
+				<Help>I - Check to see if file claims to be Microsoft</Help>
+				<Help>J - check linker version, header size, sizeofcode, section ordering, valid section names</Help>
+				<Help>K - test PE checksum</Help>
+				<Help>L - TimeStamp check</Help>
+				<Help>M - Windows cache check (only for files in system32)</Help>
+				<Help>N - Name check (mismatch between file name and file name in embedded resource)</Help>
+				<Help>R - check to see if dll can be relocated</Help>
+				<Help>U - check driver path - checks to see if file is in system32/drivers</Help>
+				<Help>V - Check for extra data at end of file</Help>
+				<Help>W - Check to see if file has no resources</Help>
+				<Help>X - Check valid attributes (is file hidden)</Help>
+				<Argument name='tests' data='selecttests'/>
+			</Option>
+
+			
+			<Option name='maliciousscore' optional='true' group='type'>
+				<Help> only return results for files with minimum malicious score </Help>
+				<Help> If set to 0, all results will be returns.  If not specified, all results will be returned </Help>
+				<Argument name='minimum score for file to be considered malicious' data='maliciousscore' optional='false' />
+			</Option>
+			
+			<Option name='peheader' optional='true'>
+				<Help>Collect additional PE header data</Help>
+				<Help>This will include section data and imported functions</Help>
+				<Set data='peheader' value='true'/>
+			</Option>
+
+			
+			<Option name='throttle' optional='true'>
+				<Help>Add sleeps to minimize load on target</Help>
+				<Set data='throttle' value='true'/>
+			</Option>
+			
+			<Option name='nofilehandle' optional='true'>
+				<Help>Use alternate file access methods to avoid opening file handles</Help>
+				<Help>Note that this will increase run time and load on target</Help>
+				<Set data='nofilehandle' value='true'/>
+			</Option>
+			
+			<Option name='maxscan' optional='true'>
+				<Help>Continue to scan files up to the number specified.  If zero,</Help>
+				<Help>return all results.  If not specified, return all.</Help>
+				<Argument name='number' data='maxscan'/>
+			</Option>
+			
+			<Option name='maxresults' optional='true'>
+				<Help>Continue to scan files up to the number specified.  If zero,</Help>
+				<Help>return all results.  If not specified, return all.</Help>
+				<Argument name='number' data='maxresults'/>
+			</Option>
+			
+			<Option name='age' optional='true'>
+				<Help>Only scan files that are at most 'interval' old ([#d][#h][#m][#s])</Help>
+
+				<Argument name='interval' data='age'/>
+				
+				<Reject>after</Reject>
+				<Reject>before</Reject>
+			</Option>
+
+			<Option name='after' optional='true'>
+				<Help>Only scan files with timestamps after the given date.</Help>
+				<Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+				
+				<Argument name='date' data='after'/>
+				
+				<Reject>age</Reject>
+			</Option>
+
+			<Option name='before' optional='true'>
+				<Help>Only scan files with timestamps before the given date</Help>
+				<Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+				
+				<Argument name='date' data='before'/>
+				
+				<Reject>age</Reject>
+			</Option>
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many bytes to queue before returning data.</Help>
+			</Option>
+
+		</Input>
+		<Output>
+			<Data name='path_and_mask' type='string'/>
+			<Data name='mask' type='string'/>
+			<Data name='path' type='string'/>			
+			<Data name='throttle' type='bool' default='false'/>
+			<Data name='peheader' type='bool' default='false'/>
+			<Data name='nofilehandle' type='bool' default='false'/>
+			<Data name='maxscan' type='uint32_t' default='0'/>
+			<Data name='maxresults' type='uint32_t' default='0'/>
+			<Data name='age' type='time'/>
+			<Data name='after' type='datetime'/>
+			<Data name='before' type='datetime'/>
+			<Data name='maliciousscore' type='uint32_t' default='0' />
+			<Data name='chunksize' type='uint32_t' default='65536'/>
+			<Data name='selecttests' type='string'/>			
+		</Output>
+    </Command>
+</Plugin>

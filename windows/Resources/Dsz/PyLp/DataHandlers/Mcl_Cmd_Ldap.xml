@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25117' script='DataHandlers/Mcl_Cmd_Ldap_DataHandler.pyo'>
+</DataHandler>

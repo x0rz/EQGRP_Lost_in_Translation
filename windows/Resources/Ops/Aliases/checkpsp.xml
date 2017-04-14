@@ -1,0 +1,14 @@
+<?xml version='1.1' ?>
+<Aliases>
+    <Alias>
+		<Name>checkpsp</Name>
+		<ReplaceBeforeArgs>python windows/checkpsp.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>Usage: checkpsp [options]
+	Looks for PSPs, extracts configuration, and executes actions as needed.
+Options:
+  -h, --help       show this help message and exit
+  --vendor=VENDOR  Look for this specific vendor on target.
+  --printConfig    Print the current PSP's configuration data.</Help>
+	</Alias>
+</Aliases>

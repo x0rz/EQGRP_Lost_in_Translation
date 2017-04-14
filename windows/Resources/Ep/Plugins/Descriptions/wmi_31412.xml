@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31412'>
+
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='5' minor='*'>
+		<File>Wmi_Lp.dll</File>
+	    </Version>
+	</Platform>
+
+	<!-- 9x family -->
+
+    </Windows>
+
+</Plugin>

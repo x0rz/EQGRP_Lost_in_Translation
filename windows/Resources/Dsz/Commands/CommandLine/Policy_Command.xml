@@ -1,0 +1,106 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Policy/_Policy.pyo' providerType='script'>
+
+	<Command name="Policy" id="0">
+		<Help>Retrieves policy information about a Windows domain</Help>
+		
+		<Input>
+			<Option name='node' optional='true'>
+				<Argument name='type'>
+					<Value string='computer'>
+						<Set data='doUser' value='false'/>
+						<Set data='doComputer' value='true'/>
+					</Value>
+					<Value string='user'>
+						<Set data='doUser' value='true'/>
+						<Set data='doComputer' value='false'/>
+					</Value>
+					<Value string='both'>
+						<Set data='doUser' value='true'/>
+						<Set data='doComputer' value='true'/>
+					</Value>
+				</Argument>
+				<Help>Restrict query to computer configuration or user configuration. Default: Both</Help>
+			</Option>
+			
+			<Option name='templates' optional='true'>
+				<Set data='templates' value='true' />
+				<Help>Administrative templates. (Computer and User)</Help>
+			</Option>
+
+			<Option name='software' optional='true'>
+				<Set data='software' value='true' />
+				<Help>Software restriction Policies. (Computer and User)</Help>
+			</Option>
+
+			<Option name='ipsec' optional='true'>
+				<Set data='ipsec' value='true' />
+				<Help>IP Security. (Computer)</Help>
+			</Option>
+
+			<Option name='account' optional='true'>
+				<Set data='account' value='true' />
+				<Help>Account Policies (Password and Account Lockout). (Computer)</Help>
+			</Option>
+
+			<Option name='privileges' optional='true'>
+				<Set data='privileges' value='true' />
+				<Help>User rights assignment. (Computer)</Help>
+			</Option>
+
+			<Option name='restricted' optional='true'>
+				<Set data='restricted' value='true' />
+				<Help>Restricted Groups. Domain only. (Computer)</Help>
+			</Option>
+
+			<Option name='permissions' optional='true'>
+				<Set data='permissions' value='true' />
+				<Help>Registry, file, and system services permissions. Domain only. (Computer)</Help>
+			</Option>
+
+			<Option name='audit' optional='true'>
+				<Set data='audit' value='true' />
+				<Help>Audit policy. Domain only. (Computer)</Help>
+			</Option>
+
+			<Option name='options' optional='true'>
+				<Set data='options' value='true' />
+				<Help>Security options. (Computer)</Help>
+			</Option>
+
+			<Option name='log' optional='true'>
+				<Set data='log' value='true' />
+				<Help>Event Log policies for application, security, and system. Domain only. (Computer)</Help>
+			</Option>
+
+			<Option name='local' optional='true'>
+				<Set data='local' value='true' />
+				<Help>Retrieve local system security policies (retrieve policies not overridden by domain policy)</Help>
+			</Option>
+			
+			<Option name='force' optional='true'>
+				<Set data='force' value='true' />
+				<Help>Modify DACLs to allow access to local system security policies</Help>
+			</Option>
+
+		</Input>
+		
+		<Output>
+			<Data name='doComputer'		type='bool'		default='true'/>
+			<Data name='doUser'			type='bool'		default='true'/>
+			<Data name='templates'		type='bool'		default='false'/>
+			<Data name='software'		type='bool'		default='false'/>
+			<Data name='ipsec'			type='bool'		default='false'/>
+			<Data name='local'			type='bool'		default='false'/>
+			<Data name='force'			type='bool'		default='false'/>
+			<Data name='account'		type='bool'		default='false'/>
+			<Data name='privileges'		type='bool'		default='false'/>
+			<Data name='restricted'		type='bool'		default='false'/>
+			<Data name='permissions'	type='bool'		default='false'/>
+			<Data name='audit'			type='bool'		default='false'/>
+			<Data name='options'		type='bool'		default='false'/>
+			<Data name='log'			type='bool'		default='false'/>
+		</Output>
+	</Command>
+</Plugin>

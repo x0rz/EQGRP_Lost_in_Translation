@@ -1,0 +1,1356 @@
+@include "_LpHelperFunctions.dsi";
+@include "_Processes.dsi";
+# @include "_VersionChecks.dsi";
+# @include "_Paths.dsi";
+# @include "windows/_PathsWindows.dsi";
+# @include "_Arrays.dsi";
+
+struct OracleProcesses {
+	string $oracle_process_exename;
+	string $sql_process_exename;
+	string $process_path;
+	string $sqlplus_path;
+	string $oracle_home;
+	int $process_id;
+	int $counter;
+	bool $singleinstance;
+} 
+struct OracleRegistry {
+	string $myoraclesids;
+	string $myoraclesidenvcmds;
+	int $numsids;
+	string $myoraclebases;
+	string $myoraclebaseenvcmds;
+	int $numbases;
+	string $myoraclehomes;
+	string $myoraclehomeenvcmds;
+	int $numhomes;
+	string $myoraclenlslangs;
+	string $myoraclenlslangenvcmds;
+	int $numlangs;
+}
+struct OraclePlugins {
+	int $local_id;
+	int $local_loadcount;
+	string $local_name;
+	int $remote_id;
+	int $remote_loadcount;
+	string $remote_name;
+}
+#----------------------------------------------------------------
+sub _PFre_GetTestScriptsUploadsDir(OUT string $testscriptsUploadsDir)
+{
+	return _PFre_GetResourcesSubDir( "Uploads", "PFre", $testscriptsUploadsDir );
+}
+
+#----------------------------------------------------------------
+sub _PFre_GetUploadsDir(OUT string $uploadsDir)
+{
+	return _PFre_GetResourcesSubDir( "Uploads", "PFre", $uploadsDir );
+}
+
+#----------------------------------------------------------------
+sub _PFre_GetTempDownloadDir(OUT string $uploadsDir)
+{
+	return _PFre_GetResourcesSubDir( "TempDownloads", "PFre", $uploadsDir );
+}
+
+#----------------------------------------------------------------
+sub _PFre_GetScriptsDir(OUT string $scriptsDir)
+{
+	return _PFre_GetResourcesSubDir( "Scripts", "PFre", $scriptsDir );
+}
+
+
+#----------------------------------------------------------------
+sub _PFre_GetResourcesSubDir(IN string $subDir, OUT string $resoucesSubDir)
+{
+	return _PFre_GetResourcesSubDir( $subDir, "PFre", $resoucesSubDir );
+}
+
+#----------------------------------------------------------------
+sub _PFre_GetResourcesSubDir(IN string $subDir, IN string $project, OUT string $resoucesSubDir)
+{
+
+	string $resDir;
+	if (!_GetLpResourcesDirectory($resDir) || !defined($resDir)) {
+		echo "* Failed to get upload directory";
+		return false;
+	}
+
+	$resoucesSubDir = "$resDir\\$project";
+	if (defined($subDir) && (StrLen($subDir) > 0)) {
+		$resoucesSubDir = "$resoucesSubDir\\$subDir";
+	}
+	
+	return true;
+
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_DeleteFileAndStopId(IN string $file, IN int $id)
+{
+	if ( `delete -file $file` )
+	{
+		`background stop $id`;
+	}
+	
+	return true;
+	
+}	/* END _PFre_DeleteFileAndStopId */
+
+#-------------------------------------------------------------------------
+sub _PFre_GetPathForOraclePID(IN int $pid_counter, REF OracleProcesses @myOraProcInfo)
+{
+	string $path;
+	@record on;
+	`processinfo -id @myOraProcInfo.$process_id[$pid_counter] -elevate`;
+	@record off;
+
+	string $my_modulename;
+	string $myorahome;
+	object $my_modules;
+	GetCmdData("processinfo::modules::module", $my_modules);
+
+	for (int $i=0; $i < sizeof($my_modules); $i++)
+	{
+		GetCmdData("processinfo::modules::module[$i]::modulename", $my_modulename);
+		SplitPath($my_modulename, $path);
+		if ($path[1] == @myOraProcInfo.$oracle_process_exename[$pid_counter] )
+		{
+			@myOraProcInfo.$process_path[$pid_counter] = $my_modulename;
+			echo "Oracle Executable Path = @myOraProcInfo.$process_path[$pid_counter]";
+			_PFre_GetOracleHomeFromPath($my_modulename, $myorahome);
+			@myOraProcInfo.$oracle_home[$pid_counter] = $myorahome;
+			break;
+		}
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_GetOracleHomeFromPath(IN string $modulename, REF string $oraclehome)
+{
+	string $path1;
+	string $path2;
+	SplitPath($modulename, $path1);
+	SplitPath($path1[0], $path2);
+	$oraclehome = $path2[0];
+	echo "ORACLE_HOME = $oraclehome";
+	return true;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_SetSqlPlus(REF OracleProcesses @myOraProcInfo)
+{
+	for (int $i=0; $i < sizeof(@myOraProcInfo.$oracle_home); $i++)
+	{
+		@myOraProcInfo.$sqlplus_path[$i] = "@myOraProcInfo.$oracle_home[$i]\\bin\\@myOraProcInfo.$sql_process_exename";
+		if (@myOraProcInfo.$oracle_home[$i] != @myOraProcInfo.$oracle_home[0])
+		{
+			@myOraProcInfo.$singleinstance = false;
+		}
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_VerifySqlPlus(REF OracleProcesses @myOraProcInfo)
+{
+	bool $rtn = true;
+	for (int $i = 0; $i < sizeof(@myOraProcInfo.$sqlplus_path); $i++ )
+	{
+		/************************************/
+		/* Verify the existence of the file */
+		/* by getting the file attributes   */
+		/************************************/
+		if (! `fileattributes -file @myOraProcInfo.$sqlplus_path[$i]`)
+		{
+			string $msg = "FAILED: getfileattribs -file @myOraProcInfo.$sqlplus_path[$i]";
+			$msg[1] = "";
+			$msg[2] = "***WARNING*** SQLPlus Tool: @myOraProcInfo.$sqlplus_path[$i], might not exist, ";
+			$msg[3] = "              so we may not be able to query the database!";
+			_PFre_MyBannerMultiLine($msg, "\n");
+			$rtn = false;
+			pause;
+		}
+		else
+		{
+			echo "SQLPLus Tool Exists: @myOraProcInfo.$sqlplus_path[$i]";
+		}
+
+	}
+	return $rtn;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_ResetSqlPlusHome(IN string $newsqlpluspath, REF OracleProcesses @myOraProcInfo)
+{
+	for (int $i = 0; $i < sizeof(@myOraProcInfo.$sqlplus_path); $i++ )
+	{
+		/************************************/
+		/* Verify the existence of the file */
+		/* by getting the file attributes   */
+		/************************************/
+		if (! `fileattributes -file @myOraProcInfo.$sqlplus_path[$i]`)
+		{
+			echo "\n\nResetting SQLPlus Tool:  @myOraProcInfo.$sqlplus_path[$i]  to:  $newsqlpluspath\\@myOraProcInfo.$sql_process_exename\n\n";
+			@myOraProcInfo.$sqlplus_path[$i] = "$newsqlpluspath\\@myOraProcInfo.$sql_process_exename";
+		}
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_OpenOracle(IN OracleProcesses @myOraProcInfo, REF OraclePlugins @myOraclePlugins)
+{
+	bool $rtn = true;
+	int $oraclePID;
+	for (int $i=0; $i < sizeof(@myOraProcInfo.$process_id); $i++)
+	{
+		/**********************************/
+		/* Run the "oracle -open" command */
+		/**********************************/
+		if (! `oracle -open -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]`)
+		{
+			echo "Multiple Oracle versions on box?  Trying Oracle open again after freeing Oracle plugins (PID @myOraProcInfo.$process_id[$i])";
+			_PFre_FreeOraclePlugins( @myOraclePlugins );
+			if (! `oracle -open -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]`)
+			{
+				echo "\n\nFAILED: oracle -open -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]\n\n";
+				$rtn = false;
+			}
+		}
+	}
+	return $rtn;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_CloseOracle(IN OracleProcesses @myOraProcInfo, REF OraclePlugins @myOraclePlugins)
+{
+	bool $rtn = true;
+	int $oraclePID;
+	for (int $i=0; $i < sizeof(@myOraProcInfo.$process_id); $i++)
+	{
+		/***********************************/
+		/* Run the "oracle -close" command */
+		/***********************************/
+		if (! `oracle -close -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]`)
+		{
+			echo "Multiple Oracle versions on box?  Trying Oracle close again after freeing Oracle plugins (PID @myOraProcInfo.$process_id[$i])";
+			_PFre_FreeOraclePlugins( @myOraclePlugins );
+			if (! `oracle -close -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]`)
+			{
+				echo "\n\nFAILED: oracle -close -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]\n\n";
+				$rtn = false;
+			}
+		}
+	}
+	return $rtn;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_Memorycheck(IN OracleProcesses @myOraProcInfo, REF OraclePlugins @myOraclePlugins)
+{
+	bool $rtn = true;
+	int $oraclePID;
+	for (int $i=0; $i < sizeof(@myOraProcInfo.$process_id); $i++)
+	{
+		/**********************************************/
+		/* Run the "oracle -memcheck" command to make */
+		/* sure that we can exploit this database.    */
+		/**********************************************/
+		@echo on;
+		@echo on;
+		if (! `oracle -memcheck -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]`)
+		{
+			echo "Multiple Oracle versions on box?  Trying Oracle memcheck again after freeing Oracle plugins";
+			@echo off;
+			@echo off;
+			_PFre_FreeOraclePlugins( @myOraclePlugins );
+			@echo on;
+			@echo on;
+			if (! `oracle -memcheck -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]`)
+			{
+				echo "\n\nFAILED: oracle -memcheck -file @myOraProcInfo.$process_path[$i] -pid @myOraProcInfo.$process_id[$i]\n\n";
+				$rtn = false;
+			}
+		}
+		@echo off;
+		@echo off;
+	}
+	return $rtn;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_Crc(IN OracleProcesses @myOraProcInfo)
+{
+	bool $rtn = true;
+	int $oraclePID;
+	for (int $i=0; $i < sizeof(@myOraProcInfo.$process_id); $i++)
+	{
+		echo "\n\nPID: @myOraProcInfo.$process_id[$i]\n";
+		/******************************************************/
+		/* Run the "oracle -crc" command to determine version */
+		/******************************************************/
+		@echo on;
+		@echo on;
+		if (! `oracle -crc -file @myOraProcInfo.$process_path[$i]`)
+		{
+			echo "\n\nFAILED: oracle -crc -file @myOraProcInfo.$process_path[$i] 	(PID: @myOraProcInfo.$process_id[$i])\n\n";
+			$rtn = false;
+		}
+		@echo off;
+		@echo off;
+	}
+	return $rtn;
+}
+#-------------------------------------------------------------------------------
+# _PFre_GetPluginsList
+#	Retrieves the list of plugins on the remote system
+# Params:
+#	local_ids - list of local plugin ids
+#	local_names - list of local plugin names
+#	remote_ids - list of remote plugin ids
+#	remote_names - list of remote plugin names
+#-------------------------------------------------------------------------------
+Sub _PFre_GetPluginsList(OUT INT $local_ids, OUT string $local_names, OUT INT $local_loadcounts, OUT INT $remote_ids, OUT string $remote_names, OUT INT $remote_loadcounts)
+{
+
+	@echo off;
+	@echo off;
+	@record on;
+	if (!`plugins`) {
+    	return false;
+	}
+	@record off;
+	@echo on;
+	@echo on;
+
+    return (GetCmdData("Local::Plugin::id", $local_ids) &&
+		GetCmdData("Local::Plugin::name", $local_names) && 
+		GetCmdData("Local::Plugin::loadcount", $local_loadcounts) && 
+		GetCmdData("Remote::Plugin::id", $remote_ids) &&
+		GetCmdData("Remote::Plugin::name", $remote_names) &&
+		GetCmdData("Remote::Plugin::loadcount", $remote_loadcounts));
+
+} /* END _PFre_GetPluginsList */
+
+#-------------------------------------------------------------------------------
+# _PFre_FreeOraclePlugins
+#	Frees the loaded Oracle plugins (local and remote)
+# Params:
+#-------------------------------------------------------------------------------
+Sub _PFre_FreeOraclePlugins( REF OraclePlugins @myOraclePlugins )
+{
+
+	int $local_ids;
+	string $local_names;
+	int $local_loadcounts;
+	int $remote_ids;
+	string $remote_names;
+	int $remote_loadcounts;
+
+	if (! _PFre_GetPluginsList($local_ids, $local_names, $local_loadcounts, $remote_ids, $remote_names, $remote_loadcounts) )
+	{
+		echo "Failed to get list of plugins.";
+		return false;
+	}
+
+	for (int $i=0; $i < sizeof($local_names); $i++)
+	{
+		if ($local_names[$i] == @myOraclePlugins.$local_name )
+		{
+			@myOraclePlugins.$local_id = $local_ids[$i];
+			@myOraclePlugins.$local_loadcount = $local_loadcounts[$i];
+#			echo "Local Oracle Plugin ID = @myOraclePlugins.$local_id";
+		}
+	}	
+	for (int $i=0; $i < sizeof($remote_names); $i++)
+	{
+		if ($remote_names[$i] == @myOraclePlugins.$remote_name )
+		{
+			@myOraclePlugins.$remote_id = $remote_ids[$i];
+			@myOraclePlugins.$remote_loadcount = $remote_loadcounts[$i];
+#			echo "Remote Oracle Plugin ID = @myOraclePlugins.$remote_id";
+		}
+	}
+
+
+#	echo "Oracle Plugins (name::id::loadcount):  Local - @myOraclePlugins.$local_name::@myOraclePlugins.$local_id::@myOraclePlugins.$local_loadcount     Remote - @myOraclePlugins.$remote_name::@myOraclePlugins.$remote_id::@myOraclePlugins.$remote_loadcount";
+
+	/* Free the oracle plugins */
+	if ( ( @myOraclePlugins.$local_id != 0 ) && (@myOraclePlugins.$remote_id != 0 ) )
+	{
+#	@echo on;
+#	@echo on;
+#		echo "Freeing Oracle Plugin - local";
+		for (int $i=0; $i < @myOraclePlugins.$local_loadcount; $i++)
+		{
+			`local freeplugin -id @myOraclePlugins.$local_id`;
+		}
+#		echo "Freeing Oracle Plugin - remote";
+		for (int $i=0; $i < @myOraclePlugins.$remote_loadcount; $i++)
+		{
+			`freeplugin -id @myOraclePlugins.$remote_id`;
+		}
+#	@echo off;
+#	@echo off;
+
+	}
+	else
+	{
+		echo "Could not identify Oracle plugin running";
+	}
+	
+
+} /* END _PFre_FreeOraclePlugins */
+
+#-------------------------------------------------------------------------
+sub _PFre_GetOraclePIDs(IN string $oracleexecutables, IN string $sqlplusexecutables,  REF OracleProcesses @myOraProcInfo, IN int $oraclePID)
+{
+	int $ids;
+	string $names;
+	if (_GetProcessList($ids, $names))
+	{
+		for (int $i=0; $i < sizeof($ids); $i++)
+		{
+			if ($ids[$i] == $oraclePID)
+			{
+				@myOraProcInfo.$process_id[@myOraProcInfo.$counter] = $ids[$i];
+				@myOraProcInfo.$oracle_process_exename[@myOraProcInfo.$counter] = $names[$i];
+				echo "Oracle process ID = @myOraProcInfo.$process_id[@myOraProcInfo.$counter], (@myOraProcInfo.$oracle_process_exename[@myOraProcInfo.$counter])";
+				_PFre_GetPathForOraclePID(@myOraProcInfo.$counter, @myOraProcInfo);
+				for (int $j=0; $j < sizeof($oracleexecutables); $j++)
+				{
+					if ($names[$i] == $oracleexecutables[$j])
+					{
+						@myOraProcInfo.$sql_process_exename[@myOraProcInfo.$counter] = $sqlplusexecutables[$j];
+						@myOraProcInfo.$counter++;
+					}
+				}
+			}
+		}	
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_GetOraclePIDs(IN string $oracleexecutables, IN string $sqlplusexecutables,  REF OracleProcesses @myOraProcInfo)
+{
+	int $ids;
+	string $names;
+	if (_GetProcessList($ids, $names))
+	{
+		for (int $i=0; $i < sizeof($ids); $i++)
+		{
+			int $myloopcount = 0;
+			for (int $j=0; $j < sizeof($oracleexecutables); $j++)
+			{
+				if ($names[$i] == $oracleexecutables[$j])
+				{
+					@myOraProcInfo.$process_id[@myOraProcInfo.$counter] = $ids[$i];
+					@myOraProcInfo.$oracle_process_exename[@myOraProcInfo.$counter] = $names[$i];
+					@myOraProcInfo.$sql_process_exename[@myOraProcInfo.$counter] = $sqlplusexecutables[$myloopcount];
+					echo "Oracle process ID = @myOraProcInfo.$process_id[@myOraProcInfo.$counter], (@myOraProcInfo.$oracle_process_exename[@myOraProcInfo.$counter])";
+					_PFre_GetPathForOraclePID(@myOraProcInfo.$counter, @myOraProcInfo);
+					@myOraProcInfo.$counter++;
+				}
+				$myloopcount++;
+			}
+		}	
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_MyBanner_( IN string $msg )
+{
+	if (sizeof($msg) > 0)
+	{
+		_PFre_MySeparator( );
+		echo "$msg";
+		_PFre_MySeparator( );
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_MyBanner( IN string $msg )
+{
+	if (sizeof($msg) > 0)
+	{
+		_PFre_MySeparator(StrLen($msg));
+		echo "$msg";
+		_PFre_MySeparator(StrLen($msg));
+	}
+}
+
+
+#-------------------------------------------------------------------------
+sub _PFre_MyBanner( IN string $msg, IN string $msg2 )
+{
+	if (sizeof($msg) > 0)
+	{
+		_PFre_MySeparator(StrLen($msg));
+		echo "$msg";
+		_PFre_MySeparator(StrLen($msg));
+		echo "$msg2";
+	}
+}
+
+
+#-------------------------------------------------------------------------
+sub _PFre_MyBannerMultiLine(IN string $msg )
+{
+	if (sizeof($msg) > 0)
+	{
+		int $longestLineSize = StrLen($msg);
+		for (int $i = 1; $i < sizeof($msg); $i++)
+		{
+			if ( $longestLineSize < StrLen($msg[$i]) )
+			{
+				/* Save off the longest line length */
+				$longestLineSize = StrLen($msg[$i]);
+			}
+		}
+		_PFre_MySeparator($longestLineSize);
+		for (int $i = 0; $i < sizeof($msg); $i++)
+		{
+			echo "$msg[$i]";
+		}
+		_PFre_MySeparator($longestLineSize);
+	}
+}
+
+
+#-------------------------------------------------------------------------
+sub _PFre_MyBannerMultiLine(IN string $msg, IN string $msg2 )
+{
+	if (sizeof($msg) > 0)
+	{
+		int $longestLineSize = StrLen($msg);
+		for (int $i = 1; $i < sizeof($msg); $i++)
+		{
+			if ( $longestLineSize < StrLen($msg[$i]) )
+			{
+				/* Save off the longest line length */
+				$longestLineSize = StrLen($msg[$i]);
+			}
+		}
+		_PFre_MySeparator($longestLineSize);
+		for (int $i = 0; $i < sizeof($msg); $i++)
+		{
+			echo "$msg[$i]";
+		}
+		_PFre_MySeparator($longestLineSize);
+	}
+	echo "$msg2";
+}
+
+
+#-------------------------------------------------------------------------
+sub _PFre_MySeparator (IN int $len)
+{
+	if ( $len < 43 )
+	{
+		$len = 43;
+	}
+	string $line = "-------------------------------------------";
+	for (int $i = 43; $i < $len; $i++)
+	{
+		StrCat($line, "-");
+	}
+	echo "$line";
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_MySeparator (IN int $len, OUT string $line)
+{
+	if ( $len < 43 )
+	{
+		$len = 43;
+	}
+	$line = "-------------------------------------------";
+	for (int $i = 43; $i < $len; $i++)
+	{
+		StrCat($line, "-");
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_MySeparator ()
+{
+	echo "-------------------------------------------";
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_MySeparator2()
+{
+	echo "-------------------------------------------\n\n";
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_ParseOracleRegistry( IN object $values, REF OracleRegistry @myOraReg )
+{
+	for (int $i=0; $i < sizeof($values); $i++)
+	{
+		string $value, $name;
+		if (GetObjectData($values[$i], "Value", $value) && GetObjectData($values[$i], "Name", $name) )
+		{
+			if ( $name == "NLS_LANG" )
+			{
+				if (! ($value == "NA") ) 
+				{
+					bool $bFound = false;
+					if ( @myOraReg.$numlangs == 0 )
+					{
+						@myOraReg.$myoraclenlslangs[@myOraReg.$numlangs] = $value;
+						@myOraReg.$myoraclenlslangenvcmds[@myOraReg.$numlangs] = "environment -var $name -set $value";
+						@myOraReg.$numlangs++;
+					}
+					else
+					{
+						for (int $j=0; $j < sizeof(@myOraReg.$myoraclenlslangs); $j++)
+						{
+							if ( @myOraReg.$myoraclenlslangs[$j] == $value )
+							{
+								$bFound = true;
+							}
+						}
+						if ( $bFound == false )
+						{
+							@myOraReg.$myoraclenlslangs[@myOraReg.$numlangs] = $value;
+							@myOraReg.$myoraclenlslangenvcmds[@myOraReg.$numlangs] = "environment -var $name -set $value";
+							@myOraReg.$numlangs++;				
+						}
+					}
+				}
+				else
+				{
+				}
+			}
+			else if ( $name == "ORACLE_HOME" )
+			{
+				bool $bFound = false;
+				if ( @myOraReg.$numhomes == 0 )
+				{
+					@myOraReg.$myoraclehomes[@myOraReg.$numhomes] = $value;
+					@myOraReg.$myoraclehomeenvcmds[@myOraReg.$numhomes] = "environment -var $name -set $value";
+					@myOraReg.$numhomes++;
+				}
+				else
+				{
+					for (int $j=0; $j < sizeof(@myOraReg.$myoraclehomes); $j++)
+					{
+						if ( @myOraReg.$myoraclehomes[$j] == $value )
+						{
+							$bFound = true;
+						}
+					}
+					if ( $bFound == false )
+					{
+						@myOraReg.$myoraclehomes[@myOraReg.$numhomes] = $value;
+						@myOraReg.$myoraclehomeenvcmds[@myOraReg.$numhomes] = "environment -var $name -set $value";
+						@myOraReg.$numhomes++;				
+					}
+				}
+			}
+			else if ( $name == "ORACLE_BASE" )
+			{
+				bool $bFound = false;
+				if ( @myOraReg.$numbases == 0 )
+				{
+					@myOraReg.$myoraclebases[@myOraReg.$numbases] = $value;
+					@myOraReg.$myoraclebaseenvcmds[@myOraReg.$numbases] = "environment -var $name -set $value";
+					@myOraReg.$numbases++;
+				}
+				else
+				{
+					for (int $j=0; $j < sizeof(@myOraReg.$myoraclebases); $j++)
+					{
+						if ( @myOraReg.$myoraclebases[$j] == $value )
+						{
+							$bFound = true;
+						}
+					}
+					if ( $bFound == false )
+					{
+						@myOraReg.$myoraclebases[@myOraReg.$numbases] = $value;
+						@myOraReg.$myoraclebaseenvcmds[@myOraReg.$numbases] = "environment -var $name -set $value";
+						@myOraReg.$numbases++;				
+					}
+				}
+			}
+			else if ( $name == "ORACLE_SID" )
+			{
+				bool $bFound = false;
+				if ( @myOraReg.$numsids == 0 )
+				{
+					@myOraReg.$myoraclesids[@myOraReg.$numsids] = $value;
+					@myOraReg.$myoraclesidenvcmds[@myOraReg.$numsids] = "environment -var $name -set $value";
+					@myOraReg.$numsids++;
+				}
+				else
+				{
+					for (int $j=0; $j < sizeof(@myOraReg.$myoraclesids); $j++)
+					{
+						if ( @myOraReg.$myoraclesids[$j] == $value )
+						{
+							$bFound = true;
+						}
+					}
+					if ( $bFound == false )
+					{
+						@myOraReg.$myoraclesids[@myOraReg.$numsids] = $value;
+						@myOraReg.$myoraclesidenvcmds[@myOraReg.$numsids] = "environment -var $name -set $value";
+						@myOraReg.$numsids++;				
+					}
+				}
+			}
+			else
+			{
+			}
+		}
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_GetAndParseOracleRegistry(REF OracleRegistry @myOraReg)
+{
+	@record on;
+	`registryquery -hive L -key software\\oracle -recursive`;
+	@record off;
+
+	object $key;
+	if (GetCmdData("Key", $key) )
+	{
+		object $values, $subkeys;
+		string $keyname;
+		for (int $i = 0; $i < sizeof($key); $i++ )
+		{
+			if (GetObjectData($key[$i], "Value", $values))
+			{
+				# Call the registry parsing function for the top level objects
+				_PFre_ParseOracleRegistry( $values, @myOraReg );
+			}
+		}
+	}
+
+
+
+	string $element;
+	int $arraycounter = 0;
+	_PFre_MyBanner ("Registry Values of Interest");
+
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclebases); $i++)
+	{
+		echo "ORACLE_BASE = @myOraReg.$myoraclebases[$i]";
+	}
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclehomes); $i++)
+	{
+		echo "ORACLE_HOME = @myOraReg.$myoraclehomes[$i]";
+	}
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclesids); $i++)
+	{
+		echo "ORACLE_SID = @myOraReg.$myoraclesids[$i]";
+	}
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclenlslangs); $i++)
+	{
+		echo "NLS_LANG = @myOraReg.$myoraclenlslangs[$i]";
+	}
+	_PFre_MySeparator();
+	echo "\n";
+	_PFre_MyBanner("Possible Environment Commands");
+
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclebaseenvcmds); $i++)
+	{
+		echo "@myOraReg.$myoraclebaseenvcmds[$i]";
+	}
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclehomeenvcmds); $i++)
+	{
+		echo "@myOraReg.$myoraclehomeenvcmds[$i]";
+	}
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclesidenvcmds); $i++)
+	{
+		echo "@myOraReg.$myoraclesidenvcmds[$i]";
+	}
+	for (int $i = 0; $i < sizeof(@myOraReg.$myoraclenlslangenvcmds); $i++)
+	{
+		echo "@myOraReg.$myoraclenlslangenvcmds[$i]";
+	}
+
+	_PFre_MySeparator();
+	echo "\n";
+
+		return true;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_InitOraReg(REF OracleRegistry @myOraReg)
+{
+	@myOraReg.$numsids = 0;
+	@myOraReg.$numbases = 0;
+	@myOraReg.$numhomes = 0;
+	@myOraReg.$numlangs = 0;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_GetDateForOracleAuditQuery(REF string $myMonth, REF string $myYear)
+{
+	@record on;
+	`time`;
+	@record off;
+	string $myDate;
+	GetCmdData("timeitem::gmttime::date", $myDate);
+	string $dateParts;
+	RegExSplit("-", $myDate, 3, $dateParts);
+	
+	int $iMM = <int> $dateParts[1];
+	int $iYYYY = <int> $dateParts[0];
+
+	if ($iMM == 0)
+	{
+		/* Get rid of leading 0 so everything below works */
+		string $monthParts;
+		RegExSplit("0", $dateParts[1], 0, $monthParts);
+		$iMM = <int> $monthParts[1];
+	}
+
+	if ($iMM == 1)
+	{
+		$iYYYY--;
+		$iMM = 12;
+	}
+	else
+	{
+		$iMM--;
+	}
+	
+	if ($iMM == 1)
+	{
+		$myMonth = "JAN";
+	}
+	else if ($iMM == 2)
+	{
+		$myMonth = "FEB";
+	}
+	else if ($iMM == 3)
+	{
+		$myMonth = "MAR";
+	}
+	else if ($iMM == 4)
+	{
+		$myMonth = "APR";
+	}
+	else if ($iMM == 5)
+	{
+		$myMonth = "MAY";
+	}
+	else if ($iMM == 6)
+	{
+		$myMonth = "JUN";
+	}
+	else if ($iMM == 7)
+	{
+		$myMonth = "JUL";
+	}
+	else if ($iMM == 8)
+	{
+		$myMonth = "AUG";
+	}
+	else if ($iMM == 9)
+	{
+		$myMonth = "SEP";
+	}
+	else if ($iMM == 10)
+	{
+		$myMonth = "OCT";
+	}
+	else if ($iMM == 11)
+	{
+		$myMonth = "NOV";
+	}
+	else if ($iMM == 12)
+	{
+		$myMonth = "DEC";
+	}
+	else
+	{
+		$myMonth = "Could not determine month";
+	}
+	
+	$myYear = <string>$iYYYY;	
+	return true;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_DiagnoseOracleProblem(IN OracleProcesses @myOraProcInfo, REF OraclePlugins @myOraclePlugins)
+{
+	bool $bProblemFound = false;
+	bool $bProblemFixed = false;
+
+	if ( _PFre_Crc(@myOraProcInfo) )
+	{
+		echo "\n";
+		echo "It looks like we know the version(s) of Oracle running on the box.\n\n";
+	}
+	else
+	{
+		echo "\n";
+		echo "PROBLEM FOUND!  There is an unknown version of Oracle running on the box!\n";
+		echo "                It could be that you just need an updated version of PASSFREELY.  If not, you";
+		echo "                should grab the Oracle symbol file and executable that failed the CRC check above!\n\n";
+		$bProblemFound = true;
+	}
+	
+	if ( $bProblemFound == false )
+	{
+		if ( _PFre_Memorycheck(@myOraProcInfo, @myOraclePlugins) )
+		{
+			echo "\n";
+			echo "It looks like PASSFREELY has verified all of the memory modification locations.\n\n";
+		}
+		else
+		{
+			$bProblemFound = true;
+			echo "\n";
+			echo "PROBLEM FOUND!  The memory check failed.  This could be caused by the memory already being modified.";
+			echo "                Check to see if the memory value matches the expected MODIFIED value.\n\n";
+			if ( prompt ("Does the memory value match the modified value?" ))
+			{
+				echo "\n";
+				echo "I will try resetting the memory ...\n";
+				if ( _PFre_CloseOracle(@myOraProcInfo, @myOraclePlugins) )
+				{
+					echo "... Successful\n";
+				}
+				echo "Trying the _PFre_Memorycheck command again ...\n\n";
+				if ( _PFre_Memorycheck(@myOraProcInfo, @myOraclePlugins) )
+				{
+					echo "\n";
+					echo "It looks like that was most likely the problem!\n\n";
+					$bProblemFixed = true;
+				}
+				else
+				{
+					echo "\n";
+					echo "OK, that wasn't it or at least I couldn't fix the problem.  It could be that this";
+					echo "is an unknown version of Oracle (verify that the CRC identified a version string) ";
+					echo "If the version isn't identified, then that is the problem, otherwise the problem ";
+					echo "is with PASSFREELY itself, so please contact the developer!\n\n";
+
+					echo "If the version is unknown, you should bring back the Oracle executable and";
+					echo "the associated symbol file so that it can be incorporated it into this plugin.";
+					for (int $i=0; $i < sizeof(@myOraProcInfo.$process_id); $i++)
+					{
+						echo "\n\nPID: @myOraProcInfo.$process_id[$i]\n";
+						/******************************************************/
+						/* Run the "oracle -crc" command to determine version */
+						/******************************************************/
+						@echo on;
+						@echo on;
+						`oracle -crc -file @myOraProcInfo.$process_path[$i]`;
+						@echo off;
+						@echo off;
+						if (! prompt("Is the version identified?"))
+						{
+							if ( prompt("Do you want to get the file: @myOraProcInfo.$process_path[$i]?") )
+							{
+								_PFre_GetAndNameFileInTheBackground(@myOraProcInfo.$process_path[$i], "@myOraProcInfo.$oracle_process_exename[$i]_");
+							}
+							if ( prompt("Do you want to get the file: @myOraProcInfo.$oracle_home[0]\\rdbms\\admin\\oracle.sym?") )
+							{
+								_PFre_GetAndNameFileInTheBackground("@myOraProcInfo.$oracle_home[0]\\rdbms\\admin\\oracle.sym", "oracle.sym_");
+							}
+						}
+					}
+				}
+
+			}
+			else
+			{
+				echo"\n";
+				if (@myOraProcInfo.$singleinstance == false) 
+				{
+					echo "It looks like there are multiple versions of Oracle running on the box.\n\n";
+					if (prompt ("Did the memory check for one of the versions succeed and another fail?" ) )
+					{
+						echo "OK, that issue is a problem that might be able to be solved, but even so,";
+						echo "you will not be able to use this script to continue with the OP.\n\n";
+						echo "A likely cause to this problem is that the multiple versions have the Oracle";
+						echo "executable loaded at different base address.  If this is the case, then you would";
+						echo "have to manually run the Oracle Open command for each version and between versions";
+						echo "you would need to free the Oracle plugin before you can modify the next version.";
+						echo "You would also have to do this same thing for the Oracle Close command.\n\n";
+						echo "This scenario would require an intimate knowledge of PASSFREELY commands and being";
+						echo "able to manually run the Oracle survey commands without the aid of this script.\n\n";
+					}
+					else
+					{
+						echo "\n";
+						echo "OK, this is something that I can't further diagnose.\n\n";
+					}
+				}
+				else
+				{
+					echo "\n";
+					echo "OK, it looks like this is a single instance of Oracle, so it could be that this";
+					echo "is a problem with PASSFREELY itself.  Please contact the developer!\n\n";
+				}
+
+			}
+		}
+	}
+	if ( $bProblemFound == false )
+	{
+		echo "\n";
+		echo "OK, everything checks out with PASSFREELY, so the most likely cause of this problem";
+		echo "is a bad ORACLE SID being used or the database for this ORACLE SID is shutdown.";
+		echo "Please try the survey again using a different Oracle SID.\n\n";
+		echo "If you don't think that this is the problem, then this will require further attention.";
+		echo "Please contact the developer to try and diagnose further!\n\n";
+		$bProblemFound = true;
+	}
+	else if ( $bProblemFixed == true )
+	{
+		echo "\n";
+		echo "It looks like we corrected the problem.  Please try the survey again for the same Oracle SID.\n\n";
+		$bProblemFound = false;
+	}
+
+	return $bProblemFound;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_FindOracleSids(IN string $directoryToSearch, IN string $oracle_home, REF string $mySids, REF int $imySids )
+{
+
+	_PFre_MyBanner("Database SIDs");
+	string $oraHomeDir;
+	SplitPath($oracle_home, $oraHomeDir);
+	@record on;
+	`dir -path "$directoryToSearch"`;
+	@record off;
+	object $mydiritems;
+	GetCmdData("diritem::fileitem", $mydiritems);
+	string $dirs;
+	int $count = 0;
+	for(int $j = 0; $j < sizeof($mydiritems); $j++)
+	{
+		string $filename;
+		bool $isDirectory;
+		GetCmdData("$mydiritems[$j]::name", $filename);		
+		GetCmdData("$mydiritems[$j]::attributes::directory", $isDirectory);
+		if ( $isDirectory == false )
+		{
+			continue;
+		}
+		if ( $filename == "." )
+		{
+			continue;
+		}
+		if ( $filename == ".." )
+		{
+			continue;
+		}
+		if ( $filename == $oraHomeDir[1] )
+		{
+			continue;
+		}
+		/* Save off the directory */
+		$dirs[$count] = "$directoryToSearch\\$filename";
+		$count++;
+	}
+	for (int $j = 0; $j < $count; $j++)
+	{
+		@record on;
+		`dir -mask *.dbf -path $dirs[$j] -recursive`;
+		@record off;
+		object $diritems;
+		GetCmdData("diritem", $diritems);
+		string $mysidpath;
+		string $current_sid = "Unknown";
+		for ( int $i = 0; $i < sizeof($diritems); $i++)
+		{
+			string $filespath;
+			GetCmdData("$diritems[$i]::path", $filespath);
+			string $mysid;
+			SplitPath($filespath, $mysid);
+			if ($mysid[1] != $current_sid)
+			{
+				$mySids[$imySids] = $mysid[1];
+				$imySids++;
+				$current_sid = $mysid[1];
+				echo "$current_sid";
+			}
+		}
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_DeleteStar(IN string $path, IN string $mask, IN bool $verifydelete )
+{
+	@record on;
+	`dir -mask $mask -path $path`;
+	@record off;
+	string $files;
+	GetCmdData("diritem::fileitem::name", $files);
+	for ( int $i = 0; $i < sizeof($files); $i++)
+	{
+
+		if ( $files[$i] == "." )
+		{
+			continue;
+		}
+		if ( $files[$i] == ".." )
+		{
+			continue;
+		}
+		
+		if ($verifydelete == true)
+		{
+			if ( prompt ("Do you want to delete:  $path\\$files[$i] ?" ))
+			{
+				`delete -file "$path\\$files[$i]"`;
+			}
+		} 
+		else
+		{
+			`delete -file "$path\\$files[$i]"`;
+		}
+	}
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_IsCommandRunning(IN string $cmdToLookFor, IN string $strToLookFor)
+{
+	@record on;
+	`commands`;
+	@record off;
+	string $cmdName;
+	string $cmdString;
+	GetCmdData("command::name", $cmdName);
+	GetCmdData("command::fullcommand", $cmdString);
+	for (int $i = 0; $i < sizeof($cmdName); $i++)
+	{
+		if ($cmdName[$i] == $cmdToLookFor)
+		{
+			/* Check that get is the one we are looking for */
+			string $matches;
+			if (RegExMatch($strToLookFor, $cmdString[$i], $matches) == true)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_WaitUntilCmdFinished(IN string $cmdToLookFor, IN string $strToLookFor)
+{
+	while(_PFre_IsCommandRunning($cmdToLookFor, $strToLookFor))
+	{
+		sleep(1000);
+	}
+	return true;
+}
+
+
+#-------------------------------------------------------------------------
+sub _PFre_WaitUntilCmdFinished(IN string $cmdToLookFor, IN string $strToLookFor, IN bool $verbose)
+{
+	int $delay = 5000;
+	sleep(1000);
+	while ( _PFre_IsCommandRunning($cmdToLookFor, $strToLookFor))
+	{
+		int $sec = $delay;
+		$sec /= 1000;
+		if ( $verbose == true )
+		{
+			echo "Waiting $sec seconds for command to finish";
+		}
+		sleep ($delay);
+		if ($delay < 25000)
+		{
+			$delay += 5000;
+		}
+		else
+		{
+			_PFre_MyBanner( "Pausing script after waiting 1:15 (command is still running).", "Continue script to wait again for command to finish.");
+			pause;
+			$delay = 5000;
+		}
+	}
+	return true;
+}
+
+
+#-------------------------------------------------------------------------
+sub _PFre_RunCmdAndWaitUntilFinished(IN string $cmdToRun)
+{
+	_PFre_MyBanner("Running:  $cmdToRun");
+	if (! `$cmdToRun`)
+	{
+		_PFre_MyBanner( "*** Command Failed! ***" );
+		return false;
+	}
+	string $tokens;
+	RegExSplit(" ", $cmdToRun, 0, $tokens);
+	int $iCmd = 0;
+	int $iSearch;
+	if ($tokens[$iCmd] == "background")
+	{
+		$iCmd++;
+	}
+	$iSearch = $iCmd;
+	$iSearch++;
+	string $matches;
+	while (RegExMatch("^-", $tokens[$iSearch], $matches) == true)
+	{
+		$iSearch++;
+	}
+	string $myCmd;
+	SplitPath($tokens[$iSearch], $myCmd);
+	_PFre_WaitUntilCmdFinished($tokens[$iCmd], $myCmd[1], true);
+	return true;
+}
+
+
+#-------------------------------------------------------------------------
+sub _PFre_GetAndNameFile(IN string $sFileToGet, IN string $sNameToSaveAs)
+{
+/************************** User-settable parameters *************************/
+/* If a file is bigger than this, it will prompt you before getting it       */
+int $bigsize=2000000;
+/* If a file is bigger than this, it will prompt you twice before getting it */
+int $hugesize=20000000;
+/************************** User-settable parameters *************************/
+	@record on;
+	`dir $sFileToGet`;
+	@record off;
+	int $size;
+	GetCmdData("diritem::fileitem::size", $size);
+	if ( $size > $bigsize ) 
+	{
+		if ( $size > $hugesize ) 
+		{
+			_PFre_MyBanner("This file is huge ( $size bytes )!");
+			if ( prompt ("Do you REALLY want to get this file?", false )) 
+			{
+				if ( prompt ( "Are you positive?" )) 
+				{
+					_PFre_RunCmdAndWaitUntilFinished("background get $sFileToGet -name $sNameToSaveAs");
+				}
+				else
+				{
+					echo "Skipped\n";
+					return false;
+				}
+			} 
+			else 
+			{
+				echo "Skipped\n";
+				return false;
+			}
+		} 
+		else 
+		{				
+			_PFre_MyBanner("This file is large ($size bytes).");
+			if ( prompt ("Do you want to get it?" ) )
+			{
+				_PFre_RunCmdAndWaitUntilFinished("background get $sFileToGet -name $sNameToSaveAs");
+			}
+		}
+	}
+	else
+	{
+		_PFre_RunCmdAndWaitUntilFinished("get $sFileToGet -name $sNameToSaveAs");
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_RunCmd(IN string $cmdToRun)
+{
+	_PFre_MyBanner("Running:  $cmdToRun");
+	if (! `$cmdToRun`)
+	{
+		_PFre_MyBanner( "*** Command Failed! ***" );
+		return false;
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------
+sub _PFre_GetAndNameFileInTheBackground(IN string $sFileToGet, IN string $sNameToSaveAs)
+{
+/************************** User-settable parameters *************************/
+/* If a file is bigger than this, it will prompt you before getting it       */
+int $bigsize=2000000;
+/* If a file is bigger than this, it will prompt you twice before getting it */
+int $hugesize=20000000;
+/************************** User-settable parameters *************************/
+	@record on;
+	`dir $sFileToGet`;
+	@record off;
+	int $size;
+	GetCmdData("diritem::fileitem::size", $size);
+	if ( $size > $bigsize ) 
+	{
+		if ( $size > $hugesize ) 
+		{
+			_PFre_MyBanner("This file is huge ( $size bytes )!");
+			if ( prompt ("Do you REALLY want to get this file?", false )) 
+			{
+				if ( prompt ( "Are you positive?" )) 
+				{
+					_PFre_RunCmd("background get $sFileToGet -name $sNameToSaveAs");
+				}
+				else
+				{
+					echo "Skipped\n";
+					return false;
+				}
+			} 
+			else 
+			{
+				echo "Skipped\n";
+				return false;
+			}
+		} 
+		else 
+		{				
+			_PFre_MyBanner("This file is large ($size bytes).");
+			if ( prompt ("Do you want to get it?" ) )
+			{
+				_PFre_RunCmd("background get $sFileToGet -name $sNameToSaveAs");
+			}
+		}
+	}
+	else
+	{
+		_PFre_RunCmd("get $sFileToGet -name $sNameToSaveAs");
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------
+sub(string) _PFre_GetProjectVersion()
+{
+	string $resDir;
+	if (_GetLpResourcesDirectory($resDir))
+	{
+		string $xmlFile = "$resDir/PFre/Version.xml";
+		
+		_XmlElement @version;
+		if (_XmlReadFile($xmlFile, "Version", @version))
+		{
+			return @version.$text;
+		}
+	}
+	
+	return "PFre 0.0.0.0";
+}

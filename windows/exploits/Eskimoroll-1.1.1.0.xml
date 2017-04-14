@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<t:config id="b312630cfabfbb7572a55a75e213eff54be451e1"
+          name="Eskimoroll"
+          version="1.1.1"
+          configversion="1.1.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+          
+  <t:inputparameters>
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds)"
+                 type="S16"
+                 default="60"/>
+    <t:parameter name="TargetIp"
+                 description="Domain Controller's IP address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by the Kerberos service"
+                 type="TcpPort"
+                 binding="//service[name='kerberos']/port"
+                 default="88"/>
+
+    <t:parameter name="Delay"
+                 description="Time to wait between packets (in seconds)"
+                 type="S32"
+                 default="0"/>
+    <t:parameter name="TicketFile"
+                 description="Local file to store ticket (leave blank for in-memory only)"
+                 type="String"
+                 default=""/>
+
+    <t:parameter name="TargetMachine"
+                 description="Target's NetBIOS name (in Unicode)"
+                 type="UString"/>               
+    <t:parameter name="DomainDns"
+                 description="DNS name of the domain being exploited (in Unicode)"
+                 type="UString"/>
+    <t:parameter name="DomainSid"
+                 description="SID of the domain being exploited (e.g., S-1-5-21-XXXX-XXXX)"
+                 type="String"/>
+
+    <t:paramchoice name="CredentialType" 
+                   description="Password, password hash, ticket, etc">
+        <t:paramgroup name="UnicodeCreds" 
+                      description="Unicode encoded credentials">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Unicode password entered as hex bytes (in Unicode)"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="PasswordHash"
+                      description="Password hash">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Hash of user/machine password entered as hex bytes"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="MachineHash"
+                      description="Credentials for the domain computer, obtained from lsadump">
+            <t:parameter name="Username"
+                         description="Machine's name, with trailing '$' character, in UNICODE"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Machine hash obtained from lsadump, entered as HEX bytes."
+                         type="UString"/>
+        </t:paramgroup>
+    </t:paramchoice>
+  </t:inputparameters>
+
+  <t:outputparameters>
+    <t:paramchoice name="CredentialType" 
+                   description="Password, password hash, ticket, etc">
+        <t:paramgroup name="UnicodeCreds" 
+                      description="Unicode encoded credentials">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Unicode password entered as hex bytes (in Unicode)"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="PasswordHash"
+                      description="Password hash">
+            <t:parameter name="Username"
+                         description="Username entered as hex bytes (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Hash of user/machine password entered as hex bytes"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="MachineHash"
+                      description="Credentials for the domain computer, obtained from lsadump">
+            <t:parameter name="Username"
+                         description="Machine's name, with trailing '$' character, in UNICODE"
+                         type="UString"/>
+            <t:parameter name="Credential"
+                         description="Machine hash obtained from lsadump, entered as HEX bytes."
+                         type="UString"/>
+        </t:paramgroup>
+
+        <t:paramgroup name="KerberosTicket"
+                      description="Kerberos ticket for target machine">
+            <t:parameter name="Username"
+                         description="Name of the user who owns the Kerberos ticket (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="DomainDns"
+                         description="DNS name of the domain being exploited (in Unicode)"
+                         type="UString"/>
+            <t:parameter name="KerberosTicket"
+                         description="Kerberos ticket with necessary privileges"
+                         type="UString"/>
+            <t:parameter name="SessionKey"
+                         description="Encryption key used in the Kerberos ticket"
+                         type="UString"/>
+        </t:paramgroup>
+        <t:paramgroup name="KerberosFile"
+                      description="Kerberos ticket from disk">
+            <t:parameter name="TicketFile"
+                         description="Local file holding Kerberos ticket"
+                         type="LocalFile"/>
+        </t:paramgroup>
+    </t:paramchoice>
+  </t:outputparameters>
+
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='smb']/port"
+              closeoncompletion="true"/>
+  </t:redirection>
+
+  <t:logic>
+      <t:or>
+        <t:os family="windows" name="Windows 2000" osclass="Server"/>
+        <t:os family="windows" name="Windows 2003"/>
+        <t:os family="windows" name="Windows 2003 R2"/>
+        <t:os family="windows" name="Windows 2008"/>
+        <t:os family="windows" name="Windows 2008 R2" version="Free"/>
+      </t:or>
+  </t:logic>
+</t:config>

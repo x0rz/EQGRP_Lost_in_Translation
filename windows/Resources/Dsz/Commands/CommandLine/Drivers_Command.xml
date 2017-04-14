@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Drivers_Tasking.pyo' providerType='script'>
+
+	<Command id="0" name="Drivers">
+	
+		<Help>Returns information about the drivers on the system</Help>
+		<Help>or changes their state.</Help>
+		
+		<Input>
+			<Option name="load" optional="false" group="operation">
+				<Help>Loads a driver onto the system</Help>
+				<Set data="type" value="3" />
+				<Argument data="file" name="driverName" optional="false" />
+				<Reject>minimal</Reject>
+				<Reject>nosignature</Reject>
+				<Reject>noversion</Reject>
+			</Option>
+			
+			<Option name="unload" optional="false" group="operation">
+				<Help>Unloads a driver onto the system</Help>
+				<Set data="type" value="2" />
+				<Argument data="file" name="driverName" optional="false" />
+				<Reject>minimal</Reject>
+				<Reject>nosignature</Reject>
+				<Reject>noversion</Reject>
+			</Option>
+			
+			<Option name="list" optional="false" group="operation">
+				<Help>Lists the currently loaded drivers</Help>
+				<Set data="type" value="1" />
+			</Option>
+			
+			<Option name='minimal' optional='true'>
+				<Set data='no_signature' value='true'/>
+				<Set data='no_version' value='true'/>
+				<Help>Do not perform additional driver information queries</Help>
+			</Option>
+
+			<Option name='nosignature' optional='true'>
+				<Set data='no_signature' value='true'/>
+				<Help>Do not perform driver signature check</Help>
+			</Option>
+
+			<Option name='noversion' optional='true'>
+				<Set data='no_version' value='true'/>
+				<Help>Do not query for driver version information</Help>
+			</Option>
+			
+			<Option name="parameters" optional="true">
+				<Help>Set driver-specific options during load. UNIX ONLY</Help>
+				<Help>Format to list parameters: option1=value1,option2=value2,...</Help>
+				<Argument data="params" name="driverParams" optional="true" />
+			</Option>
+			
+			<Option name='method' optional='true'>
+				<Help>Specifies file access method - will use current default if not specified.</Help>
+				<Argument name='method' data='method'/>
+			</Option>
+
+		</Input>
+		
+		<Output>
+			<Data name="file" type="string" />
+			<Data name="params" type="string" />
+			<Data name="type" type="uint8_t" />
+			<Data name="no_signature" type="bool" default="false"/>
+			<Data name="no_version" type="bool" default="false"/>
+			<Data name='method'    type='string'/>
+		</Output>
+		
+	</Command>
+</Plugin>

@@ -1,0 +1,206 @@
+#####################################################################
+# File: RMTASKIDL.eps
+#
+# Script that will take an input of a TASK-ID and then create a SQL
+# script which it will exectue via "runsql".
+# The script will dump the response associated with the
+# taskID  entered from the Oracle DB and then call a perl scrip 
+# to uncompress and write it out in a legable form
+#
+# $Date$ $Revision$
+# Modifications:
+#  06/26/2008 - Created
+#  06/30/2008 - Updated to take in the Network Element name to ensure results from the 
+#		correct MSC as well as automatically check the BAK db if nothing is 
+#  		returned from the ACT db.
+#--------------------------------------------------------
+#####################################################################
+sub Usage()
+{
+	echo "---------------------------------------------------------------------------";
+	echo "Usage: rmTaskID -t <task_number> -n <network Element Name>";
+	echo " where -n is the network element name of the switch you would like to      ";
+	echo " obtain the results from.";
+	echo "---------------------------------------------------------------------------";
+	return (FALSE);
+}
+
+#####################################################################
+@include "_FileExists.epm";
+@include "_StringFunctions.epm";
+@include "_GenericFunctions.epm";
+
+@echo off;
+@record on;
+`getdirectory -scripts`;
+string $scripts_dir = GetCmdData("dir");
+@record off;
+@echo on;
+
+int $i = 1;
+string $perl_script_rmTaskID = "RoundupMast\\blobUncompress.pl";
+string $sql_cmd = "";
+string $taskID = "";
+string $nename = "";
+#####################################################################
+# Get command line arguments
+#####################################################################
+while (defined ($ARGV[$i]))
+{
+	$sql_cmd[$i] = $ARGV[$i];
+	$i++;
+}
+
+#####################################################################
+# check cmd line options for username and password and id options
+#####################################################################
+if ($i == 5){
+	if ((($sql_cmd[1] == "-t") || ($sql_cmd[1] == "-T")) && ($sql_cmd[2] != "") && (($sql_cmd[3] == "-n") || ($sql_cmd[3] == "-N")) && ($sql_cmd[4] != ""))		
+	{
+		$taskID = $sql_cmd[2];
+		$nename = $sql_cmd[4];
+	}
+	else{
+		return (Usage());
+	}
+}
+
+else{
+	return (Usage());
+}
+#####################################################################
+# rename any previous sql commands...
+#####################################################################
+echo "renaming get files...\n";
+ifnot (`script ROUNDUPMAST\\rmrename.eps`)
+{
+	echo "Could not run rmrename.eps.";
+}
+
+#####################################################################
+# call the runsql script with the file to execute....
+#####################################################################
+
+echo "generating input file to run with taskid = $taskID\n";
+# Generating SQL Input file
+	writefile("temp.sql", true, "");
+	writefile("temp.sql", true, "/ AS SYSDBA");
+	writefile("temp.sql", true, "");
+	writefile("temp.sql", true, "set termout off");
+	writefile("temp.sql", true, "set recsep off");
+	writefile("temp.sql", true, "set serveroutput on;");
+	writefile("temp.sql", true, "spool c:\\recycler\\~o774194.tmp");
+	writefile("temp.sql", true, "declare");
+	writefile("temp.sql", true, "  response_var  RAW(32767);");
+	writefile("temp.sql", true, "  v_nBufferSize CONSTANT PLS_INTEGER := 32767;");
+	writefile("temp.sql", true, "  v_nAmount     PLS_INTEGER;");
+	writefile("temp.sql", true, "  output_var    RAW(32767);");
+	writefile("temp.sql", true, "  cursor actResp is select RESPONSE, RESPTIMESTAMP, RESPONSELENGTH, TASKTIMESTAMP from DBO.LG_RESP_TABLE_ACT where taskid = '$taskID';");
+	writefile("temp.sql", true, "  actResp_val actResp\%ROWTYPE;");
+	writefile("temp.sql", true, "  cursor actTask is select TASKTIMESTAMP  from DBO.LG_TASK_TABLE_ACT where taskid = '$taskID' and NENAME = '$nename';");
+	writefile("temp.sql", true, "  actTask_val actTask\%ROWTYPE;  ");
+	writefile("temp.sql", true, "  cursor bakResp is select RESPONSE, RESPTIMESTAMP, RESPONSELENGTH, TASKTIMESTAMP from DBO.LG_RESP_TABLE_BAK where taskid = '$taskID';");
+	writefile("temp.sql", true, "  bakResp_val bakResp\%ROWTYPE;");
+	writefile("temp.sql", true, "  cursor bakTask is select TASKTIMESTAMP  from DBO.LG_TASK_TABLE_BAK where taskid = '$taskID' and NENAME = 'nename';");
+	writefile("temp.sql", true, "  bakTask_val bakTask\%ROWTYPE;  ");
+	writefile("temp.sql", true, "  v_nDestLen	PLS_INTEGER;");
+	writefile("temp.sql", true, "  pos INTEGER;");
+	writefile("temp.sql", true, "begin");
+	writefile("temp.sql", true, "  open actTask;");
+	writefile("temp.sql", true, "  DBMS_OUTPUT.ENABLE(1000000);");
+	writefile("temp.sql", true, "    <<outer>>");
+	writefile("temp.sql", true, "      loop");
+	writefile("temp.sql", true, "        fetch actTask into actTask_val;");
+	writefile("temp.sql", true, "        exit outer when actTask\%NOTFOUND;");
+	writefile("temp.sql", true, "	open actResp;");
+	writefile("temp.sql", true, "	<<inner>>");
+	writefile("temp.sql", true, "	loop  ");
+	writefile("temp.sql", true, "	  fetch actResp into actResp_val;");
+	writefile("temp.sql", true, "          exit inner when actResp\%NOTFOUND;");
+	writefile("temp.sql", true, "          pos := 1;");
+	writefile("temp.sql", true, "	  v_nAmount := v_nBufferSize; ");
+	writefile("temp.sql", true, "	    if (actTask_val.TASKTIMESTAMP = actResp_val.TASKTIMESTAMP) then");
+	writefile("temp.sql", true, "              DBMS_LOB.READ(actResp_val.RESPONSE, v_nAmount, pos, output_var);");
+	writefile("temp.sql", true, "              for i in 0..LENGTH(output_var)/200 LOOP");
+	writefile("temp.sql", true, "                DBMS_OUTPUT.PUT_LINE(SUBSTR(output_var, i*200+1, 200));");
+	writefile("temp.sql", true, "              end loop; ");
+	writefile("temp.sql", true, "              DBMS_OUTPUT.PUT_LINE('z');");
+	writefile("temp.sql", true, "            end if;");
+	writefile("temp.sql", true, "        end loop inner;");
+	writefile("temp.sql", true, "        close actResp;");
+	writefile("temp.sql", true, "      end loop outer;");
+	writefile("temp.sql", true, "  close actTask;");
+	writefile("temp.sql", true, "  open bakTask;");
+	writefile("temp.sql", true, "    <<bakOuter>>");
+	writefile("temp.sql", true, "      loop");
+	writefile("temp.sql", true, "        fetch bakTask into bakTask_val;");
+	writefile("temp.sql", true, "	open bakResp;");
+	writefile("temp.sql", true, "	<<bakInner>>");
+	writefile("temp.sql", true, "	loop  ");
+	writefile("temp.sql", true, "	  fetch bakResp into bakResp_val;");
+	writefile("temp.sql", true, "          pos := 1;");
+	writefile("temp.sql", true, "	  v_nAmount := v_nBufferSize; ");
+	writefile("temp.sql", true, "	    if (bakTask_val.TASKTIMESTAMP = bakResp_val.TASKTIMESTAMP) then");
+	writefile("temp.sql", true, "              DBMS_LOB.READ(bakResp_val.RESPONSE, v_nAmount, pos, output_var);");
+	writefile("temp.sql", true, "              for i in 0..LENGTH(output_var)/200 LOOP");
+	writefile("temp.sql", true, "                DBMS_OUTPUT.PUT_LINE(SUBSTR(output_var, i*200+1, 200));");
+	writefile("temp.sql", true, "              end loop; ");
+	writefile("temp.sql", true, "              DBMS_OUTPUT.PUT_LINE('z');");
+	writefile("temp.sql", true, "            end if;");
+	writefile("temp.sql", true, "          exit bakInner when bakResp\%NOTFOUND;");
+	writefile("temp.sql", true, "        end loop bakInner;");
+	writefile("temp.sql", true, "        close bakResp;");
+	writefile("temp.sql", true, "        exit bakOuter when bakTask\%NOTFOUND;");
+	writefile("temp.sql", true, "      end loop bakOuter;");
+	writefile("temp.sql", true, "  close bakTask;  ");
+	writefile("temp.sql", true, "end;");
+	writefile("temp.sql", true, "/");
+	writefile("temp.sql", true, "set serveroutput off;");
+	writefile("temp.sql", true, "spool off");
+	writefile("temp.sql", true, "set termout on");
+	writefile("temp.sql", true, "disconnect");
+	writefile("temp.sql", true, "exit;");
+
+
+# writefile function puts a unicode character at the beginning of the file..
+# Need to remove the character before uploading to target
+`local run -command "cmd.exe /c more +1 temp.sql > task_$taskID.sql"`;
+
+# Sleep statement prevents race condition where the put statement tries to upload the file before it's created
+#sleep 2000;
+
+#####################################################################
+# call runsql.eps with the sql file name...
+#####################################################################
+echo "calling runsql...\n";
+ifnot (`script ROUNDUPMAST\\runsql.eps task_$taskID.sql`)
+{
+	echo "Could not run runsql.eps.";
+	return (FALSE);
+}
+
+# Sleep statement prevents race condition where the put statement tries to upload the file before it's created
+sleep 2000;
+
+#####################################################################
+# call rmrename.eps with the sql file name...
+#####################################################################
+echo "renaming results....";
+ifnot (`script ROUNDUPMAST\\rmrename.eps`)
+	{ return (FALSE); }
+
+#####################################################################
+# call blobUncompress on the file we just recieved...
+#####################################################################
+echo "uncompressing results....";
+sleep 2000;
+ifnot (`local run -command "perl $scripts_dir\\$perl_script_rmTaskID" -redirect x`)
+	{ return (FALSE); }
+
+#####################################################################
+# CLEAN UP
+#####################################################################
+#clean up temp files
+`local del temp.sql`;
+`local del task_$taskID.sql`;
+return(TRUE);

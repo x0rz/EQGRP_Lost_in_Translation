@@ -1,0 +1,32 @@
+@include "ifthen\\execute.epm";
+
+@echo off;
+@case-sensitive off;
+
+sub searchServices(IN string $services, IN string $actions)
+{
+	@record on;
+	`regquery -hive L -subkey system\\currentcontrolset\\services`;
+	@record off;
+
+	string $names = GetCmdData("subkey");
+
+	int $size = sizeof($services);
+	int $i = 0;
+
+	while($i < $size)
+	{
+		string $name;
+		foreach $name ($names)
+		{
+			if($services[$i] == $name)
+			{
+				echo "match: $name";
+				echo "\taction: $actions[$i]";
+				execute($actions[$i]);
+				break;
+			}
+		}
+		$i++;
+	}
+}

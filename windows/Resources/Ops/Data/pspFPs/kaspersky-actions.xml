@@ -1,0 +1,7 @@
+<Software value="PSP">
+ <Vendor value="Kaspersky">
+  <Product value="Endpoint Security 8">
+   <SafetyCheck command="registryadd" handlerfunc="ops.psp.mcafeeSafetyChecks.registryadd" />
+  </Product>
+ </Vendor>
+</Software>

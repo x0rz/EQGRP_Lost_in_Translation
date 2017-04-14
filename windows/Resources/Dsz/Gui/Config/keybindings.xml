@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Valid ActionNames for this document
+     complete
+     kill command
+     background command
+     line start
+     line end
+     cut to end
+     cut line
+     history prev
+     history next
+     history first
+     history last
+     inc font size
+     dec font size
+     reset font size
+     next tab
+     prev tab
+	
+	KeyStroke strings must fit the following syntax:
+	
+	<modifiers>* (<typedID> | <pressedReleasedID>)
+
+    modifiers := shift | control | ctrl | meta | alt | altGraph 
+    typedID := typed <typedKey>
+    typedKey := string of length 1 giving Unicode character.
+    pressedReleasedID := (pressed | released) key
+    key := KeyEvent key code name, i.e. the name following "VK_".
+	
+-->
+
+<KeyBindings>
+	<KeyBinding>
+		<KeyStroke>CANCEL</KeyStroke>
+		<ActionName>kill command</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>PAUSE</KeyStroke>
+		<ActionName>kill command</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl D</KeyStroke>
+		<ActionName>kill command</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl B</KeyStroke>
+		<ActionName>background command</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl Z</KeyStroke>
+		<ActionName>background command</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl U</KeyStroke>
+		<ActionName>cut line</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ESCAPE</KeyStroke>
+		<ActionName>cut line</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl K</KeyStroke>
+		<ActionName>cut to end</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl A</KeyStroke>
+		<ActionName>line start</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl E</KeyStroke>
+		<ActionName>line end</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>TAB</KeyStroke>
+		<ActionName>complete</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>UP</KeyStroke>
+		<ActionName>history prev</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>DOWN</KeyStroke>
+		<ActionName>history next</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>PAGE_UP</KeyStroke>
+		<ActionName>history first</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>PAGE_DOWN</KeyStroke>
+		<ActionName>history last</ActionName>
+	</KeyBinding>
+	
+	<KeyBinding>
+		<KeyStroke>F8</KeyStroke>
+		<ActionName>history search</ActionName>
+	</KeyBinding>
+	<KeyBinding>
+		<KeyStroke>ctrl EQUALS</KeyStroke>
+		<ActionName>inc font size</ActionName>
+	</KeyBinding>
+	
+	<KeyBinding>
+		<KeyStroke>ctrl MINUS</KeyStroke>
+		<ActionName>dec font size</ActionName>
+	</KeyBinding>
+	
+	<KeyBinding>
+		<KeyStroke>ctrl 0</KeyStroke>
+		<ActionName>reset font size</ActionName>
+	</KeyBinding>
+
+	<KeyBinding>
+		<KeyStroke>ctrl LEFT</KeyStroke>
+		<ActionName>prev tab</ActionName>
+	</KeyBinding>
+
+	<KeyBinding>
+		<KeyStroke>ctrl RIGHT</KeyStroke>
+		<ActionName>next tab</ActionName>
+	</KeyBinding>
+</KeyBindings>

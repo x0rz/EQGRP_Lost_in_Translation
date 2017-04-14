@@ -1,0 +1,30 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31340'>
+
+  <Command id='16' name='RunAsChild'>
+
+    <Help>Run a specified command as a child of the given process</Help>
+
+    <Input>
+
+      <Option name='pid' optional='false'>
+	<Argument name='Parent Process Id' data='pid'/>
+      </Option>
+
+      <Option name='command' optional='false'>
+	<Argument name='command line' data='command'/>
+	<Help>Command to execute.</Help>
+      </Option>
+
+	
+    </Input>
+
+    <Output>
+      <Data name='pid' type='uint32_t' default='0'/>
+      <Data name='command' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

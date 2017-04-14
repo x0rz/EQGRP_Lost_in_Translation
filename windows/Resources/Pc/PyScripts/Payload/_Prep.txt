@@ -1,0 +1,113 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+<-action <list|pick|configure|disable>>
+    Action to perform on payload
+[-type <payload_type>]
+    The type of payload (level3, level4)
+[-level3]
+    Level3 only.
+[-level4]
+    Level4 only.
+[-arch <arch>]
+    The payload architecture
+[-i386]
+    Use i386 arch only.
+[-x64]
+    Use x64 only.
+[-os <os>]
+    The payload OS (deprecated and ignored)
+[-bintype <type>]
+    The binary type (sharedlib, exe)
+[-sharedlib]
+    DLL types.
+[-exe]
+    EXE types.
+[-tcp]
+    TCP PC
+[-http]
+    HTTP PC
+[-extra <extraInfo>]
+    Extra payload information
+[-verbose]
+    Print additional information
+[-utilityburst]
+    Configure with utilityburst support
+    REJECT: -appcompat -winsockhelperapi -generic
+[-appcompat]
+    Configure with appcompat support (FREEPARKING)
+    REJECT: -utilityburst -winsockhelperapi -generic
+[-winsockhelperapi]
+    Configure with winsockhelperapi support
+    REJECT: -utilityburst -appcompat -generic
+[-generic]
+    Configure without specific persistence support (i.e. appinit or exe)
+    REJECT: -utilityburst -appcompat -winsockhelperapi
+[-driver <name>]
+    Sets the driver name
+[-process <name>]
+    Sets the process name
+[-info <name>]
+    Sets the extra info area
+[-file <file>]
+    The payload file for the -disable option
+[-calladdr [iparg]]
+    Set the callback address. Omit iparg to set default.
+[-callport [dstport1] [srcport1] [dstport2] [srcport2] [dstport3] [srcport3] [dstport4] [srcport4] [dstport5] [srcport5]]
+    Set the callback port(s).  Omit any ports to set all defaults. Every DEST port must have a SRC port (which may be 0).
+[-exename [name]]
+    Set the "exe name in version information". Omit name to retain default.
+[-fire]
+    Update the Windows firewall when listening
+[-nofire]
+    Do not update the Windows firewall when listening
+[-tls]
+    Use TLS (HTTPS) for comms (HTTP-PC only).
+[-notls]
+    Use HTTP for comms (HTTP-PC only).
+[-imm]
+    Configure for immediate callback
+[-noimm]
+    Do not do immediate callback
+[-key <name>]
+    Set the key name (e.g. Default).
+[-listen [start] [stop]]
+    PC should listen. Omit suboption(s), to retain defaults. If specifying start must also specify stop.
+[-loops <numloops>]
+    Number of listening loops.
+[-ldur <seconds>]
+    Duration per loop.
+[-laddr <iparg>]
+    Bind address for listening.
+[-lport [port1] [port2] [port3] [port4] [port5] [port6]]
+    Set the listening port(s). Omit any ports to set all defaults.
+[-nolisten]
+    PC should not listen (TCP-PC only)
+[-pcid [id]]
+    Set the PC ID. Up to 64 bits, can use 0x prefix to set as hex. Omit idarg to set default (0).
+[-pcp]
+    Set the proxy connection parameters. Omit suboption(s), to retain defaults (HTTP-PC only).
+[-maxdata <numbytes>]
+    The maximum data in an HTTP or TLS session.
+[-failwait <seconds>]
+    For HTTP, the number of seconds to wait after a failed session to retry. Does not apply to TLS.
+[-sendwait <seconds>]
+    For HTTP, the number of seconds to wait after a completed session until starting the next session. Does not apply to TLS.
+[-maxfail <numfails>]
+    The number of consecutive failures after which to stop attempting to communicate to the LP.
+[-proxyaddr <iparg>]
+    Set the proxy address.
+[-proxyport <port>]
+    Set the proxy port.
+[-proxyuser <name>]
+    Set the username to the proxy.
+[-proxypass [password]]
+    Set the password to the proxy.
+[-qdel]
+    Enable quick-deletion (Level3 EXE only)
+[-noqdel]
+    Disable quick-deletion (Level3 EXE only)
+[-wind]
+    Allow PC to create a window (DLL only)
+[-nowind]
+    Do not allow PC to create a window (DLL only)

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module id="520" name="SerialRedirect_Lp">
+
+	<Interfaces>
+		<Interface id='0x01c10032' provider="0x01010078" />
+		<Interface id='0x01c10034' provider='0x01010078'>
+			<DataHandler>25162</DataHandler>
+			<DataHandler>25163</DataHandler>
+			<DataHandler>25164</DataHandler>
+		</Interface>
+	</Interfaces>
+
+	<Dependencies>
+		<Remote>SerialRedirect_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version major="*" minor="*" other="*">
+				<File loadtype='file'>i386-winnt-vc9/release/SerialRedirect_Lp.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

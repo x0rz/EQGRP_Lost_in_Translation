@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_DomainController_Tasking.pyo' providerType='script'>
+
+    <Command name="DomainController" id="0">
+    
+		<Help>Retrieves the domain controller(s) for the specified domain.</Help>
+		<Help>If not specified, the primary domain is assumed.</Help>
+		
+		<Input>
+			<Option optional="false" name="primary" group="type">
+				<Set data="primary" value="true"/>
+				<Help>Get the primary domain controller (PDC) for this domain</Help>
+			</Option>
+			
+			<Option optional="false" name="all" group="type">
+				<Set data="primary" value="false"/>
+				<Help>Get all the domain controllers for this domain</Help>
+			</Option>
+			
+			<Option optional="true" name="domain">
+				<Argument optional="false" name="name" data="domain"/>
+				<Help>Specify the domain</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data type="bool" name="primary" default="false"/>
+			<Data type="string" name="domain"/>
+		</Output>
+		
+    </Command>
+</Plugin>

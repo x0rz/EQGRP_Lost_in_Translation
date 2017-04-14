@@ -1,0 +1,40 @@
+#-------------------------------------------------------------------------------
+# File: mcafeestatus.eps
+# Description: Checks the status of McAfee Framework Services and logging
+#
+# v0.1 2006-11-22 Initial creation
+# v0.2 2006-12-01 Added root drive discovery
+# v0.3 2007-08-22 Heavy re-write to add support for 8.5i. All this file does is calls the correct version.
+#-------------------------------------------------------------------------------
+
+string $auditing = GetEnv("AUDITOFF");
+
+if ($auditing == "TRUE"){
+		echo "Verified auditing was off/has been dorked. Moving on";
+}else{
+	echo "auditing still on!";
+}
+
+#what version of McAfee are we working with here?
+@echo off;
+if ( `regquery -hive L -subkey "software\\network associates\\ePolicy Orchestrator\\application plugins\\VIRUSCAN8000"` ){
+	echo "\rIt appears they are running version 8.0\r";
+	@echo on;
+	`script mcafee80.eps`;
+}else if(`regquery -hive L -subkey "software\\mcafee\\ePolicy Orchestrator\\application plugins\\VIRUSCAN8600"`){
+	if(`regquery -hive L -subkey "software\\McAfee\\VSCore\\On Access Scanner\\BehaviourBlocking" -value FileBlockEnabled_27`){
+		echo "\rIt appears they have upgraded McAfee 8.0 to 8.5\r";
+	}else{
+		echo "\rIt appears they are running version 8.5\r";
+	}
+	@echo on;
+	`script mcafee85.eps`;
+}else if(`regquery -hive L -subkey "software\\network associates\\ePolicy Orchestrator\\application plugins\\VIRUSCAN7000"` ){
+	echo "\rIt appears they are running version 7.0\r";
+	echo "\rI'm afraid I can't help you with this version. Good luck!\r";
+}else{
+	echo "I can't figure out what version of McAfee is running! Good luck with that. Exiting...";
+}
+
+echo "mcafeestatus script complete\r";
+

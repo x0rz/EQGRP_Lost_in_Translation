@@ -1,0 +1,18 @@
+string $syspath = GetEnv("SYSPATH");
+string $ipmontr = "$syspath\\ipmontr.exe";
+string $ipconfhlp = "$syspath\\ipconfhlp.dll";
+
+@record on;
+`dir $ipmontr`;
+int $size_ipcontr = GetCmdData("size");
+`dir $ipconfhlp`;
+int $size_ipconfhlp = GetCmdData("size");
+
+
+@record off;
+
+
+if (prompt "SIG6 was detected.  Do you want to grab the exe and dll? ($ipmontr, size: $size_ipcontr, $ipconfhlp, size: $size_ipconfhlp)") {
+	`get $ipmontr`;
+	`get $ipconfhlp`;
+}

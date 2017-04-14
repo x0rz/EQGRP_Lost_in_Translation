@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName="Tasking/Mcl_Cmd_RemoteExecute_Tasking.pyo" providerType="script">
+    
+	<Command name="RemoteExecute" id="0">
+        <Help>Execute a command on a remote target</Help>
+
+        <Input>
+
+            <Option optional="false" name="target">
+                <Help>The address of the target</Help>
+
+                <Argument optional="false" data="addr" name="address"/>
+            </Option>
+
+            <Option optional="false" name="execute">
+                <Help>The command to execute on the target</Help>
+
+                <Argument optional="false" data="cmd" name="cmd"/>
+            </Option>
+        </Input>
+
+        <Output>
+            <Data type="string" name="addr"/>
+            <Data type="string" name="cmd"/>
+        </Output>
+    </Command>
+
+</Plugin>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_DmGz_Tasking.pyo' providerType='script'>
+
+    <Command name="DmGz_Control" id="0">
+    
+		 <Help>Queries the DoormanGauze driver.</Help>
+		
+		<Input>
+			<Option name="status" optional="false" group="type">
+				<Help>Gets the driver's status</Help>
+				<Set data="type" value="1"/>
+			</Option>
+
+			<Option name="version" optional="false" group="type">
+				<Help>Gets the driver's version</Help>
+				<Set data="type" value="2"/>
+			</Option>
+			
+			<Option name="adapters" optional="false" group="type">
+				<Help>Gets the driver's adapter status</Help>
+				<Set data="type" value="3"/>
+			</Option>
+			
+			<Option name="driver" optional="true">
+				<Help>Specify the driver device name</Help>
+				<Argument name="name" data="driver" optional="false" />
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="type"   type="uint8_t"/>
+			<Data name="driver" type="string"/>
+		</Output>
+		
+    </Command>
+</Plugin>

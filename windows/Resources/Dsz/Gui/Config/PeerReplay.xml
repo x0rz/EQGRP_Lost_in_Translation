@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<Plugin pluginClass="ddb.dsz.plugin.mirror.ReplayMirror" pluginName="Reflection">
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.requesthandler.RequestSender"	pluginName="Requests" />
+</StartupConfig>

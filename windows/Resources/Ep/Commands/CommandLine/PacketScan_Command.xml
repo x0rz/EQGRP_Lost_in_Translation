@@ -1,0 +1,64 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31386'>
+
+  <Command id='16' name='PacketScan'>
+
+    <Help>Control the DarkSkyline driver</Help>
+
+    <Input>
+      <Option name='name' optional='false'>
+	<Argument name='driver_name' data='driver'/>
+      </Option>
+
+      <Option name='status' optional='false' group='action'>
+	<Set data='action' value='0'/>
+	<Help>Retrieve the current driver status</Help>
+      </Option>
+
+      <Option name='get' optional='false' group='action'>
+	<Set data='action' value='1'/>
+	<Help>Retrieve the current packet filter</Help>
+      </Option>
+
+      <Option name='set' optional='false' group='action'>
+	<Argument name='filter' data='filter'/>
+	<Set data='action' value='2'/>
+	<Help>Changes the current packet filter</Help>
+      </Option>
+
+      <Option name='control' optional='false' group='action'>
+	<Argument name='signal'>
+	    <Value string='disable'>
+		<Set data='control' value='1'/>
+	    </Value>
+	    <Value string='enable'>
+		<Set data='control' value='2'/>
+	    </Value>
+	    <Value string='start'>
+		<Set data='control' value='3'/>
+	    </Value>
+	    <Value string='stop'>
+		<Set data='control' value='4'/>
+	    </Value>
+	</Argument>
+	<Set data='action' value='3'/>
+	<Help>Send a control signal to the driver</Help>
+      </Option>
+
+      <Option name='promiscuous' optional='true'>
+	<Set data='promiscuous' value='true'/>
+      </Option>	
+    </Input>
+
+    <Output>
+      <Data name='driver' type='string'/>
+      <Data name='action' type='uint8_t'/>
+      <Data name='control' type='uint8_t'/>
+      <Data name='filter' type='string'/>
+      <Data name='promiscuous' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

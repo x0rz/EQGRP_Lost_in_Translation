@@ -1,0 +1,72 @@
+#------------------------------------------------------
+# File:	EmtpyKeg.eps
+#
+# Performs EmptyKeg Remote Execute
+#
+# Modifications:
+#	03/23/07	Created.
+#
+#------------------------------------------------------
+@include "_RecordToolUse.epm";
+
+#defaults
+string $version = "EmptyKeg 1.0.0.1";
+
+#_RecordToolUse("EmptyKeg", $version);
+
+echo " ";
+#echo "--------------------";
+#echo "$version";
+#echo "--------------------";
+#echo " ";
+
+
+if ($argc != 3)	{
+	echo "Usage: $argv[0] <cmd> <targetMachine>\r\n";
+	return false;
+} else if ($argv[1]	== "?")	{
+	echo "Usage: $argv[0] <cmd> <targetMachine>\r\n";
+	return false;
+}
+
+string $cmd = $argv[1];
+
+string $target = Split("\\\\", $argv[2]);
+
+if (sizeof($target)	> 1) {
+	$target	= "\\\\$target[1]\\root\\cimv2";
+} else {
+	$target	= "\\\\$target[0]\\root\\cimv2";
+}
+if ($target	== "\\\\") {
+	echo "Invalid target ($target)";
+	return false;
+}
+
+@echo off;
+@record on;
+ifnot (`wmi -target $target -run $cmd`) {
+	echo "Unable to touch $target";
+	return false;
+}
+@record off;
+
+echo "Performing remote execution of $cmd on $target";
+echo " ";
+
+int $ReturnValue = GetCmdData("ReturnValue");
+int $RemotePID = GetCmdData("RemotePID");
+
+if ($ReturnValue == 0) {
+
+	echo "Success!  $cmd running on $target.";
+	echo "Remote PID is $RemotePID";
+	return true;
+}
+else {
+
+	echo "Failed to create remote process.";
+	return false;
+}
+
+return false;

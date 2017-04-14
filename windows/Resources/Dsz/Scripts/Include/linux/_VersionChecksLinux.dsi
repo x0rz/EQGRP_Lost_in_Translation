@@ -1,0 +1,89 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsLinux
+#	Returns whether the current target is Linux
+#----------------------------------------------------
+sub _IsLinux()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os))
+	{
+		if (($os == "linux") || ($os == "linux_se"))
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsLinux
+
+#----------------------------------------------------
+# _IsLinuxLocal
+#	Returns whether the local os is Linux
+#----------------------------------------------------
+sub _IsLinuxLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os))
+	{
+		if (($os == "linux") || ($os == "linux_se"))
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsLinuxLocal
+
+#----------------------------------------------------
+# _IsSeLinux
+#	Returns whether the current target is SELinux
+#----------------------------------------------------
+sub _IsSeLinux()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os))
+	{
+		if ($os == "linux_se")
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsSeLinux
+
+#----------------------------------------------------
+# _IsSeLinuxLocal
+#	Returns whether the local os is Linux
+#----------------------------------------------------
+sub _IsSeLinuxLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os))
+	{
+		if ($os == "linux_se")
+		{
+			return true;
+		}
+	}
+	
+	return false;
+
+}
+# END _IsSeLinuxLocal
+

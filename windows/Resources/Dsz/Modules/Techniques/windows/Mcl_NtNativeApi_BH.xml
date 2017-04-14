@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Technique name='Mcl_NtNativeApi_Dswi_BH' id='116'>
+
+	<Implementation value='2'/>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+		    <Version major='5+' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+
+	<Architecture type='x64'>
+
+		<Platform family='winnt'>
+		    <Version major='5+' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+	
+</Technique>

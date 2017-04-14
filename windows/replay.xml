@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<ReplayFiles>
+	<File>configure_lp.py</File>
+	<File>start_lp.py</File>
+	<File>Start.jar</File>
+	<File>RemoteDump.py</File>
+	<File name="start.properties">start.properties.replay</File>
+	<File name="user.defaults">user.defaults.replay</File>
+	<Dir name="Bin">
+		<Dir name="java-j2se_1.5-sun">
+			<Dir name="release">
+				<File>*</File>
+			</Dir>
+		</Dir>
+	</Dir>
+	<Dir name="Resources">
+		<Dir name="*">
+			<Ignore>Ep</Ignore>
+			<Dir name="Commands">
+				<Dir name="Display">
+					<File>*.xsl</File>
+					<Dir name="include">
+						<File>*.xsl</File>
+					</Dir>
+				</Dir>
+				<Dir name="Storage">
+					<File>*.xsl</File>
+					<Dir name="include">
+						<File>*.xsl</File>
+					</Dir>
+				</Dir>
+			</Dir>
+			<Dir name="Databases">
+				<File>*</File>
+			</Dir>
+			<Dir name="Config" recursive="true">
+				<File>*</File>
+			</Dir>
+			<Dir name="lib">
+				<Dir name="java-j2se_1.6-sun">
+					<File>*</File>
+				</Dir>
+			</Dir>
+			<Dir name="Gui" recursive="true">
+				<File>*</File>
+			</Dir>
+			<Dir name="Tools">
+				<Dir name="java-j2se_1.5">
+					<File>FullThreadDump.jar</File>
+				</Dir>
+			</Dir>
+			<Dir name="i386-linux-gcc">
+				<File>*</File>
+			</Dir>
+			<Dir name="i386-winnt-vc9">
+				<File>*</File>
+			</Dir>
+			<Dir name="i386-winnt-vc71">
+				<File>*</File>
+			</Dir>
+			<Dir name="java-j2se_1.6-sun" recursive="true">
+				<File>*</File>
+			</Dir>
+			
+			
+			<Dir name="Version">
+				<File>*.xml</File>
+			</Dir>
+			<File>Version.xml</File>
+		</Dir>
+	</Dir>
+</ReplayFiles>

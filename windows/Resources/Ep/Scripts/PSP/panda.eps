@@ -1,0 +1,102 @@
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+#The struct is defined in PSPHelpers.epm
+metaData @metaData;
+#initialize the struct
+init(@metaData);
+
+echo "Starting Panda configuration change check";
+@echo off;
+# Check Panda versions
+
+string $version;
+reg_query("\"software\\Panda Software\\Setup\"", "CLIENT", $version);
+
+if (defined($version)) {
+	panda($version,@metaData);
+} else {
+	@metaData.$vendor = "Panda";
+	@metaData.$product = "Unknown";
+	@metaData.$version = "Unknown";
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: Unknown!";
+	if (prompt "Pull Panda registry information?") {
+		`background regquery -hive L -subkey "software\\Panda Software" -recursive`;
+	} else {
+		echo "Please reconsider so we can fingerprint this...";
+	}
+}
+#----------------------------------------------------------------
+# Runs a reg query searching for a specific subkey and returning 
+# a value.
+# values = the values from the subkey that you are looking for
+# ret = return values (in an array)
+# error = do you want to halt on query errors
+#----------------------------------------------------------------
+sub reg_query(IN string $subkey, IN string $search_values, OUT string $ret)
+{
+	string $values;
+	string $value;
+	string $value_data;
+	int $i=0;
+	int $j=0;
+	@record on;
+	if(`regquery -hive L -subkey $subkey`)
+	{
+		$values = GetCmdData("value");
+		$value_data = GetCmdData("value_data");
+		
+		foreach $value ($values)
+		{
+			string $search_value;
+			foreach $search_value ($search_values)
+			{
+				if($value == $search_value)
+				{
+					$ret[$j] = $value_data[$i];
+					$j++;
+				}
+			}
+			$i++;
+		}
+	} else {
+		return false;
+	}
+
+}
+sub panda(IN string $version,IN metaData @metaData) {
+	@record on;
+	if(@metaData.$history){
+		if(checkConfig("panda:$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+	string $product;
+	reg_query("\"software\\Panda Software\\Setup\"", "LPRODUCTNAME", $product);
+	if (defined($product)) {
+		@metaData.$product = $product;
+	}
+
+	string $installDate;
+	reg_query("\"software\\Panda Software\\Panda Antivirus Platinum\"", "FECHAINSTALACION", $installDate);
+	if (defined($installDate)) {
+		@metaData.$installDate = $installDate;
+	}
+
+	@metaData.$vendor = "Panda";
+	@metaData.$version = $version;
+
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: @metaData.$product (@metaData.$version)";
+}

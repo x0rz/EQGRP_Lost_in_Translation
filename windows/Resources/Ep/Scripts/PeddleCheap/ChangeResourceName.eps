@@ -1,0 +1,109 @@
+#-----------------------------------------------------------------------------
+# File: ChangeResourceName.eps
+#
+#  Changes the resourcename for the exe or dll
+#-----------------------------------------------------------------------------
+
+@echo off;
+
+if ($argc != 4) {
+	echo "Usage: $argv[0] <original_file> <resouce_version> <new_res_name>";
+	return false;
+}
+
+string $file	= $argv[1];
+int $resVer	= <int>$argv[2];
+string $newName = $argv[3];
+
+# ensure resource name is valid
+if (CheckName($resVer, $newName) == false) {
+    echo "* Name ($newName) is invalid for the given resource type ($resVer)";
+    return false;
+}
+
+@record on;
+
+# get full path to original file
+ifnot (`getdirectory -resources`) {
+	echo "* ChangeResourceName: Unable to get resources directory";
+	return false;
+}
+
+string $resDir = GetCmdData("dir");
+ifnot (defined($resDir[0])) {
+	echo "* ChangeResourceName: Unable to retrieve resources directory";
+	return false;
+}
+
+# see if it's already a full path
+string $fullPath;
+string $parts = Split(":", $file);
+if (sizeof($parts) > 1) {
+	# path is a full path
+	$fullPath = $file;
+} else {
+	$fullPath = "$resDir\\$file";
+}
+
+# get logs directory
+ifnot (`getdirectory -logs`) {
+	echo "* ChangeResouceName: Unable to get logs directory";
+	return false;
+}
+
+string $currentDir = GetCmdData("dir");
+ifnot (defined($currentDir[0])) {
+	echo "* ChangeResourceName: Unable to retrieve logs directory";
+	return false;
+}
+
+# get filename
+string $fileParts = Split("\\", $file);
+int $lastPart = sizeof($fileParts);
+$lastPart--;
+string $fileName = $fileParts[$lastPart];
+ifnot (defined($fileName[0])) {
+	echo "* ChangeResourceName: Unable to determine file name";
+	return false;
+}
+
+$fileName = "$currentDir\\$fileName-$newName";
+
+# change the resource name
+ifnot (`local run -command "$resDir\\PC\\Tools\\SetResourceName.exe \\"$fullPath\\" \\"$fileName\\" $resVer $newName" -redirect changeresource`) {
+	echo "* ChangeResourceName: Resource name change failed";
+	return false;
+}
+
+echo "New resource name set for $fileName";
+return SetCmdData(STRING, "file", $fileName);
+
+#---------------------------------------------------------------------------------
+Sub CheckName(IN int $resVer, IN string $newName)
+{
+
+    int $RES_APPINIT 	= 2;
+    int $RES_MEMSS	= 3;
+
+    string $parts = Split(".", $newName);
+    if (sizeof($parts) != 2) {
+	return false;
+    }
+
+    if (($resVer == $RES_APPINIT) && ($parts[1] != "dll")) {
+	# RES_APPINIT type must be a DLL
+	return false;
+    } else if (($resVer == $RES_MEMSS) && ($parts[1] != "exe")) {
+	# RES_MEMSS must be an exe
+	return false;
+    }
+
+    if (strlen($parts[0]) != 7) {
+        return false;
+    }
+
+    return true;
+    
+
+}	/* END CheckName */
+

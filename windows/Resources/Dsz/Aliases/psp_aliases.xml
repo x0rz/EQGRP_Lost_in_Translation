@@ -1,0 +1,28 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>psp_avoidance</Name>
+		<ReplaceBeforeArgs>script PSP/_Avoidance.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Dsz</ReplaceAfterArgs>
+
+		<Help>psp_avoidance options</Help>
+		<Help>  Options:</Help>
+		<Help>    &lt;-enable|-disable&gt;</Help>
+		<Help>       Enable or disable PSP avoidance</Help>
+		<Help>    [-no_drni]</Help>
+		<Help>       Do not enable/disable DRNI</Help>
+		<Help>    [-no_dswi]</Help>
+		<Help>       Do not enable/disable DSWI</Help>
+		<Help>    [-use_bh]</Help>
+		<Help>       Enable use of BH with DSWI</Help>
+		
+		<Options>
+			<Option>enable</Option>
+			<Option>disable</Option>
+			<Option>no_drni</Option>
+			<Option>no_dswi</Option>
+			<Option>use_bh</Option>
+		</Options>
+	</Alias>
+</Aliases>

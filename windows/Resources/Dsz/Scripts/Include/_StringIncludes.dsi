@@ -1,0 +1,516 @@
+@include "_Math.dsi";
+@include "_Arrays.dsi";
+
+#----------------------------------------------------
+# _ParseStrings
+#	Returns an array of strings from an REG_MULTI_SZ
+#----------------------------------------------------
+sub _ParseStrings( IN string $blob, OUT string $values ) {
+	int $index = 0;
+	int $interest = 4;
+	int $nulls = 0;
+	int $empties = 0;
+	$values[0] = "";
+
+	while( defined($blob) && strlen( $blob ) > 0 ) {
+		string $first;
+
+		_SubString( $blob, 0, $interest, $first );
+		_SubString( $blob, $interest, $blob  );
+		
+		string $number, $null;
+
+		_SubString( $first, 0, 2, $number );
+		_SubString( $first, 2, $null );
+
+		string $suffix;
+		if( $null == "00" ) {
+			# we are good
+			if( $number == "00" ) {
+				if( $nulls == 0 ) {
+					$empties++;
+				}
+			} else {
+				$nulls = 0;
+				_HexToChar( $number, $suffix );
+			}
+		} else {
+			echo "Bad";
+			# not in our code page
+		}
+		if( defined( $suffix ) ) {
+			while( $empties > 0 ) {
+				$empties--;
+				$index++;
+				$values[$index] = "";
+			}
+			StrCat($values[$index], $suffix);
+		}
+	}
+	return true;
+}
+
+#----------------------------------------------------
+sub _SubString( IN string $str, IN int $start, OUT string $substring ) {
+	if( !defined( $str ) ) {
+		return false;
+	}
+	return _SubString( $str, $start, strlen( $str ), $substring );
+}
+
+#----------------------------------------------------
+sub _SubString( IN string $str, IN int $start, IN int $stop, OUT string $substring ) {
+	if( $start >= $stop || !defined( $str ) ) {
+		return false;
+	}
+	if( $start >= strlen( $str ) ) {
+		$substring = "";
+		return true;
+	}
+
+	int $diff;
+
+	_Subtract( $stop, $start, $diff);
+
+	return RegexMatch( ".{$start}(.{$diff}).*", $str, $substring );
+}
+
+#----------------------------------------------------
+sub _StringToArray(IN string $str, OUT string $arrayOfString) {
+	if (!defined($str)) {
+		return false;
+	}
+	
+	for (int $j = 0; $j < sizeof($str); $j++) {
+		string $line = $str[$j];
+		if (!defined($line)) {
+			continue;
+		}
+		string $temp;
+		while (RegexMatch("([^\\n]*)\\n(.*)", $line, $temp)) {
+			if (!defined($temp)) {
+				return false;
+			}
+			
+			_AppendString($arrayOfString, $temp[0]);
+			$line = $temp[1];
+		}
+	}
+	return true;
+}
+
+#----------------------------------------------------
+sub _HexToInt( IN string $hex, OUT int $value ) {
+	$value = 0;
+
+	while( defined( $hex ) && strlen( $hex ) > 0 ) {
+		string $first;
+		int $temp;
+
+		_SubString( $hex, 0, 1, $first );
+		_SubString( $hex, 1, $hex );
+		if( !defined( $first ) ) {
+			return false;
+		}
+		_Base16ToBase10( $first, $temp );
+		if( !defined( $temp ) ) {
+			return false;
+		}
+
+		$value *= 16;
+		$value += $temp;
+	}
+	return true;
+}
+
+#----------------------------------------------------
+sub _Base16ToBase10( IN string $hex, OUT int $base10 ) {
+	$base10 = 0;
+	if( $hex == "a" || $hex == "A" ) {
+		$base10 = 10;
+	} else if( $hex == "b" || $hex == "B" ) {
+		$base10 = 11;
+	} else if( $hex == "c" || $hex == "C" ) {
+		$base10 = 12;
+	} else if( $hex == "d" || $hex == "D" ) {
+		$base10 = 13;
+	} else if( $hex == "e" || $hex == "E" ) {
+		$base10 = 14;
+	} else if( $hex == "f" || $hex == "F" ) {
+		$base10 = 15;
+	} else {
+		$base10 = <int> $hex;
+	}
+	return true;
+}
+
+#----------------------------------------------------
+sub _HexToChar( IN string $hex, OUT string $value ) {
+	int $localInt;
+	if( !_HexToInt( $hex, $localInt ) || !defined( $localInt ) ) {
+		return false;
+	}
+/*
+	if( $localInt == 0 ) {
+	} else if ( $localInt == 1 ) {
+	} else if ( $localInt == 2 ) {
+	} else if ( $localInt == 3 ) {
+	} else if ( $localInt == 4 ) {
+	} else if ( $localInt == 5 ) {
+	} else if ( $localInt == 6 ) {
+	} else if ( $localInt == 7 ) {
+	} else if ( $localInt == 8 ) {
+	} else if ( $localInt == 9 ) {
+	} else if ( $localInt == 10 ) {
+	} else if ( $localInt == 11 ) {
+	} else if ( $localInt == 12 ) {
+	} else if ( $localInt == 13 ) {
+	} else if ( $localInt == 14 ) {
+	} else if ( $localInt == 15 ) {
+	} else if ( $localInt == 16 ) {
+	} else if ( $localInt == 17 ) {
+	} else if ( $localInt == 18 ) {
+	} else if ( $localInt == 19 ) {
+	} else if ( $localInt == 20 ) {
+	} else if ( $localInt == 21 ) {
+	} else if ( $localInt == 22 ) {
+	} else if ( $localInt == 23 ) {
+	} else if ( $localInt == 24 ) {
+	} else if ( $localInt == 25 ) {
+	} else if ( $localInt == 26 ) {
+	} else if ( $localInt == 27 ) {
+	} else if ( $localInt == 28 ) {
+	} else if ( $localInt == 29 ) {
+	} else if ( $localInt == 30 ) {
+	} else if ( $localInt == 31 ) {
+	} else */
+	if ( $localInt == 32 ) {
+		$value = " ";
+	} else if ( $localInt == 33 ) {
+		$value = "!";
+	} else if ( $localInt == 34 ) {
+		$value = "\"";
+	} else if ( $localInt == 35 ) {
+		$value = "#";
+	} else if ( $localInt == 36 ) {
+		$value = "\$";
+	} else if ( $localInt == 37 ) {
+		$value = "\%";
+	} else if ( $localInt == 38 ) {
+		$value = "&";
+	} else if ( $localInt == 39 ) {
+		$value = "'";
+	} else if ( $localInt == 40 ) {
+		$value = "(";
+	} else if ( $localInt == 41 ) {
+		$value = ")";
+	} else if ( $localInt == 42 ) {
+		$value = "*";
+	} else if ( $localInt == 43 ) {
+		$value = "+";
+	} else if ( $localInt == 44 ) {
+		$value = ",";
+	} else if ( $localInt == 45 ) {
+		$value = "-";
+	} else if ( $localInt == 46 ) {
+		$value = ".";
+	} else if ( $localInt == 47 ) {
+		$value = "/";
+	} else if ( $localInt == 48 ) {
+		$value = "0";
+	} else if ( $localInt == 49 ) {
+		$value = "1";
+	} else if ( $localInt == 50 ) {
+		$value = "2";
+	} else if ( $localInt == 51 ) {
+		$value = "3";
+	} else if ( $localInt == 52 ) {
+		$value = "4";
+	} else if ( $localInt == 53 ) {
+		$value = "5";
+	} else if ( $localInt == 54 ) {
+		$value = "6";
+	} else if ( $localInt == 55 ) {
+		$value = "7";
+	} else if ( $localInt == 56 ) {
+		$value = "8";
+	} else if ( $localInt == 57 ) {
+		$value = "9";
+	} else if ( $localInt == 58 ) {
+		$value = ":";
+	} else if ( $localInt == 59 ) {
+		$value = ";";
+	} else if ( $localInt == 60 ) {
+		$value = "<";
+	} else if ( $localInt == 61 ) {
+		$value = "=";
+	} else if ( $localInt == 62 ) {
+		$value = ">";
+	} else if ( $localInt == 63 ) {
+		$value = "?";
+	} else if ( $localInt == 64 ) {
+		$value = "\@";
+	} else if ( $localInt == 65 ) {
+		$value = "A";
+	} else if ( $localInt == 66 ) {
+		$value = "B";
+	} else if ( $localInt == 67 ) {
+		$value = "C";
+	} else if ( $localInt == 68 ) {
+		$value = "D";
+	} else if ( $localInt == 69 ) {
+		$value = "E";
+	} else if ( $localInt == 70 ) {
+		$value = "F";
+	} else if ( $localInt == 71 ) {
+		$value = "G";
+	} else if ( $localInt == 72 ) {
+		$value = "H";
+	} else if ( $localInt == 73 ) {
+		$value = "I";
+	} else if ( $localInt == 74 ) {
+		$value = "J";
+	} else if ( $localInt == 75 ) {
+		$value = "K";
+	} else if ( $localInt == 76 ) {
+		$value = "L";
+	} else if ( $localInt == 77 ) {
+		$value = "M";
+	} else if ( $localInt == 78 ) {
+		$value = "N";
+	} else if ( $localInt == 79 ) {
+		$value = "O";
+	} else if ( $localInt == 80 ) {
+		$value = "P";
+	} else if ( $localInt == 81 ) {
+		$value = "Q";
+	} else if ( $localInt == 82 ) {
+		$value = "R";
+	} else if ( $localInt == 83 ) {
+		$value = "S";
+	} else if ( $localInt == 84 ) {
+		$value = "T";
+	} else if ( $localInt == 85 ) {
+		$value = "U";
+	} else if ( $localInt == 86 ) {
+		$value = "V";
+	} else if ( $localInt == 87 ) {
+		$value = "W";
+	} else if ( $localInt == 88 ) {
+		$value = "X";
+	} else if ( $localInt == 89 ) {
+		$value = "Y";
+	} else if ( $localInt == 90 ) {
+		$value = "Z";
+	} else if ( $localInt == 91 ) {
+		$value = "[";
+	} else if ( $localInt == 92 ) {
+		$value = "\\";
+	} else if ( $localInt == 93 ) {
+		$value = "]";
+	} else if ( $localInt == 94 ) {
+		$value = "^";
+	} else if ( $localInt == 95 ) {
+		$value = "_";
+	} else if ( $localInt == 96 ) {
+		$value = "`";
+	} else if ( $localInt == 97 ) {
+		$value = "a";
+	} else if ( $localInt == 98 ) {
+		$value = "b";
+	} else if ( $localInt == 99 ) {
+		$value = "c";
+	} else if ( $localInt == 100 ) {
+		$value = "d";
+	} else if ( $localInt == 101 ) {
+		$value = "e";
+	} else if ( $localInt == 102 ) {
+		$value = "f";
+	} else if ( $localInt == 103 ) {
+		$value = "g";
+	} else if ( $localInt == 104 ) {
+		$value = "h";
+	} else if ( $localInt == 105 ) {
+		$value = "i";
+	} else if ( $localInt == 106 ) {
+		$value = "j";
+	} else if ( $localInt == 107 ) {
+		$value = "k";
+	} else if ( $localInt == 108 ) {
+		$value = "l";
+	} else if ( $localInt == 109 ) {
+		$value = "m";
+	} else if ( $localInt == 110 ) {
+		$value = "n";
+	} else if ( $localInt == 111 ) {
+		$value = "o";
+	} else if ( $localInt == 112 ) {
+		$value = "p";
+	} else if ( $localInt == 113 ) {
+		$value = "q";
+	} else if ( $localInt == 114 ) {
+		$value = "r";
+	} else if ( $localInt == 115 ) {
+		$value = "s";
+	} else if ( $localInt == 116 ) {
+		$value = "t";
+	} else if ( $localInt == 117 ) {
+		$value = "u";
+	} else if ( $localInt == 118 ) {
+		$value = "v";
+	} else if ( $localInt == 119 ) {
+		$value = "w";
+	} else if ( $localInt == 120 ) {
+		$value = "x";
+	} else if ( $localInt == 121 ) {
+		$value = "y";
+	} else if ( $localInt == 122 ) {
+		$value = "z";
+	} else if ( $localInt == 123 ) {
+		$value = "{";
+	} else if ( $localInt == 124 ) {
+		$value = "|";
+	} else if ( $localInt == 125 ) {
+		$value = "}";
+	} else if ( $localInt == 126 ) {
+		$value = "~";
+#	} else if ( $localInt == 127 ) {
+	} else {
+		$value = "?";
+	}
+/*
+	} else if ( $localInt == 128 ) {
+	} else if ( $localInt == 129 ) {
+	} else if ( $localInt == 130 ) {
+	} else if ( $localInt == 131 ) {
+	} else if ( $localInt == 132 ) {
+	} else if ( $localInt == 133 ) {
+	} else if ( $localInt == 134 ) {
+	} else if ( $localInt == 135 ) {
+	} else if ( $localInt == 136 ) {
+	} else if ( $localInt == 137 ) {
+	} else if ( $localInt == 138 ) {
+	} else if ( $localInt == 139 ) {
+	} else if ( $localInt == 140 ) {
+	} else if ( $localInt == 141 ) {
+	} else if ( $localInt == 142 ) {
+	} else if ( $localInt == 143 ) {
+	} else if ( $localInt == 144 ) {
+	} else if ( $localInt == 145 ) {
+	} else if ( $localInt == 146 ) {
+	} else if ( $localInt == 147 ) {
+	} else if ( $localInt == 148 ) {
+	} else if ( $localInt == 149 ) {
+	} else if ( $localInt == 150 ) {
+	} else if ( $localInt == 151 ) {
+	} else if ( $localInt == 150 ) {
+	} else if ( $localInt == 152 ) {
+	} else if ( $localInt == 153 ) {
+	} else if ( $localInt == 154 ) {
+	} else if ( $localInt == 155 ) {
+	} else if ( $localInt == 156 ) {
+	} else if ( $localInt == 157 ) {
+	} else if ( $localInt == 158 ) {
+	} else if ( $localInt == 159 ) {
+	} else if ( $localInt == 160 ) {
+	} else if ( $localInt == 161 ) {
+	} else if ( $localInt == 162 ) {
+	} else if ( $localInt == 163 ) {
+	} else if ( $localInt == 164 ) {
+	} else if ( $localInt == 165 ) {
+	} else if ( $localInt == 166 ) {
+	} else if ( $localInt == 167 ) {
+	} else if ( $localInt == 168 ) {
+	} else if ( $localInt == 169 ) {
+	} else if ( $localInt == 170 ) {
+	} else if ( $localInt == 171 ) {
+	} else if ( $localInt == 172 ) {
+	} else if ( $localInt == 173 ) {
+	} else if ( $localInt == 174 ) {
+	} else if ( $localInt == 175 ) {
+	} else if ( $localInt == 176 ) {
+	} else if ( $localInt == 177 ) {
+	} else if ( $localInt == 178 ) {
+	} else if ( $localInt == 179 ) {
+	} else if ( $localInt == 180 ) {
+	} else if ( $localInt == 181 ) {
+	} else if ( $localInt == 182 ) {
+	} else if ( $localInt == 183 ) {
+	} else if ( $localInt == 184 ) {
+	} else if ( $localInt == 185 ) {
+	} else if ( $localInt == 186 ) {
+	} else if ( $localInt == 187 ) {
+	} else if ( $localInt == 188 ) {
+	} else if ( $localInt == 189 ) {
+	} else if ( $localInt == 190 ) {
+	} else if ( $localInt == 191 ) {
+	} else if ( $localInt == 192 ) {
+	} else if ( $localInt == 193 ) {
+	} else if ( $localInt == 194 ) {
+	} else if ( $localInt == 195 ) {
+	} else if ( $localInt == 196 ) {
+	} else if ( $localInt == 197 ) {
+	} else if ( $localInt == 198 ) {
+	} else if ( $localInt == 199 ) {
+	} else if ( $localInt == 200 ) {
+	} else if ( $localInt == 201 ) {
+	} else if ( $localInt == 202 ) {
+	} else if ( $localInt == 203 ) {
+	} else if ( $localInt == 204 ) {
+	} else if ( $localInt == 205 ) {
+	} else if ( $localInt == 206 ) {
+	} else if ( $localInt == 207 ) {
+	} else if ( $localInt == 208 ) {
+	} else if ( $localInt == 209 ) {
+	} else if ( $localInt == 210 ) {
+	} else if ( $localInt == 211 ) {
+	} else if ( $localInt == 212 ) {
+	} else if ( $localInt == 213 ) {
+	} else if ( $localInt == 214 ) {
+	} else if ( $localInt == 215 ) {
+	} else if ( $localInt == 216 ) {
+	} else if ( $localInt == 217 ) {
+	} else if ( $localInt == 218 ) {
+	} else if ( $localInt == 219 ) {
+	} else if ( $localInt == 220 ) {
+	} else if ( $localInt == 221 ) {
+	} else if ( $localInt == 222 ) {
+	} else if ( $localInt == 223 ) {
+	} else if ( $localInt == 224 ) {
+	} else if ( $localInt == 225 ) {
+	} else if ( $localInt == 226 ) {
+	} else if ( $localInt == 227 ) {
+	} else if ( $localInt == 228 ) {
+	} else if ( $localInt == 229 ) {
+	} else if ( $localInt == 230 ) {
+	} else if ( $localInt == 231 ) {
+	} else if ( $localInt == 232 ) {
+	} else if ( $localInt == 233 ) {
+	} else if ( $localInt == 234 ) {
+	} else if ( $localInt == 235 ) {
+	} else if ( $localInt == 236 ) {
+	} else if ( $localInt == 237 ) {
+	} else if ( $localInt == 238 ) {
+	} else if ( $localInt == 239 ) {
+	} else if ( $localInt == 240 ) {
+	} else if ( $localInt == 241 ) {
+	} else if ( $localInt == 242 ) {
+	} else if ( $localInt == 243 ) {
+	} else if ( $localInt == 244 ) {
+	} else if ( $localInt == 245 ) {
+	} else if ( $localInt == 246 ) {
+	} else if ( $localInt == 247 ) {
+	} else if ( $localInt == 248 ) {
+	} else if ( $localInt == 249 ) {
+	} else if ( $localInt == 250 ) {
+	} else if ( $localInt == 251 ) {
+	} else if ( $localInt == 250 ) {
+	} else if ( $localInt == 252 ) {
+	} else if ( $localInt == 253 ) {
+	} else if ( $localInt == 254 ) {
+	} else if ( $localInt == 255 ) {
+	} else {
+	}
+*/
+	return true;
+}

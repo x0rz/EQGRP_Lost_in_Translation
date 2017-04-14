@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="Name">NOPEN</entry>
+<entry key="NormalBg">0xcccccc</entry>
+<entry key="NormalFg">0x000000</entry>
+<entry key="NoticeBg">0xcccccc</entry>
+<entry key="NoticeFg">0x0000ee</entry>
+<entry key="WarningBg">0xcccccc</entry>
+<entry key="WarningFg">0x888800</entry> <!-- NOPEN uses 0xffff00, but that's unreadable in DSZ -->
+<entry key="ErrorBg">0xcccccc</entry>
+<entry key="ErrorFg">0xcd0000</entry>
+</properties>

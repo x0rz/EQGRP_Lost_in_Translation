@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName='Run_Lp' providerType='module'>
+
+    <Command id="0" name="Run">
+    
+		<Help>Executes a given process</Help>
+		
+		<Input>
+		
+			<Option name='command' optional='false'>
+				<Argument name='command_string' data='cmd'/>
+				<Help>The process to be created (plus arguments)</Help>
+			</Option>
+			
+			<Option name='redirect' optional='true' group='waitType'>
+				<Argument name='cmdInput' data='cmdInput' optional='true'/>
+				<Set data='redirect' value='true'/>
+				<Set data='wait' value='true'/>
+				<Help>Redirect executable input and output to the console.</Help>
+				<Help>If input is specified, it will be written to the</Help>
+				<Help>newly created process.</Help>
+			</Option>
+
+			<Option name='noinput' optional='true'>
+				<Set data='noinput' value='true'/>
+				<Help>Don't perform input redirection.</Help>
+			</Option>
+			
+			<Option name='wait' optional='true' group='waitType'>
+				<Set data='wait' value='true'/>
+				<Help>Waits for the executable to return before ending.</Help>
+			</Option>
+			
+			<Option name='input' optional='true'>
+				<Help>Sets the redirect input stream type (default=ASCII).</Help>
+				
+				<Argument name='type'>
+					<Value string='utf8'>
+						<Set data='input' value='0'/>
+					</Value>
+					<Value string='ascii'>
+						<Set data='input' value='0'/>
+					</Value>
+					<Value string='unicode'>
+						<Set data='input' value='1'/>
+					</Value>
+					<Value string='oem'>
+						<Set data='input' value='2'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='output' optional='true'>
+				<Help>Sets the redirect output stream type (default=auto)</Help>
+				
+				<Argument name='type'>
+					<Value string='auto'>
+						<Set data='output' value='0'/>
+					</Value>
+					<Value string='unicode'>
+						<Set data='output' value='1'/>
+					</Value>
+					<Value string='utf8'>
+						<Set data='output' value='2'/>
+					</Value>
+					<Value string='ascii'>
+						<Set data='output' value='2'/>
+					</Value>
+					<Value string='oem'>
+						<Set data='output' value='3'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='directory' optional='true'>
+				<Argument name='dir' data='directory'/>
+				<Help>Run the newly created process from the given directory.</Help>
+			</Option>
+
+			<Option name='user' optional='true'>
+				<Set data='changeUser' value='true'/>
+				<Argument name='uid' data='uid'/>
+				<Argument name='gid' data='gid'/>
+				<Help>Run the newly created process as a particular user (unix only)</Help>
+			</Option>
+			
+			<Option name='allowdsz' optional='true'>
+				<Set data='allowdsz' value='true'/>
+				<Help>Allows running of DSZ commands with input prefx (prefix='-')</Help>
+			</Option>
+			
+			<Option name='background' optional='true'>
+				<Set data='background' value='true'/>
+				<Require>redirect</Require>
+				<Help>Send command to background after exe is started.</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='cmd' type='string'/>
+			<Data name='input' type='uint8_t' default='0'/>
+			<Data name='output' type='uint8_t' default='0'/>
+			<Data name='redirect' type='bool' default='false'/>
+			<Data name='wait' type='bool' default='false'/>
+			<Data name='cmdInput' type='string'/>
+			<Data name='directory' type='string'/>
+			<Data name='noinput' type='bool' default='false'/>
+			<Data name='changeUser' type='bool' default='false'/>
+			<Data name='uid' type='uint32_t'/>
+			<Data name='gid' type='uint32_t'/>
+			<Data name='allowdsz' type='bool' default='false'/>
+			<Data name='background' type='bool' default='false'/>
+		</Output>
+		
+	</Command>
+	
+</Plugin>

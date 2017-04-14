@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31323'>
+ <Command id='16' name='groups'>
+  <Help>Returns the list of (global or local) groups on the given machine</Help>
+  <Input>
+   <Option name="local" optional="false" group="type">
+    <Set data='local' value='true' />
+    <Argument name="remote_server" data="servername" optional="true" />
+    <Help>Get local groups</Help>
+   </Option>
+   <Option name="global" optional="false" group="type">
+    <Set data='local' value='false' />
+    <Argument name="remote_server" data="servername" optional="true" />
+    <Help>Get remote groups</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='local' type='bool' default='true'/>
+   <Data name='servername' type='string'/>
+  </Output>
+ </Command>
+</Plugin>

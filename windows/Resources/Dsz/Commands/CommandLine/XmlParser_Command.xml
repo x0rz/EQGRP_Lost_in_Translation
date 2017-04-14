@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="XmlParser_Lp" providerType="module">
+
+    <Command name="XmlParser" id="0">
+        <Help>Parses an XML file</Help>
+
+        <Input>
+			<Option name='file' optional='false'>
+				<Help>The XML file</Help>
+				<Argument name='name' data='xml'/>
+			</Option>
+			
+			<Option name='schema' optional='true'>
+				<Help>The XML schema</Help>
+				<Argument name='name' data='schema'/>
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name='xml' type='string'/>
+			<Data name='schema' type='string'/>
+        </Output>
+    </Command>
+</Plugin>

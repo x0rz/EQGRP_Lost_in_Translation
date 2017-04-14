@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_Portmap_Tasking.pyo' providerType='script'>
+
+    <Command name="Portmap" id="0">
+
+		<Help>Shows open ports and the process to which they belong</Help>
+
+		<Input>
+			<Option name="max" optional="true">
+				<Help>The maximum number of ports to display (default=500)</Help>
+				
+				<Argument name="#" data="maxports" />
+			</Option>
+
+			<Option name="memory" optional="true">
+				<Help>The number of bytes to use for open handle list (default=250k)</Help>
+				
+				<Argument name="#" data="memory" />
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='maxports' type='uint32_t' default='500'/>
+			<Data name='memory'   type='uint32_t' default='256000'/>
+		</Output>
+
+    </Command>
+</Plugin>

@@ -1,0 +1,41 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31368'>
+
+  <Command id='16' name='routemodify'>
+
+    <Help>Adds and removes routes from the route table</Help>
+
+    <Input>
+     <Option name="add" optional="false" group="type">
+      <Help>Adds a given route</Help>
+      <Argument name="destination" data="addDest"   optional="false" />
+      <Argument name="netmask"     data="netmask"   optional="false" />
+      <Argument name="gateway"     data="gateway"   optional="false" />
+      <Argument name="interface"   data="interface" optional="false" />
+      <Argument name="metric"      data="metric"   optional="true" />
+      <Set data="type" value="1" />
+     </Option>
+     <Option name="delete" optional="false" group="type">
+      <Help>Deletes a given route</Help>
+      <Argument name="destination" data="addDest"   optional="false" />
+      <Argument name="netmask"     data="netmask"   optional="false" />
+      <Argument name="gateway"     data="gateway"   optional="false" />
+      <Argument name="interface"   data="interface" optional="false" />
+      <Set data="type" value="2" />
+     </Option>
+    </Input>
+
+    <Output>
+     <Data name="type"      type="uint8_t"              />
+     <Data name="addDest"   type="string"               />
+     <Data name="delDest"   type="string"               />
+     <Data name="netmask"   type="string"               />
+     <Data name="gateway"   type="string"               />
+     <Data name="interface" type="string"               />
+     <Data name="metric"    type="uint32_t" default="1" />
+    </Output>
+
+  </Command>
+
+</Plugin>

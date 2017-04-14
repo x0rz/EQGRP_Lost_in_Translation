@@ -1,0 +1,38 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='42' name='LongTerm'>
+
+    <Help>Controls and queries use of long-term plugins</Help>
+
+    <Input>
+	<Option name='list' optional='false' group='type'>
+	    <Help>Lists stored plugins</Help>
+	    <Set data='type' value='0'/>
+	</Option>
+	<Option name='load' optional='false' group='type'>
+	    <Help>Loads stored plugins.  If no Id is given, all available are loaded.</Help>
+	    <Set data='type' value='1'/>
+	    <Argument name='id' data='id' optional='true'/>
+	</Option>
+	<Option name='delete' optional='false' group='type'>
+	    <Help>Deletes a stored plugin</Help>
+	    <Set data='type' value='2'/>
+	    <Argument name='id' data='id' optional='false'/>
+	</Option>
+	<Option name='store' optional='false' group='type'>
+	    <Help>Stores a given plugin</Help>
+	    <Set data='type' value='3'/>
+	    <Argument name='id' data='id' optional='false'/>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='type' type='uint8_t'/>
+	<Data name='id' type='uint16_t' default='0'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

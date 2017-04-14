@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_DiskSpace_Tasking.pyo' providerType='script'>
+
+  <Command id="0" name='DiskSpace'>
+
+    <Help>Returns number of bytes available on the specified resource</Help>
+
+    <Input>
+        <Argument name='directory' optional="true" data='directory'>
+        	<Help>Specify drive or directory to query about available space. If not specified, available space is listed for all fixed drives.</Help>
+		</Argument>
+    </Input>
+
+    <Output>
+		<Data name='directory' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>
+

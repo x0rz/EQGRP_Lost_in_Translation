@@ -1,0 +1,10 @@
+<Software value="PSP">
+	<Vendor value="Rising">
+		<Product value="Antivirus">
+			<Safetycheck command="eventlogedit" handlerfunc="ops.psp.genericSafetyHandlers.notRecommended" />
+			<Safetycheck command="audit" handlerfunc="ops.psp.genericSafetyHandlers.notRecommended" />
+			<Safetycheck command="passworddump" handlerfunc="ops.psp.genericSafetyHandlers.notRecommended" />
+			<Safetycheck command="authentication" handlerfunc="ops.psp.genericSafetyHandlers.notRecommended" />
+		</Product>
+	</Vendor>
+</Software>

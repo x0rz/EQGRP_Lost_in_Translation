@@ -1,0 +1,40 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+  <Command id='4' name='Available'>
+
+    <Help>
+	Determines whether a given command is available or not.  Optionally loads any
+	required modules.
+    </Help>
+
+	<Input>
+		<Option name='command' optional='false'>
+			<Argument name='name' data='command'/>
+		</Option>
+
+		<Option name='isloaded' optional='true' group='load'>
+			<Set data='load' value='1'/>
+			<Help>Check if all required modules are loaded</Help>
+		</Option>
+		
+		<Option name='load' optional='true' group='load'>
+			<Set data='load' value='2'/>
+			<Help>Load any required modules</Help>
+		</Option>
+		
+		<Option name='query' optional='true' group='load'>
+			<Set data='load' value='3'/>
+			<Help>Query state of any required modules</Help>
+		</Option>
+	</Input>
+
+    <Output>
+		<Data name='command' type='string'/>
+		<Data name='load' type='uint8_t' default='0'/>
+	</Output>
+    
+  </Command>
+
+</Plugin>

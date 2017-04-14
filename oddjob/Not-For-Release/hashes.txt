@@ -1,0 +1,5 @@
+325770d2e11bfb36d59d94bd4113ca5712877a39 *../Binaries/oddjob_builder/bin/oddjob_v3_x64.dll
+742604660ba4aa04c44ad4d73c2b98ad24204b2a *../Binaries/oddjob_builder/bin/oddjob_v3_x64.exe
+cbbbb1cf3616fa794a722c68e41824cd8f017982 *../Binaries/oddjob_builder/bin/oddjob_v3_x86.dll
+8c930b130e82762581f1f9b3510442809df86d22 *../Binaries/oddjob_builder/bin/oddjob_v3_x86.exe
+68f0f4f78426dbf2a9e3abc4b4aa8d23ebc1e335 *../Binaries/oddjob_builder/builder/oddjob_config_v3.exe

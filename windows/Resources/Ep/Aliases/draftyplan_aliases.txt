@@ -1,0 +1,12 @@
+draftyplan		script DraftyPlan.eps
+dp_install		script DraftyPlan\Install.eps pdresy
+dp_uninstall		script DraftyPlan\Uninstall.eps pdresy
+dp_load			driverload -name pdresy
+dp_unload		driverunload -name pdresy
+dp_verify		script DraftyPlan\VerifyInstall.eps pdresy
+dp_running		script DraftyPlan\VerifyRunning.eps pdresy
+dp_status		dp_getprocessid -name pdresy
+dp_updateexe		script DraftyPlan\\UpdateExe.eps pdresy
+dp_clearid		dp_clearprocessid -name pdresy
+dp_terminateexe		dp_terminateprocess -name pdresy
+dp_restartexe		dp_restartprocess -name pdresy

@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+<Aliases>
+	<Alias>
+		<Name>darkpulsar</Name>
+		<ReplaceBeforeArgs>python dapu.py -project DaPu -args " </ReplaceBeforeArgs>
+		<ReplaceAfterArgs> "</ReplaceAfterArgs>
+		<Help>Configures the FUZZBUNCH files for DARKPULSAR
+Usage: darkpulsar -k [full_path_to_keyfile] -t [target_IP] -p [target_port]</Help>
+	</Alias>	
+</Aliases>

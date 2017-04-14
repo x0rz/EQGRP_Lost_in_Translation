@@ -1,0 +1,16 @@
+<Plugin id="20">
+	<Name>Terminal</Name>
+	<Class>ddb.dsz.plugin.terminal.Terminal</Class>
+	<Description>A command console</Description>
+	<Logo>images/terminal.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>true</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>true</UserClose>
+	<CanClose>true</CanClose>
+	<VerifyClose>true</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

@@ -1,0 +1,4 @@
+fw_status	script	XpFirewall\XpFirewallStatus.eps
+fw_list		script	XpFirewall\XpFirewallList.eps
+fw_add		script	XpFirewall\XpFirewallAdd.eps
+fw_delete	script	XpFirewall\XpFirewallDelete.eps

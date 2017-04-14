@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_GeZu_KernelMemory_Tasking.pyo' providerType='script'>
+
+	<Command name='GeZu_KernelMemory' id='0'>
+
+		<Help>Kernel memory dumper.</Help>
+
+		<Input>
+			<Option name='baseAddress' optional='false'>
+				<Help>The virtual address of the start of memory to grab (with a 0x prefix)</Help>
+				<Argument name='baseAddress' data='baseAddress'/>
+			</Option>
+			<Option name='size' optional='false'>
+				<Help>Length of memory to retrieve as an integer</Help>
+				<Argument name='size' data='size'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='baseAddress' type='uint64_t' default='0xFFFFFFFFFFFFFFFF' />
+			<Data name='size' type='uint64_t' default='0xFFFFFFFFFFFFFFFF' />
+		</Output>
+
+	</Command>
+
+</Plugin>

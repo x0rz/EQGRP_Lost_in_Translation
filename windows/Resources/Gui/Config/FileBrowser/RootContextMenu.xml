@@ -1,0 +1,42 @@
+<ContextMenu>
+
+	<!--
+		acceptable substitutes are:
+		{id},
+		{name},
+		{path},
+		{fullpath}
+	-->
+	<Entry live="true" replay="true">
+		<Verify>false</Verify>
+		<Label>Drives</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>drives</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry live="true" replay="true">
+		<Verify>false</Verify>
+		<Label>Dirwalk</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>dir</Line>
+			<Line>path=*</Line>
+			<Line>name=*</Line>
+			<Line>recursive=true</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<!--
+	<Entry>
+		<Verify>false</Verify>
+		<Label>Properties</Label>
+		<Action>
+			<Line>properties</Line>
+			<Line>{id}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	-->
+</ContextMenu>

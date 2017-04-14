@@ -1,0 +1,267 @@
+#-------------------------------------------------------------------------------
+# File: mcafee87.eps
+# Description: Checks the status of McAfee Framework Services 8.7 and logging
+#
+# v0.1 2009-01-07 Initial creation - uses "safe" grep function
+#-------------------------------------------------------------------------------
+@include "PerlFunctions.epm";
+@include "PSPHelpers.epm";
+
+#string $root = GetEnv("_SYSDIRROOT");
+string $system32 = GetEnv("SYSPATH");
+string $rootDrive = split(":",$system32);
+int $major = GetEnv("OSMAJOR");
+int $minor = GetEnv("OSMINOR");
+int $fsize;
+string $mDate;
+string $mTime;
+
+echo "\r+++++++++++++++++++\r";
+echo "Pulling registry values to help determine current enforcement settings.\rThe default value is: AccessProtection{..}\r";
+
+@echo off;
+@record on;
+`regquery -hive L -subkey "software\\McAfee\\VSCore\\On Access Scanner\\BehaviourBlocking" -value AccessProtectionUserRules`;
+string $regResults = GetCmdData("value_data");
+@record off;
+@echo on;
+
+#crazy hex hash
+string %lookFor;
+%lookFor{'55736572456E666F7263652041564F30342031'} = "BLOCK remote creation/modification of executable and configuration files\r	!!!WILL PREVENT ZB ATTEMPT; USE ZZ!!!";
+#%lookFor{'55736572456E666F7263652041564F30342030'} = "FALSE = Block remote creation/modification of executable and configuration files"; 
+%lookFor{'557365725265706F72742041564F30342031'} = "LOG Remote creation/modification of executable and configuration files\r	!!!WILL LOG ZB ATTEMPT; USE ZZ!!!";
+#%lookFor{'557365725265706F72742041564F30342030'} = "FALSE = Log remote creation/modification of executable and configuration files";
+%lookFor{'55736572456E666F7263652041564F30372031'} = "BLOCK Svchost executing non-Windows executables\r	!!!WILL LOG DRIVERS -LIST IN DSZ!!!";
+#%lookFor{'55736572456E666F7263652041564F30372030'} = "FALSE = Block svchost executing non-Windows executables"; 
+%lookFor{'557365725265706F72742041564F30372031'} = "LOG Svchost executing non-Windows executables\r	!!!WILL LOG DRIVERS -LIST IN DSZ!!!"; 
+#%lookFor{'557365725265706F72742041564F30372030'} = "FALSE = Log svchost executing non-Windows executables"; 
+%lookFor{'55736572456E666F7263652043573031612031'} = "BLOCK Programs registering to autorun\r	!!!WILL PREVENT PC INSTALL!!!"; 
+#%lookFor{'55736572456E666F7263652043573031612030'} = "FALSE = Block programs registering to autorun"; 
+%lookFor{'557365725265706F72742043573031612031'} = "LOG Programs registering to autorun\r	!!!WILL LOG PC INSTALL!!!"; 
+#%lookFor{'557365725265706F72742043573031612030'} = "FALSE = Log programs registering to autorun"; 
+%lookFor{'55736572456E666F7263652043573031622031'} = "BLOCK Programs registering as a service\r	!!!WILL PREVENT DG/FLAV/ST/OLY/YAK/DS INSTALL!!!";
+#%lookFor{'55736572456E666F7263652043573031622030'} = "FALSE = Block programs registering as a service";
+%lookFor{'557365725265706F72742043573031622031'} = "LOG Programs registering as a service\r	!!!WILL LOG DG/FLAV/ST/OLY/YAK/DS INSTALL!!!"; 
+#%lookFor{'557365725265706F72742043573031622030'} = "FALSE = Log programs registering as a service";
+%lookFor{'55736572456E666F7263652043573032612031'} = "BLOCK Creation of new EXE/DLL in the Windows folder\r	!!!WILL PREVENT PC/OLY/UR/YAK INSTALL!!!"; 
+#%lookFor{'55736572456E666F7263652043573032612030'} = "FALSE = Block creation of new EXE/DLL in the Windows folder"; 
+%lookFor{'557365725265706F72742043573032612031'} = "LOG Creation of new EXE/DLL in the Windows folder\r	!!!WILL LOG PC/OLY/UR/YAK INSTALL!!!"; 
+#%lookFor{'557365725265706F72742043573032612030'} = "FALSE = Log creation of new EXE/DLL in the Windows folder"; 
+%lookFor{'55736572456E666F7263652041564F30382031'} = "BLOCK Windows process spoofing\r	!!!DONT USE COMMON WINDOWS NAMES!!!";
+#%lookFor{'55736572456E666F7263652041564F30382030'} = "FALSE = Block Windows process spoofing";
+%lookFor{'557365725265706F72742041564F30382031'} = "LOG Windows process spoofing\r	!!!DONT USE COMMON WINDOWS NAMES!!!";
+#%lookFor{'557365725265706F72742041564F30382030'} = "FALSE = Log Windows process spoofing";
+%lookFor{'55736572456E666F7263652041565730322031'} = "BLOCK Cached files from password and email address stealers \r	!!!WILL PREVENT UR/MB RUNNING!!!";
+#%lookFor{'55736572456E666F7263652041565730322030'} = "FALSE = Block cached files from password and email address stealers";
+%lookFor{'557365725265706F72742041565730322031'} = "LOG Cached files from password and email address stealers\r	!!!WILL PREVENT UR/MB RUNNING!!!";
+#%lookFor{'557365725265706F72742041565730322030'} = "FALSE = Log cached files from password and email address stealers";
+%lookFor{'557365725265706f72742041534f30312031'} = "LOG Protect Internet Explorer favorites and settings \r	!!!WILL LOG ANY VAL/OLY/UR CONNECTIONS!!!";
+#%lookFor{'557365725265706f72742041534f30312030'} = "FALSE = Log Protect Internet Explorer favorites and settings \rWas enabled at some point. Would have logged ANY VAL/OLY/UR connections";
+%lookFor{'55736572456e666f7263652041534f30312031'} = "BLOCK Protect Internet Explorer favorites and settings \r	!!!WILL BLOCK AND LOG ANY VAL/OLY/UR CONNECTIONS!!!";
+#%lookFor{'55736572456e666f7263652041534f30312030'} = "FALSE = Block Protect Internet Explorer favorites and settings \rWas enabled at some point. Would have blocked/logged ANY VAL/OLY/UR connections";
+%lookFor{'557365725265706f72742041535730322031'} = "LOG Prevent all programs from running files from the Temp folder\r	!!!WILL LOG DMW RUNNING!!!";
+#%lookFor{'557365725265706f72742041535730322030'} = "FALSE = Log Prevent all programs from running files from the Temp folder";
+%lookFor{'55736572456e666f7263652041535730322031'} = "BLOCK Prevent all programs from running files from the Temp folder\r	!!!WILL LOG DMW RUNNING!!!";
+#%lookFor{'55736572456e666f7263652041535730322030'} = "FALSE = Block Prevent all programs from running files from the Temp folder";
+%lookFor{'55736572456e666f7263652043573032622031'} = "BLOCK Creation of new EXE/DLL in the Program Files folder\r	!!!WATCH WHERE YOU DROP FILES!!!"; 
+#%lookFor{'55736572456e666f7263652043573032622030'} = "FALSE = Block creation of new EXE/DLL in the Program Files folder\r	Was enabled at some time."; 
+%lookFor{'557365725265706f72742043573032622031'} = "LOG Creation of new EXE/DLL in the Program Files folder\r	!!!WATCH WHERE YOU DROP FILES!!!"; 
+#%lookFor{'557365725265706f72742043573032622030'} = "FALSE = Log creation of new EXE/DLL in the Program Files folder\r	!!!Watch where you drop files!!!"; 
+%lookFor{'55736572456e666f72636520435730362031'} = "BLOCK HTTP Communication\r	!!!AVOID PORTS 80/443/CANGETOUT!!!";
+%lookFor{'557365725265706f727420435730362031'} = "LOG HTTP Communication\r	!!!AVOID PORTS 80/443/CANGETOUT!!!";
+#%lookFor{'55736572456e666f72636520435730362030'} = "FALSE = Block HTTP Communication";
+#%lookFor{'557365725265706f727420435730362030'} = "FALSE = Log HTTP Communication";
+%lookFor{'55736572456e666f72636520435730352031'} = "BLOCK FTP Communication\r	!!!AVOID PORT 20!!!";
+%lookFor{'557365725265706f727420435730352031'} = "LOG FTP Communication\r	!!!AVOID PORT 20!!!";
+#%lookFor{'55736572456e666f72636520435730352030'} = "FALSE = Block FTP Communication";
+#%lookFor{'557365725265706f727420435730352030'} = "FALSE = Log FTP Communication";
+%lookFor{'55736572456e666f72636520434f30362031'} = "BLOCK Installation of Browser Helper Objects and Shell Extensions";
+%lookFor{'557365725265706f727420434f30362031'} = "LOG Installation of Browser Helper Objects and Shell Extensions";
+#%lookFor{'55736572456e666f72636520434f30362030'} = "FALSE = Block installation of Browser Helper Objects and Shell Extensions";
+#%lookFor{'557365725265706f727420434f30362030'} = "FALSE = Log installation of Browser Helper Objects and Shell Extensions";
+%lookFor{'55736572456e666f72636520434f31322031'} = "BLOCK Protect Network Settings\r	!!!WILL BLOCK PC2 INSTALL!!!";
+#%lookFor{'55736572456e666f72636520434f31322030'} = "FALSE = (Block) Protect Network Setting";
+%lookFor{'557365725265706f727420434f31322031'} = "LOG Protect Network Settings\r	!!!WILL LOG PC2 INSTALL!!!";
+#%lookFor{'557365725265706f727420434f31322030'} = "FALSE = Log Protect Network Setting";
+%lookFor{'55736572456E666F726365204153573031'} = "BLOCK Prevent installation of new CLSIDs, APPIDs and TYPELIBs\r	!!!WILL BLOCK VAL INSTALL!!!";
+%lookFor{'557365725265706F72742041535730312031'} = "LOG Prevent installation of new CLSIDs, APPIDs and TYPELIBs\r	!!!WILL LOG VAL INSTALL!!!";
+%lookFor{'55736572456E666F7263652041564F31302031'} = "BLOCK Prevent mass mailing worm from sending mail\r	!!!AVOID PORT 25/110/587!!!";
+%lookFor{'557365725265706F72742041564F31302031'} = "LOG Prevent mass mailing worm from sending mail\r	!!!AVOID PORT 25/110/587!!!";
+%lookFor{'557365725265706F7274204F4230312031'} = "LOG Make shares read-only\r	!!!WILL LOG ZB ATTEMPT!!!";
+%lookFor{'55736572456E666F726365204F4230312031'} = "BLOCK Make shares read-only\r	!!!WILL BLOCK ZB ATTEMPT!!!";
+%lookFor{'557365725265706F7274204F4230312031'} = "BLOCK Block read and write access to all shares\r	!!!WILL BLOCK ZB ATTEMPT!!!";
+%lookFor{'55736572456E666F726365204F4230312031'} = "LOG Block read and write access to all shares\r	!!!WILL LOG ZB ATTEMPT!!!";
+%lookFor{'55736572537472696E67'} = "!!!POSSIBLE CUSTOM RULES. REVIEW ASCII IN REGISTRY KEY!!!";
+
+string $key;
+#if they have the default value, don't even bother checking
+string $defaultSettings = "41636365737350726f74656374696f6e207b0d0a7d0d0a";
+if( $defaultSettings == $regResults){
+	echo "They are using the default settings for a McAfee 8.7 install.\rYou should be good";
+}else{
+	#let the fun begin. 
+	echo "They are not using the default settings.\rAttempting to display any troublesome settings. No output = safe\r";
+	@echo off ;
+	bool $status = TRUE;
+	foreach $key(keys %lookFor){
+		if(grep($key,$regResults,$status)){
+			echo "%lookFor{'$key'}\n";
+		}
+	}
+	#did any of the call's to grep crash the function due to string size?
+	ifnot($status){
+		#struct defined in PSPHelpers.epm
+		metaData @metaData;
+		init(@metaData);
+		string $scripts = GetEnv("SCRIPTSDIR");
+		@echo on;
+		echo "!!!Targets registry value is very large. Indicitive of custom rule sets.!!!\rAttempting to parse known values...";
+		ifnot(WriteFile("@metaData.$logdir\\mcafee-reg-overflow.txt",TRUE,$regResults)){
+			echo "\r!!!I couldn't write the registry values to disk!!!\r";
+		}
+		@echo off;
+	    
+		@record on;
+		`local run -command "perl $scripts\\PSP\\mcafee-parse.pl @metaData.$logdir\\mcafee-reg-overflow.txt" -redirect`;
+		#when called via checkpsp, you must manually force the output from the run -command to print
+		string $perlOut = GetCmdData("output");
+		string $tmpVar;
+		@echo on;
+		foreach $tmpVar($perlOut){
+			echo $tmpVar;
+		}
+		@echo off;
+		
+		@record on;
+		`local run -command "perl $scripts\\PSP\\mcafee_hex2ascii.pl @metaData.$logdir\\mcafee-reg-overflow.txt" -redirect`;
+		string $perlOut3 = GetCmdData("output");
+		WriteFile("@metaData.$logdir\\mcafeecustomrules.txt",TRUE,$perlOut3);
+		echo "***********************************************************************";
+		echo "!!!!!!Wrote mcafeecustomrules.txt...open to review custom settings!!!!!!";
+		echo "***********************************************************************";
+	 }	 
+}
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
+pause;
+echo "\rChecking to see if we are calling home to an ePO server...";
+#what OS are we on? Found out 2k3 boxes may put things in different locations than XP boxes. 
+#Not only does OS matter, other mcafee software changes things. just check both locations...
+string $2k3Path = "Documents and Settings\\All Users\\Application Data\\Mcafee\\Common Framework";
+string $xpPath = "Documents and Settings\\All Users\\Application Data\\McAfee\\Common Framework";
+string $sslist = "$rootDrive[0]:\\$2k3Path\\ServerSiteList.xml";
+string $sslist2 = "$rootDrive[0]:\\$xpPath\\ServerSiteList.xml";
+string $smlist = "$rootDrive[0]:\\$2k3Path\\SiteMapList.xml";
+string $smlist2 = "$rootDrive[0]:\\$xpPath\\SiteMapList.xml";
+string $agent = "$rootDrive[0]:\\$2k3Path\\Agent.ini";
+string $agent2 = "$rootDrive[0]:\\$xpPath\\Agent.ini";
+string $xmlDir = "$rootDrive[0]:\\$2k3Path\\AgentEvents";
+string $xmlDir2 = "$rootDrive[0]:\\$xpPath\\AgentEvents";
+
+@echo off;
+@record on;
+bool $ssl = `getfileattribs -file "$sslist"`;
+bool $sml = `getfileattribs -file "$smlist"`;
+bool $aml = `getfileattribs -file "$agent"`;
+bool $ssl2 = `getfileattribs -file "$sslist2"`;
+bool $sml2 = `getfileattribs -file "$smlist2"`;
+bool $aml2 = `getfileattribs -file "$agent2"`;
+bool $xmlDirCheck = `getfileattribs -file "$xmlDir"`;
+bool $xmlDirCheck2 = `getfileattribs -file "$xmlDir2"`;
+@record off;
+@echo on;
+
+#ServerSiteList.xml tells us where the ePO server lives
+#SiteMapList.xml is created when the software tries to update itself for the first time
+#Agent.ini should aways exist, if we can't find it, we are looking in the wrong place
+#If we can't find one of the .xml files, this is a very recent install
+@echo on;
+if ( ($ssl && $sml) || ($ssl2 && $sml2) )
+{
+	echo "\r***********\rServerSiteList.xml file exists\rLooks like we have an ePO server somewhere.\r***********\r";
+	if( prompt "Try to grep out the ePO Server IP?" ) { `grep -mask "$sslist" -pattern ServerIP`; }
+	if( prompt "Would you like to pull back the configuration file for inspection?" ) { `copyget "$sslist"`; }
+   	pause;
+
+}else if ( ($sml && ($ssl != true) ) || ($sml2 && ($ssl2 != true) ) ){
+	#Stand alone
+	echo "\rSiteMapList.xml = True\rServerSiteList.xml = False\rLooks like a stand alone install.\r";
+
+}else if( ( ($ssl != true) && ($sml != true) && ($aml != true) ) && ( ($ssl2 != true) && ($sml2 != true) && ($aml2 != true) ) ){
+	#Wrong path?
+	echo "\r***************\rCannot Verify Status!\rMost likely cause is the files are not in the default location.\rI checked:\r";
+	echo "$sslist";
+	echo "$smlist";
+	echo "$sslist2";
+	echo "$smlist2 \r***************\r";
+	if (prompt "The rest of these checks will probably fail. Should I stop?") { return false; }
+
+}else if( ($aml && $ssl) || ($aml2 && $ssl2) ){
+	#Fresh agent install? Needs manual verification
+	echo "\r***********\rServerSiteList.xml file exists but SiteMapList.xml does not.\rLooks like we have an ePO server somewhere.\rThis may be a very recently installed box.\rPAY ATTENTION! NETWORK SECURITY MAY BE INCREASING!\r***********\r";
+	if( prompt "Try to grep out the ePO Server IP?" ) { `grep -mask "$sslist" -pattern ServerIP`; }
+	if( prompt "Would you like to pull back the configuration file for inspection?" ) { `copyget "$sslist"`; }
+   	pause;
+}else if( $aml || $aml2 ){
+	#We are looking in the right spot
+	echo "\r***********\rThis looks like a brand new install. No ePO server found.\rPAY ATTENTION! NETWORK SECURITY MAY BE INCREASING!\r***********\r";
+
+}else{
+	echo "\r*************\rIf you are reading this, you've found some weird state. I'm of no use to you. Good luck!\r***********";
+	return false;
+}
+
+echo "\rCurrent target time for reference is:";
+
+@record on;
+`remotelocaltime`;
+@record off;
+
+#Any chance we are in the logs?
+string $aplog = "$rootDrive[0]:\\Documents and Settings\\All Users\\Application Data\\McAfee\\DesktopProtection\\AccessProtectionLog.txt";
+string $bolog = "$rootDrive[0]:\\Documents and Settings\\All Users\\Application Data\\McAfee\\DesktopProtection\\BufferOverflowProtectionLog.txt";
+
+@echo off;
+echo "\r+++++++++++++++++++\rChecking out AccessProtectionLog\r+++++++++++++++++++\r";
+@record on;
+bool $check = `getfileattribs -file "$aplog"`;
+@record off;
+@echo on;
+
+if ($check) 
+{
+	$fsize = GetCmdData("Size");
+	$mDate = GetCmdData("ModifiedDate");
+	$mTime = GetCmdData("ModifiedTime");
+
+	echo "AccessProtectionLog details:\rLast modified on $mDate at $mTime \rFile size of $fsize bytes.\r";
+	if($fsize == 3){ echo "It appears the file is empty"; } 
+	else { if( prompt "Would you like to copyget the file?" ) { `copyget "$aplog"`; } }
+
+}else{
+
+	echo "Sorry, I cannot find AccessProtectionLog in the default location. I looked in:\r\"$aplog\"\r";
+}
+
+@echo off;
+echo "\r+++++++++++++++++++\rChecking out BufferOverflowProtectionLog\r+++++++++++++++++++\r";
+@record on;
+$check = `getfileattribs -file "$bolog"`;
+@record off;
+@echo on;
+
+if ($check)
+{
+	$fsize = GetCmdData("Size");
+	$mDate = GetCmdData("ModifiedDate");
+	$mTime = GetCmdData("ModifiedTime");
+
+	echo "BufferOverFlowProtectionLog details:\rLast modified on $mDate at $mTime \rFile size of $fsize bytes.\r";
+	if($fsize == 3){ echo "It appears the file is empty"; } 
+	else { if( prompt "Would you like to copyget the file?" ) { `copyget "$bolog"`; } }
+}else{
+	echo "Sorry, I cannot find BufferOverflowProtectionLog in the default location. I looked in:\r\"$bolog\"\r";
+}
+
+@echo on;
+echo "\r\rMy work here is done. Have fun.\r\r";

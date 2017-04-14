@@ -1,0 +1,78 @@
+#####################################################
+#             Checking For YAK
+#####################################################
+bool $success;
+@echo off;
+echo "#####################################################";
+echo "#             Checking For YAK";
+echo "#####################################################";
+if (`yak verify`){
+	`lpsetenv -option YAK -value ON`;
+	echo "                  YAK FOUND ON TARGET!!";
+	echo "MUST UNINSTALL UNLESS OTHERWISE INSTRUCTED BY HIGHER POWER! "; 
+	if(prompt "Uninstall YAK?"){
+		`yak collect`;
+		ifnot(`yak uninstall`){
+			echo "Uninstall Unsuccessful! WHY?";
+			echo "GO GET HELP!";
+		}else{
+			ifnot(`yak verify`){
+				echo "YAK Uninstalled! You May move on.";
+				`lpsetenv -option YAK -value OFF`;
+			}else{
+				echo "YAK NOT Uninstalled IEEEEEEE!";
+				echo "GO GET HELP!";
+			}
+		}
+	}
+}
+#check for the registry key of interest.
+
+echo "\nChecking for YAK registry keys";
+
+@echo on;
+if (`regquery -hive L -subkey "system\\currentcontrolset\\enum\\root\\legacy_kbpnp"`) {
+	#registry key is still there
+	echo "Found YAK's registry key: HKLM\\system\\currentcontrolset\\enum\\root\\legacy_kbpnp";
+	if (prompt "YAK's registry key still there, would you like to remove it?") {
+		
+		`regdelkey -hive L -key "system\\currentcontrolset\\enum\\root\\legacy_kbpnp" -recursive`;
+		#check one more time
+		if (`regquery -hive L -subkey "system\\currentcontrolset\\enum\\root\\legacy_kbpnp"`) {
+			echo "UNABLE TO REMOVE THE REGISTRY KEY.  FIND HELP";
+		}
+	}
+
+} else { echo "\n** No YAK registry key in CurrentControlSet. **\n";}
+
+#find how many controlSet's there are
+int $controlNums = 0;
+
+echo "\nChecking all other control Sets\n";
+
+bool $keepGoing = true;
+while ($keepGoing) {
+	$controlNums++;
+	@echo off;
+	if (`regquery -hive L -subkey "system\\controlset00$controlNums"`) {
+		@echo on;
+		if (`regquery -hive L -subkey "system\\controlset00$controlNums\\enum\\root\\legacy_kbpnp"`) {
+			if (prompt "Delete out of controlset00$controlNums ?") {
+				`regdelkey -hive L -key "system\\controlset00$controlNums\\enum\\root\\legacy_kbpnp" -recursive`;
+				#check one more time
+				if (`regquery -hive L -subkey "system\\controlset00$controlNums\\enum\\root\\legacy_kbpnp"`) {
+					echo "UNABLE TO REMOVE THE REGISTRY KEY.  FIND HELP";
+				}
+			}
+
+		} else { echo "\n** No YAK registry key in controlset00$controlNums. **\n\n";}
+
+	} else { $keepGoing = false; }
+		
+} 
+
+echo "\n*** YAK Registry Cleanup complete***\n";
+
+
+pause;
+@echo on;

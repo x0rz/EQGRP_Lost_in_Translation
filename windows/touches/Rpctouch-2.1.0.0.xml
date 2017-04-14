@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<t:config id="cbe9b627fe881b0f5fe6122af36fe6234935c7e7"
+          name="Rpctouch"
+          version="2.1.0"
+          configversion="2.1.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+<!-- All plugins that accept a callback must have the Callback* parameters
+     listed below, or their equivalents. -->
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                 type="S16"
+                 default="60"/>
+    
+    <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    
+    <t:parameter name="TargetPort"
+                 description="Port used by the MSRPC service. Typically 445 (SMB) or 139 (NBT)"
+                 type="TcpPort"
+                 default="445" 
+                 binding="//service[name='msrpc']/port"/>
+    
+    <t:paramchoice name="Protocol" description="Protocol to connect to target with. Touches will vary with protocol." default="SMB">
+      <t:paramgroup name="SMB" description="SMB over TCP"/>
+      <t:paramgroup name="NBT" description="Netbios over TCP">
+      </t:paramgroup>
+    </t:paramchoice>
+    <t:parameter name="NetBIOSName" type="String" description="Name to use if running touch over NBT, Vista and above require real hostname." default="*SMBSERVER"/>
+    <t:parameter name="TouchLanguage" type="Boolean" description="Run language touch against RPC spooler service." default="False"/>
+    <t:parameter name="TouchArchitecture" type="Boolean" description="Run architecture touch against SMB via a memory disclosure bug." default="False"/>
+  </t:inputparameters>
+
+  <t:outputparameters>
+    <t:parameter name="Protocol" type="String" description=""/>
+    <t:parameter name="Target" type="String" description=""/>
+    <t:parameter name="TargetString" type="String" description=""/>
+    <t:parameter name="TargetDWORD" type="U32" description=""/>
+    <t:parameter name="Language" type="String" description=""/>
+    <t:parameter name="NetworkTimeout" type ="S16" description=""/>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="StagedUpload"/>
+  </t:outputparameters>
+
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='msrpc']/port"
+              closeoncompletion="true"/>
+  </t:redirection>
+</t:config>

@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31372'>
+
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='5' minor='*'>
+		<File>adgc_LP.dll</File>
+	    </Version>
+	    <Version major='6' minor='*'>
+		<File>adgc_LP.dll</File>
+	    </Version>
+	</Platform>
+
+
+    </Windows>
+
+</Plugin>

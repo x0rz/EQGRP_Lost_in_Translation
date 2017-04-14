@@ -1,0 +1,94 @@
+
+@include "_Versions.dsi";
+
+#----------------------------------------------------
+# _IsWindows7
+#	Returns the whether the current target is Windows 7
+#----------------------------------------------------
+sub _IsWindows7()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return (($major == 6) && ($minor == 1));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows7
+
+#----------------------------------------------------
+# _IsWindows7Local
+#	Returns the whether the local os is Windows 7
+#----------------------------------------------------
+sub _IsWindows7Local()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return (($major == 6) && ($minor == 1));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows7Local
+
+#----------------------------------------------------
+# _IsWindows7OrGreater
+#	Returns the whether the current target is Windows 7 or greater
+#----------------------------------------------------
+sub _IsWindows7OrGreater()
+{
+
+	# _GetOsFamily handles IsLocal check
+	string $os;
+	if (_GetOsFamily($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersion($major, $minor)) {
+				return ((($major == 6) && ($minor >= 1)) ||
+						($major > 6));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows7OrGreater
+
+#----------------------------------------------------
+# _IsWindows7OrGreaterLocal
+#	Returns the whether the local os is Windows 7 or greater
+#----------------------------------------------------
+sub _IsWindows7OrGreaterLocal()
+{
+
+	string $os;
+	if (_GetOsFamilyLocal($os)) {
+		if ($os == "winnt") {
+			int $major, $minor;
+			if (_GetOsVersionLocal($major, $minor)) {
+				return ((($major == 6) && ($minor >= 1)) ||
+						($major > 6));
+			}
+		}
+	}
+	
+	return false;
+
+}
+# END _IsWindows7OrGreaterLocal

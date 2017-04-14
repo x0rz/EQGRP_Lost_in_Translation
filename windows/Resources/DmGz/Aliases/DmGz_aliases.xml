@@ -1,0 +1,69 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>dmgz_install</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "-action INSTALL  -driver </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dmgz_install [driver_name]</Help>
+		<Help>    Installs DmGz</Help>
+	</Alias>
+	<Alias>
+		<Name>dmgz_uninstall</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "-action UNINSTALL  -driver </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dmgz_uninstall [driver_name]</Help>
+		<Help>    Uninstalls DmGz</Help>
+	</Alias>
+	<Alias>
+		<Name>dmgz_load</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "-action LOAD  -driver </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dmgz_load [driver_name]</Help>
+		<Help>    Loads DmGz</Help>
+	</Alias>
+	<Alias>
+		<Name>dmgz_unload</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "-action UNLOAD  -driver </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dmgz_unload [driver_name]</Help>
+		<Help>    Unloads DmGz</Help>
+	</Alias>
+	<Alias>
+		<Name>dmgz_verifyInstall</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "-action VERIFYINSTALL  -driver </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dmgz_verifyInstall [driver_name]</Help>
+		<Help>    Verifies DmGz is installed</Help>
+	</Alias>
+	<Alias>
+		<Name>dmgz_verifyRunning</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "-action VERIFYRUNNING  -driver </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dmgz_verifyInstall [driver_name]</Help>
+		<Help>    Verifies DmGz is running</Help>
+	</Alias>
+	<Alias>
+		<Name>dmgz_status</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "-action STATUS -driver </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dmgz_status [driver_name]</Help>
+		<Help>    Gets DmGz status</Help>
+	</Alias>
+	<Alias>
+		<Name>DoormanGauze</Name>
+		<ReplaceBeforeArgs>python _DmGz.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>DmGz</Help>
+		<Help>    Runs the DmGz management script</Help>
+	</Alias>
+</Aliases>	
+		

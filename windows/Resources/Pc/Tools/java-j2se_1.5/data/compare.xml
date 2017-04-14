@@ -1,0 +1,42 @@
+﻿<?xml version='1.0' encoding='UTF-8' ?>
+<PCConfig>
+  <Version>2.0.0</Version>
+  <Id>0x0000000000000000</Id>
+  <Flags value='0x00000010'>
+    <PCHEAP_CONFIG_FLAG_LEVEL4/>
+  </Flags>
+  <StartListenHour>0</StartListenHour>
+  <StopListenHour>0</StopListenHour>
+  <ListenDuration>1800</ListenDuration>
+  <ListenLoops>4294967295</ListenLoops>
+  <ListenBindAddress>0.0.0.0</ListenBindAddress>
+  <ListenPorts>
+    <BindPort>1167</BindPort>
+    <BindPort>1298</BindPort>
+    <BindPort>1353</BindPort>
+    <BindPort>1997</BindPort>
+    <BindPort>1733</BindPort>
+  </ListenPorts>
+  <CallbackAddress>127.0.0.1</CallbackAddress>
+  <CallbackPorts>
+    <CallbackPair>
+      <SrcPort>0</SrcPort>
+      <DstPort>443</DstPort>
+    </CallbackPair>
+    <CallbackPair>
+      <SrcPort>0</SrcPort>
+      <DstPort>80</DstPort>
+    </CallbackPair>
+    <CallbackPair>
+      <SrcPort>0</SrcPort>
+      <DstPort>53</DstPort>
+    </CallbackPair>
+    <CallbackPair>
+      <SrcPort>0</SrcPort>
+      <DstPort>1509</DstPort>
+    </CallbackPair>
+  </CallbackPorts>
+  <DriverName/>
+  <ProcessName/>
+  <InfoValue/>
+</PCConfig>

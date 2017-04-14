@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25084' script='DataHandlers/Mcl_Cmd_EventLogQuery_DataHandler.pyo'>
+</DataHandler>

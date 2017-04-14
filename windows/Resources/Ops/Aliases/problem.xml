@@ -1,0 +1,14 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>problem</Name>
+		<ReplaceBeforeArgs>python problem.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>problem [toolname] message
+	Report a problem with a tool or script.  Note that [message] CANNOT contain quotes
+	Examples:
+	problem YAK2 YAK is not properly parsing Unicode files in Japanese
+	problem freshscan.py No results are being returned after submitting a file
+		</Help>
+	</Alias>
+</Aliases>

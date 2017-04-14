@@ -1,0 +1,111 @@
+##############################################
+#                                            #
+# PSP Script: Windows Defender               #
+#                                            #
+##############################################
+
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+#The struct is defined in PSPHelpers.epm
+metaData @metaData;
+#initialize the struct
+init(@metaData);
+#We know this much already
+@metaData.$vendor = "Microsoft";
+@metaData.$product = "Windows Defender";
+
+@echo on;
+@record on;
+echo "Starting Windows Defender configuration check\r";
+#you need two echo off's here to supress the display of text to the screen. 
+@echo off;
+@echo off;
+ifnot(`regquery -hive L -subkey "software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A06275F4-324B-4E85-95E6-87B2CD729401}" -value DisplayVersion`){
+	### Doesn't look like Defender. See if it's Forefront.
+	if(forefront(@metaData)) {
+		@echo on;
+		if(writeMetaData(@metaData)){
+			echo "Wrote meta data to disk\r";
+		}else{
+			echo "\rERROR. could not write meta data to disk. ERROR\r";
+		}
+		return true;
+	}
+	else {
+		@echo on;
+		echo "I'm sorry, I can't determine the version of Windows Defender (or Microsoft Forefront) is running";
+		@metaData.$version = "Unknown";
+		@echo off;
+	}
+}else{ 
+	@echo on;
+	@metaData.$version = GetCmdData("value_data"); 
+	echo "Windows Defender version = @metaData.$version";
+	@echo off;
+}
+
+if(`regquery -hive L -subkey "software\\Microsoft\\Windows Defender\\Scan" -value LastScanRun`){
+	string $temp = GetCmdData("value_data");
+	@metaData.$information = "LastScanRun - $temp";
+}
+
+if(`regquery -hive L -subkey "software\\Microsoft\\Windows Defender\\SpyNet" -value SpyNetReporting`){
+	string $temp = GetCmdData("value_data");
+	@metaData.$information = "@metaData.$information,SpyNet - $temp";
+}
+
+if(`regquery -hive L -subkey "software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{A06275F4-324B-4E85-95E6-87B2CD729401}" -value InstallDate`){
+	@metaData.$installDate = GetCmdData("value_data");
+}
+#dump the entire key for offline analysis. Should be pretty small
+`regquery -hive L -subkey "software\\Microsoft\\Windows Defender" -recursive`;
+
+@record off;
+@echo on;
+if(writeMetaData(@metaData)){
+	echo "Wrote meta data to disk\r";
+}else{
+	echo "\rERROR. could not write meta data to disk. ERROR\r";
+}
+
+################################################################################
+################################### FOREFRONT ##################################
+################################################################################
+
+sub forefront (REF metadata @metaData){
+	if(`regquery -hive L -subkey "software\\Microsoft\\Microsoft Forefront\\Client Security\\1.0\\AM\\Signature Updates" -value EngineVersion`) {
+		@echo on;
+		@metaData.$version = GetCmdData("value_data"); 
+		@metaData.$product = "Forefront Client";
+		echo "Microsoft Forefront Client version = @metaData.$version";
+		@echo off;
+		return true;
+	}
+
+	else if (`regquery -hive L -subkey "software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{436028CD-6476-4224-9274-8F0320F30FD1}" -value DisplayVersion`){
+		@echo on;
+		@metaData.$version = GetCmdData("value_data"); 
+		@metaData.$product = "Forefront Client";
+		echo "Microsoft Forefront Client version = @metaData.$version";
+		@echo off;
+		if(`regquery -hive L -subkey "software\\Microsoft\\Microsoft Forefront\\Client Security\\1.0\\AM\\Signature Updates" -value DisplayName`) {
+			@metaData.$product = GetCmdData("value_data"); 
+		}
+		return true;
+	}
+
+	else if (`regquery -hive L -subkey "software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{50391F9C-82FF-458F-A77B-DEF724E6140D}" -value DisplayVersion`){
+		@echo on;
+		@metaData.$version = GetCmdData("value_data"); 
+		@metaData.$product = "Forefront Client";
+		echo "Microsoft Forefront Client version = @metaData.$version";
+		@echo off;
+		if(`regquery -hive L -subkey "software\\Microsoft\\Microsoft Forefront\\Client Security\\1.0\\AM\\Signature Updates" -value DisplayName`) {
+			@metaData.$product = GetCmdData("value_data"); 
+		}
+		return true;
+	}
+
+	return false;
+}

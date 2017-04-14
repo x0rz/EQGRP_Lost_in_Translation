@@ -1,0 +1,57 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31331'>
+
+  <Command id='16' name='processlist'>
+
+    <Help>Lists the currently running processes on the target</Help>
+
+    <Input>
+      <Option name='verbose' optional='true'/>
+    </Input>
+
+    <Output/>
+
+  </Command>
+
+  <Command id='17' name='processmonitor'>
+
+    <Help>Monitors the target for process starts and stops</Help>
+
+    <Input>
+      <Option name='sleep' optional='true'>
+	<Argument name='time' data='time' optional='false'/>
+	<Help>The time to sleep between comparing process lists</Help>
+	<Help>(defaults to 1 second)</Help>
+      </Option>
+      <Option name='ignore' optional='true'>
+	<Argument name='name1' data='name1' optional='false'/>
+	<Argument name='name2' data='name2' optional='true'/>
+	<Argument name='name3' data='name3' optional='true'/>
+	<Argument name='name4' data='name4' optional='true'/>
+	<Argument name='name5' data='name5' optional='true'/>
+	<Argument name='name6' data='name6' optional='true'/>
+	<Argument name='name7' data='name7' optional='true'/>
+	<Argument name='name8' data='name8' optional='true'/>
+	<Argument name='name9' data='name9' optional='true'/>
+	<Help>Processes to not display</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='time'  type='uint32_t' default='1'/>
+      <Data name='name1' type='string'/>
+      <Data name='name2' type='string'/>
+      <Data name='name3' type='string'/>
+      <Data name='name4' type='string'/>
+      <Data name='name5' type='string'/>
+      <Data name='name6' type='string'/>
+      <Data name='name7' type='string'/>
+      <Data name='name8' type='string'/>
+      <Data name='name9' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

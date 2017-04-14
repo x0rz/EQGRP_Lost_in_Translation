@@ -1,0 +1,71 @@
+sub _tracerouteTasking(IN STRING $tracerouteTxtFile, OUT STRING $tracerouteCmd, OUT STRING $taskID, OUT STRING $targetID) {
+	echo "\nProcessing $tracerouteTxtFile";
+
+	string $lines;
+	string $taskIDStr;
+	string $targetIDStr;
+
+	if (!ReadFile ($tracerouteTxtFile, $lines)) {
+		return false;
+	}
+	$tracerouteCmd = "traceroute";
+	string $hostnameStr = "";
+	string $hostname = "";
+	string $ipStr = "";
+	string $ip = "";
+	string $tcpStr = "";
+	string $tcp = "";
+	string $maxStr = "";
+	string $max = "";
+	string $timeoutStr = "";
+	string $timeout = "";
+	for (int $i=0; $i < sizeof($lines); $i++) {
+		string $line = $lines[$i];
+
+		# TargetID is required
+		if (RegexMatch("TargetID", $line)) {
+			RegExSplit(" ", $line, 2, $targetIDStr);
+			$targetID = $targetIDStr[1];
+		}
+
+		# TaskID is required
+		if (RegexMatch("TaskID", $line)) {
+			RegExSplit(" ", $line, 2, $taskIDStr);
+			$taskID = $taskIDStr[1];
+		}
+
+		if (RegexMatch("Hostname", $line)) {
+			RegexSplit(" ", $line, 2, $hostnameStr);
+			$hostname = $hostnameStr[1];
+			$tracerouteCmd = "$tracerouteCmd $hostname";
+		}
+		if (RegexMatch("IPAddress", $line)) {
+			RegexSplit(" ", $line, 2, $ipStr);
+			$ip = $ipStr[1];
+			$tracerouteCmd = "$tracerouteCmd $ip";
+		}
+		# Note: tcp option won't work unless the DoormanGauze driver is installed; You can assume it is.
+		# dmgz_install; dmgz_load
+		if (RegexMatch("use_tcp_tracert", $line)) {
+			RegexSplit(" ", $line, 2, $tcpStr);
+			$tcp = $tcpStr[1];
+			if ($tcp == "true") {
+				$tracerouteCmd = "$tracerouteCmd -tcp";
+			}
+		}
+
+		if (RegexMatch("maximum_hops", $line)) {
+			RegexSplit(" ", $line, 2, $maxStr);
+			$max = $maxStr[1];
+			$tracerouteCmd = "$tracerouteCmd -maxhops $max";
+		}
+
+		if (RegexMatch("timeout", $line)) {
+			RegexSplit(" ", $line, 2, $timeoutStr);
+			$timeout = $timeoutStr[1];
+			$tracerouteCmd = "$tracerouteCmd -timeout $timeout";
+		}
+	}
+
+	return true;
+}

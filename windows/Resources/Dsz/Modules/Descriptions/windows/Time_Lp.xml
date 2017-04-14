@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="Time_Lp" id="434" script="Tasking/Mcl_Cmd_Time_Tasking.pyo">
+
+	<Interfaces/>
+
+	<Dependencies>
+		<Remote>Time_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"></File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

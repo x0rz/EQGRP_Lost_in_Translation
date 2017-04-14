@@ -1,0 +1,56 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31372'>
+
+  <Command id='16' name='adgc'>
+
+    <Help>Lists the groups, users or computers obtained from the Global Catalog.</Help>
+
+    <Input>
+      <Option name='computers' optional='false' group='options'>
+	<Set data='type' value='0'/>
+        <Help>returns the list of computers currently listed in the GC</Help>
+      </Option>	
+      <Option name='groups' optional='false' group='options'>
+	<Set data='type' value='1'/>
+        <Help>returns the list of groups currently listed in the GC</Help>
+      </Option>	
+      <Option name='users' optional='false' group='options'>
+	<Set data='type' value='2'/>
+        <Help>returns the list of users currently listed in the GC</Help>
+      </Option>	
+      <Option name='all' optional='false' group='options'>
+	<Set data='type' value='3'/>
+        <Help>returns computers, groups, and users listed in the GC</Help>
+      </Option>	
+      <Option name='pagesize' optional='true'>
+	<Argument name='entries' data='pageSize'/>
+        <Help>Sets the number of entries used per page</Help>
+      </Option>	
+
+      <Option name='c' optional='false' group='options'>
+	<Set data='type' value='0'/>
+        <Help>Short for '-computers'</Help>
+      </Option>	
+      <Option name='g' optional='false' group='options'>
+	<Set data='type' value='1'/>
+        <Help>Short for '-groups'</Help>
+      </Option>	
+      <Option name='u' optional='false' group='options'>
+	<Set data='type' value='2'/>
+        <Help>Short for '-users'</Help>
+      </Option>	
+      <Option name='a' optional='false' group='options'>
+	<Set data='type' value='3'/>
+        <Help>Short for '-all'</Help>
+      </Option>	
+    </Input>
+
+    <Output>
+      <Data name='type' type='uint8_t'  default='3'/>
+      <Data name='pageSize' type='uint32_t' default='1000'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

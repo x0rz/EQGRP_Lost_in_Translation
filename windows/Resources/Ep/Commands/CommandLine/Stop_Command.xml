@@ -1,0 +1,42 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='18' name='Stop'>
+
+    <Help>Attempts to stop a given command.</Help>
+
+    <Input>
+      <Argument name='Id_Or_Name' optional='false' data='command'>
+	<Help>The id or name of the command to be stopped</Help>
+      </Argument>
+
+      <Option name='local' optional='true' group='type'>
+	<Set data='local' value='true'/>
+	<Set data='remote' value='false'/>
+	<Help>Only the LP side is stopped</Help>
+      </Option>
+
+      <Option name='remote' optional='true' group='type'>
+	<Set data='local' value='false'/>
+	<Set data='remote' value='true'/>
+	<Help>Only the Implant side is stopped</Help>
+      </Option>
+
+      <Option name='contains' optional='true'>
+	<Argument name='command' data='contains'/>
+	<Help>Only stops commands that also contain the specified string.</Help>
+	<Help>This option is only valid when stopping by CommandName.</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='command' type='string'/>
+      <Data name='local' type='bool' default='true'/>
+      <Data name='remote' type='bool' default='true'/>
+      <Data name='contains' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

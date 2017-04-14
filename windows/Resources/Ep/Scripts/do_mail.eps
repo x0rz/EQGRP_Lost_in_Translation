@@ -1,0 +1,53 @@
+# Script to automatically get mail
+
+# Call perl script to generate listmail.eps
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:/resources/ep/scripts";
+}
+@record off;
+@echo on;
+
+`local run -command "perl $ScriptsDir/../../../tools/listmail.pl" -redirect listmail`;
+
+ifnot (`script listmail.eps`) {
+	return false;
+}
+
+# wait until greps are done
+bool $grepsDone=false;
+string $grepString="script mailgrep.eps";
+
+while ($grepsDone == false) {
+	echo "Hit return to see if the greps are done.";
+	pause;
+	$grepsDone=true;
+	@record on;
+	`channels`;
+	string $command=GetCmdData("command");
+	int $i=0;
+	while ($i < sizeof($command)) {
+		string $split=split($grepString, $command[$i]);
+		ifnot ($command[$i] == $split) {
+			$grepsDone=false;
+			$i=sizeof($command);
+		}
+		$i++;
+	}
+	@record off;
+}
+
+echo "Greps are done!";
+
+# Call perl script to generate getmail.eps
+
+`local run -command "perl $ScriptsDir/../../../tools/getmail.pl" -redirect getmail`;
+
+return `script getmail.eps`;
+

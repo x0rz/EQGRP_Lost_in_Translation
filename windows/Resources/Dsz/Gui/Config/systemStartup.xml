@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<!--
+		use -align=top, -align=right, -align=left, -align=bottom to reorganize the tab location
+		in a plugin container.
+		Default is left align
+	-->
+	<Plugin pluginClass="ds.plugin.uber.UberPlugin" pluginName="Terminals" visible="true" align="left">
+		<InitArgs>-load=terminalStartup.xml</InitArgs>
+		<InitArgs>-align=bottom</InitArgs>
+		<InitArgs>-layout=wrap</InitArgs>
+		<InitArgs>-logo=images/terminal.png</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.notify.NotifyWindow" pluginName="Notify" visible="false" />
+	<Plugin pluginClass="ddb.dsz.plugin.monitor.MonitorWindow2" pluginName="Monitor" visible="false">
+		<InitArgs>-MonitorMaximumLines=20000</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.logviewer.LogViewer" pluginName="LogViewer"/>
+	<Plugin pluginClass="ds.plugin.peer.PeerServer"     pluginName="Server" align="right">
+		<InitArgs>-load=PeerLive.xml</InitArgs>
+		<InitArgs>-layout=wrap</InitArgs>
+	</Plugin>
+	<Macro macroFile="SystemStartup.xml" align="right"/>
+	<Plugin pluginClass="ddb.dsz.plugin.transfermonitor.TransferMonitor" pluginName="Transfers"/>
+	<Plugin pluginClass="ddb.dsz.plugin.taskmanager.TaskManager2"	pluginName="Processes" />
+</StartupConfig>

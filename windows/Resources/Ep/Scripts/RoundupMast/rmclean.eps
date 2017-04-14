@@ -1,0 +1,65 @@
+# $Revision: 1.2 $ $Date: 2007-06-04 12:12:50-04 $
+
+string $RMD_TARGET = "usrmgrd.exe";
+#string $RMC_TARGET = "drmclien.exe";
+string $RM_DIR = GetEnv("RM_DIR");
+int $PID = GetEnv("RM_RMDPROCESSID");
+
+if ($PID != 0)
+{
+	echo "**";
+	echo "** Environment variable RM_RMDPROCESSID exists!";
+	echo "** Is the daemon still running?  Run rmstop.";
+	echo "**";
+	return FALSE;
+}
+
+string $RM_RMDNAME = GetEnv("RM_RMDNAME");
+
+
+if ($RM_DIR == "")
+{
+	echo "** Environment variable RM_DIR does not exist!";
+	
+	@echo off;
+	@record on;
+	`getsyspaths`;
+	$RM_DIR = GetCmdData("SystemDirectoryPath");
+	@record off;
+	@echo on;
+	
+	echo "** Assuming RM_DIR is $RM_DIR";
+}
+
+if ($RM_RMDNAME != "")
+{
+	ifnot (`del $RM_RMDNAME -path $RM_DIR`) {pause;}
+	ifnot (`lpsetenv -option RM_RMDNAME -delete`) {pause;}
+}
+else
+{
+	echo "** Environment variable RM_RMDNAME does not exist!";
+
+	@echo off;
+	if (`checkfile -name $RM_DIR\\$RMD_TARGET`)
+	{
+		@echo on;
+		echo "** $RM_DIR\\$RMD_TARGET exists.";
+		if (prompt "Do you want to delete it?")
+		{
+			ifnot (`del $RMD_TARGET -path $RM_DIR`) {pause;}
+		}
+	}
+	else
+	{
+		@echo on;
+		echo "** $RM_DIR\\$RMD_TARGET does not exist.";
+	}
+}
+
+if (GetEnv("RM_DIR") != "")
+{
+	ifnot (`lpsetenv -option RM_DIR -delete`) {pause;}
+}
+
+return (TRUE);

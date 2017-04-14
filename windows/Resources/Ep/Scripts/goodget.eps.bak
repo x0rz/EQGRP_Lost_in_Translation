@@ -1,0 +1,297 @@
+#-------------------------------------------------------------------------------
+# File: goodget.eps
+# Description: Does a dir for the get's files before getting them
+#
+#-------------------------------------------------------------------------------
+
+#################### User-settable parameters #######################
+
+# !! If a file is bigger than this, it will prompt you before getting it !!
+int $bigsize=2000000;
+
+# !! If a file is smaller than this, it will skip it !!
+int $minsize=1;
+
+# !! If a file is bigger than this (and bigger than bigsize), it will automatically skip it !!
+#    (setting this to 0 will cause goodget to skip anything big enough that it would have prompted you for)
+int $insanelybigsize=100000000;
+
+# !! If true, will pause when it cannot get a file
+bool $pauseOnFailure=true;
+
+# !! If true, will pause even after a successful get
+bool $pauseOnSuccess=false;
+
+# !! If true, goodget will ask if you want to try getting insanely big files using rarget 
+bool $tryRar=false;
+
+# !! If true, will prompt you to do a recursive get if the "file" is a directory
+#    If false, will skip directories
+bool $tryDirectories=false;
+
+#####################  Regular script below this line #######################
+
+bool $badParams = false;
+string $path="";
+string $fileMask="";
+
+string $localDir;
+
+# This is the offset (-range) which the file will be retrieved from
+int $offset=0;
+
+if ($argc == 1) {
+    $badParams = true;
+} else {
+	$fileMask=$argv[1];
+	if ($argv[1] == "?") {
+		$badParams=true;
+	}
+	# find -path in arguments; if it doesn't exist, create one
+	int $p=2;
+	while ($p < sizeof($argv)) {
+		if ($argv[$p] == "-path") {
+			$p++;
+			$path=$argv[$p];
+		}
+		$p++;
+	}
+	if ($path == "") {
+		#must get one from $fileMask
+		string $fileParts=splitpath($fileMask);
+		$path=$fileParts[0];
+		$fileMask=$fileParts[1];
+#		if ($fileParts[0] != "") {
+#			#TODO: see if this is a relative path; if relative, add current dir
+#			@record on;
+#			`pwd`;
+#			$localDir=GetCmdData("string_val");
+#			@record off;
+#		}
+	}
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] <get input>";
+    echo "    Does a get, but first does a dir on the files to be retrieved";
+    `get ?`;
+
+    if ($argc > 1) {
+	if ($argv[1] == "?") {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+string $fileToGet = "";
+string $pathToGet = "";
+
+string $dirargs="";
+string $getargs="";
+
+int $i=2;
+int $iminus1=1;
+while ($i < sizeof($argv)) {
+	# skip -path (dealt with above)
+	if ($argv[$i] == "-path") {
+		$i++;
+		$i++;
+		$iminus1++;
+		$iminus1++;
+	}
+
+	if ($i < sizeof($argv)) {
+		if ($getargs == "") {
+			$getargs=$argv[$i];
+		} else {
+			$getargs="$getargs $argv[$i]";
+		}
+
+		if ($argv[$i] != "-range") {
+			if ($argv[$iminus1] != "-range") {
+				if ($dirargs == "") {
+					$dirargs=$argv[$i];
+				} else {
+					$dirargs="$dirargs $argv[$i]";
+				}
+			} else {
+				$offset=<int>$argv[$i];
+			}
+		}
+	}
+	$iminus1++;
+	$i++;
+}
+
+#if ($path != "") {
+#	if ($path != $localDir) {
+#		ifnot (`cd "$path"`) {
+#			echo "Could not cd into $path.  Bailing.";
+#			return false;
+#		}
+#	}
+#}
+string $copygetstring="copyget \"$path\\$fileMask\"";
+string $rargetstring="rarget \"$path\\$fileMask\"";
+string $getstring="get \"$path\\$fileMask\" $getargs";
+string $dirstring="log script dirtoget.eps \"$fileMask\" -path \"$path\" $dirargs";
+string $dirgetstring="script dirget.eps \"$path\\$fileMask\" * all R";
+string $filepermsstring="log fileperms -file \"$path\\$fileMask\"";
+
+if ($path == "") {
+	$copygetstring="copyget \"$fileMask\"";
+	$rargetstring="rarget \"$fileMask\"";
+	$getstring="get \"$fileMask\" $getargs";
+	$dirstring="log script dirtoget.eps \"$fileMask\" $dirargs";
+	$dirgetstring="script dirget.eps \"$fileMask\" * all R";
+	$filepermsstring="log fileperms -file \"$fileMask\"";
+}
+
+bool $success=true;
+
+bool $getFile=true;
+bool $doRarGet=false;
+
+bool $didSetUser=false;
+
+@record on;
+ifnot (`$dirstring`) {
+	echo "Failed to get dir information: \"$fileMask\" $dirargs.";
+	$success=false;
+#	The system cannot find the file specified.
+#	Could also be a permissions problem, or some other issue
+#	if ($path != "") {
+#		# check permissions/password file on path [possibly for domain controller]
+#		if (`log fileperms -file "$path"`) {
+#			`local run -command "perl E:\\tools\\setUserToGetFile.pl" -redirect setUser`;
+#			if (`script setUserToGetFile.eps`) {
+#				$didSetUser=true;
+#				if (`$dirstring`) {
+#					$success=true;
+#				}
+#			} else {
+#				$success=false;
+#			}
+#		}
+#	}
+}
+
+if ($success == true) {
+	echo "FYI, the offset I'll be getting from is $offset";
+	bool $isdir=GetCmdData("isdir");
+	if ($isdir==true) {
+		if ($tryDirectories) {
+			if (prompt "This is a directory.  Do you want to recursively get everything inside?") {
+				if (`$dirgetstring`) {
+					$success=true;
+				} else {
+					$success=false;
+				}
+			} else {
+				$success=true;
+			}
+		} else {
+			$success=true;
+		}
+	} else {
+		int $size=GetCmdData("lowsize");
+		$size -= $offset;
+		echo "FYI, this means the size is $size";
+		echo "Getting $path\\$fileMask";
+		echo "  ($size bytes)";
+		@record off;
+		if ($size > $bigsize) {
+			if ($size > $insanelybigsize) {
+				echo "That's just insanely big.";
+				if ($tryRar) {
+					if (prompt "Do you want to try getting it with rarget (if not, it will be skipped)?") {
+						$doRarGet=true;
+					} else {
+						$getFile=false;
+						$success=true;
+					}
+				} else {
+					$getFile=false;
+					$success=true;
+				}
+			} else {				
+				echo "$path\\$fileMask is big.";
+				echo "Will get with $getstring.";
+				ifnot (prompt "Get it?") {
+					$getFile=false;
+					$success=true;
+				}
+			}
+		} else if ($size < $minsize) {
+			echo "That's too small.";
+			$getFile=false;
+		}
+		if ($getFile) {
+			if ($doRarGet) {
+				if (`$rargetstring`) {
+					$success=true;
+				} else {
+					$success=false;
+				}
+			} else {
+				if (`$getstring`) {
+					$success=true;
+				} else {
+					# check permissions/password file [possibly for domain controller]
+					if (`$filepermsstring`) {
+						if (prompt "Try using known passwords?") {
+							`local run -command "perl E:\\tools\\setUserToGetFile.pl" -redirect setUser`;
+							if (`script setUserToGetFile.eps`) {
+								$didSetUser=true;
+								if (`$getstring`) {
+									$success=true;
+								} else {
+									$success=false;
+								}
+							} else {
+								$success=false;
+							}
+						} else {
+							$success=false;
+						}
+					} else {
+						$success=false;
+					}
+				}
+				if ($success == false) {
+					if (`$copygetstring`) {
+						$success=true;
+					}
+				}
+			}
+		}
+	}
+}
+@record off;
+
+#if ($path != "") {
+#	if ($path != $localDir) {
+#		`cd "$localDir"`;
+#	}
+#}
+
+if ($didSetUser) {
+	`setuser`;
+}
+
+ifnot ($success) {
+	echo "!!!!! Failed get: $fileMask $getargs !!!!!!!!";
+	if ($pauseOnFailure==true) {
+		pause;
+	} else if ($pauseOnSuccess==true) {
+		pause;
+	}
+} else {
+	if ($pauseOnSuccess==true) {
+		pause;
+	}
+}
+
+return $success;

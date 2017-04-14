@@ -1,0 +1,16 @@
+﻿<?xml version='1.0'?>
+
+<Plugin id="31050">
+
+	<Lp>Yes</Lp>
+	<Implant>No</Implant>
+	
+	<Windows>
+		<Platform id="2">
+			<Version major="*" minor="*">
+				<File>RemoteCommand_Lp.dll</File>
+			</Version>
+		</Platform>
+	</Windows>
+	
+</Plugin>

@@ -1,0 +1,7 @@
+<?xml version='1.0' ?>
+
+<Keys>
+
+    <Key name='Default' dir='Default' private='private_key.bin' public='public_key.bin'/>
+
+</Keys>

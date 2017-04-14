@@ -1,0 +1,52 @@
+#--------------------------------------------------------
+# File: GetStatus.eps
+#
+# Displays status of BehavePeking tools
+#
+# Modifications:
+#  29 Aug 2005	Created.
+#--------------------------------------------------------
+@include "_GetSystemPaths.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+bool $rtn = true;
+
+@record on;
+ifnot (`webtipper -name $driver -status`) {
+    echo "*** Unable to get driver status (is it running?) ***";
+    $rtn = false;
+} else {
+    bool $filter = GetCmdData("FilterActive");
+    bool $thread = GetCmdData("ThreadRunning");
+    string $name = GetCmdData("MailslotName");
+    int $numPatterns = GetCmdData("NumPatterns");
+    string $types = GetCmdData("Type");
+    string $hosts = GetCmdData("HostOrType");
+    string $pattern1 = GetCmdData("pattern1");
+    string $pattern2 = GetCmdData("pattern2");
+
+    echo "";
+    echo " Filter Active : $filter";
+    echo "Thread Running : $thread";
+    echo "      Mailslot : $name";
+    echo "  Num Patterns : $numPatterns";
+    int $i=0;
+    while ($i < $numPatterns) {
+	echo "--------------------------------------------------";
+	echo "    Web Type : $types[$i]";
+	echo "Host or Type : $hosts[$i]";
+	echo "   Pattern 1 : $pattern1[$i]";
+	echo "   Pattern 2 : $pattern2[$i]";
+	$i++;
+    }
+}
+
+return $rtn;

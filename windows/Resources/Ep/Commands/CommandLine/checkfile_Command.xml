@@ -1,0 +1,50 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31329'>
+
+  <Command id='16' name='checkfile'>
+
+    <Help>Checks a given file for existance and against a set of characteristics.</Help>
+
+    <Input>
+      <Option name='name' optional='false'>
+ 	 <Argument name='file_name' data='fileOffset'/>
+	 <Help>is the complete filename, including full path</Help>
+         <Help>on the target machine of interest</Help>
+      </Option>
+
+      <Option name='date' optional='true'>
+	 <Argument name='MM/DD/YYYY' data='dateOffset' optional='true'/>
+	 <Help>is the familiar MDY date format, including</Help>
+         <Help>4-digit year of the date last written to file</Help>
+      </Option>
+
+      <Option name='time' optional='true'>
+	<Help>The file to read the strings from.</Help>
+	<Argument name='HH:MMa(or p)' data='timeOffset' optional='true'/>
+      </Option>
+	
+      <Option name='length' optional='true'>
+	<Argument name='NNNNNN' data='length' optional='true'/>
+      </Option>
+	
+      <Option name='checksum' optional='true'>
+	<Set data='getChecksum' value='true'/>
+	<Argument name='NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN' data='checksum' optional='true'/>
+        <Help>a 20-byte (40 hex digits) checksum</Help>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='fileOffset' type='string'/>
+      <Data name='dateOffset' type='string'/>
+      <Data name='timeOffset' type='string'/>
+      <Data name='length' type='int32_t' />
+      <Data name='checksum' type='string'/>
+      <Data name='getChecksum' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

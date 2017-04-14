@@ -1,0 +1,27 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>registrytimes</Name>
+		<ReplaceBeforeArgs>python windows/regtimes.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>regtimes</Help>
+		<Help>Display the last modified times of registry keys and values</Help>
+		<Help> </Help>
+		<Help>Options:</Help>
+		<Help>&lt;-key &lt;key&gt;&gt;</Help>
+		<Help>    Key to search through in registry</Help>
+		<Help>&lt;-hive &lt;C|G|L|R|U&gt;&gt;</Help>
+		<Help>      Which hive to use</Help>
+		<Help>      U - HKEY_USERS</Help>
+		<Help>      L - HKEY_LOCAL_MACHINE</Help>
+		<Help>      C - HKEY_CURRENT_USER</Help>
+		<Help>      G - HKEY_CURRENT_CONFIG</Help>
+		<Help>      R - HKEY_CLASSES_ROOT</Help>
+		<Help>[-recursive]</Help>
+		<Help>    Recursively search through registry from base key</Help>
+		<Help>[-after &lt;date&gt;]</Help>
+		<Help>    Only show keys with last write after YYYY-MM-DD</Help>
+		<Help>[-before &lt;date&gt;]</Help>
+		<Help>    Only show keys with last write before YYYY-MM-DD</Help>
+	</Alias>
+</Aliases>

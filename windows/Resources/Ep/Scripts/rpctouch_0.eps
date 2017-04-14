@@ -1,0 +1,73 @@
+#-----------------------------------------------------------------------------
+#  Do a scan on the specified IP
+#-----------------------------------------------------------------------------
+
+if ($argc < 2) {
+	echo "Usage: $argv[0] <IP to scan> [probeType: 0=general, 1=regprobe, 2=is2003, 3=isXPServer, 4=w2k SP version] [portType: 135, 139, 445, or 80]";
+	echo "You provided $argc arguments";
+	return false;
+}
+
+string $target= $argv[1];
+string $probeType="0";
+string $portType="135";
+
+if ($argc >= 3) {
+	$probeType=$argv[2];
+}
+if ($argc >= 4) {
+	$portType=$argv[3];
+}
+
+@echo off;
+@record on;
+string $ScriptsDir = GetCmdData("dir");
+@record off;
+ifnot (defined($ScriptsDir[0])) {
+#	echo "* $argv[0]: Unable to retrieve scripts directory";
+#	echo "  using E:\\resources\\ep\\scripts";
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+
+string $localPort="1350";
+string $protocolType="rpc_tcp";
+if ($portType == "139") {
+	$localPort="1390";
+	$protocolType="rpc_nbt";
+} else if ($portType == "445") {
+	$localPort="4450";
+	$protocolType="rpc_smb";
+} else if ($portType == "80") {
+	$localPort="800";
+	$protocolType="rpc_http";
+}
+
+# set up redirector
+ifnot (`redirect -tcp -lplisten $localPort -target $target $portType`) {
+	echo "* $argv[0]: Unable to set up redirector";
+	return false;
+}
+@echo on;
+
+echo "RPCTOUCH (type $probeType, $portType) on $target";
+
+# do scan
+ifnot (`log local run -command "$ScriptsDir\\..\\..\\..\\Resources\\Tools\\rpctouch.exe -i 127.0.0.1 -p $localPort -s $protocolType -t $probeType -a $target" -redirect scan_$target-$probeType-$protocolType`) {
+	echo "* $argv[0]: Scanner failed";
+	# close redirector
+	@echo off;
+	ifnot (`stop redirect -contains "tcp -lplisten $localPort"`) {
+		echo "* $argv[0]: Unable to stop redirector";
+		return false;
+	}	
+	return false;
+}
+@echo off;
+
+# close redirector
+ifnot (`stop redirect -contains "tcp -lplisten $localPort"`) {
+	echo "* $argv[0]: Unable to stop redirector";
+	return false;
+}	
+
+return true;

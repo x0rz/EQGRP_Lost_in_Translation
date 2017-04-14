@@ -1,0 +1,47 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31388'>
+
+ <Command id='16' name='ResourceManager'>
+
+  <Help>Changes a resource for a given file</Help>
+
+  <Input optionprefix='-'>
+
+   <Option name='resourceNumber' optional='false'>
+    <Argument name='value' data='resourceNumber'/>
+    <Help>Resource number</Help>
+   </Option>
+
+   <Option name='encrypt' optional='true'>
+    <Help>Encrypt the resource before adding it to the file</Help>
+    <Set data='encrypt' value='true'/>
+   </Option>
+
+   <Option name='file' optional='false'>
+     <Argument name='name' data='fileName'/>    
+     <Help>Name of the (remote) file to be updated with the given resource</Help>
+   </Option>
+
+   <Option name='resource' optional='false'>
+    <Argument name='name' data='resourceFileName'/>
+    <Help>Local name of the resource file</Help>
+   </Option>
+
+   <Option name='key' optional='true'>
+	<Argument name='value' data='key'/>
+   </Option>
+
+  </Input>
+
+  <Output>
+   <Data name='resourceNumber' type='uint32_t'/>
+   <Data name='encrypt' type='bool' default='false'/>
+   <Data name='key' type='bytearray' default='fa 1c bf 61 fd 54 f9 9e 8e 01 ca e0 20 8c 90 0b 01 40 c6 32 a5 3d 9a 64 82 31 6d 14 3c 85 87 86 39 81 37 ff 83 c8 14 57 1a c5 bb 71 89 9e 37 e4 cc 35 70 41 19 a2 8c cb 8a 14 82 41 d9 8c 69 a1'/>
+   <Data name='fileName' type='string'/>
+   <Data name='resourceFileName' type='string'/>
+  </Output>
+
+ </Command>
+
+</Plugin>

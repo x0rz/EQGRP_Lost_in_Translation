@@ -1,0 +1,197 @@
+<?xml version='1.0' ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Dir_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='Dir'>
+
+		<Help>Returns a list of files in the specified directory</Help>
+
+		<Input>
+			<Argument name='path_and_mask' optional='true' data='path_and_mask'/>
+			
+			<Option name='recursive' optional='true'>
+				<Set data='recursive' value='true'/>
+				<Argument name='depth' data='recurseDepth' optional='true'>
+					<Help>The maximum depth to recurse (0=infinite (default))</Help>
+				</Argument>
+			</Option>
+
+			<Option name='mask' optional='true'>
+				<Argument name='filemask' data='mask'/>
+			</Option>
+
+			<Option name='path' optional='true'>
+				<Help>Do a dir listing from a directory other than the current one.</Help>
+				<Help>If '*' do a dir listing of all directories on all fixed drives</Help>
+
+				<Argument name='path' data='path'/>
+			</Option>
+
+			<Option name='max' optional='true'>
+				<Help>Continue to return listings up to the number specified.  If zero,</Help>
+				<Help>return all listings.  If not specified, return all.</Help>
+				
+				<Argument name='number' data='max'/>
+			</Option>
+
+			<Option name='time' optional='true'>
+				<Help>Time type to use in after/before/age and display</Help>
+				<Help>(defaults to modified)</Help>
+
+				<Argument name='type'>
+					<Value string='accessed'>
+						<Set data='timetype' value='1'/>
+						<Set param='timetype' value='Accessed'/>
+					</Value>
+					<Value string='modified'>
+						<Set data='timetype' value='2'/>
+						<Set param='timetype' value='Modified'/>
+					</Value>
+					<Value string='created'>
+						<Set data='timetype' value='3'/>
+						<Set param='timetype' value='Created'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='age' optional='true'>
+				<Help>Only display files that are at most 'interval' old ([#d][#h][#m][#s])</Help>
+
+				<Argument name='interval' data='age'/>
+				
+				<Reject>after</Reject>
+				<Reject>before</Reject>
+			</Option>
+
+			<Option name='after' optional='true'>
+				<Help>Only display files with timestamps after the given date.</Help>
+				<Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+				
+				<Argument name='date' data='afterDate'/>
+				
+				<Reject>age</Reject>
+			</Option>
+
+			<Option name='before' optional='true'>
+				<Help>Only display files with timestamps before the given date</Help>
+				<Help>'date' must be of the form YYYY-MM-DD [hh:mm:ss]</Help>
+				
+				<Argument name='date' data='beforeDate'/>
+				
+				<Reject>age</Reject>
+			</Option>
+
+			<Option name="hash" optional="true">
+				<Help>Specifies the algorithm(s) that will be used to generate the hash</Help>
+				<Help>The default is all</Help>
+				
+				<Set data="allhashes" value="true"/>
+				
+				<Argument name="type1" optional='true'>
+					<Value string="sha1">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha1" value="true"/>
+					</Value>
+					<Value string="md5">
+						<Set data="allhashes" value="false"/>
+						<Set data="md5" value="true"/>
+					</Value>
+					<Value string="sha256">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha256" value="true"/>
+					</Value>
+					<Value string="sha512">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha512" value="true"/>
+					</Value>
+				</Argument>
+				<Argument name="type2" optional='true'>
+					<Value string="sha1">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha1" value="true"/>
+					</Value>
+					<Value string="md5">
+						<Set data="allhashes" value="false"/>
+						<Set data="md5" value="true"/>
+					</Value>
+					<Value string="sha256">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha256" value="true"/>
+					</Value>
+					<Value string="sha512">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha512" value="true"/>
+					</Value>
+				</Argument>
+				<Argument name="type3" optional='true'>
+					<Value string="sha1">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha1" value="true"/>
+					</Value>
+					<Value string="md5">
+						<Set data="allhashes" value="false"/>
+						<Set data="md5" value="true"/>
+					</Value>
+					<Value string="sha256">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha256" value="true"/>
+					</Value>
+					<Value string="sha512">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha512" value="true"/>
+					</Value>
+				</Argument>
+				<Argument name="type4" optional='true'>
+					<Value string="sha1">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha1" value="true"/>
+					</Value>
+					<Value string="md5">
+						<Set data="allhashes" value="false"/>
+						<Set data="md5" value="true"/>
+					</Value>
+					<Value string="sha256">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha256" value="true"/>
+					</Value>
+					<Value string="sha512">
+						<Set data="allhashes" value="false"/>
+						<Set data="sha512" value="true"/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='dirsonly' optional='true'>
+				<Help>Only return directories</Help>
+				<Set data='dirsonly' value='true'/>
+			</Option>
+			
+			<Option name='chunksize' optional='true'>
+				<Argument name='bytes' data='chunksize'/>
+				<Help>How many bytes to queue before returning data.</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='path_and_mask' type='string'/>
+			<Data name='mask' type='string'/>
+			<Data name='path' type='string'/>
+			<Data name='recursive' type='bool' default='false'/>
+			<Data name='max' type='uint32_t' default='0'/>
+			<Data name='timetype' type='uint8_t' default='2'/>
+			<Data name='age' type='time'/>
+			<Data name='afterDate' type='datetime'/>
+			<Data name='beforeDate' type='datetime'/>
+			<Data name='allhashes' type='bool' default='false'/>
+			<Data name='dirsonly' type='bool' default='false'/>
+			<Data name='chunksize' type='uint32_t' default='65536'/>
+			<Data name='md5' type='bool' default='false'/>
+			<Data name='sha1' type='bool' default='false'/>
+			<Data name='sha256' type='bool' default='false'/>
+			<Data name='sha512' type='bool' default='false'/>
+			<Data name='recurseDepth' type='uint32_t' default='0'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

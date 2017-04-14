@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>netstat</Name>
+		<ReplaceBeforeArgs>netconnections</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+</Aliases>	
+		

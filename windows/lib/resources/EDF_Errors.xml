@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config id="1536669c2bc26176d86fa7ed07d582a8d30b3731" configversion="4.1.0.0"
+    name="ExploitDevelopmentFramework" version="4.1.0"
+    xmlns="urn:trch" schemaversion="2.1.0">
+  <errors>
+      <errorcode name="EDF_SUCCESS" value="0"
+          description="Success"/> 
+      <errorcode name="EDF_ERROR_UNKNOWN" value="1"
+          description="Unknown error"/> 
+      <errorcode name="EDF_ERROR_NOMEM" value="32"
+          description="Out of memory"/> 
+      <errorcode name="EDF_ERROR_ADDRINUSE" value="33"
+          description="Address already in use"/> 
+      <errorcode name="EDF_ERROR_CONNREFUSED" value="34"
+          description="Connection refused"/> 
+      <errorcode name="EDF_ERROR_CONNRESET" value="35"
+          description="Connection reset by peer"/>
+      <errorcode name="EDF_ERROR_AUTHENTICATION_FAILED" value="36"
+          description="Remote authentication failed (e.g., bad credentials)"/>
+      <errorcode name="EDF_ERROR_CALLBACK_TIMEDOUT" value="37"
+          description="Timeout waiting for callback"/>
+      <errorcode name="EDF_ERROR_UNEXPECTED_RESPONSE" value="38"
+          description="Unspecified protocol error"/>
+      <errorcode name="EDF_ERROR_PAYLOAD_TOO_LARGE" value="39"
+          description="Payload too large to fit into buffer"/>
+      <errorcode name="EDF_ERROR_BAD_AUTHCODE" value="40"
+          description="Follow-on stage authentication failure"/>
+      <errorcode name="EDF_ERROR_INVALID_OPTIONS" value="41"
+          description="Specified parameters are invalid"/>
+      <errorcode name="EDF_ERROR_UNKNOWN_REMOTE" value="42"
+          description="Unknown remote error"/>
+  </errors>
+</config>

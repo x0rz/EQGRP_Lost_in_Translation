@@ -1,0 +1,25 @@
+﻿<?xml version='1.0'?>
+<Plugin id="31397">
+  <Command id="16" name="arpmon">
+    <Help>Arp Monitor, very similar to ARP except arp mon continously checks the arp cache and displays updates</Help>
+    <Input optionprefix="-">
+      <Option name="delay" optional="true">
+        <Help>Delay to specify sleep time for implant before rechecking the ARP cache</Help>
+        <Argument name="milliseconds" data="delay" />
+      </Option>
+      <Option name="entries" optional="true">
+        <Help>The number of entries initially stored in memory, and the amount to allocate if additional entries are found.</Help>
+        <Argument name="ARP Cache Entries" data="entries" />
+      </Option>
+      <Option name="sendInterval" optional="true">
+        <Help>Interval to send cache entries, in multiples of the delay time</Help>
+        <Argument name="delay multiple" data="sendInterval" />
+      </Option>
+    </Input>
+    <Output>
+      <Data name="delay" type="uint32_t" default="1000" />
+      <Data name="entries" type="uint8_t" default="100" />
+      <Data name="sendInterval" type="uint8_t" default="0" />
+    </Output>
+  </Command>
+</Plugin>

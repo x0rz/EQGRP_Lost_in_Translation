@@ -1,0 +1,27 @@
+<?xml version='1.0' ?>
+
+<Technique name='Mcl_NtElevation_EpMo_GrSa' id='122'>
+
+	<Implementation value='0'/>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+			<Version major='5' minor='*' other='*'/>
+			<Version major='6' minor='0' other='*'/>
+			<Version major='6' minor='1' other='*'/>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type='x64'>
+
+		<Platform family='winnt'>
+			<Version major='5' minor='*' other='*'/>
+			<Version major='6' minor='0' other='*'/>
+			<Version major='6' minor='1' other='*'/>
+		</Platform>
+
+	</Architecture>
+
+</Technique>

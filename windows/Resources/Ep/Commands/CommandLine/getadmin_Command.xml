@@ -1,0 +1,16 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31344'>
+ <Command id='16' name='getadmin'>
+  <Help>Adds the Administrators group to the given process' token.</Help> 
+  <Input>
+   <Option name='id' optional='true'>
+    <Argument name='#' data='id'/>
+    <Help>The id of the process to modify.</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='id'    type='uint32_t'/>
+  </Output>
+ </Command>
+</Plugin>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_ProcessInfo_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='processinfo'>
+	
+		<Help>Gets extended information on the given process</Help>
+		
+		<Input>
+			<Option name='id' optional='true'>
+				<Argument name='#' data='id'/>
+				<Help>The id of the process to be queried (default=current).</Help>
+			</Option>
+			
+			<Option name='elevate' optional='true'>
+				<Set data="elevate" value="true"/>
+				<Help>Attempt to elevate to open the process (if necessary).</Help>
+			</Option>
+
+			<Option name='minimal' optional='true'>
+				<Set data="performHashes" value="false"/>
+				<Help>Do not perform hashing of loaded DLLs.</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='id' type='uint32_t'/>
+			<Data name='elevate' type='bool' default='false'/>
+			<Data name='performHashes' type='bool' default='true'/>
+		</Output>
+	</Command>
+
+</Plugin>

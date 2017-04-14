@@ -1,0 +1,12 @@
+
+
+#-------------------------------------------------------------------------
+Sub _StartCommand(IN string $cmd, OUT int $id)
+{
+	
+	`$cmd`;
+	$id = <int>%_sgEnv{"last_command_id"};
+	
+	return true;
+	
+}	/* END _StartCommand */

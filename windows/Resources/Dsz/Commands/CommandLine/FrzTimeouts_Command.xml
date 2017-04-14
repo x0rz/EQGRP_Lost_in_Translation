@@ -1,0 +1,60 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x0101200b'>
+
+	<Command id='4' name='FrzTimeouts'>
+
+		<Help>Manipulates FRZ timeouts</Help>
+
+		<Input>
+			<Option name='list' optional='false' group='action'>
+				<Help>Display timeouts</Help>
+				<Set data='action' value='0'/>
+
+				<Reject>timeouts</Reject>
+				<Reject>retries</Reject>
+			</Option>
+
+			<Option name='add' optional='false' group='action'>
+				<Help>Adds a timeout</Help>
+				<Set data='action' value='1'/>
+				<Argument name='cidrValue' data='cidr'/>
+
+				<Require>timeouts</Require>
+				<Require>retries</Require>
+			</Option>
+
+			<Option name='delete' optional='false' group='action'>
+				<Help>Deletes a timeout</Help>
+				<Set data='action' value='2'/>
+				<Argument name='cidrValue' data='cidr'/>
+
+				<Reject>timeouts</Reject>
+				<Reject>retries</Reject>
+			</Option>
+
+			<Option name='timeouts' optional='true'>
+				<Help>Specify timeouts</Help>
+				<Argument name='send_timeout' data='sendTimeout'/>
+				<Argument name='recv_timeout' data='recvTimeout'/>
+			</Option>
+
+			<Option name='retries' optional='true'>
+				<Help>Specify retries</Help>
+				<Argument name='send_retries' data='sendRetries'/>
+				<Argument name='recv_retries' data='recvRetries'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='action' type='uint8_t' default='0'/>
+			<Data name='cidr' type='cpcidr'/>
+			<Data name='sendTimeout' type='time'/>
+			<Data name='recvTimeout' type='time'/>
+			<Data name='sendRetries' type='uint8_t'/>
+			<Data name='recvRetries' type='uint8_t'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

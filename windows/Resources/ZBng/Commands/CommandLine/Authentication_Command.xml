@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName="Tasking/Mcl_Cmd_Authentication_Tasking.pyo" providerType="script">
+    <Command name="Authentication" id="0">
+        
+        <Help>Disables authentication. It modifies the system to allow</Help>
+        <Help>a given user to be authenticated without the need for the user's</Help>
+		<Help>password.</Help>
+		
+		<Input>
+			<Option name='user' optional='false'>
+				<Argument name='UserName' data='user' optional='true'>
+					<Help>The user to modify (Administrator is used if no user is given)</Help>
+				</Argument>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies memory access and thread method - will use current default if not specified.</Help>
+				<Argument name='memory' data='memory'/>
+				<Argument name='thread' data='thread'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='user' type='string' default='Administrator'/>
+			<Data name='memory'    type='string'/>
+			<Data name='thread'    type='string'/>
+		</Output> 
+		
+    </Command>
+</Plugin>

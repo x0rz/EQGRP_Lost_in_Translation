@@ -1,0 +1,17 @@
+rmregquery	script RoundupMast\rmregquery.eps
+
+rmput		script RoundupMast\rmput.eps
+rmclean		script RoundupMast\rmclean.eps
+rmstart		script RoundupMast\rmstart.eps
+rmstop		script RoundupMast\rmstop.eps
+
+runsql		script RoundupMast\runsql.eps
+ftp		script RoundupMast\ftp.eps
+
+rmrename	script RoundupMast\rmrename.eps
+rmdecrypt	script RoundupMast\rmdecrypt.eps
+
+runperl		script RoundupMast\runperl.eps
+rmtaskid	script RoundupMast\rmTaskID.eps
+
+rmaddaliases	script RoundupMast\rmaddaliases.eps

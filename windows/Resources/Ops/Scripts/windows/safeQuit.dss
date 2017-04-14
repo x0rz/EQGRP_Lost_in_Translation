@@ -1,0 +1,58 @@
+#-----------------------------------------------------------------------
+# Name: safeQuit.dss
+# Last Update: 06/11/2009
+#
+# This script wraps quitanddelete to ensure that the user doesn't try and
+# Q&D while paused within another script and that the user finishes simple.
+#-----------------------------------------------------------------------
+
+string $commandOutput;
+string $commandLine;
+string $value;
+bool $pauseFlag = FALSE;
+
+@echo off;
+
+#-----------------------------------------------------------------------
+# Check to see if user has any scripts running (is in a "paused" state)
+#-----------------------------------------------------------------------
+undef($commandOutput);
+@record on;
+`commands`;
+@record off;
+GetCmdData("Command::commandAsTyped", $commandOutput);
+
+for (int $i=0; $i < sizeof($commandOutput); $i++) {
+	$commandLine = $commandOutput[$i];
+
+	RegExSplit(" ", $commandLine, 0, $value);
+	if (($value[0] == "script") && (!RegExMatch("safeQuit.dss", $value[1]))) {
+		$pauseFLAG = TRUE;
+		break;
+	}
+}
+
+if ($pauseFlag) {
+	echo "Can't Q&D from a \"paused\" state...quit \"$commandLine\" first";
+} else {
+	#-----------------------------------------------------------------------
+	# Check to see if user has finished simple
+	#-----------------------------------------------------------------------
+	@record on;
+	`lpgetenv -name Ops_SIMPLE`;
+	@record off;
+
+	$commandOutput;
+	GetCmdData("EnvItem::value", $commandOutput);
+
+	if ($commandOutput == "TRUE") {
+		`stopaliasing quitanddelete`;
+	} else {
+		echo "\nWhat exactly do you think your doing???  You know the rules...FINISH SIMPLE!\n";
+		if (prompt("Really Quit?")) {
+			`stopaliasing quitanddelete`;
+		}
+	}
+}
+
+return true;

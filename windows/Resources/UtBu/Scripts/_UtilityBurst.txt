@@ -1,0 +1,11 @@
+# any line that begins with a '#' is discarded as a comment
+
+# UtilityBurst commandline
+[-action <INSTALL|UNINSTALL|VERIFYINSTALL|VERIFYRUNNING|LOAD|UNLOAD|STATUS>]
+	Do the specific action, rather than show a menu
+[-silent]
+	Do not display anything
+[-quiet]
+	Do not ask questions
+[-name <driverName>]
+	The name of the UtilityBurst driver

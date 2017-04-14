@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName='Tasking/Mcl_Cmd_Time_Tasking.pyo' providerType='script'>
+
+    <Command name="Time" id="0">
+
+        <Input>
+			<Option name="target" optional="true">
+				<Help>Get remote time</Help>
+				<Argument name="IP_OR_HOST" data="target"/>
+			</Option>
+        </Input>
+
+        <Output>
+			<Data name="target" type="string"/>
+        </Output>
+    </Command>
+</Plugin>

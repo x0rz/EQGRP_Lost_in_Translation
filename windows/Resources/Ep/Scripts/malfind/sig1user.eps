@@ -1,0 +1,18 @@
+@record on;
+`regquery -hive U`;
+@record off;
+
+string $subkeys = GetCmdData('subkey');
+string $subkey;
+
+foreach $subkey ($subkeys)
+{
+	if (`regquery -hive U -subkey "$subkey\\software\\microsoft\\windows\\currentversion\\StrtdCfg" -recursive`)
+	{
+		return true;
+	}
+
+
+}
+
+return false;

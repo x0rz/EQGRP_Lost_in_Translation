@@ -1,0 +1,28 @@
+sub _processlistTasking(IN STRING $proclistTxtFile, OUT STRING $proclistCmd, OUT STRING $taskID, OUT STRING $targetID) {
+	echo "\nProcessing $proclistTxtFile";
+	string $lines;
+	string $taskIDStr;
+	string $targetIDStr;
+	if (!ReadFile ($proclistTxtFile, $lines)) {
+		return false;
+	}
+	for (int $i=0; $i < sizeof($lines); $i++) {
+		string $line = $lines[$i];
+
+		# TargetID is required
+		if (RegexMatch("TargetID", $line)) {
+			RegExSplit(" ", $line, 2, $targetIDStr);
+			$targetID = $targetIDStr[1];
+		}
+
+		# TaskID is required
+		if (RegexMatch("TaskID", $line)) {
+			RegExSplit(" ", $line, 2, $taskIDStr);
+			$taskID = $taskIDStr[1];
+		}
+	}
+
+	$proclistCmd = "processes -list";
+
+	return true;
+}

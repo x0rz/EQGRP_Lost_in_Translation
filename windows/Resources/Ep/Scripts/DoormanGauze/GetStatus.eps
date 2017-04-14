@@ -1,0 +1,46 @@
+#--------------------------------------------------------
+# File: GetStatus.eps
+#
+# Displays status of DoormanGauze tools
+#
+# Modifications:
+#  23 Mar 2006	Created.
+#--------------------------------------------------------
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+bool $rtn = true;
+
+@record on;
+ifnot (`dg_control -version -driver $driver`) {
+    echo "*** Unable to get driver version (is it running?) ***";
+    $rtn = false;
+} else {
+    int $major = GetCmdData("Major");
+    int $minor = GetCmdData("Minor");
+    int $build = GetCmdData("Build");
+
+    echo "";
+    echo "     Driver Version : $major.$minor.$build";
+
+    ifnot (`dg_control -status -driver $driver`) {
+	echo "*** Unable to get driver status (is it running?) ***";
+	$rtn = false;
+    } else {
+	string $mailslot = GetCmdData("MailSlot");
+	int $pid = GetCmdData("pid");
+	string $lastTrigger = GetCmdData("LastTrigger");
+
+	echo "Registered Mailslot : $mailslot";
+	echo "Register Process Id : $pid";
+	echo "  Last Trigger Time : $lastTrigger";
+    }
+}
+
+return $rtn;

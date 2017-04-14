@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="RegistryHive_Lp" id="511" script="Tasking/Mcl_Cmd_RegistryHive_Tasking.pyo">
+
+	<Interfaces/>
+
+	<Dependencies>
+		<Remote>RegistryHive_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"/>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

@@ -1,0 +1,14 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>disableauditing</Name>
+		<Location>Remote</Location>
+		<ReplaceBeforeArgs>python Lib/ops/survey/auditing.py -project Ops -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+		<Help>Usage:
+	disableauditing
+Executes: python Lib/ops/survey/auditing.py -project Ops
+Shortcut to run the interactive script for disabling auditing on a box. See also
+the DSZ command 'audit'.</Help>
+	</Alias>
+</Aliases>

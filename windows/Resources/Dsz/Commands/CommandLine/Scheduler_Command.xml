@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Scheduler_Tasking.pyo' providerType='script'>
+	
+	<Command name="Scheduler" id="0">
+	
+		<Help>Lists, adds or removes scheduled jobs.</Help>
+		
+		<Input>
+			<Option name='query' optional='false' group='type'>
+				<Help>Query for jobs</Help>
+				<Set data='cmdType' value='0'/>
+				
+				<Argument name='type' optional='true'>
+					<Help>The scheduler type to query</Help>
+					<Value string='default'>
+						<Set data='schedulerType' value='0'/>
+					</Value>
+					<Value string='at'>
+						<Set data='schedulerType' value='1'/>
+					</Value>
+					<Value string='gui'>
+						<Set data='schedulerType' value='2'/>
+					</Value>
+					<Value string='service'>
+						<Set data='schedulerType' value='3'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='add' optional='false' group='type'>
+				<Help>Adding a new job</Help>
+				<Set data="cmdType" value="1" />
+				
+				<Argument name='delay' data='delay'>
+					<Help>Time from now to run the command ([#d][#h][#m][#s])</Help>
+				</Argument>
+				
+				<Argument name='cmd' data='cmd'>
+					<Help>Command to run, including parameters</Help>
+				</Argument>
+
+				<Argument name='type' optional='true'>
+					<Help>The scheduler type to modify</Help>
+					<Value string='default'>
+						<Set data='schedulerType' value='0'/>
+					</Value>
+					<Value string='at'>
+						<Set data='schedulerType' value='1'/>
+					</Value>
+					<Value string='gui'>
+						<Set data='schedulerType' value='2'/>
+					</Value>
+					<Value string='service'>
+						<Set data='schedulerType' value='3'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='delete' optional='false' group='type'>
+				<Help>Removes a scheduled job</Help>
+				<Set data="cmdType" value="2" />
+				
+				<Argument name='job' data='job'>
+					<Help>The job to delete</Help>
+				</Argument>
+
+				<Argument name='type' optional='true'>
+					<Help>The scheduler type to modify</Help>
+					<Value string='default'>
+						<Set data='schedulerType' value='0'/>
+					</Value>
+					<Value string='at'>
+						<Set data='schedulerType' value='1'/>
+					</Value>
+					<Value string='gui'>
+						<Set data='schedulerType' value='2'/>
+					</Value>
+					<Value string='service'>
+						<Set data='schedulerType' value='3'/>
+					</Value>
+				</Argument>
+
+				<Reject>folder</Reject>
+			</Option>
+
+			<Option name='folder' optional='true'>
+				<Help>Use this folder when acting on jobs</Help>
+				<Argument name='folder' data='folder'/>
+			</Option>
+
+			<Option name='target' optional='true'>
+				<Help>Act on a remote machine</Help>
+				<Argument name='machine' data='machinename'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='cmdType' type='uint8_t'/>
+			<Data name='schedulerType' type='uint8_t' default='0'/>
+			<Data name='machinename' type='string'/>
+			<Data name='job' type='string'/>
+			<Data name='cmd' type='string'/>
+			<Data name='delay' type='time'/>
+			<Data name='folder' type='string'/>
+		</Output>
+	</Command>
+</Plugin>

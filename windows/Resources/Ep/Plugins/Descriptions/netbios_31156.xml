@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31156'>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='*' minor='*'>
+		<File>netbios_Implant.dll</File>
+	    </Version>
+	</Platform>
+
+	<!-- 9x family -->
+
+    </Windows>
+
+</Plugin>

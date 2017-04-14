@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+		<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="One">
+        </Plugin>		
+		<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Two">
+        </Plugin>		
+		<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Three">
+        </Plugin>		
+		<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Four">
+        </Plugin>		
+		<Plugin pluginClass="ddb.dsz.plugin.terminal.Terminal" pluginName="Five">
+        </Plugin>		
+</StartupConfig>

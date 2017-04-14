@@ -1,0 +1,24 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31161'>
+
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+
+    <Windows>
+
+	<!-- Although this code works for all OSes, we're 
+	     only going to let it work on NT 4 systems.  -->
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='4' minor='*'>
+		<File>netstatmon_Implant.dll</File>
+	    </Version>
+	</Platform>
+
+	<!-- 9x family -->
+
+    </Windows>
+
+</Plugin>

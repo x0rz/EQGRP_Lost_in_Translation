@@ -1,0 +1,22 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='16' name='Channels'>
+
+    <Help>Lists ongoing commands and bytes sent/received</Help>
+
+    <Input>
+      <Option name='verbose' optional='true'>
+	<Set data='verbose' value='true'/>
+	<Help>Lists open channels</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='verbose' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

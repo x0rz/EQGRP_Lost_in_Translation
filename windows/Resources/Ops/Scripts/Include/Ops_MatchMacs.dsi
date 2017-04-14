@@ -1,0 +1,63 @@
+#-----------------------------------------------------------------------------
+# Ops_MatchMacs.dsi
+#
+#  Takes any number of MAC addresses and attempts to find a matching comment
+#  in the "ethernetMACs.txt" file.
+#-----------------------------------------------------------------------------
+
+@include "Ops_GenericFunctions.dsi";
+
+sub _MatchMac(IN string $macs, OUT string %macTypes)
+{
+
+	string $dataPath;
+	if (!Ops_GetDataPath($dataPath))
+	{
+		echo("Failed to get data directory", ERROR);
+		return false;
+	}
+	string $lines;
+
+    @echo off;
+    @record on;
+    if (! ReadFile("$dataPath/ethernetMACs.txt", $lines)) {
+	echo "* MatchMac: Error reading MAC listing file";
+	return false;
+    }
+
+    int $numLines = sizeof($lines);
+    if ($numLines == 0) {
+	echo "* MatchMac: No matching lines in MAC listing file";
+	return false;
+    }
+
+   for (int $i=0; $i < sizeof($lines); $i++) {
+	string $line;
+	$line = $lines[$i];
+
+	string $addrs;
+	RegExSplit(":", $line, 0, $addrs);
+	if (sizeof($addrs) > 2) {
+	    # good line
+          for (int $j=0; $j < sizeof($macs); $j++) {
+	      string $mac;
+		$mac = $macs[$j];
+		string $macParts;
+		RegExSplit("-", $mac, 0, $macParts);
+		if ((sizeof($macParts) == 6) &&
+		    ($macParts[0] == $addrs[0]) &&
+		    ($macParts[1] == $addrs[1])) {
+			string $last;
+			RegExSplit("     ", $addrs[2], 0, $last);
+			if ((sizeof($last) > 1) && ($last[0] == $macParts[2])) {
+			    # we have a match
+			    %macTypes{'$mac'} = $last[1];
+			}
+		}
+	    }
+	}
+    }
+
+    return true;
+
+}	/* end _MatchMac */

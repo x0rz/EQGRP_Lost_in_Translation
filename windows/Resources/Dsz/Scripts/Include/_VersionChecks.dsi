@@ -1,0 +1,27 @@
+
+@include "_Versions.dsi";
+@include "linux/_VersionChecksLinux.dsi";
+@include "solaris/_VersionChecksSolaris.dsi";
+@include "unix/_VersionChecksUnix.dsi";
+@include "windows/_VersionChecksWindows.dsi";
+
+#----------------------------------------------------
+# _IsOs64Bit
+#	Returns whether the target is running a 64-bit OS
+#----------------------------------------------------
+sub _IsOs64Bit()
+{
+	return _IsOs64Bit(%_sgEnv{'script_target_address'});
+}
+sub _IsOs64BitLocal()
+{
+	return _IsOs64Bit(%_sgEnv{'script_source_address'});
+}
+sub _IsOs64Bit(IN string $tgt)
+{
+	bool $is64=false;
+	GetEnv('_OS_64BIT', $is64, 0, $tgt);
+	return $is64;
+}
+# END _IsOs64Bit
+

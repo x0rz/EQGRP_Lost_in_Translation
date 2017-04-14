@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<t:config id="2a7d82545aa7bdf8b44ee403dbebf2b360f55b3a"
+          name="Esteemaudit"
+          version="2.1.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+    <t:touchlist>
+        <t:plugin name="Esteemaudittouch"
+                  displayname="ESAU Vulnerability Touch"
+                  description="Check if Target is vulnerable to ESAU"
+                  postmessage="ESAU requires vulnerable target">
+            <t:ivparam name="TargetPort" value="TargetPort"/>
+            <t:ivparam name="TargetIp" value="TargetIp"/>
+            <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+            <t:ivparam name="PacketTimeout" value="PacketTimeout"/>
+            <t:oparam name="Architecture" value="Architecture"/>
+            <t:oparam name="Target" value="Target"/>
+            <t:oparam name="RdpLibHertz" value="RdpLibHertz"/>
+        </t:plugin>
+    </t:touchlist>
+</t:config>

@@ -1,0 +1,41 @@
+#In order to get access to the functions you'll need to call,
+#include the following files
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+#To reduce the number of function calls, we pass common data via a struct
+#The struct is defined in PSPHelpers.epm
+metaData @metaData;
+#initialize the struct
+init(@metaData);
+
+#you now know
+#@metaData.$ip - what the target is being post-processed as
+#@metaData.$ipw - just the ip with 'w' on the end to help look in preps
+#@metaData.$projectName - if one is found in the preps directory
+#@metaData.$driveLetter - where they placed the ops disk, probably d:
+#@metaData.$prepsDir - where preps live, probably d:\OPSDisk\preps
+#@metaData.$history - bool - did we find a pspConfig.txt file in preps
+
+#it is now up to you to fill in the following as best you can
+#@metaData.$vendor - McAfee - AVG - Symantec - etc.
+#@metaData.$product - Endpoint Protection - Desktop Firewall - etc.
+#@metaData.$version - 8.0 - 8.5 - etc.
+#@metaData.$installDate - if you know
+#@metaData.$defUpdates - last time product/virus def's were updated
+#@metaData.$logFile - where are the logs stored
+#@metaData.$quarantine - location of quarantine folder
+#@metaData.$information - place any additional information here
+
+#functions to use
+#You construct $runningConfig. returns true if equal to the previous ops config, else false
+#checkConfig also calls createConfig under the covers for you.
+checkConfig($runningConfig,@metaData)
+
+#If no history is found, you can use this to save your config for use on subsequent ops
+createConfig($runningConfig,@metaData)
+
+#Once you've filled in the blanks of the struct as best you can, use this function
+#It will wrap the data in XML and place it where it belongs.
+writeMetaData(@metaData)
+

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="Name">Papyrus</entry>
+<entry key="WarningBg">0xfafad2</entry>
+<entry key="NoticeFg">0x0000ff</entry>
+<entry key="ErrorFg">0xff0000</entry>
+<entry key="NoticeBg">0xfafad2</entry>
+<entry key="ErrorBg">0xffffff</entry>
+<entry key="NormalFg">0x000000</entry>
+<entry key="WarningFg">0x14637a</entry>
+<entry key="NormalBg">0xfafad2</entry>
+</properties>

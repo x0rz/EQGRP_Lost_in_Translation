@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StartupConfig>
+	<Plugin pluginClass="ddb.dsz.plugin.about.About" pluginName="About..." align="left"/>
+	<Plugin pluginClass="ddb.dsz.plugin.systemlogviewer.SystemLogViewer" pluginName="System Logs" align="right">
+		<InitArgs>-max=10000</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ddb.dsz.plugin.appconsole.ImplantConsole" pluginName="DszLp.exe" align="right">
+		<InitArgs>-exe=@@RES_DIR@@/../../Bin/@@OS_DIR@@/@@BUILD_TYPE@@/DszLp.exe</InitArgs>
+		<InitArgs>-max=10000</InitArgs>
+	</Plugin>
+	<Plugin pluginClass="ds.plugin.replay.ReplayManager" pluginName="Operations" />
+	<Plugin pluginClass="ds.plugin.options.DszOptions" pluginName="Options" />
+	<Plugin pluginClass="ddb.dsz.plugin.commandviewer.CommandViewer" pluginName="Commands" align="right"/>
+	<Plugin pluginClass="ddb.dsz.plugin.connectioninfo.ConnectionInfo"	pluginName="Connection Info" visible='false'/>
+
+</StartupConfig>

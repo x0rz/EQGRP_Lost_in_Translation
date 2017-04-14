@@ -1,0 +1,45 @@
+<?xml version='1.0' ?>
+
+<Plugin interface="0x01c10032" provider='0x01012004'>
+
+  <Command id='0' name='Script'>
+
+    <Help>For information about scripting, please see user documentation.</Help>
+
+	<Input>
+		<Argument name='script' optional='false' data='script'>
+			<Help>The script to run.</Help>
+		</Argument>
+
+		<Option name='args' optional='true'>
+			<Help>Script arguments</Help>
+			<Argument name='script_args' optional='false' data='args'/>
+		</Option>
+		
+		<Option name='project' optional='true'>
+			<Help>Limit script searches to a given project</Help>
+			<Argument name='name' optional='false' data='project'/>
+		</Option>
+		
+		<Option name="verify" optional='true'>
+			<Help>Check the script for errors, but do not run</Help>
+			<Set data='verify' value='true'/>
+		</Option>
+
+		<Option name="quiet" optional='true'>
+			<Help>Enable quiet if parent echo'ing is disabled</Help>
+			<Set data='noquiet' value='false'/>
+		</Option>
+    </Input>
+
+    <Output>
+		<Data name='script' type='string'/>
+		<Data name='args' type='string'/>
+		<Data name='project' type='string'/>
+		<Data name='verify' type='bool' default='false'/>
+		<Data name='noquiet' type='bool' default='true'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

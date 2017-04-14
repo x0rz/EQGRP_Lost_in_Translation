@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : common.xsd
+    Created on : April 24, 2006, 8:20 AM
+    Author     : ADF design group
+    Description:
+        Collection of different schema types shared by the different ADF managers.                
+-->
+
+<xsd:schema 
+    xml:lang="en"
+    targetNamespace="urn:adf:Common"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"                       
+    xmlns:c="urn:adf:Common"
+    elementFormDefault="qualified">
+
+   <xsd:simpleType name="ServicePackType">
+      <xsd:union memberTypes="c:UnknownType xsd:nonNegativeInteger"/>
+   </xsd:simpleType>
+
+   <xsd:simpleType name="UnknownType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="UNKNOWN"/>
+         <xsd:enumeration value="Unknown"/>
+         <xsd:enumeration value="unknown"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   
+   <xsd:simpleType name="ProtocolType">
+      <xsd:restriction base="xsd:string">
+         <xsd:enumeration value="TCP"/>
+         <xsd:enumeration value="Tcp"/>
+         <xsd:enumeration value="tcp"/>
+         <xsd:enumeration value="UDP"/>
+         <xsd:enumeration value="Udp"/>
+         <xsd:enumeration value="udp"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+ 
+   <!-- Define attribute groups -->
+   <xsd:attributeGroup name="osattrgroup">
+      <xsd:attribute name="family" type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="osclass" type="xsd:string"/>
+      <xsd:attribute name="kernelversion" type="xsd:string"/>
+      <xsd:attribute name="version" type="xsd:string"/>
+      <xsd:attribute name="architecture" type="xsd:string"/>
+      <xsd:attribute name="processormodel" type="xsd:string"/>
+      <xsd:attribute name="language" type="xsd:string"/>
+      <xsd:attribute name="servicepack" type="c:ServicePackType"/>
+      <xsd:attribute name="hardwareplatform" type="xsd:string"/>
+      <xsd:attribute name="confidence" type="xsd:float"/>
+   </xsd:attributeGroup>
+   
+   <xsd:attributeGroup name="serviceattrgroup">
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="port" type="xsd:int"/> 
+      <xsd:attribute name="protocol" type="c:ProtocolType"/>
+      <xsd:attribute name="username" type="xsd:string"/>
+      <xsd:attribute name="password" type="xsd:string"/>
+      <xsd:attribute name="confidence" type="xsd:float"/>
+   </xsd:attributeGroup>
+
+   <xsd:attributeGroup name="miscinfoattrgroup">
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="value" type="xsd:string"/>
+   </xsd:attributeGroup>
+ 
+   <xsd:attributeGroup name="productattrgroup">
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="version" type="xsd:string"/>
+      <xsd:attribute name="confidence" type="xsd:float"/>
+   </xsd:attributeGroup>
+   
+   <xsd:attributeGroup name="patchattrgroup">
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="confidence" type="xsd:float"/>
+   </xsd:attributeGroup>
+   
+ <!-- Define Types -->    
+   <xsd:complexType name="OperatingSystemType">
+        <xsd:annotation>
+            <xsd:documentation>A guess of the target os.</xsd:documentation>
+        </xsd:annotation>      
+        <xsd:attributeGroup ref="c:osattrgroup"/>	
+    </xsd:complexType>
+ 
+    <xsd:complexType name="ServiceType">
+        <xsd:attributeGroup ref="c:serviceattrgroup"/>
+    </xsd:complexType>
+ 
+    <xsd:complexType name="ProductType">
+        <xsd:attributeGroup ref="c:productattrgroup"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="MiscInfoType">
+        <xsd:attributeGroup ref="c:miscinfoattrgroup"/>
+    </xsd:complexType>
+ 
+    <xsd:complexType name="PatchType">
+        <xsd:attributeGroup ref="c:patchattrgroup"/>
+    </xsd:complexType>
+    
+</xsd:schema>

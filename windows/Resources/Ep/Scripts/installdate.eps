@@ -1,0 +1,10 @@
+@record on;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion"`;
+string $values=GetCmdData("value_data");
+@record off;
+
+echo "install hex is $values[1]";
+
+`local run -command "perl d:/dszopsdisk/resources/ops/tools/installdate.pl $values[1]" -redirect installdate`;
+
+return true;

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_KisuFullList_Tasking.pyo" providerType="script">
+
+    <Command name="kisu_fulllist" id="0">
+        <Help>List configurations for all KiSu instances on target</Help>
+		<Input>
+			<Option name="checksum" optional="true">
+				<Help>Perform checksum on the modules in the store</Help>
+				<Set data="checksum" value="true"/>
+			</Option>
+
+			<Option name="quiet" optional="true">
+				<Help>Hides step updates.  Provide only configuration data</Help>
+				<Set data="quiet" value="true"/>
+			</Option>
+		</Input>
+		<Output>
+			<Data name="quiet" type="bool" default="false"/>
+			<Data name="checksum" type="bool" default="false"/>
+		</Output>
+    </Command>
+
+</Plugin>

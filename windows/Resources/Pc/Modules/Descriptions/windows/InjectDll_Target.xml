@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="InjectDll_Target" id="246">
+
+    <Interfaces>
+        <Interface provider="0x0101102e" id="0x01010031"/>
+    </Interfaces>
+    
+    <Dependencies>
+		<Local>Mcl_ThreadInject</Local>
+		<Local>Mcl_NtElevation</Local>
+		<Local>Mcl_NtMemory</Local>
+	</Dependencies>
+    
+    <Lp>No</Lp>
+	<Target>Yes</Target>
+    
+    <Architecture type="i386">
+    
+        <Platform family="winnt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">i386-winnt-vc9s/release/InjectDll_Target.dll</File>
+                <File loadtype="memory">i386-winnt-vc9s/release/InjectDll_Target.dll</File>
+            </Version>
+        </Platform>
+        
+    </Architecture>
+    
+    <Architecture type="x64">
+    
+        <Platform family="winnt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">x64-winnt-vc9s/release/InjectDll_Target.dll</File>
+                <File loadtype="memory">x64-winnt-vc9s/release/InjectDll_Target.dll</File>
+            </Version>
+        </Platform>
+        
+    </Architecture>
+    
+</Module>

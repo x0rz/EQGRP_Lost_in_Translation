@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Plugin providerName='Tasking/Mcl_Cmd_SidLookup_Tasking.pyo' providerType='script'>
+
+	<Command name="SidLookup" id="0">
+
+		<Help>Looks up information on a given sid</Help>
+
+		<Input>
+			<Option name="id" optional="false" group='value'>
+				<Help>The id to check</Help>
+				<Argument name="#" data="number" />
+			</Option>
+
+			<Option name="name" optional="false" group='value'>
+				<Help>The name to check</Help>
+				<Argument name="value" data="name" />
+			</Option>
+
+			<Option name="wellknown" optional="false" group='value'>
+				<Help>The well-known group name to lookup (Windows only)</Help>
+
+				<Argument name="idName">
+					<Value string='System'>
+						<Set data='local' value='true'/>
+						<Set data='number' value='0x00000012'/>
+					</Value>
+					<Value string='Administrators'>
+						<Set data='number' value='0x00000220'/>
+					</Value>
+					<Value string='Users'>
+						<Set data='number' value='0x00000221'/>
+					</Value>
+					<Value string='Guests'>
+						<Set data='number' value='0x00000222'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name="user" optional="true" group='type'>
+				<Help>Perform a user lookup (default)</Help>
+				<Set data="type" value="0"/>
+			</Option>
+			
+			<Option name="group" optional="true" group='type'>
+				<Help>Perform a group lookup</Help>
+				<Set data="type" value="1"/>
+			</Option>
+
+			<Option name="local" optional="true">
+				<Help>Treat the value in the local context</Help>
+				<Set data='local' value='true'/>
+			</Option>
+		</Input>
+		<Output>
+			<Data name='number' type='uint32_t'/>
+			<Data name='name' type='string'/>
+			<Data name='type' type='uint8_t' default='0'/>
+			<Data name='local' type='bool' default='false' />
+		</Output>
+
+	</Command>
+
+</Plugin>

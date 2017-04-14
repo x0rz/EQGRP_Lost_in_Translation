@@ -1,0 +1,9 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>pcstate</Name>
+		<ReplaceBeforeArgs>python pcstate.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>    Record the PEDDLECHEAP state.  Valid options are 0-5 </Help>		
+	</Alias>
+</Aliases>

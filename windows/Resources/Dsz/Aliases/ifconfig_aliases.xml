@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>ipconfig</Name>
+		<ReplaceBeforeArgs>ifconfig</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+</Aliases>	
+		

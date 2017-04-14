@@ -1,0 +1,41 @@
+#####################################################################
+# File: checkProcess.eps Updated: 7/11/07 Version: 1.0
+#   Checks old opnotes in preps dir for information on a process
+#####################################################################
+
+sub Usage()
+{
+	echo "Usage:  checkProcess [processName]";
+	return (FALSE);
+}
+
+#####################################################################
+
+@echo off;
+
+#--------------------------------------------------------
+# Return Usage
+#--------------------------------------------------------
+if ($ARGC < 2)
+{
+	return(Usage());
+}
+
+#--------------------------------------------------------
+# Get Preps Path
+#--------------------------------------------------------
+@record on;
+`getdirectory -resources`;
+@record off;
+string $prepsPath = GetCmdData("Dir");
+$prepsPath = "$prepsPath\\..\\preps";
+
+#--------------------------------------------------------
+# Search old opnotes for processname
+#--------------------------------------------------------
+string $processName = $argv[1];
+echo "Checking old opnotes for notes on $processName";
+@echo on;
+ifnot (`local grep -mask *opnotes* -path "$prepsPath" -recursive -max 5 -nocase -pattern $processName`)
+	{ return (FALSE); }
+return (TRUE);

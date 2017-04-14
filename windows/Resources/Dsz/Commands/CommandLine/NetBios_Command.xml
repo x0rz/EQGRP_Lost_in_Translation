@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<Plugin providerName='Tasking/Mcl_Cmd_NetBios_Tasking.pyo' providerType='script'>
+
+    <Command name="NetBios" id="0">
+	
+		<Help>Displays the NetBios information, such as available services, for the machine.</Help> 
+		
+       <Input>
+			<Option optional="true" name="target">
+				<Argument optional="false" name="machinename" data="machinename"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data type="string" name="machinename"/>
+		</Output>
+		
+    </Command>
+    
+</Plugin>

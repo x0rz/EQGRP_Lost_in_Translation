@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:trch"
+        id="78a1476259ba4f740e7d7cd07c7b82304f9c4c45"
+        name="Pcdlllauncher"
+        version="2.3.1"
+        configversion="2.3.1.0"
+        schemaversion="2.0.0">
+  <inputparameters>
+    <!-- All plugins that accept a callback must have the Callback* parameters
+     listed below, or their equivalents. -->
+    <parameter name="ConnectedTcp"
+        description="Connected TCP Socket"
+        type="Socket"/>
+    <parameter name="XorMask"
+        description="XOR Mask for communication"
+        type="U8">
+      <default>0</default>
+    </parameter>
+    <parameter name="NetworkTimeout"
+        description="Network timeout (in seconds).  Use -1 for no timeout."
+        type="S16">
+      <default>60</default>
+    </parameter>
+    <parameter name="LPFilename"
+        description="Full path to LP"
+        type="LocalFile">
+		<default>D:\DSZOpsDisk\Resources\Pc\Legacy\PC_Exploit.dll</default>
+	</parameter>
+    <parameter name="LPEntryName"
+        description="LP Entry Function Name"
+        type="String">
+      <default>ServiceEntry</default>
+    </parameter>
+    <parameter name="ImplantFilename"
+        description="Full path to implant payload"
+        type="LocalFile"/>
+    <paramchoice name="TargetOsArchitecture" description="Machine architecture of target.">
+      <default>x86</default>
+      <paramgroup name="x86" description="32-bit Intel x86 processor.">
+      </paramgroup>
+      <paramgroup name="x64" description="64-bit AMD x86_64 processor.">
+      </paramgroup>
+    </paramchoice>
+    <paramchoice name="PCBehavior" description="PEDDLECHEAP EGG Behavior">
+      <default>8</default>
+      <paramgroup name="7" description="Re-use Socket (PC EGG behavior is NOT DONE)">
+      </paramgroup>
+      <paramgroup name="8" description="Re-use Socket and PC EGG behavior">
+      </paramgroup>
+    </paramchoice>
+  </inputparameters>
+</config>

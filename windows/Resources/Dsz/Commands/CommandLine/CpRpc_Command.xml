@@ -1,0 +1,90 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='20' name='CpRpc'>
+
+		<Help>Sends a raw RPC.</Help>
+
+		<Input>
+			<Option name='interface' optional='false'>
+				<Argument name='iface' data='iface'/>
+				<Argument name='provider' data='provider'/>
+				<Argument name='procId' data='procId'/>
+
+				<Help>The interface, provider, and procedure id for the RPC</Help>
+			</Option>
+			
+			<Option name='data' optional='true' group='data'>
+				<Argument name='rpcdata' data='data'/>
+				<Help>The RPC data to be sent</Help>
+			</Option>
+
+			<Option name='datafile' optional='true' group='data'>
+				<Argument name='filename' data='datafile'/>
+				<Help>The RPC data to be sent</Help>
+			</Option>
+			
+			<Option name='replyAddr' optional='true'>
+				<Argument name='addr' data='replyAddr'/>
+			</Option>
+
+			<Option name='nowait' optional='true'>
+				<Set data='noWait' value='true'/>
+			</Option>
+
+			<Option name='replyInterface' optional='true'>
+				<Argument name='iface' data='replyIface'/>
+				<Argument name='provider' data='replyProvider'/>
+				<Argument name='procId' data='replyProcId'/>
+			</Option>
+
+			<Option name='groupTag' optional='true'>
+				<Set data='useGroupTag' value='true'/>
+				
+				<Argument name='tag' data='groupTag'/>
+			</Option>
+
+			<Option name='priority' optional='true'>
+				<Argument name='value' data='priority'/>
+			</Option>
+
+			<Option name='timeout' optional='true'>
+				<Argument name='value' data='timeout'/>
+			</Option>
+
+			<Option name='blockTimeout' optional='true'>
+				<Argument name='value' data='blockTimeout'/>
+			</Option>
+
+			<Option name='messageType' optional='true'>
+				<Argument name='value' data='messageType'/>
+			</Option>
+
+			<Option name='taskId' optional='true'>
+				<Argument name='value' data='taskId'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='iface' type='uint32_t'/>
+			<Data name='provider' type='uint32_t'/>
+			<Data name='procId' type='uint8_t'/>
+			<Data name='data' type='bytearray'/>
+			<Data name='replyAddr' type='cpaddr'/>
+			<Data name='replyIface' type='uint32_t'/>
+			<Data name='replyProvider' type='uint32_t'/>
+			<Data name='replyProcId' type='uint8_t'/>
+			<Data name='priority' type='uint8_t' default='14'/>
+			<Data name='groupTag' type='uint32_t'/>
+			<Data name='useGroupTag' type='bool' default='false'/>
+			<Data name='timeout' type='time'/>
+			<Data name='blockTimeout' type='time' default='5m'/>
+			<Data name='messageType' type='uint32_t' default='0'/>
+			<Data name='noWait' type='bool' default='false'/>
+			<Data name='datafile' type='string'/>
+			<Data name='taskId' type='bytearray'/>
+		</Output>
+
+	</Command>
+</Plugin>

@@ -1,0 +1,39 @@
+# $Revision: 1.2 $ $Date: 2007-06-04 12:12:53-04 $
+
+int $PID = GetEnv("RM_RMDPROCESSID");
+string $DAEMON_SHUTDOWN = "\n\nDaemon shutting down\n";
+
+if ($PID == 0)
+{
+	echo "** Environment variable RM_RMDPROCESSID does not exist.";
+	echo "** You will have to kill the process manually.  Sorry.";
+	echo "**";
+	return FALSE;
+}
+
+################################
+# Try to kill the process
+################################
+ifnot (prompt "Should I kill the process $PID?")
+{
+	return FALSE;
+}
+
+if (`kill -id $PID`)
+{
+	`lpsetenv -option RM_RMDPROCESSID -delete`;
+
+	return TRUE;
+}
+
+echo "**";
+echo "** Could not kill process!";
+echo "**";
+
+if (prompt "Should I delete RM_RMDPROCESSID environment variable?")
+{
+	`lpsetenv -option RM_RMDPROCESSID -delete`;
+	return TRUE;
+}
+
+return FALSE;

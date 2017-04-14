@@ -1,0 +1,176 @@
+#-------------------------------------------------------------------------------
+# File: goodget.eps
+# Description: Does a dir for the get's files before getting them
+#
+#-------------------------------------------------------------------------------
+
+# !! If a file is bigger than this, it will prompt you before getting it !!
+int $bigsize=1000000;
+
+bool $badParams = false;
+string $path="";
+string $fileMask="";
+
+string $localDir;
+
+if ($argc == 1) {
+    $badParams = true;
+} else {
+	$fileMask=$argv[1];
+	if ($argv[1] == "?") {
+		$badParams=true;
+	}
+	# find -path in arguments; if it doesn't exist, create one
+	int $p=2;
+	while ($p < sizeof($argv)) {
+		if ($argv[$p] == "-path") {
+			$p++;
+			$path=$argv[$p];
+		}
+		$p++;
+	}
+	if ($path == "") {
+		#must get one from $fileMask
+		string $fileParts=split("\\",$fileMask);
+		if ($fileParts == $fileMask) {
+			# No path was given
+			$path="";
+		} else {
+			#TODO: see if this is a relative path; if relative, add current dir
+			@record on;
+			`pwd`;
+			$localDir=GetCmdData("string_val");
+			@record off;
+
+			int $partNum=0;
+			int $nextPartNum=1;
+			while ($partNum < sizeof($fileParts)) {
+				if ($fileParts[$partNum] != "") {
+					if ($nextPartNum == sizeof($fileParts)) {
+						# last part is the filename
+						$fileMask=$fileParts[$partNum];
+					} else {
+						if ($path == "") {
+							$path="$fileParts[$partNum]";
+						} else {
+							$path = "$path\\$fileParts[$partNum]";
+						}
+					}
+				}
+				$partNum++;
+				$nextPartNum++;
+			}
+		}
+	}
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] <get input>";
+    echo "    Does a get, but first does a dir on the files to be retrieved";
+    `get ?`;
+
+    if ($argc > 1) {
+	if ($argv[1] == "?") {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+string $fileToGet = "";
+string $pathToGet = "";
+
+string $getstring;
+string $copygetstring;
+
+string $dirargs="";
+string $getargs="";
+
+int $i=2;
+int $iminus1=1;
+while ($i < sizeof($argv)) {
+	# skip -path (dealt with above)
+	if ($argv[$i] == "-path") {
+		$i++;
+		$i++;
+		$iminus1++;
+		$iminus1++;
+	}
+
+	if ($i < sizeof($argv)) {
+		if ($getargs == "") {
+			$getargs=$argv[$i];
+		} else {
+			$getargs="$getargs $argv[$i]";
+		}
+
+		if ($argv[$i] != "-range") {
+			if ($argv[$iminus1] != "-range") {
+				if ($dirargs == "") {
+					$dirargs=$argv[$i];
+				} else {
+					$dirargs="$dirargs $argv[$i]";
+				}
+			}
+		}
+	}
+	$iminus1++;
+	$i++;
+}
+
+$copygetstring="copyget \"$fileMask\"";
+if ($path != "") {
+	if ($path != $localDir) {
+		ifnot (`cd "$path"`) {
+			echo "Could not cd into $path.  Bailing.";
+			return false;
+		}
+	}
+}
+$getstring="get \"$fileMask\" $getargs";
+
+bool $success=false;
+
+bool $getFile=true;
+@record on;
+ifnot (`log script dirtoget.eps "$fileMask" $dirargs`) {
+	echo "Failed to get dir information: \"$fileMask\" $dirargs.";
+	$success=false;
+#	The system cannot find the file specified.
+#	Could also be a permissions problem, or some other issue
+} else {
+	int $size=GetCmdData("lowsize");
+	echo "Getting $path\\$fileMask";
+	echo "  ($size bytes)";
+	@record off;
+	if ($size > $bigsize) {
+		echo "$path\\$fileMask is big.";
+		echo "Will get with $getstring.";
+		ifnot (prompt "Get it?") {
+			$getFile=false;
+			$success=true;
+		}
+	}
+	if ($getFile) {
+		if (`$getstring`) {
+			$success=true;
+		} else 
+		if (`$copygetstring`) {
+			$success=true;
+		}
+	}
+}
+@record off;
+
+if ($path != "") {
+	if ($path != $localDir) {
+		`cd "$localDir"`;
+	}
+}
+
+ifnot ($success) {
+	echo "Failed get: $fileMask $getargs";
+}
+
+return $success;

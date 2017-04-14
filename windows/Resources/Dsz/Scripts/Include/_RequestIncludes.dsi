@@ -1,0 +1,136 @@
+@include "_LpHelperFunctions.dsi";
+@include "_Mutex.dsi";
+
+#------------------------------------------------------------------------------------------
+# _IndirectExecution
+#	Takes the name of a command and a script's arguments, and checks to see if
+#	the script exists in the Ops directory.  If it does, then it is executed
+#	with the parameters that were passed into this function.
+#	If it doesn't, the actual command is executed with the same parameters
+#------------------------------------------------------------------------------------------
+Sub _IndirectExection(IN string $command, IN string $scriptArgs)
+{
+	if (!defined($command) || !defined($scriptArgs) || sizeof($scriptArgs) == 0) {
+		return false;
+	}
+	
+	string $arguments = "";
+	for (int $i = 1; $i < sizeof($scriptArgs); $i++) {
+		StrCat($arguments, " ");
+		
+		# strip any surrounding quotes
+		RegExSub('"(.*)"', '\$1', $scriptArgs[$i]);
+		
+		if (RegExMatch("\\s", $scriptArgs[$i])) {
+			StrCat($arguments, "\"$scriptArgs[$i]\"");
+		} else {
+			StrCat($arguments, $scriptArgs[$i]);
+		}
+	}
+	StrCat($command, " $arguments");
+	
+	string $prefix =  _GetUserPrefix();
+	
+	return `$prefix$command`;
+}
+
+#------------------------------------------------------------------------------------------
+# _WaitForOpening
+#   Limits the execution of requests to a certain number.  If that number isn't specified,
+#   it's set to 10.
+#------------------------------------------------------------------------------------------
+Sub _WaitForOpening()
+{
+	string $MUTEX = "RequestHandler";
+
+	int $countdown = 10000;
+	bool $bDone = false;
+	while ($countdown > 0 && !$bDone) {
+		$countdown--;
+		# acquire mutex
+		if (!_AcquireMutex($MUTEX)) {
+			echo ("Unable to acquire mutex for lock.", ERROR);
+			return false;
+		}
+		
+		# now find out the maximum and current counts
+		string $MAXIMUM = "RequestHandler_Maximum";
+		string $CURRENT = "RequestHandler_Current";
+		string $maxValue, $curValue;
+		int $max, $cur;
+		if (!(GetEnv($MAXIMUM, $maxValue) && <int>$maxValue > 0)) {
+			$max = 10;
+			SetEnv($MAXIMUM, "$max");
+		} else {
+			$max = <int>$maxValue;
+		}
+		if (!(GetEnv($CURRENT, $curValue) && <int>$curvalue >= 0)) {
+			$cur = 0;
+		} else {
+			$cur = <int>$curValue;
+		}
+		
+		if ($cur < $max) {
+			$cur++;
+			SetEnv($CURRENT, "$cur");
+			$bDone = true;
+		}
+		
+		_ReleaseMutex($MUTEX);
+	}	
+	
+	return true;
+}
+
+#------------------------------------------------------------------------------------------
+# _TaskFinished
+#   Reduces the current busy count by one.  Must be called after the work of the task has completed.
+#------------------------------------------------------------------------------------------
+Sub _TaskFinished()
+{
+	string $MUTEX = "RequestHandler";
+
+	# acquire mutex
+	if (!_AcquireMutex($MUTEX)) {
+		echo ("Unable to acquire mutex for lock.", ERROR);
+		return false;
+	}
+	
+	# now find out the maximum and current counts
+	string $CURRENT = "RequestHandler_Current";
+	string $curValue;
+	int $cur;
+	if (GetEnv($CURRENT, $curValue)) {
+		$cur = <int>$curValue;
+		$cur--;
+		SetEnv($CURRENT, "$cur");
+	}
+	_ReleaseMutex($MUTEX);
+	
+	return true;
+}
+
+#------------------------------------------------------------------------------------------
+# _GetUserPrefix
+#   Returns a string that can be used at the front of any command to stay as the same user
+#------------------------------------------------------------------------------------------
+Sub(string) _GetUserPrefix()
+{
+	string $key = "script_user";
+	if (!defined(%_sgEnv{$key})) {
+		return "";
+	} else {
+		string $str = %_sgEnv{$key};
+		return "user=0x%_sgEnv{$key} ";
+	}
+}
+
+#---------------------------------------------------------------------------------------
+sub _CleanPath(REF string $path)
+{
+	string $matches;
+	if (RegExMatch("/{2,99}([^/]*)/+(.*)", $path, $matches)) {
+		$path = "\\\\$matches[0]\\$matches[1]";
+	}
+	echo "Path = $path";
+}

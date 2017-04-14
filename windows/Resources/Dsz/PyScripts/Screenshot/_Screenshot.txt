@@ -1,0 +1,11 @@
+# any line that begins with a '#' is discarded as a comment
+
+# payload commandline
+[-res [default|high|low|medium]]
+	Select desired resolution
+[-format [bmp|default|gif|jpeg|png]]
+	Select desired file format
+[-wnd <handle>]
+	Select desired window to capture (entire desktop by default)
+[-force]
+	Force window capture even if window is minimized

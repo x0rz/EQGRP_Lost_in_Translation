@@ -1,0 +1,55 @@
+@echo off;
+
+@record on;
+ifnot (`log driverlist`) {
+	echo "Couldn't get Driverlist";
+	return false;
+}
+@record off;
+string $names = GetCmdData("name");
+
+@record on;
+ifnot (`getdirectory -scripts`) {
+	echo "Couldn't get directory";
+	return false;
+}
+@record off;
+string $scripts_path = GetCmdData("dir");
+
+string $path;
+string $lines;
+string $unknowns;
+if (ReadFile("$scripts_path..\\drv_list.txt",$lines)) {
+	foreach $path ($names) {
+		bool $match = false;
+		string $values= Split("\\",$path[0]);
+		int $i = sizeof($values);
+		$i-=1;
+		string $filename = Split(".",$values[$i]);
+
+		string $line;
+		foreach $line ($lines) {
+			string $file = Split(",",$line);
+			string $file_noquotes = Split("\"",$file[0]);
+			if ($filename[0] == $file_noquotes[1]) {
+				$match = true;
+				string $desc_noquotes = Split("\"",$file[1]);
+				int $nameLen = StrLen($filename[0]);
+				while ($nameLen < 15) { 
+					$filename[0] = "$filename[0] ";
+					$nameLen = StrLen($filename[0]);
+				}
+
+
+				echo "$filename[0]     $desc_noquotes[1]";
+			}			
+		}
+		
+		if ($match == false) {
+			echo "$filename[0]";
+			$unknowns = "$unknowns\r\n$filename[0]";
+		}
+	}
+	WriteFile("unknownDrivers.txt", TRUE, $unknowns);
+}
+

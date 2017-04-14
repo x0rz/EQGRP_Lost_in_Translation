@@ -1,0 +1,63 @@
+
+#-----------------------------------------------------------------------------
+# _MatchMac
+#
+#  Takes any number of MAC addresses and attempts to find a matching comment
+#  in the "ethernetMACs.txt" file.
+#-----------------------------------------------------------------------------
+sub _MatchMac(IN string $macs, OUT string %macTypes)
+{
+
+    string $macFile = "ethernetMACs.txt";
+
+    @echo off;
+
+    @record on;
+    ifnot (`getdirectory -scripts`) {
+	echo "* MatchMac: Unable to get scripts directory";
+	return false;
+    }
+    @record off;
+
+    string $dir = GetCmdData("dir");
+    ifnot (defined($dir[0])) {
+	echo "* MatchMac: Unable to retrieve scripts directory";
+	return false;
+    }
+
+    string $lines;
+    ifnot (ReadFile("$dir\\..\\$macFile", $lines)) {
+	echo "* MatchMac: Error reading MAC listing file";
+	return false;
+    }
+
+    int $numLines = sizeof($lines);
+    if ($numLines == 0) {
+	echo "* MatchMac: No matching lines in MAC listing file";
+	return false;
+    }
+
+    string $line;
+    foreach $line ($lines) {    
+	string $addrs = Split(":", $line);
+	if (sizeof($addrs) > 2) {
+	    # good line
+	    string $mac;
+	    foreach $mac ($macs) {
+		string $macParts = Split(" ", $mac);
+		if ((sizeof($macParts) == 6) &&
+		    ($macParts[0] == $addrs[0]) &&
+		    ($macParts[1] == $addrs[1])) {
+			string $last = Split("     ", $addrs[2]);
+			if ((sizeof($last) > 1) && ($last[0] == $macParts[2])) {
+			    # we have a match
+			    %macTypes{'$mac'} = $last[1];
+			}
+		}
+	    }
+	}
+    }
+
+    return true;
+
+}	/* end _MatchMac */

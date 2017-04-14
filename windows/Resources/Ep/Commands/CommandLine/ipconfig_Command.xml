@@ -1,0 +1,17 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31365'>
+
+  <Command id='16' name='ipconfig'>
+
+    <Help>Returns information about the connection configuration.</Help>
+
+    <Input>
+    </Input>
+
+    <Output>
+    </Output>
+
+  </Command>
+
+</Plugin>

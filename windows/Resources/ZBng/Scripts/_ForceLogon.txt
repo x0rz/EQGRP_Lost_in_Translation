@@ -1,0 +1,9 @@
+# any line that begins with a '#' is discarded as a comment
+
+# ForceLogon commandline
+<-user <USER_NAME>>
+	The user to log in as
+[-domain <DOMAIN>]
+	The user's domain
+[-type <batch|interactive|network|network_cleartext|new_credentials|service>]
+	If no type is specified, "interactive" is the default

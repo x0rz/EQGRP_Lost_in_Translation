@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<t:config id="def84fcfbc30f146f982bf43d536f300bf2e6485"
+          name="Eclipsedwing"
+          version="1.5.2"
+          configversion="1.5.2.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+  <t:touchlist>
+      <t:plugin name="Rpctouch"
+                displayname="RPC Touch"
+                description="Touch to get Target OS"
+                postmessage="ECWI requires Target OS">
+                <t:ivparam name="TargetPort" value="TargetPort"/>
+                <t:ivparam name="TargetIp" value="TargetIp"/>
+                <t:ivparam name="Protocol" value="Protocol"/>
+                <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+                <t:oparam name="Target" value="Target"/>
+                <t:oparam name="Protocol" value="Protocol"/>
+      </t:plugin>
+      <t:plugin name="Eclipsedwingtouch"
+                displayname="ECWI Vulnerability Touch"
+                description="Check if Target is vulnerable to ECWI"
+                postmessage="ECWI requires vulnerable target">
+                <t:ivparam name="TargetPort" value="TargetPort"/>
+                <t:ivparam name="TargetIp" value="TargetIp"/>
+                <t:ivparam name="Protocol" value="Protocol"/>
+                <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+      </t:plugin>
+  </t:touchlist>
+</t:config>

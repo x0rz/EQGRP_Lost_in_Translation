@@ -1,0 +1,132 @@
+#--------------------------------------------------------
+# File: SetMaxFileSize.eps
+#
+# Sets the maximum capture file size for DrillerSkyline tools
+#
+# Modifications:
+#  12/12/2006	Stole from DS
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+bool $retVal;
+
+while(true) {
+
+	echo "Getting list of currently attached devices";
+	@record on;
+	$retVal = `serialsniffer -driver $driver -status`;
+	@record off;
+	string $currentDevices;
+	int $currentIds;
+	if($retVal) {
+		$currentDevices = GetCmdData("deviceName");
+		$currentIds		= GetCmdData("id");
+	}
+
+	echo "Getting list of permanent devices";
+	@record on;
+	$retVal = `serialsniffer -driver $driver -getstoredsettings`;
+	@record off;
+	string $permaDevices;
+	if($retVal) {
+		$permaDevices = GetCmdData("device");
+	}
+
+	int $numActive = 0;
+	int $numPerm = 0;
+
+	if(defined($currentDevices)) {
+		$numActive = sizeof($currentDevices);
+	}
+
+	if(defined($permaDevices)) {
+		$numPerm = sizeof($permaDevices);
+	}
+	
+	if($numPerm == 0 && $numActive == 0) {
+		echo "Not attached to any devices right now";
+		return true;
+	}
+
+	string $commands;
+
+	$commands[0] = "Return to main menu";
+
+	int $i = 0;
+	while($i < $numActive) {
+		int $j = $i;
+		$j += 1;
+		$commands[$j] = $currentDevices[$i];
+		$i++;
+	}
+
+	$i = 0;
+	while($i < $numPerm) {
+		int $j = $i;
+		$j += $numActive;
+		$j += 1;
+		$commands[$j] = $permaDevices[$i];
+		$i++;
+	}
+
+	echo "\r\n\r\n";
+	echo "NOTE:  Removing a device only removes it from the specified category";
+	int $k = 0;
+	while($k < sizeof($commands)) {
+		int $temp = $numActive;
+		$temp++;
+		if($k == 1 && $numActive > 0) {
+			echo "";
+			echo "Currently attached devices:";
+		} else if($k == $temp && $numPerm > 0) {
+			echo "";
+			echo "Attach on reconnect devices:";
+		}
+		echo "\t($k). $commands[$k]";
+		$k++;
+	}
+	
+	int $choice = GetInput("Disconnect from which device?");
+	
+	if($choice == 0) {
+		return true;
+	} else if($choice <= $numActive ) {
+		$choice--;
+		
+		echo "Detaching from $currentDevices[$choice]";
+#		@echo on;
+		bool $ret = `serialsniffer -driver $driver -removeNow $currentIds[$choice]`;
+#		@echo off;
+		if($ret) {
+			echo "    SUCCESS";
+		} else {
+			echo "    FAILED";
+		}
+	} else {
+		$choice -= $numActive;
+		$choice--;
+		
+		echo "Detaching permanently from $permaDevices[$choice]";
+#		@echo on;
+		bool $ret = `serialsniffer -driver $driver -removeAlways "$permaDevices[$choice]"`;
+#		@echo off;
+		if($ret) {
+			echo "    SUCCESS";
+		} else {
+			echo "    FAILED";
+		}
+	}
+	
+	
+	
+	pause;
+}
+
+return true;

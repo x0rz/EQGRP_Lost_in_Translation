@@ -1,0 +1,28 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31315'>
+ <Command id='16' name='put'>
+  <Help>Transfers a file to the remote machine.</Help>
+  <Input>
+   <Argument name='source' optional='false' data='source'>
+    <Help>The file to be be copied</Help>
+   </Argument>
+   <Option name='name' optional='true'>
+    <Argument name='string' data='remote'/>
+    <Help>What to name the remote file</Help>
+   </Option>
+   <Option name='permanent' optional='true'>
+    <Set data='permanent' value='true'/>
+    <Help>If specified, the uploaded file will not be marked for deletion</Help>
+   </Option>
+   <Option name='timeout' optional='true'>
+    <Help>No effect anymore</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='source'    type='string'/>
+   <Data name='remote'    type='string'/>
+   <Data name='permanent' type='bool' default='false'/>
+  </Output>
+ </Command>
+</Plugin>

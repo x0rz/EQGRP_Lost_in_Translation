@@ -1,0 +1,46 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='8' name='LpSetEnv'>
+
+		<Help>Changes the given environment option.</Help>
+
+		<Input>
+			<Option name='name' optional='false'>
+				<Argument name='name' data='name'/>
+				<Help>The environment variable to change</Help>
+			</Option>
+
+			<Option name='value' optional='false' group='action'>
+				<Argument name='name' data='value'/>
+				<Help>The new value for the environment variable</Help>
+			</Option>
+
+			<Option name='delete' optional='false' group='action'>
+				<Set data='delete' value='true'/>
+				<Help>If specified, delete the environment variable</Help>
+			</Option>
+			
+			<Option name='default' optional='true' group='address'>
+				<Set data='default' value='true'/>
+				<Help>If specified, act on the "default" address for the environment variable</Help>
+			</Option>
+			
+			<Option name='destination' optional='true' group='address'>
+				<Argument name='address' data='address'/>
+				<Help>If specified, the destination address for the environment variable</Help>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='name' type='string'/>
+			<Data name='value' type='string'/>
+			<Data name='delete' type='bool' default='false'/>
+			<Data name='default' type='bool' default='false'/>
+			<Data name='address' type='cpaddr'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

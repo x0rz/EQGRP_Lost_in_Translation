@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Strings_Tasking.pyo' providerType='script'>
+
+	<Command id="0" name="Strings">
+		<Input>
+			<Argument data="filename" name="nameAndPath" optional="false">
+				<Help>The file to search.</Help>
+			</Argument>
+			
+			<Option name="threshold" optional="true">
+				<Help>Sets the minimum length for a valid string (default=4).</Help>
+				<Argument data="threshold" name="number" optional="false" />
+			</Option>
+			
+			<Option name="max" optional="true">
+				<Help>Sets the maximum number of strings to return.</Help>
+				<Argument data="maximum" name="number" optional="false" />
+			</Option>
+			
+			<Option name="radix" optional="true">
+				<Help>Prints the offset within the file before each string.</Help>
+				<Argument name="type">
+					<Value string="decimal">
+						<Set param="radix" value="decimal" />
+					</Value>
+					<Value string="octal">
+						<Set param="radix" value="octal" />
+					</Value>
+					<Value string="hex">
+						<Set param="radix" value="hex" />
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name="encoding" optional="true">
+				<Help>Search the file for strings in the given encoding (default=ASCII).</Help>
+				<Argument name="type">
+					<Value string="ASCII">
+						<Set data="encoding" value="0" />
+					</Value>
+					<Value string="Unicode">
+						<Set data="encoding" value="1" />
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name="bounds" optional="true">
+				<Help>Set the search parameters</Help>
+				<Argument name="startOffset" data="startOffset" />
+				<Argument name="endOffset" data="endOffset" optional="true" />
+			</Option>
+		</Input>
+		<Output>
+			<Data name="filename" type="string" />
+			<Data name="threshold" type="uint32_t" default="4"/>
+			<Data name="maximum" type="uint32_t" default="0"/>
+			<Data name="encoding" type="uint8_t" default="0"/>
+			<Data name="startOffset" type="uint32_t" default="0" />
+			<Data name="endOffset" type="uint32_t" default="0" />
+		</Output>
+		
+	</Command>
+</Plugin>

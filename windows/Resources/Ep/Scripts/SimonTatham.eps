@@ -1,0 +1,35 @@
+#v1.0
+
+@echo off;
+@record on;
+`regquery -hive U`;
+@record off;
+string $cmdout = GetCmdData("subkey");
+@echo on;
+
+if(defined($cmdout))
+{
+	int $tmp = sizeof($cmdout);
+	int $i = 0;
+	while($i < $tmp)
+	{
+		if($cmdout[$i] == ".DEFAULT")
+		{
+			$i++;
+			continue;
+		}
+		string $items = split("-", "$cmdout[$i]");
+		if($items[3] == "21")
+		{
+			string $user = split("_", "$cmdout[$i]");
+			if(defined($user[1]))
+			{
+				$i++;
+				continue;
+			}
+			`background log regquery -hive u -subkey $user\\software\\simontatham -recursive`;
+			`background log regquery -hive u -subkey "$user\\software\\Martin Prikryl" -recursive`;
+		}
+		$i++;
+	}
+}

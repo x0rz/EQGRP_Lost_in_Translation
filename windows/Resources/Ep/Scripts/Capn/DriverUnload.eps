@@ -1,0 +1,31 @@
+#--------------------------------------------------------
+# File: VerifyRunning.eps
+#
+# Wrapper script to verify Capn tools are running
+#
+# Modifications:
+#  8/10/2005	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "cloak.eps";
+@include "getResDir.eps";
+
+@echo off;
+
+if ($argc != 3) {	
+  echo "Usage: $argv[0] <driverName> <cloaker>";
+  return false;
+}
+
+string $resPath;
+getResDirectory($resPath);
+ifnot(cloakIt($argv[2], $resPath, "uncloak")) {
+  echo "EP couldn't gain uncloaked privileges";
+  return false;
+}
+
+
+string $driver = $argv[1];
+@echo on;
+`driverunload -name $driver`;
+@echo off;

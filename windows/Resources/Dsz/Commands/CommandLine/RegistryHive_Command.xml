@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_RegistryHive_Tasking.pyo' providerType='script'>
+
+	<Command name="RegistryHive" id="0">
+	
+		<Help>Provides options to manipulate registry hives.</Help>
+		
+		<Input>
+
+			<Option name="load" optional="false" group="actions">
+				<Help>Load a registry hive from a file.</Help>
+				<Set data="action" value="1"/>
+				<Require>hive</Require>
+				<Require>key</Require>
+				<Require>file</Require>
+			</Option>
+
+			<Option name="unload" optional="false" group="actions">
+				<Help>Unload a hive currently loaded in the registry.</Help>
+				<Set data="action" value="2"/>
+				<Require>hive</Require>
+				<Require>key</Require>
+				<Reject>file</Reject>
+			</Option>
+
+			<Option name="save" optional="false" group="actions">
+				<Help>Save a loaded registry hive to file.</Help>
+				<Set data="action" value="3"/>
+				<Require>hive</Require>
+				<Require>key</Require>
+				<Require>file</Require>
+			</Option>
+      
+			<Option name="hive" optional="true">
+				<Help>Which hive to use</Help>
+				<Help>U - HKEY_USERS</Help>
+				<Help>L - HKEY_LOCAL_MACHINE</Help>
+				<Help>C - HKEY_CURRENT_USER</Help>
+				<Help>G - HKEY_CURRENT_CONFIG</Help>
+				<Help>R - HKEY_CLASSES_ROOT</Help>
+
+				<Argument name="h" optional="false">
+					<Value string="U">
+						<Set data="hive" value="1" />
+					</Value>
+					<Value string="L">
+						<Set data="hive" value="2" />
+					</Value>
+					<Value string="R">
+						<Set data="hive" value="3" />
+					</Value>
+					<Value string="C">
+						<Set data="hive" value="4" />
+					</Value>
+					<Value string="G">
+						<Set data="hive" value="5" />
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='key' optional='true'>
+				<Help>Name of the key to be used.</Help>
+				<Argument name='name' data='key' />
+			</Option>
+			
+			<Option name='file' optional='true'>
+				<Help>A file containing the new hive information.</Help>
+				<Argument name='name' data='file' />
+			</Option>
+
+			<Option name='permanent' optional ='true'>
+				<Help>Keep hive loaded until computer restarts</Help>
+				<Set data="permanent" value="1" />
+			</Option>
+			
+			<Option name='target' optional='true'>
+				<Help>Remote computer to connect with.</Help>
+				<Argument name='machine' data='remote' />
+			</Option>
+			
+		</Input>
+		
+		<Output>
+      <Data name='action' type='uint8_t' default='0'/>
+			<Data name='hive' type='uint8_t' default='0'/>
+			<Data name='key' type='string' />
+			<Data name='file' type='string' />
+			<Data name='permanent' type='uint8_t' default='0'/>
+			<Data name='remote' type='string' />
+		</Output>
+		
+	</Command>
+</Plugin>

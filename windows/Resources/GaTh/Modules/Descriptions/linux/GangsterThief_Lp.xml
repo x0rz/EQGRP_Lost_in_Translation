@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="GangsterThief_Lp" id="510">
+    <Interfaces>
+        <Interface provider="0x0101006e" id="0x01c10032"/>
+    </Interfaces>
+    <Dependencies>
+        <Local>1510</Local>
+        <Remote>310</Remote>
+    </Dependencies>
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+    <Architecture type="i386">
+        <Platform family="linux">
+            <Version other="*" minor="5+" major="2">
+                <File loadtype="file">i386-linux-gcc/release-glibc2.5/GangsterThief_Lp.so</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

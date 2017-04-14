@@ -1,0 +1,31 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31334'>
+
+  <Command id='16' name='run'>
+
+    <Help>Runs a given command</Help>
+
+    <Input>
+      <Option name='command' optional='false'>
+	<Argument name='command_string' data='cmd'/>
+	<Help>The process to be created (plus arguments)</Help>
+	<Help>If it contains whitespace (parameters), use &quot;s.</Help>
+      </Option>
+      <Option name='redirect' optional='true'>
+	<Set data='redirect' value='true'/>
+	<Argument name='prefix'  optional='true'>
+         <Help>This has been depreciated.</Help>
+        </Argument>
+	<Help>Specify redirect to display the output on the console.</Help>
+      </Option>
+    </Input>
+
+    <Output>
+	<Data name='cmd' type='string'/>
+	<Data name='redirect' type='bool' default='false' />
+    </Output>
+
+  </Command>
+
+</Plugin>

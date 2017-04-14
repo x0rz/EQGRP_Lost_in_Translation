@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin provider="0x101200a" interface="0x01c10032">
+    <Command name="Python" id="0">
+        
+        <Help>For information about scripting, please see user documentation.</Help>
+
+		<Input>
+			<Argument name='script' optional='false' data='script'>
+				<Help>The script to run.</Help>
+			</Argument>
+
+			<Option name='args' optional='true'>
+				<Help>Script arguments</Help>
+				<Argument name='script_args' optional='false' data='args'/>
+			</Option>
+			
+			<Option name='project' optional='true'>
+				<Help>Limit script searches to a given project</Help>
+				<Argument name='name' optional='false' data='project'/>
+			</Option>
+
+			<Option name="quiet" optional='true'>
+				<Help>Enable quiet if parent echo'ing is disabled</Help>
+				<Set data='noquiet' value='false'/>
+			</Option>
+
+			<Option name="threads" optional='true'>
+				<Help>Enable threading (not supported/recommended for most cases)</Help>
+				<Set data='enablethreading' value='true'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='script' type='string'/>
+			<Data name='args' type='string'/>
+			<Data name='project' type='string'/>
+			<Data name='noquiet' type='bool' default='true'/>
+			<Data name='enablethreading' type='bool' default='false'/>
+		</Output>
+    
+    </Command>
+</Plugin>

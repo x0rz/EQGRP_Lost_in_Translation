@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='utf-8'?>
+<config xmlns='urn:trch' name='Eternalblue' version='2.2.0' schemaversion='2.1.0' configversion='2.2.0.0' id='0f38f55b6a88feccfb846d3d10ab4687e652e63e'>
+  <inputparameters>
+    <parameter hidden='true' type='TcpPort' name='DaveProxyPort' description='DAVE Core/Proxy Hookup connection port'>
+      <default>0</default>
+    </parameter>
+    <parameter type='S16' name='NetworkTimeout' description='Timeout for blocking network calls (in seconds). Use -1 for no timeout.'>
+      <default>60</default>
+    </parameter>
+    <parameter xdevmap='TARGET_IP_V4_ADDRESS' type='IPv4' name='TargetIp' description='Target IP Address'/>
+    <parameter xdevmap='TARGET_PORT' type='TcpPort' name='TargetPort' description='Port used by the SMB service for exploit connection'>
+      <default>445</default>
+    </parameter>
+    <parameter xdevmap='ETERNALBLUE_VALIDATE_TARGET' type='Boolean' name='VerifyTarget' description='Validate the SMB string from target against the target selected before exploitation.'>
+      <default>true</default>
+    </parameter>
+    <parameter xdevmap='ETERNALBLUE_VALIDATE_BACKDOOR' type='Boolean' name='VerifyBackdoor' description='Validate the presence of the DOUBLE PULSAR backdoor before throwing. This option must be enabled for multiple exploit attempts.'>
+      <default>true</default>
+    </parameter>
+    <parameter xdevmap='ETERNALBLUE_MAX_EXPLOIT_ATTEMPTS' type='U32' name='MaxExploitAttempts' description='Number of times to attempt the exploit and groom. Disabled for XP/2K3.'>
+      <default>3</default>
+    </parameter>
+    <parameter xdevmap='ETERNALBLUE_NUMBER_SPRAY_ALLOCATIONS' type='U32' name='GroomAllocations' description='Number of large SMBv2 buffers (Vista+) or SessionSetup allocations (XK/2K3) to do.'>
+      <default>12</default>
+    </parameter>
+    <parameter name='ShellcodeBuffer' required='false' xdevmap='EXPLOIT_SHELLCODE' hidden='true' type='Buffer' description="Shellcode buffer in hex (hint: use 'F:&lt;FILENAME&gt;' to load from file)"/>
+    <paramchoice xdevmap='TARGET_PLATFORM' name='Target' description='Operating System, Service Pack, and Architecture of target OS'>
+      <value>WIN72K8R2</value>
+      <paramgroup name='XP' description='Windows XP 32-Bit All Service Packs'/>
+      <paramgroup name='WIN72K8R2' description='Windows 7 and 2008 R2 32-Bit and 64-Bit All Service Packs'/>
+    </paramchoice>
+  </inputparameters>
+  <outputparameters>
+    <parameter xdevmap='ETERNALBLUE_DOUBLEPULSAR_PRESENT' type='Boolean' name='DoublePulsarPresent' description='Set to true if the DOUBLEPULSAR backdoor was already installed and the exploit did not have to be thrown'/>
+  </outputparameters>
+  <redirection>
+    <local protocol='TCP' listenaddr='TargetIp' listenport='TargetPort' closeoncompletion='true' destaddr='//identifier' destport="//service[name='SMB']/port"/>
+  </redirection>
+  <logic>
+    <and>
+      <service name='smb'>
+        <bindtovalue name='Protocol' value='SMB'/>
+        <bindtopath path="//service[name='smb']/port" name='TargetPort'/>
+      </service>
+      <or>
+        <os name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XP'/>
+        </os>
+        <os servicepack='0' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XP'/>
+        </os>
+        <os servicepack='1' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XP'/>
+        </os>
+        <os servicepack='2' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XP'/>
+        </os>
+        <os servicepack='3' name='Windows XP' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='XP'/>
+        </os>
+        <os servicepack='0' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP0'/>
+        </os>
+        <os servicepack='1' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP1SP2'/>
+        </os>
+        <os servicepack='2' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP1SP2'/>
+        </os>
+        <os servicepack='1' name='Windows 2003' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='W2K3X64'/>
+        </os>
+        <os servicepack='2' name='Windows 2003' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='W2K3X64'/>
+        </os>
+        <os servicepack='0' name='Windows Vista' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X86'/>
+        </os>
+        <os servicepack='1' name='Windows Vista' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X86'/>
+        </os>
+        <os servicepack='2' name='Windows Vista' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X86'/>
+        </os>
+        <os servicepack='0' name='Windows Vista' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X64'/>
+        </os>
+        <os servicepack='1' name='Windows Vista' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X64'/>
+        </os>
+        <os servicepack='2' name='Windows Vista' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X64'/>
+        </os>
+        <os servicepack='0' name='Windows 2008' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X86'/>
+        </os>
+        <os servicepack='1' name='Windows 2008' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X86'/>
+        </os>
+        <os servicepack='2' name='Windows 2008' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X86'/>
+        </os>
+        <os servicepack='0' name='Windows 2008' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X64'/>
+        </os>
+        <os servicepack='1' name='Windows 2008' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X64'/>
+        </os>
+        <os servicepack='2' name='Windows 2008' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='VISTA2K8X64'/>
+        </os>
+        <os servicepack='0' name='Windows 2008 R2' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='WIN72K8R2'/>
+        </os>
+        <os servicepack='1' name='Windows 2008 R2' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='WIN72K8R2'/>
+        </os>
+        <os servicepack='0' name='Windows 7' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WIN72K8R2'/>
+        </os>
+        <os servicepack='1' name='Windows 7' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WIN72K8R2'/>
+        </os>
+        <os servicepack='0' name='Windows 7' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='WIN72K8R2'/>
+        </os>
+        <os servicepack='1' name='Windows 7' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='WIN72K8R2'/>
+        </os>
+      </or>
+    </and>
+  </logic>
+</config>

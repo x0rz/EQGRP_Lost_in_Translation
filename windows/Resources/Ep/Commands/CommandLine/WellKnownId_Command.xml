@@ -1,0 +1,42 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31321'>
+ <Command id='16' name='wellKnownId'>
+  <Help>Prints the sid string for the given well-known id.</Help>
+  <Input>
+   <Option name="id" optional="true">
+    <Set  data='type' value='1' />
+    <Argument name="#" data="number" />
+    <Help>The id to check (in hex)</Help>
+   </Option>
+   <Option name="name" optional="true">
+    <Set  data='type' value='2' />
+    <Argument name="idName">
+     <Value string='System'>
+      <Set data='name' value='0' />
+     </Value>
+     <Value string='Administrators'>
+      <Set data='name' value='1' />
+     </Value>
+     <Value string='Users'>
+      <Set data='name' value='2' />
+     </Value>
+     <Value string='Guests'>
+      <Set data='name' value='3' />
+     </Value>
+    </Argument>
+   </Option>
+   <Option name="local" optional="true">
+    <Set  data='local' value='1' />
+    <Help>Treat the value in the local system context</Help>
+   </Option>
+
+  </Input>
+  <Output>
+   <Data name='type'   type='uint8_t' default="0"/>
+   <Data name='number' type='uint32_t' />
+   <Data name='name'   type='uint32_t' />
+   <Data name='local'  type='uint8_t' default="0"/>
+  </Output>
+ </Command>
+</Plugin>

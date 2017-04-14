@@ -1,0 +1,81 @@
+# Called from simple.eps
+
+string $lookfors;
+
+$lookfors[0] = ".pkr";
+$lookfors[1] = ".skr";
+$lookfors[2] = ".asc";
+$lookfors[3] = ".tb";
+$lookfors[4] = ".gpg";
+$lookfors[5] = "genkey*";
+$lookfors[6] = "randseed.bin";
+$lookfors[7] = "randseed.rnd";
+$lookfors[8] = "key*";
+$lookfors[9] = "password*";
+$lookfors[10] = "passwd*";
+$lookfors[11] = ".pas";
+
+bool $showUsage = false;
+bool $success = true;
+bool $ask = false;
+string $datefrom;
+
+if ($argc <= 1) {
+    $datefrom=GetInput("When do you want a SectionSnake survey since? (type 'all' to get all, 'none' to cancel) ");
+} else if ($argv[1] == "?") {
+    $showUsage = true;
+} else {
+    $datefrom=$argv[1];
+}
+
+if ($argc == 3 ) {
+	if ( $argv[2] == "-fast" ) {
+		$ask = false;
+	}
+}
+
+if ($showUsage) {
+    echo "Usage: $argv[0] <from date|'all'|'none'> ['-fast']";
+	echo "  use 'all' as the date to get all files";
+	echo "  use 'none' as the date to change your mind and get no files";
+    return $success;
+}
+
+bool $date=true;
+if ($datefrom == "fast") {
+	$ask=false;
+	$datefrom=GetInput("When do you want a SectionSnake survey since? (type 'all' to get all, 'none' to cancel) ");
+}
+
+if ($datefrom == "all") {
+	$date=false;
+}
+
+if ($datefrom == "none") {
+	return false;
+}
+
+
+int $i = 0;
+
+while ( $i < sizeof($lookfors) ) {
+	if ( $ask == true ) {
+		if (prompt "Do you want a listing of all $lookfors[$i] files?") {
+			if ($date == false) {
+				`background dir *$lookfors[$i] -path * -recursive -max 0`;
+			} else {
+				`background dir *$lookfors[$i] -path * -recursive -max 0 -after $datefrom`;
+			}
+		}	
+	} else {
+		if ($date == false) {
+			`background dir *$lookfors[$i] -path * -recursive -max 0`;
+		} else {
+			`background dir *$lookfors[$i] -path * -recursive -max 0 -after $datefrom`;
+		}
+	}
+	$i++;
+}
+
+`channels`;
+return $success;

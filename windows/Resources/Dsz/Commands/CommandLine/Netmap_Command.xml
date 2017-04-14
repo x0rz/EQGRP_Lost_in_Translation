@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Netmap_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='Netmap'>
+	
+		<Help>Displays Network information</Help>
+
+		<Input>
+			<Option name='type'>
+				<Help>Network enumeration scope</Help>
+				
+				<Argument name='scope'>
+					<Value string='all'>
+						<Set data='type' value='0'/>
+					</Value>
+					<Value string='connected'>
+						<Set data='type' value='1'/>
+					</Value>
+					<Value string='remembered'>
+						<Set data='type' value='2'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='minimal'>
+				<Help>Do not gather additional OS or time information for each host</Help>
+				<Set data='getOsInfo' value='false'/>
+				<Set data='getTimeInfo' value='false'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint8_t' default='0'/>
+			<Data name='getOsInfo' type='bool' default='true'/>
+			<Data name='getTimeInfo' type='bool' default='true'/>
+		</Output>
+	</Command>
+	
+</Plugin>

@@ -1,0 +1,193 @@
+<Software value="PSP">
+ <Vendor value="Kaspersky" directory="%ProgramFiles%\Kaspersky Lab">
+  <Product value="Endpoint Security" regkey="HKLM\software\kasperskylab\protected\KES8\environment" regvalue="ProductName" regdata="Kaspersky Endpoint Security 8 for Windows">
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\KES8\environment" regvalue="ProductVersion">
+     <Information value="BE AWARE CLOUD PSP"/>
+	 <Application_Startup_Control value="Enabled" regkey="HKLM\software\KasperskyLab\protected\KES8\profiles\Controls\profiles\EntAppControl" regvalue="enabled" regdata="1" config="True" />
+     <Application_Privilege_Control value="Enabled" regkey="HKLM\software\KasperskyLab\protected\KES8\profiles\Controls\profiles\HipsTask" regvalue="enabled" regdata="1" config="True" />
+     <Vulnerability_Monitor value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Controls\profiles\VulnsScan2rt" regvalue="enabled" regdata="1" config="True" />
+     <Device_Control value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Controls\profiles\DeviceControl" regvalue="enabled" regdata="1" config="True" />
+     <WebControl value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Controls\profiles\WebControl" regvalue="enabled" regdata="1" config="True" />
+     <Kaspersky_Security_Network value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\settings" regvalue="KSN_AllowGlobal" regdata="1" config="True" />
+     <KSN-File_Scanning value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\settings" regvalue="KSN_AllowForFiles" regdata="1" config="True" />
+     <KSN-URL_Scanning value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\settings" regvalue="KSN_AllowForURLs" regdata="1" config="True" />
+     <InstallDate value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\KES8\environment" regvalue="InstallDate" />
+   </Version>
+   <AVP_File_Monitoring value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Protection\profiles\File_Monitoring" regvalue="enabled" regdata="1" config="True" />
+   <AVP_Mail_Monitoring value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Protection\profiles\Mail_Monitoring" regvalue="enabled" regdata="1" config="True" />
+   <AVP_Web_Monitoring value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Protection\profiles\Web_Monitoring" regvalue="enabled" regdata="1" config="True" />
+   <AVP_IM_Monitoring value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Protection\profiles\IM_Monitoring" regvalue="enabled" regdata="1" config="True" />
+   <AVP_Firewall value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Protection\profiles\Firewall" regvalue="enabled" regdata="1" config="True" />
+   <FW_AppRules1 value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Hips\settings" regvalue="vRuleList_vcontent" config="True" />
+   <FW_AppRules2 value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Hips\settings\Application" regvalue="Childs_vcontent" config="True" />
+   <AVP_Network_Attack_Blocker value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Protection\profiles\ids" regvalue="enabled" regdata="1" config="True" />
+   <AVP_System_Watcher value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\profiles\Protection\profiles\SW_PDM" regvalue="enabled" regdata="1" config="True" />
+   <SelfDefense value="Configured" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\settings" regvalue="EnableSelfProtection" regdata="1" config="True" />
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\KES8\environment" regvalue="DataRoot" config="True" />
+   <Quarantine value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\KES8\environment" regvalue="Quarantine" config="True" />
+   <bQuarantineDir value="%directory%" directory="%ProgramData%\Kaspersky Lab\KES8" config="True" />
+   <LastSuccessfulUpdate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\KES8\Data" regvalue="LastSuccessfulUpdate" config="True" />
+   <LogFile value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\KES8\environment" regvalue="Report" config="True" />
+   <RealReportDir value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\KES8\environment" regvalue="Report" config="True" />
+  </Product>
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP13\environment" regvalue="ProductName" regdata="Kaspersky Internet Security 2013">
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVp13\environment" regvalue="ProductVersion"/>
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP13\environment" regvalue="Localization" config="True"/>
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP13\environment" regvalue="InstallDate" config="True"/>
+   <Information value="BE AWARE CLOUD PSP"/>
+   <Logfile value="Dataroot\Report"/>
+   <Kaspersky_Security_Network value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP13\settings" regvalue="UseKSN" regdata="1" />
+   <Kaspersky_Security_Network value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP13\settings" regvalue="UseKSN" regdata="0" />
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP13\environment" regvalue="Localization" />
+   <SelfProtection value="enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP13\settings" regvalue="EnableSelfProtection" regdata="1" />
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\AVP13\environment" regvalue="DataRoot" config="True" />
+   <Quarantine value="Dataroot\QB" />	
+  </Product>
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP12\environment" regvalue="ProductName" >
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVp12\environment" regvalue="ProductVersion"/>
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP12\environment" regvalue="Localization" config="True"/>
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP12\environment" regvalue="InstallDate" config="True"/>
+   <Information value="BE AWARE CLOUD PSP"/>
+   <Logfile value="Dataroot\Report"/>
+   <Kaspersky_Security_Network value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP12\settings" regvalue="UseKSN" regdata="1" />
+   <Kaspersky_Security_Network value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP12\settings" regvalue="UseKSN" regdata="0" />
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP12\environment" regvalue="Localization" />
+   <SelfProtection value="enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP12\settings" regvalue="EnableSelfProtection" regdata="1" />
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\AVP12\environment" regvalue="DataRoot" config="True" />
+   <Quarantine value="Dataroot\QB" />	
+  </Product>
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP11\environment" regvalue="ProductName"  >
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP11\environment" regvalue="ProductVersion"  />
+    <Information value="BE AWARE CLOUD PSP"/>
+	<InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP11\environment" regvalue="InstallDate" config="True"/>
+	<LogFile value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\AVP11\environment" regvalue="DataRoot" config="True" />
+	<Quarantine value="Dataroot\QB" />
+    <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP11\environment" regvalue="Localization" />
+    <KSN value="Not Installed"/>
+    <KSN value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\KSN" regvalue="enabled" regdata="0" />
+	<KSN value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\KSN" regvalue="enabled" regdata="1" />
+    <Object_Scan value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\Scan_Object" regvalue="enabled" regdata="0" />
+    <Object_Scan value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\Scan_Object" regvalue="enabled" regdata="1" />
+    <HIPS value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\Hips" regvalue="enabled" regdata="0" />
+    <HIPS value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\Hips" regvalue="enabled" regdata="1" />
+    <Orgin_Traffic_Mon value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\TrafficMonitor" regvalue="enabled" regdata="0" />
+    <Orgin_Traffic_Mon value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP11\profiles\TrafficMonitor" regvalue="enabled" regdata="1" />
+  </Product> 
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP9\environment" regvalue="ProductName" >
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP9\environment" regvalue="ProductVersion"/>
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP9\environment" regvalue="Localization" config="True"/>
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP9\environment" regvalue="InstallDate" config="True"/>
+   <Logfile value="Dataroot\Report"/>
+   <Kaspersky_Security_Network value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP9\settings" regvalue="UseKSN" regdata="1" />
+   <Kaspersky_Security_Network value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP9\settings" regvalue="UseKSN" regdata="0" />
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP9\environment" regvalue="Localization" />
+   <SelfProtection value="enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP9\settings" regvalue="EnableSelfProtection" regdata="1" />
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\AVP9\environment" regvalue="DataRoot" config="True" />
+   <Quarantine value="Dataroot\QB" />	
+   <Object_Scan value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP9\profiles\Scan_Object" regvalue="enabled" regdata="0" />
+   <Object_Scan value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP9\profiles\Scan_Object" regvalue="enabled" regdata="1" />
+   <HIPS value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP9\profiles\Hips" regvalue="enabled" regdata="0" />
+   <HIPS value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP9\profiles\Hips" regvalue="enabled" regdata="1" />
+   <Orgin_Traffic_Mon value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP9\profiles\TrafficMonitor" regvalue="enabled" regdata="0" />
+   <Orgin_Traffic_Mon value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP9\profiles\TrafficMonitor" regvalue="enabled" regdata="1" />
+  </Product>  
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP8\environment" regvalue="ProductName" >
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP8\environment" regvalue="ProductVersion"/>
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP8\environment" regvalue="Localization" config="True"/>
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP8\environment" regvalue="InstallDate" config="True"/>
+   <Logfile value="Dataroot\Report"/>
+   <Kaspersky_Security_Network value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP8\settings" regvalue="UseKSN" regdata="1" />
+   <Kaspersky_Security_Network value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP8\settings" regvalue="UseKSN" regdata="0" />
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP8\environment" regvalue="Localization" />
+   <SelfProtection value="enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP8\settings" regvalue="EnableSelfProtection" regdata="1" />
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\AVP8\environment" regvalue="DataRoot" config="True" />
+   <Quarantine value="Dataroot\QB" />	
+   <Object_Scan value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP8\profiles\Scan_Object" regvalue="enabled" regdata="0" />
+   <Object_Scan value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP8\profiles\Scan_Object" regvalue="enabled" regdata="1" />
+   <HIPS value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP8\profiles\Hips" regvalue="enabled" regdata="0" />
+   <HIPS value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP8\profiles\Hips" regvalue="enabled" regdata="1" />
+   <Orgin_Traffic_Mon value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP8\profiles\TrafficMonitor" regvalue="enabled" regdata="0" />
+   <Orgin_Traffic_Mon value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP8\profiles\TrafficMonitor" regvalue="enabled" regdata="1" />
+  </Product>   
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP7\environment" regvalue="ProductName" >
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP7\environment" regvalue="ProductVersion"/>
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP7\environment" regvalue="Localization" config="True"/>
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP7\environment" regvalue="InstallDate" config="True"/>
+   <Logfile value="Dataroot\Report"/>
+   <Kaspersky_Security_Network value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP7\settings" regvalue="UseKSN" regdata="1" />
+   <Kaspersky_Security_Network value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP7\settings" regvalue="UseKSN" regdata="0" />
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP7\environment" regvalue="Localization" />
+   <SelfProtection value="enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP7\settings" regvalue="EnableSelfProtection" regdata="1" />
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\AVP7\environment" regvalue="DataRoot" config="True" />
+   <Quarantine value="Dataroot\QB" />	
+   <Object_Scan value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP7\profiles\Scan_Object" regvalue="enabled" regdata="0" />
+   <Object_Scan value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP7\profiles\Scan_Object" regvalue="enabled" regdata="1" />
+   <HIPS value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP7\profiles\Hips" regvalue="enabled" regdata="0" />
+   <HIPS value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP7\profiles\Hips" regvalue="enabled" regdata="1" />
+   <Orgin_Traffic_Mon value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP7\profiles\TrafficMonitor" regvalue="enabled" regdata="0" />
+   <Orgin_Traffic_Mon value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP7\profiles\TrafficMonitor" regvalue="enabled" regdata="1" />
+  </Product>   
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP80\environment" regvalue="ProductName" >
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\protected\AVP80\environment" regvalue="ProductVersion"/>
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\environment" regvalue="Localization" config="True"/>
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\environment" regvalue="InstallDate" config="True"/>
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\protected\AVP80\environment" regvalue="DataRoot" config="True" />
+   <Logfile value="Dataroot\Report"/>
+   <Behavior_Blocking_BB2 value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Behavior_Blocking2" regvalue="enabled" regdata="1" config="True" />
+   <Behavior_Blocking_BB2 value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Behavior_Blocking2" regvalue="enabled" regdata="0" config="True" />
+   <BB2_RegGuard value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Behavior_Blocking2\profiles\regguard2" regvalue="enabled" regdata="1" config="True"/>
+   <BB2_RegGuard value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Behavior_Blocking2\profiles\regguard2" regvalue="enabled" regdata="0" config="True"/>
+   <File_Mon value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\file_monitoring" regvalue="enabled" regdata="1" config="True"/>
+   <AH_Firewall value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw" regvalue="enabled" regdata="0" config="True"/>
+   <AH_Firewall value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw" regvalue="enabled" regdata="1" config="True"/>
+   <AH_FW_ProtectionLevel value="0x1 High Security" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="1" config="True"/>
+   <AH_FW_ProtectionLevel value="0x2 TrainingMode NOT GOOD" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="2" config="True"/>
+   <AH_FW_ProtectionLevel value="0x3 Low Securtiy" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="3" config="True"/>
+   <AH_FW_ProtectionLevel value="0x4 Off" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="4" config="True"/>
+   <AH_FW_Zone value="0x0 Trusted Network" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw\settings\knownnetworks\0000" regvalue="Zone" regdata="0" config="True"/>
+   <AH_FW_Zone value="0x2 Local Network" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw\settings\knownnetworks\0000" regvalue="Zone" regdata="1" config="True"/>
+   <AH_FW_Zone value="0x3 Internet :SMB Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Anti_Hacker\profiles\fw\settings\knownnetworks\0000" regvalue="Zone" regdata="2" config="True"/>
+   <File_Mon value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\file_monitoring" regvalue="enabled" regdata="1" config="True"/>
+   <File_Mon value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\file_monitoring" regvalue="enabled" regdata="0" config="True"/>
+   <Traffic_Mon value="Enabled all: mail,nntp,http,msn,icq" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\trafficmonitor" regvalue="enabled" regdata="1" />
+   <Web_Mon value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Web_Monitoring" regvalue="enabled" regdata="1" config="True"/>
+   <Web_Mon value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Web_Monitoring" regvalue="enabled" regdata="0" config="True"/>
+   <Web_Mon_code_analyzer value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Web_Monitoring\settings\0" regvalue="CodeAnalyzer" regdata="1" config="True"/>
+   <Web_Mon_Packed_Scan value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\protected\AVP80\Profiles\Web_Monitoring\settings\0" regvalue="ScanPacked" regdata="1" config="True"/>
+   <Quarantine value="Dataroot\QB" />	
+   <Object_Scan value="Enabled" regkeys="HKLM\software\kasperskylab\protected\AVP80\profiles\Scan_Object" regvalue="enabled" regdata="1" config="True"/>
+   <Object_Scan value="Disabled" regkeys="HKLM\software\kasperskylab\protected\AVP80\profiles\Scan_Object" regvalue="enabled" regdata="0" config="True"/>
+  </Product>   
+  <Product value="%regdata%" regkey="HKLM\software\kasperskylab\AVP6\environment" regvalue="ProductName" >
+   <Version value="%regdata%" regkey="HKLM\software\kasperskylab\AVP6\environment" regvalue="ProductVersion"/>
+   <Language value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\environment" regvalue="Localization" config="True"/>
+   <InstallDate value="%regdata%" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\environment" regvalue="InstallDate" config="True"/>
+   <DataRoot value="%regdata%" regkey="HKLM\software\KasperskyLab\AVP6\environment" regvalue="DataRoot" config="True" />
+   <Logfile value="Dataroot\Report"/>
+   <Behavior_Blocking_BB2 value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Behavior_Blocking2" regvalue="enabled" regdata="1" config="True" />
+   <Behavior_Blocking_BB2 value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Behavior_Blocking2" regvalue="enabled" regdata="0" config="True" />
+   <BB2_RegGuard value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Behavior_Blocking2\profiles\regguard2" regvalue="enabled" regdata="1" config="True"/>
+   <BB2_RegGuard value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Behavior_Blocking2\profiles\regguard2" regvalue="enabled" regdata="0" config="True"/>
+   <File_Mon value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\file_monitoring" regvalue="enabled" regdata="1" config="True"/>
+   <AH_Firewall value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw" regvalue="enabled" regdata="0" config="True"/>
+   <AH_Firewall value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw" regvalue="enabled" regdata="1" config="True"/>
+   <AH_FW_ProtectionLevel value="0x1 High Security" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="1" config="True"/>
+   <AH_FW_ProtectionLevel value="0x2 TrainingMode NOT GOOD" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="2" config="True"/>
+   <AH_FW_ProtectionLevel value="0x3 Low Securtiy" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="3" config="True"/>
+   <AH_FW_ProtectionLevel value="0x4 Off" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw\settings" regvalue="ProtectionLevel" regdata="4" config="True"/>
+   <AH_FW_Zone value="0x0 Trusted Network" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw\settings\knownnetworks\0000" regvalue="Zone" regdata="0" config="True"/>
+   <AH_FW_Zone value="0x2 Local Network" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw\settings\knownnetworks\0000" regvalue="Zone" regdata="1" config="True"/>
+   <AH_FW_Zone value="0x3 Internet :SMB Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Anti_Hacker\profiles\fw\settings\knownnetworks\0000" regvalue="Zone" regdata="2" config="True"/>
+   <File_Mon value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\file_monitoring" regvalue="enabled" regdata="1" config="True"/>
+   <File_Mon value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\file_monitoring" regvalue="enabled" regdata="0" config="True"/>
+   <Traffic_Mon value="Enabled all: mail,nntp,http,msn,icq" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\trafficmonitor" regvalue="enabled" regdata="1" />
+   <Web_Mon value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Web_Monitoring" regvalue="enabled" regdata="1" config="True"/>
+   <Web_Mon value="Disabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Web_Monitoring" regvalue="enabled" regdata="0" config="True"/>
+   <Web_Mon_code_analyzer value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Web_Monitoring\settings\0" regvalue="CodeAnalyzer" regdata="1" config="True"/>
+   <Web_Mon_Packed_Scan value="Enabled" regkey="HKLM\SOFTWARE\KasperskyLab\AVP6\Profiles\Web_Monitoring\settings\0" regvalue="ScanPacked" regdata="1" config="True"/>
+   <Quarantine value="Dataroot\QB" />	
+   <Object_Scan value="Enabled" regkeys="HKLM\software\kasperskylab\AVP6\profiles\Scan_Object" regvalue="enabled" regdata="1" config="True"/>
+   <Object_Scan value="Disabled" regkeys="HKLM\software\kasperskylab\AVP6\profiles\Scan_Object" regvalue="enabled" regdata="0" config="True"/>
+  </Product>
+ </Vendor> 
+</Software>

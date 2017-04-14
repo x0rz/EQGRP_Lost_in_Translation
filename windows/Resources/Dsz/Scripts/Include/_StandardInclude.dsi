@@ -1,0 +1,116 @@
+
+#----------------------------------------------------
+# _Initialize
+#	This subroutine is called prior to calling any code in a script
+#----------------------------------------------------
+sub _Initialize()
+{
+
+    string $str;
+    if (!GetEnv('_LOGPATH', $str)) {
+		return false;
+	}
+	%_sgEnv{'log_path'} = $str;
+    return true;
+
+}
+# END _Initialize
+
+#----------------------------------------------------
+# IsLocal
+#	Returns whether the script is running locally
+#----------------------------------------------------
+sub IsLocal()
+{
+
+    return <BOOL>%_sgEnv{'script_running_locally'};
+
+}
+# END IsLocal
+
+#----------------------------------------------------
+# PromptCommand
+#	Runs a given command if the user answers yes
+#----------------------------------------------------
+sub PromptCommand(IN string $cmd)
+{
+	return PromptCommand($cmd, true);
+}
+sub PromptCommand(IN string $cmd, IN bool $default)
+{
+	if (!prompt("Do you want to run '$cmd'?", $default))
+	{
+		echo("Skipping command", WARNING);
+		return false;
+	}
+	else
+	{
+		return `$cmd`;
+	}
+}
+# END PromptCommand
+
+#----------------------------------------------------
+# StrCat
+#	Concatenates $str2 to $str1
+#----------------------------------------------------
+sub StrCat(REF string $str1, IN string $str2)
+{
+	if (defined($str2))
+	{
+		if (defined($str1))
+		{
+			# both defined -- cat them together
+			$str1 = "$str1$str2";
+		}
+		else
+		{
+			# str1 not defined -- just make it str2
+			$str1 = $str2;
+		}
+	}
+	# no str2 to append, so leave $str1 alone
+	
+	return true;
+}
+# END StrCat
+
+#----------------------------------------------------
+# SplitPath
+#	Splits a given path
+# NOTE: Assumes \ and / are valid path delimiters
+#----------------------------------------------------
+sub SplitPath(IN string $path, OUT string $parts)
+{
+
+    if (StrLen($path) == 0) {
+		return false;
+    }
+
+	
+	@case-sensitive off;
+	@regex-global off;
+	if (!RegExMatch("^(.*)[\\\\/]([^\\\\/]*)\$", $path, $parts)) {
+		# error performing match -- just filename or path
+		if (RegExMatch("^[A-Z]:\$", $path)) {
+			# just a drive
+			$parts[0] = $path;
+			$parts[1] = "";
+		} else {
+			# just a file
+			$parts[0] = "";
+			$parts[1] = $path;
+		}
+	}
+
+	# handle special "/" case
+	if ($parts[0] == "") {
+		if (RegExMatch("^/.*\$", $path)) {
+			$parts[0] = "/";
+		}
+	}
+	
+    return true;
+
+}
+# END SplitPath

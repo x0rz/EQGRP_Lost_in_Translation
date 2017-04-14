@@ -1,0 +1,155 @@
+#-------------------------------------------------------------------------------
+# File: UninstallDll.eps
+# Description: Performs an uninstall of a level4 Dll
+#
+# Modifications:
+#	08/09/05	Created
+#-------------------------------------------------------------------------------
+
+@include "_FileExists.epm";
+@include "_GetSystemPaths.epm";
+
+@echo off;
+
+if ($argc != 3) {
+    echo "Usage: $argv[0] <installedName> <tempName>";
+    return false;
+}
+
+string $installedName = $argv[1];
+string $tempName = $argv[2];
+
+# get the system directory
+string $root;
+string $sys;
+ifnot (_GetSystemPaths($root, $sys)) {
+    echo "Unable to determine root directory\n";
+    return false;
+}
+string $sysDir = "$root\\$sys";
+
+#-------------------------------------------------------------------------------------
+#
+# perform the uninstall
+#
+#-------------------------------------------------------------------------------------
+
+bool $success = true;
+
+while (prompt "Is the currently installed filename $installedName" == false) {
+    $installedName = GetInput("Enter the filename");
+}
+
+# try to delete the file
+ifnot (RemoveFile($installedName, $tempName, $sysDir)) {
+    $success = false;
+}
+
+# try to update the registry key
+ifnot (RemoveFromRegistry($installedName)) {
+    $success = false;
+}
+
+echo "";
+if ($success) {
+    echo "Uninstall completed SUCCESSFULLY";
+} else {
+    echo "Some parts of uninstall FAILED";
+}
+echo "";
+
+return $success;
+
+#---------------------------------------------------------------------------------
+sub RemoveFile(IN string $installedName, IN string $tempName, IN string $sysDir)
+{
+
+    # try to delete the file
+    echo "Attempting to delete tool file ($installedName)";
+    ifnot (_FileExists($installedName, $sysDir)) {
+	echo "    FILE NOT FOUND";
+	return false;
+    }
+
+    # file found
+    ifnot (`del "$installedName" -path "$sysDir"`) {
+	# delete failed -- move the file to the temporary name
+	ifnot (`move "$sysDir\\$installedName" "$sysDir\\$tempName"`) {
+	    # move to temporary name failed
+	    echo "    FAILED TO MOVE FOR DELETE";
+	    return false;
+	} else {
+	    # attempt to do a delayed deletion
+	    ifnot (`move "$sysDir\\$tempName" -delay`) {
+		echo "    FAILED TO DELETE";
+		return false;
+	    } else {
+		echo "    MARKED TO DELETE ON REBOOT";
+	    }
+	}
+    } else {
+	echo "    DELETED";
+    }
+
+    return true;
+
+} /* end RemoveFile */
+
+#---------------------------------------------------------------------------------
+sub RemoveFromRegistry(IN string $installedName)
+{
+
+    string $HIVE	= "L";
+    string $KEY		= "Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows";
+    string $KEY_VALUE	= "AppInit_Dlls";
+
+    # get the current key
+    @record on;
+    echo "Updating registry key";
+    ifnot (`regquery -hive $HIVE -subkey "$KEY" -value "$KEY_VALUE"`) {
+	echo "    FAILED TO QUERY KEY/VALUE";
+	return false;
+    }
+
+    # queried key/value
+    string $value = GetCmdData("value_data");
+    ifnot (defined($value[0])) {
+	echo "    FAILED TO GET VALUE STRING";
+	return false;
+    }
+
+    # got value
+    string $strs = Split(" ", $value[0]);
+	
+    # see if the expected value was there
+    bool $found = false;
+    string $newValue = "";
+    int $i=0;
+    while ($i < sizeof($strs)) {
+	if ($strs[$i] == $installedName) {
+	    $found = true;
+	} else if ($newValue != "") {
+	    $newValue = "$newValue $strs[$i]";
+	} else {
+	    $newValue = $strs[$i];
+	}    
+	$i++;
+    }
+
+    ifnot ($found) {
+	echo "    FAILED TO FIND EXPECTED STRING IN KEY/VALUE";
+	return false;
+    }
+
+    ifnot (`regadd -hive $HIVE -key "$KEY" -value "$KEY_VALUE" -data "$newValue" -type REG_SZ`) {
+	echo "    FAILED TO UPDATE KEY/VALUE";
+	return false;
+    }
+
+    echo "    UPDATED";
+    echo "    Old Key Value : $value";
+    echo "    New Key Value : $newValue";
+    return true;
+
+} /* end RemoveFromRegistry */
+

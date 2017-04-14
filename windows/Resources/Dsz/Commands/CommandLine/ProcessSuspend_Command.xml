@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_ProcessSuspend_Tasking.pyo' providerType='script'>
+
+	<Command name="ProcessSuspend" id="0">
+
+		<Help>Suspends a process.</Help>
+
+		<Input>				
+			<Option name='id' optional='false'>
+				<Argument name='#' data='pid' />
+				<Help>The id of the process to suspend.</Help>
+			</Option>	
+			<Option name='force' optional='true'>
+				<Set data='force' value='true'/>
+				<Help>Suspend a process even if it is running in context of NT_AUTHORITY</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='pid' type='uint32_t'/>
+			<Data name='force' type='bool' default='false'/>
+		</Output>
+		
+    </Command>
+</Plugin>

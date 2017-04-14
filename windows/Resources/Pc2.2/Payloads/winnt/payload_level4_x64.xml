@@ -1,0 +1,62 @@
+<Payloads>
+	<Payload>
+		<Description>FlewAvenue TCP</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc2.2</ShortName>
+		<Arch>x64</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/x64-winnt/release/PC_Level4_flav_dll</BaseFile>
+		<Extra name="Comms">FlewAvenue</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 4 FLEWAVENUE TCP DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x64</Extra>
+	</Payload>
+	<Payload>
+		<Description>FlewAvenue HTTP Proxy</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc2.2</ShortName>
+		<Arch>x64</Arch>
+		<Os>winnt</Os>
+		<BinType>sharedlib</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/x64-winnt/release/PC_Level4_http_flav_dll</BaseFile>
+		<Extra name="Comms">FlewAvenue</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 4 FLEWAVENUE HTTP DLL</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x64</Extra>
+	</Payload>
+	<Payload>
+		<Description>FlewAvenue TCP</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc2.2</ShortName>
+		<Arch>x64</Arch>
+		<Os>winnt</Os>
+		<BinType>exe</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/x64-winnt/release/PC_Level4_flav_exe</BaseFile>
+		<Extra name="Comms">FlewAvenue</Extra>
+		<Extra name="CommsType">TCP</Extra>
+		<Extra name="Fc_Name">Level 4 FLEWAVENUE TCP EXE</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x64</Extra>
+	</Payload>
+	<Payload>
+		<Description>FlewAvenue HTTP Proxy</Description>
+		<Name>PeddleCheap</Name>
+		<ShortName>Pc2.2</ShortName>
+		<Arch>x64</Arch>
+		<Os>winnt</Os>
+		<BinType>exe</BinType>
+		<Type>Level4</Type>
+		<BaseFile>Level4/x64-winnt/release/PC_Level4_http_flav_exe</BaseFile>
+		<Extra name="Comms">FlewAvenue</Extra>
+		<Extra name="CommsType">HTTP</Extra>
+		<Extra name="Fc_Name">Level 4 FLEWAVENUE HTTP EXE</Extra>
+		<Extra name="Fc_OsFamily">Windows NT</Extra>
+		<Extra name="Fc_Architecture">x64</Extra>
+	</Payload>
+</Payloads>

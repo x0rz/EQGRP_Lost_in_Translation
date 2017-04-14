@@ -1,0 +1,86 @@
+﻿<?xml version='1.0'?>
+
+<Plugin id='31387'>
+
+  <Command id='16' name='dp_getprocessid'>
+    <Help>Returns the process id of the process launched by the driver.  The </Help>
+    <Help>eprocess location is also returned.  These two values can be used with </Help>
+    <Help>the command "processhide" to un-hide the process if necessary.</Help>
+
+    <Input>
+	<Option name='name' optional='false'>
+	    <Argument name='driver_name' data='file'/>
+	    <Help>The DP driver name</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='file' type='string'/>
+    </Output>
+
+  </Command>
+
+  <Command id='17' name='dp_isprocessrunning'>
+    <Help>Checks whether the given process is running.</Help>
+
+    <Input>
+	<Option name='id' optional='false'>
+	    <Argument name='process_id' data='id'/>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='id' type='uint32_t'/>
+    </Output>
+
+  </Command>
+
+  <Command id='18' name='dp_clearprocessid'>
+    <Help>Clears the driver's internal idea of what process is launched.  This</Help>
+    <Help>should only be necessary if the launched process has terminated on its own.</Help>
+
+    <Input>
+	<Option name='name' optional='false'>
+	    <Argument name='driver_name' data='file'/>
+	    <Help>The DP driver name</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='file' type='string'/>
+    </Output>
+
+  </Command>
+
+  <Command id='19' name='dp_terminateprocess'>
+    <Help>Kills the process that was started by the driver.</Help>
+
+    <Input>
+	<Option name='name' optional='false'>
+	    <Argument name='driver_name' data='file'/>
+	    <Help>The DP driver name</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='file' type='string'/>
+    </Output>
+
+  </Command>
+
+  <Command id='20' name='dp_restartprocess'>
+    <Help>Queues an APC request to start the DP process.</Help>
+
+    <Input>
+	<Option name='name' optional='false'>
+	    <Argument name='driver_name' data='file'/>
+	    <Help>The DP driver name</Help>
+	</Option>
+    </Input>
+
+    <Output>
+	<Data name='file' type='string'/>
+    </Output>
+
+  </Command>
+</Plugin>

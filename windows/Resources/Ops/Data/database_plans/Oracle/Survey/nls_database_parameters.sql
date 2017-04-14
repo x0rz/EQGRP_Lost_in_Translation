@@ -1,0 +1,1 @@
+select * from NLS_DATABASE_PARAMETERS

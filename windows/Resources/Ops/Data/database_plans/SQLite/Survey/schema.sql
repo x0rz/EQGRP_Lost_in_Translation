@@ -1,0 +1,1 @@
+select type, name, tbl_name, sql from SQLITE_MASTER order by type, name, tbl_name

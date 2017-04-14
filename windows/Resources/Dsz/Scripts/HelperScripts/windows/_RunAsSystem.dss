@@ -1,0 +1,43 @@
+
+@include "_Processes.dsi";
+
+if ($argc != 2)
+{
+    echo "Usage: $argv[0] <cmd_to_run>";
+    echo "    Runs a command as the child of the services.exe process";
+	return false;
+}
+
+string $parentProc = "services.exe";
+int $parentId;
+if (!_FindProcessOnList($parentProc, $parentId))
+{
+    echo "* Failed to find '$parentProc' to launch child";
+    return false;
+}
+
+if (!defined($parentId) || ($parentId == 0))
+{
+    echo "* Failed to find id for '$parentProc'";
+    return false;
+}
+
+@record on;
+if (!`runaschild -id $parentId -command "$argv[1]"`)
+{
+	@echo off;
+	return false;
+}
+else
+{
+	int $id;
+	if (GetCmdData("Process::Id", $id) && defined($id))
+	{
+		StartCmdData("Process");
+		AddCmdData("Id", $id);
+		StoreCmdData();
+	}
+
+	@echo off;	
+	return true;
+}

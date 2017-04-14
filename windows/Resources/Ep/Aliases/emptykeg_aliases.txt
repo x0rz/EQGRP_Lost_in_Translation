@@ -1,0 +1,7 @@
+emkg_touch	script EmptyKeg\EmptyKeg_Touch.eps
+emkg_plist	script EmptyKeg\EmptyKeg_ProcessList.eps
+emkg_run	script EmptyKeg\EmptyKeg_Run.eps
+
+emkg		script EmptyKeg\EmptyKeg.eps
+emptykeg	wmi
+

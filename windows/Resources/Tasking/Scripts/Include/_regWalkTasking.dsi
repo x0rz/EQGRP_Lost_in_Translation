@@ -1,0 +1,73 @@
+# NOTE: ListValues and MaximumData are not supported
+#       Depth is either 1 or recursive
+sub _regWalkTasking(IN STRING $regWalkTxtFile, OUT STRING $regWalkCmd, OUT STRING $taskID, OUT STRING $targetID) {
+	echo "\nProcessing $regWalkTxtFile";
+	string $lines;
+	if (!ReadFile ($regWalkTxtFile, $lines)) {
+		return false;
+	}
+	# Process regWalk parameters
+	string $rootStr = "";
+	string $root = "";
+	string $subKeyStr = "";
+	string $subKey = "";
+	string $depthStr = "";
+	string $depth = "";
+	string $taskIDStr;
+	string $targetIDStr;
+	$regWalkCmd = "registryquery";
+
+
+	for (int $i=0; $i < sizeof($lines); $i++) {
+		string $line = $lines[$i];
+		string $hive = "";
+
+		# TargetID is required
+		if (RegexMatch("TargetID", $line)) {
+			RegExSplit(" ", $line, 2, $targetIDStr);
+			$targetID = $targetIDStr[1];
+		}
+
+		# TaskID is required
+		if (RegexMatch("TaskID", $line)) {
+			RegExSplit(" ", $line, 2, $taskIDStr);
+			$taskID = $taskIDStr[1];
+		}
+
+		if (RegexMatch("RootKey", $line)) {
+			RegExSplit(" ", $line, 2, $rootStr);
+			$root = $rootStr[1];
+			if (RegexMatch("HKEY_LOCAL_MACHINE", $line)) {
+				$hive = "L";
+			}
+			else if (RegexMatch("HKEY_USERS", $line)) {
+				$hive = "U";
+			}
+			else if (RegexMatch("HKEY_CURRENT_USER", $line)) {
+				$hive = "C";
+			}
+			else if (RegexMatch("HKEY_CURRENT_CONFIG", $line)) {
+				$hive = "G";
+			}
+			else if (RegexMatch("HKEY_CLASSES_ROOT", $line)) {
+				$hive = "R";
+			}
+
+			$regWalkCmd = "$regWalkCmd -hive $hive";
+		}
+		if (RegexMatch("Subkey", $line)) {
+			RegExSplit(" ", $line, 0, $subKeyStr);
+			$subKey = $subKeyStr[1];
+			$regWalkCmd = "$regWalkCmd -key $subKey";
+		}
+		if (RegexMatch("Depth", $line)) {
+			RegExSplit(" ", $line, 0, $depthStr);
+			$depth = $depthStr[1];
+			if (!($depth == "1")){
+				$regWalkCmd = "$regWalkCmd -recursive";
+			}
+		}
+	}
+
+	return true;
+}

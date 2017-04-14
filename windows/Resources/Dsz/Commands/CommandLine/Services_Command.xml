@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Services_Tasking.pyo' providerType='script'>
+
+	<Command id='0' name='Services'>
+
+		<Help>Returns the list of registered services</Help>
+	
+		<Input>
+			<Option name="target" optional="true">
+				<Argument name="serverName" data="serverName" optional="false" />
+				<Help>Get services at server 'x'</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='serverName' type='string'/>
+		</Output>
+		
+	</Command>
+	
+</Plugin>

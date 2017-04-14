@@ -1,0 +1,106 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='29' name='LoadPlugin'>
+
+    <Help>Loads a plugin (locally by default)</Help>
+
+    <Input>
+      <Argument name="Id_Or_Cmd" optional="false" data="id_or_cmd">
+	<Help>The id or name of command in plugin to be loaded</Help> 
+      </Argument>
+
+      <Option name='usefile' optional='true' group='loadFlags'>
+	<Set data='usefile' value='true'/>
+	<Help>The associated PPM DLL (if any) will be written to disk.</Help>
+	<Help>ONLY use this option if loading from memory fails.</Help>
+      </Option>
+
+      <Option name='remote' optional='true'>
+	<Set data='local' value='false'/>
+	<Set data='remote' value='true'/>
+	<Help>Load the plugin on the remote side</Help>
+      </Option>
+
+      <Option name='loadAddress' optional='true' group='loadFlags'>
+        <Argument name='addr' optional='false' data='loadAddress'/>
+	<Help>The address at which to load the plugin.</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='id_or_cmd' type='string'/>
+      <Data name='local' type='bool' default='true'/>
+      <Data name='remote' type='bool' default='false'/>
+      <Data name='usefile' type='bool' default='false'/>
+      <Data name='loadAddress' type='uint32_t' default='0'/>
+    </Output>
+
+  </Command>
+
+  <Command id='30' name='FreePlugin'>
+
+    <Help>Unloads the plugin with the given id or name, eliminating its functionality</Help>
+
+    <Input>
+
+      <Argument name="Id_Or_Command" optional="false" data="id_or_cmd">
+	<Help>The id or name of command in plugin to be released</Help> 
+      </Argument>
+
+      <Option name='force' optional='true'>
+	<Set data='force' value='true'/>
+	<Help>Unloads the plugin even if it has a load count greater than one</Help>
+      </Option>   
+
+      <Option name='remote' optional='true' group='location'>
+	<Set data='local' value='false'/>
+	<Set data='remote' value='true'/>
+	<Help>Frees the remote plugin</Help>
+      </Option>
+
+      <Option name='local' optional='true' group='location'>
+	<Set data='local' value='true'/>
+	<Set data='remote' value='false'/>
+	<Help>Frees the local plugin</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='id_or_cmd' type='string'/>
+      <Data name='local' type='bool' default='true'/>
+      <Data name='remote' type='bool' default='false'/>
+      <Data name='force' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+
+  <Command id='31' name='Plugins'>
+
+    <Help>Lists plugins currently loaded</Help>
+
+    <Input>
+      <Option name='verbose' optional='true'>
+	<Set data='verbose' value='true'/>
+	<Help>Show full plugin path (if any)</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='verbose' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+
+  <Command id='32' name='RemotePlugins'>
+
+    <Help>Lists the plugins loaded on the remote side</Help>
+
+    <Input/>
+    <Output/>
+
+  </Command>
+</Plugin>

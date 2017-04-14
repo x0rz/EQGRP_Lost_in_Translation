@@ -1,0 +1,73 @@
+<Software value="PSP">
+	<Vendor value="Comodo" directory="%ProgramFiles%\Comodo">
+		<Product value="Internet Security"
+			directory="%ProgramFiles%\Comodo\COMODO Internet Security">
+			<Version value="2009" regkey="HKLM\software\ComodoGroup\CDI\1"
+				regvalue="Product Version" regcompare="regex" regdata="4\.1\d\.\d{5}\.\d{3}" >
+				<ConfigurationMode value="Proactive Security"
+					default="0" regkey="HKLM\System\Software\Comodo\Firewall Pro\Configurations"
+					regvalue="Active" regdata="0" />
+			</Version>
+			<Version value="2010" regkey="HKLM\software\ComodoGroup\CDI\1"
+				regvalue="Product Version" regcompare="regex" regdata="4\.0\.\d{5}\.\d{3}">
+				<ConfigurationMode value="Internet Security"
+					default="0" regkey="HKLM\System\Software\Comodo\Firewall Pro\Configurations"
+					regvalue="Active" regdata="0">
+					<DefensePlus value="DISABLED"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\0\HIPS\Settings"
+						regvalue="Mode" regdata="10e7ffe" />
+					<DefensePlus value="Paranoid"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\0\HIPS\Settings"
+						regvalue="Mode" regdata="10e3ffe" />
+					<DefensePlus value="Training"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\0\HIPS\Settings"
+						regvalue="Mode" regdata="10e3fff" />
+					<DefensePlus value="Safe"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\0\HIPS\Settings"
+						regvalue="Mode" regdata="10f3ffe" />
+					<DefensePlus value="Clean PC"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\0\HIPS\Settings"
+						regvalue="Mode" regdata="11e3ffe" />
+				</ConfigurationMode>
+				<ConfigurationMode value="Proactive Security"
+					regkey="HKLM\System\Software\Comodo\Firewall Pro\Configurations"
+					regvalue="Active" regdata="1">
+					<DefensePlus value="DISABLED"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\1\HIPS\Settings"
+						regvalue="Mode" regdata="10e7ffe" />
+					<DefensePlus value="Paranoid"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\1\HIPS\Settings"
+						regvalue="Mode" regdata="10e3ffe" />
+					<DefensePlus value="Training"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\1\HIPS\Settings"
+						regvalue="Mode" regdata="10e3fff" />
+					<DefensePlus value="Safe"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\1\HIPS\Settings"
+						regvalue="Mode" regdata="10f3ffe" />
+					<DefensePlus value="Clean PC"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\1\HIPS\Settings"
+						regvalue="Mode" regdata="11e3ffe" />
+				</ConfigurationMode>
+				<ConfigurationMode value="Firewall Security"
+					regkey="HKLM\System\Software\Comodo\Firewall Pro\Configurations"
+					regvalue="Active" regdata="2">
+					<DefensePlus value="DISABLED"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\2\HIPS\Settings"
+						regvalue="Mode" regdata="10e7ffe" />
+					<DefensePlus value="Paranoid"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\2\HIPS\Settings"
+						regvalue="Mode" regdata="10e3ffe" />
+					<DefensePlus value="Training"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\2\HIPS\Settings"
+						regvalue="Mode" regdata="10e3fff" />
+					<DefensePlus value="Safe"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\2\HIPS\Settings"
+						regvalue="Mode" regdata="10f3ffe" />
+					<DefensePlus value="Clean PC"
+						regkey="HKLM\SYSTEM\Software\Comodo\Firewall Pro\Configurations\2\HIPS\Settings"
+						regvalue="Mode" regdata="11e3ffe" />
+				</ConfigurationMode>
+			</Version>
+		</Product>
+	</Vendor>
+</Software>

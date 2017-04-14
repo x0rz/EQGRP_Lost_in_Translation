@@ -1,0 +1,486 @@
+#########################################################################
+#
+# File: MailUsers.epm
+#
+# Modifications:
+#  15 Apr 2004	Created
+#  17 May 2004  Modified
+#  17 Feb 2005  Modified to make listing mail users a top menu option
+#  23 Jan 2006  Added option to main menu to just allow entering a user's
+#                  database file without listing all users.
+#		Added message to the bottom of the user listing which
+#                  gives the default path
+#               If the user chooses to copy the names.nsf file, by default,
+#                  it is copied to the temp directory and the filename
+#                  is prefaced with ~ and suffixed with .tmp
+#               A note was added to warn the user that copying the names.nsf
+#                  database should only be done when the attempt to open
+#                  the database has failed. The user is given a prompt
+#                  about opening the database whenever the script is ended
+#                  in an abnormal manner and this cannot be avoided. In
+#                  these scenarios, the user should answer NO to the prompt.
+#
+#########################################################################
+
+@include "_FileExists.epm";
+
+sub LotusMailUsers(IN BOOL $LNPathFound, IN STRING $dataPath, REF STRING $mailFile, REF STRING $firstName, REF STRING $lastName, REF STRING $internetAddress, IN INT $choice) { 
+
+# If Domino server, list Lotus Notes mail users. Otherwise, list contacts.
+
+	@echo off;
+	bool $ok = false;
+	string $destDirCopy = "";
+	string $srcDirCopy = "";
+	string $theDirPath = "";
+	string $theDirFile = "";
+	string $newDirFile = "";
+	string $testDirExt = "";
+	string $testColon = "";
+	int $dirFileCnt = 0;
+	string $theFile = "";
+	string $thePath = "";
+	string $dbnames="names.nsf";
+	string $listing = "";
+	string $userType = "";
+	bool $addrBookFound = true;
+
+	ifnot ($mailFile == "") {
+		PrintUsers($mailFile, $firstName, $lastName, $internetAddress, $dataPath, $choice);			
+		return true;
+	}
+	if ($choice == 3) { 
+		# Only Lotus Notes Client found on machine
+		if ($LNPathFound) {
+			echo "Since only the Lotus Client was found, mail databases cannot be listed.\r\nOnly the contact listing is available.";
+			$userType = "contacts";
+		}
+		else {
+			$userType = "mail users";		
+		}
+
+	
+		# Modified to just list users without asking if names.nsf is correct directory file
+		if (_FileExists($dbnames, "$dataPath")) {	
+			$dbnames = "names.nsf";
+			echo "\r\nOpening the Lotus Notes Directory to list $userType. The\r\nDirectory file, names.nsf, has been located.";
+			# List lotus notes mail users or contacts
+			@record on;
+			$ok = `lotusnotesmailusers -db "$dbnames"`;
+			@record off;
+		}
+		else {
+			$addrBookFound = false;
+			echo "\r\nAddress Book/Directory Listing, \r\n$dataPath\\$dbnames, was not found";
+			$dbnames = "";
+		}
+
+		while ($addrBookFound == false) {
+			if (prompt "\r\nTry again using a new file name?") {
+				$dbnames = GetInput("\r\nEnter a new name for the Notes Directory\r\n(relative to $dataPath or full path)");
+				if ($dbnames == "quit") {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+
+			# Check for existence of mail database before attempting to open
+			string $dbStr = "";
+			ifnot ($dbnames == "") {
+				# Test if database file exists on system before attempting to open it
+				# Use split with . as the delimeter to strip off .nsf file extension
+				echo "Verifying that file selected exists";
+				string $thePath = splitPath($dbnames);
+				string $theFile = $thePath[1];
+				string $testExt = split(".", $theFile);
+				string $newFile;
+				if (sizeof($testExt) == 1) {
+					$newFile = "$theFile.nsf";
+				}
+				else {
+					$newFile = $theFile;
+				}
+				$testColon = split(":", $thePath);
+				if (sizeof($testColon) == 2) {
+					$dbStr = "$thePath\\$newFile";
+				}
+				else {
+					if ($thePath == "") {
+						$dbStr = "$dataPath\\$newFile";
+					}
+					else {
+						$dbStr = "$dataPath\\$thePath\\$newFile";
+					}
+				}
+
+				if (_FileExists($dbStr, "")) {					
+					echo "Database file, $dbStr, found";
+					# Try to List lotus notes mail users or contacts with new file name
+					@record on;
+					echo "Attempting to list $userType";
+					$ok = `lotusnotesmailusers -db "$dbnames"`;
+					$addrBookFound = true;
+				}
+				else {
+					echo "Database file, $dbStr, not found";
+					$addrBookFound = false;
+				}
+			}
+		}
+
+				
+		# The Lotus Notes Directory could not be opened
+		# Possibly it is already open, so see if the user wants to make a copy and try again.
+		ifnot ($ok) {
+			echo "\r\nPLEASE NOTE: The following prompt may be the result of a CTRL-C or some other\r\nunexpected condition. If so, just say NO to the prompt! However, if you were\r\nin the process of opening a database which appears to be locked, consider\r\nmaking a copy.";
+			if(prompt "\r\nThe database required to obtain Lotus Notes users could not be opened or\r\ncontains 0 entries. This problem may be occurring because the database\r\nis already opened. Would you like to make a copy of the database and\r\ntry again?") {
+				# Get the temp directory
+				string $tempDir = "";
+				string $dbNamesCopy = "";
+				$srcDirCopy = "$dataPath\\$dbnames";
+				@record on;
+				$ok = `getsyspaths`;
+				@record off;
+				ifnot ($ok) {
+					echo "retrieving temp directory path failed";
+				}
+				else {
+					$tempDir = GetCmdData("temporaryPath");
+					$dbnames = "~$dbnames";
+					string $tmp = ".tmp";
+					$dbnames = "$dbnames$tmp";
+					$dbNamesCopy = "$tempDir$dbnames";
+					echo "\r\nDefault file name for storing the temporary copy: $dbNamesCopy";
+					if (prompt "\r\nIs this path/name for the file copy acceptable?") {
+						$destDirCopy[$dirFileCnt] = $dbNamesCopy;
+					}
+					else {
+						$dbNamesCopy = "";
+					}
+				}
+
+				
+				if ($dbNamesCopy == "") {	
+					$dbNamesCopy = GetInput("Enter a new file name for the copy of the Notes Directory database");
+					if ($dbNamesCopy == "quit") {
+						return false;
+					}
+
+				#	$srcDirCopy = "$dataPath\\$dbnames";
+					string $theDirPath = splitPath($dbNamesCopy);
+					$theDirFile = $theDirPath[1];
+					$testDirExt = split(".", $theDirFile);
+					if (sizeof($testDirExt) == 1) {
+						$newDirFile = "$theDirFile.nsf";
+					}
+					else {
+						$newDirFile = $theDirFile;
+					}
+					string $testColon = split(":", $theDirPath);
+					if (sizeof($testColon) == 2) {
+						$destDirCopy[$dirFileCnt] = "$theDirPath\\$newDirFile";
+					}
+					else {
+						if ($theDirPath == "") {
+							$theDirPath = splitPath($srcDirCopy);
+							$destDirCopy[$dirFileCnt] = "$theDirPath\\$newDirFile";
+						}
+						else {
+							$destDirCopy[$dirFileCnt] = "$theDirPath\\$newDirFile";
+						}
+					}
+				}
+
+				if (prompt "\r\nAbout to copy $srcDirCopy to $destDirCopy[$dirFileCnt]--Continue?") {
+	
+					@record on;
+					$ok = `copy "$srcDirCopy" "$destDirCopy[$dirFileCnt]"`;
+					@record off;
+					ifnot ($ok) {
+						echo "copy command failed";
+						return false;
+					}
+					else {
+						echo "copy successful\r\n";
+						echo "\r\nAttempting to list mail users: \r\n";
+					}
+				}
+				else {
+					return false;
+				}	
+				
+				$dbnames = $destDirCopy[$DirFileCnt];
+				$dirFileCnt++;
+				@record on;
+				$ok = `lotusnotesmailusers -db "$dbnames"`;
+				@record off;
+
+			}
+			else {
+				$addrBookFound = false;
+			}
+		}
+
+		@record off;
+
+		# If the Lotus Notes Directory was found and opened successfully, then list out the users/contacts
+		if ($ok && $addrBookFound) {		
+			$firstName = GetCmdData("firstName");
+			$lastName = GetCmdData("lastName");
+			$mailFile = GetCmdData("mailFile");
+			$internetAddress = GetCmdData("internetAddress");
+
+			ifnot (defined($firstName) && defined($lastName) && defined($mailFile) && defined($internetAddress)) 	{
+    				echo "    FAILED (all values not defined)";
+  				pause;
+			}
+			else {
+				PrintUsers($mailFile, $firstName, $lastName, $internetAddress, $dataPath, $choice);
+
+			} 
+		}
+
+		# Delete copy of directory
+		int $index = 0;
+		while ($index < $dirFileCnt) {
+ 			ifnot ($destDirCopy[$index] == "") {
+				if (prompt "\r\nDelete directory copy, $destDirCopy[$index]?") {
+					$thePath = splitPath($destDirCopy[$index]);
+					$theFile = $thePath[1];
+					$ok = `del "$theFile" -path "$thePath"`;
+					if ($ok) {
+						echo "$destDirCopy[$index] deleted successfully";
+				}
+				}
+			}
+			$index++;
+		} 
+		$dirFileCnt = 0;
+	}
+	# option is for entering user (#2)
+	else {
+		PrintUsers($mailFile, $firstName, $lastName, $internetAddress, $dataPath, $choice);
+	}
+
+	return true;
+
+}
+# end LotusMailUsers
+
+#############################################################################################################
+#
+# Print Mail Users to screen
+#
+#############################################################################################################
+
+Sub PrintUsers(IN STRING $mailFile, IN STRING $firstName, IN STRING $lastName, IN STRING $internetAddress, IN STRING $dataPath, IN INT $choice) {
+
+	bool $invaliddb = true;
+	string $curMailPath = "";
+	string $dbfile = "";
+        bool $badAnswer = true;
+        string $curMaildb = "";
+	int $answer = 0;
+	string $username = "";
+	string $internetAddr = "";
+	while ($invaliddb) {
+		if ($choice == 2) {
+		   	$curMaildb = GetEnv("kl_dbfile");
+			$curMailPath = splitPath($curMaildb);
+			if ($curMailPath == "") {
+				$curMailPath = $dataPath;
+			}
+			string $dbFileStr = GetInput("\r\nEnter name of mail database (relative to $curMailPath\\ or\r\nfull path)--enter \"quit\" to return to main menu");
+			if ($dbFileStr == "quit") {
+			#	SetEnv("kl_dbfile", "None Selected");
+				return false;
+			}
+			else {
+				$dbfile = $dbFileStr;
+			}
+
+			# force answer to number of users to get the correct path
+			$answer = sizeof($mailFile);				
+			$badAnswer = false;			
+		}
+		else {
+			int $i = 0;
+			int $j = 1;
+			echo "\r\n  Users                     Mail Database              Internet Address\r\n";
+#			echo "\r\n  Lotus Notes Users\r\n";
+			string $spaces = "";
+			string $spacesForNum = "";
+			string $spaces1 = " ";
+			string $spaces2 = " ";
+			echo "0. Exit to Main Menu\r\n";
+			while ($i < sizeof($mailFile)) {
+				int $numLen = strlen("$j");
+				$numLen++;
+				$numLen++;
+				int $k = 0;
+				$spacesForNum = "";
+				while ($k < $numLen) {
+					$spacesForNum = "$spacesForNum ";
+					$k++;
+				}
+				int $lineLen = $numLen;	
+				int $fNameLen = strlen($firstName[$i]);				
+				int $lNameLen = strlen($lastName[$i]);
+				int $mailFileLen = strlen($mailFile[$i]);
+				int $addrLen = strlen($internetAddress[$i]);
+				$k = 0;
+				while ($k < $fNameLen) {
+					$k++;
+					$lineLen++;
+				}
+				$k = 0;
+				while ($k < $lNameLen) {
+					$k++;
+					$lineLen++;
+				}
+				$spaces1 = "  ";
+				while ($lineLen < 23) {
+					$spaces1 = "$spaces1 ";
+					$lineLen++;
+				}
+				$k = 0;
+				while ($k < $mailFileLen) {
+					$k++;
+					$lineLen++;
+				}
+				$spaces2 = "  ";
+				while ($lineLen < 39) {
+					$spaces2 = "$spaces2 ";
+					$lineLen++;
+				}
+
+				if ($fNameLen > 0) {
+					$spaces = " ";
+				}
+				else {
+					$spaces = "";
+					$spaces1 = "$spaces1 ";
+				}
+					
+				echo "$j. $firstName[$i]$spaces$lastName[$i]$spaces1$mailFile[$i]$spaces2$internetAddress[$i]";	
+#				echo "$j. Name            : $firstName[$i]$spaces$lastName[$i]\r\n$spacesForNum  Mail Database   : $dataPath\\$mailFile[$i]\r\n$spacesForNum  Internet Address: $internetAddress[$i]\r\n";	
+				$i++;
+				$j++;
+			}
+	
+			echo " ";
+			echo "$j. Allow User to Type Name of Mail Database File";  
+				
+			$badAnswer = true;
+			$answer = 0;
+			$dbfile = "";
+			$curMailPath = "";
+			while ($badAnswer) {
+				echo "\r\nDEFAULT PATH OF MAIL DATABASES: $dataPath";
+	       			$answer = GetInput("\r\nEnter the number corresponding to the mail database to open");
+				$answer--;
+				if ($answer < sizeof($mailFile)) {
+					if ($answer == -1) {
+						return false;
+					}
+					else if ($answer > -1) {
+						$badAnswer = false;
+					}
+					else {
+						$badAnswer = true;
+						echo "Invalid response -- try again!";
+					}
+				}
+				else if ($answer == sizeof($mailFile)) {
+					$curMaildb = GetEnv("kl_dbfile");
+					$curMailPath = splitPath($curMaildb);
+					if ($curMailPath == "") {
+						$curMailPath = $dataPath;
+					}
+					string $dbFileStr = GetInput("\r\nEnter name of mail database (relative to $curMailPath\\ or\r\nfull path)");
+					if ($dbFileStr == "quit") {
+					#	SetEnv("kl_dbfile", "None Selected");
+					}
+					else {
+						$dbfile = $dbFileStr;
+					}
+				
+					$badAnswer = false;			
+				}
+				else {
+					$badAnswer = true;
+					echo "Invalid response -- try again!";
+				}
+			}
+			$username = "";
+#			$internetAddr = "";
+
+			# User chose mail database from menu
+			ifnot ($answer == sizeof($mailFile)) {
+				$username = "$firstName[$answer] $lastName[$answer]";
+				$dbfile = $mailFile[$answer];
+				$internetAddr = $internetAddress[$answer];
+			}
+		}
+		
+		# Check for existence of chosen mail database
+		string $dbStr = "";
+		string $newFile = "";
+		ifnot ($dbfile == "") {
+			# Test if database file exists on system before attempting to open it
+			# Use split with . as the delimeter to strip off .nsf file extension
+			echo "Verifying that mail database selected exists";
+			string $thePath = splitPath($dbfile);
+			string $theFile = $thePath[1];
+			string $testExt = split(".", $theFile);
+			if (sizeof($testExt) == 1) {
+				$newFile = "$theFile.nsf";
+			}
+			else {
+				$newFile = $theFile;
+			}
+			string $testColon = split(":", $thePath);
+			if (sizeof($testColon) == 2) {
+				$dbStr = "$thePath\\$newFile";
+			}
+			else {
+				if ($thePath == "") {
+					ifnot ($answer == sizeof($mailFile)) {
+						$dbStr = "$dataPath\\$newFile";
+					}
+					else {
+						$dbStr = "$curMailPath\\$newFile";
+					}
+				}
+
+				else {
+					#user chose mail user from menu
+					ifnot ($answer == sizeof($mailFile)) {
+						$dbStr = "$dataPath\\$thePath\\$newFile";
+					}
+					#user typed in a user
+					else {
+						$dbStr = "$curMailPath\\$thePath\\$newFile";
+					}
+				}
+			}
+
+			if (_FileExists($dbStr, "")) {					
+				echo "Database file, $dbStr, found";
+				$invaliddb = false;
+				SetEnv ("kl_dbfile", $dbStr);
+				SetEnv ("kl_username", $username);
+				SetEnv ("kl_internetAddr", $internetAddr);
+			}
+			else {
+				echo "\r\nDatabase file, $dbStr, not found";
+			}
+		}
+		else {
+			echo "\r\nMail database for this user cannot be found. Please select another user.\r\n";
+		}
+	}
+   	
+}		

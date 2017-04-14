@@ -1,0 +1,10 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>ps</Name>
+		<ReplaceBeforeArgs>processes -list</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+</Aliases>	
+		

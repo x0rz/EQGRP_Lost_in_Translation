@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_ProcessModify_Tasking.pyo' providerType='script'>
+
+	<Command name="ProcessModify" id="0">
+
+		<Help>Changes an existing group or privilege within a process.</Help>
+		<Help>Optionally changes the attributes for that group as well.</Help>
+
+		<Input>
+			<Option name='group' optional='false' group='type'>
+				<Set data='type' value='1'/>
+				<Help>Change a group</Help>
+				
+				<Argument name='attributes' data='attributes' optional='true'>
+					<Help>The new group attributes.  If none specified, they are left unchanged.</Help>
+					<Set data='change' value='true' />
+				</Argument>
+			</Option>
+			
+			<Option name='privilege' optional='false' group='type'>
+				<Set data='type' value='2'/>
+				<Help>Change a privilege</Help>
+				
+				<Argument name='attributes' optional='true'>
+					<Help>The new privilege attributes.  If none specified, they are left unchanged.</Help>
+					<Value string='disabled'>
+						<Set data='change' value='true' />
+						<Set data='attributes' value='0'/>
+					</Value>
+					<Value string='enabled'>
+						<Set data='change' value='true' />
+						<Set data='attributes' value='2'/>
+					</Value>
+					<Value string='enabled_by_default'>
+						<Set data='change' value='true' />
+						<Set data='attributes' value='3'/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='id' optional='true'>
+				<Argument name='#' data='pid' />
+				<Help>The id of the process to update.  If none is specified,</Help>
+				<Help>the current process is used.</Help>
+			</Option>
+			
+			<Option name='orig' optional='false'>
+				<Argument name='name' data='orig' />
+				<Help>The original value to be changed</Help>
+			</Option>
+
+			<Option name='new' optional='false' group='actionType'>
+				<Argument name='name' data='new' />
+				<Help>The new value to take the place of the old value</Help>
+			</Option>
+			
+			<Option name='add' optional='false' group='actionType'>
+				<Set data='new' value="_action_add"/>
+				<Help>Add instead of modifying.</Help>
+			</Option>
+			
+			<Option name='delete' optional='false' group='actionType'>
+				<Set data='new' value="_action_delete"/>
+				<Help>Delete instead of modifying.</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='type' type='uint8_t'/>
+			<Data name='orig' type='string'/>
+			<Data name='new' type='string'/>
+			<Data name='pid' type='uint32_t'/>
+			<Data name='attributes' type='uint32_t'/>
+			<Data name='change' type='bool' default='false'/>
+		</Output>
+		
+    </Command>
+</Plugin>

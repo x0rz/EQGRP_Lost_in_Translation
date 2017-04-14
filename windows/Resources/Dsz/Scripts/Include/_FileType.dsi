@@ -1,0 +1,27 @@
+
+
+#-------------------------------------------------------------------------------
+# _GetFileType
+#   Get the file type of the provided file - Note that this only works locally
+# Params:
+#   [in]  file - the file to type
+#	[out] type - the type returned by FileType
+#-------------------------------------------------------------------------------
+sub _GetFileType( IN string $file, OUT string $type ) {
+	if( !defined( $file ) ) {
+		return false;
+	}
+	@record on;
+	bool $ret = `local filetype -file "$file"`;
+	@record off;
+	if( !$ret ) {
+		return false;
+	}
+	
+	
+	if( !(GetCmdData("filetype::type", $type) && defined( $type ) ) ) {
+		return false;
+	}
+	
+	return true;
+}

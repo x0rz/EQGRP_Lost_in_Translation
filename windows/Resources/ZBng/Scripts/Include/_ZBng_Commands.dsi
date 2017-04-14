@@ -1,0 +1,14 @@
+@include "_VersionChecks.dsi";
+@include "_CommandModification.dsi";
+
+sub _ZBng_Commands()
+{
+	if (_IsOs64Bit() || _IsWindowsVistaOrGreater())
+	{
+		# authentication not available on 64-bit or Vista+
+		_DisableCommand("Authentication");
+	}
+	
+	return true;
+}
+

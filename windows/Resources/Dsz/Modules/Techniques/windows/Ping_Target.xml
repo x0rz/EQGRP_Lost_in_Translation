@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<Technique name='Ping_Target' id='233'>
+
+	<Implementation value='0'/>
+
+	<Architecture type='i386'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type='x64'>
+
+		<Platform family='winnt'>
+		    <Version major='*' minor='*' other='*'/>
+		</Platform>
+
+	</Architecture>
+
+</Technique>

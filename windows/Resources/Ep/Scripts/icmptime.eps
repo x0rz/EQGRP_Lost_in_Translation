@@ -1,0 +1,34 @@
+##############################################################################
+#	Calculates time offset using the ping -s 1 <remote ip> method
+##############################################################################
+
+@echo on;
+@record on;
+
+if ($argc != 2)
+{
+	echo "Usage: $argv[0] <remote IP>";
+	return false;
+}
+else
+{	
+	prompt `run -command "ping -s 1 $argv[1]" -redirect icmptime`;
+}
+
+bool $continue = true;
+
+while($continue != false)
+{
+	int $offset = GetInput("Enter offset (enter 0 to quit): ");
+
+	if($offset == 0)
+	{
+		$continue = false;
+	}
+	$offset /= 1000;
+	$offset /= 60;
+	$offset /= 60;
+	echo "Time offset: $offset";
+	
+}
+@record off;

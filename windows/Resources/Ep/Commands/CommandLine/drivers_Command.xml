@@ -1,0 +1,41 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31342'>
+
+ <Command id='16' name='driverload'>
+  <Help>Load specified driver</Help>
+
+  <Input>
+   <Option name='name' optional='false'>
+    <Argument name='driver_name' data='file'/>
+    <Help>The driver to load</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='file' type='string'   />
+  </Output>
+ </Command>
+
+ <Command id='17' name='driverlist'>
+  <Help>List loaded drivers</Help>
+
+  <Input>
+  </Input>
+  <Output>
+  </Output>
+ </Command>
+
+ <Command id='18' name='driverunload'>
+  <Help>Unload specified driver</Help>
+
+  <Input>
+   <Option name='name' optional='false'>
+    <Argument name='driver_name' data='file'/>
+    <Help>The driver to unload</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='file' type='string'   />
+  </Output>
+ </Command>
+</Plugin>

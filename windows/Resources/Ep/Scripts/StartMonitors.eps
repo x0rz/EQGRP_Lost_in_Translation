@@ -1,0 +1,67 @@
+#--------------------------------------------------------
+# File: StartMonitors.eps
+#
+#  Start State:	Assumes nothing
+#  End State:	All system monitors are started
+#  Errors:	
+#  Comments:	
+#
+# Modifications:
+#  03/21/01	Created from batch file
+#  12/17/01	Added check for nt4 for checknmagent
+#  03/20/02	Added "monitor" prefix to commands
+#--------------------------------------------------------
+
+ifnot (prompt "Do you want to begin the monitors?") {
+    echo "Aborting script...";
+    return false;
+}
+
+@echo off;
+
+bool $success = true;
+
+echo "Starting mouse monitor:";
+if (`monitor checkmouse`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    $success = false;
+}
+
+bool $noKeyboard = GetEnv("noKeyboard");
+if ($noKeyboard) {
+	echo "Skipping keyboard monitor due to a security concern. Something may catch it.";
+} else {
+	echo "Starting keyboard monitor:";
+	if (`monitor checkkeyboard`) {
+	    echo "    STARTED";
+	} else {
+	    echo "    FAILED";
+	    $success = false;
+	}
+}
+
+echo "Starting network monitor:";
+if (`background log netstatmon`) {
+    echo "    STARTED";
+} else {
+    echo "    FAILED";
+    $success = false;
+}
+
+@echo on;
+echo "";
+echo "---------------------------------------------------------------";
+`channels`;
+echo "---------------------------------------------------------------";
+echo "";
+
+if ($success == false) {
+   echo "Unable to start at least one monitor";
+   pause;
+} else {
+   echo "The monitors have been started";
+}
+
+return $success;

@@ -1,0 +1,12 @@
+<?xml version="1.1" ?>
+<Aliases>
+	<Alias>
+		<Name>yak</Name>
+		<ReplaceBeforeArgs>python windows/yak.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>YAK 2		           Runs on |WINDOWS|</Help>
+		<Help>    YAK menu script. Used to install, uninstall, collect and parse YAK</Help>
+		<Options>
+		</Options>
+	</Alias>
+</Aliases>

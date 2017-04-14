@@ -1,0 +1,106 @@
+# Translate dir tasking parameters to DSZ commands
+
+@include "_StringIncludes.dsi";
+sub _dirTasking(IN STRING $dirTxtFile, OUT STRING $dirCmd, OUT STRING $taskID, OUT STRING $targetID) {
+
+	string $lines;
+	if (!ReadFile ($dirTxtFile, $lines)) {
+		return false;
+	}
+
+      # Process dir parameters
+	string $taskIDStr;
+	string $targetIDStr;
+	string $pathStr, $path;
+	string $maskStr, $mask;
+	string $depthStr, $depth;
+	string $listallStr, $listall;
+	string $directionStr="";
+ 	string $direction = "";
+	string $timeTypeStr, $timeType;
+	string $timeStr, $time;
+      bool $timeTypeProvided = false;
+	$dirCmd = "dir";
+
+	echo "\nProcessing $dirTxtFile";
+	for (int $i=0; $i < sizeof($lines); $i++) {
+		string $line = $lines[$i];
+
+		# TargetID is required
+		if (RegexMatch("TargetID", $line)) {
+			RegExSplit(" ", $line, 2, $targetIDStr);
+			$targetID = $targetIDStr[1];
+		}
+
+		# TaskID is required
+		if (RegexMatch("TaskID", $line)) {
+			RegExSplit(" ", $line, 2, $taskIDStr);
+			$taskID = $taskIDStr[1];
+		}
+
+		# Path is required
+		if (RegexMatch("Path", $line)) {
+			RegExSplit(" ", $line, 2, $pathStr);
+			$path = $pathStr[1];
+			$dirCmd = "$dirCmd -path $path";
+		}
+		# Mask is required and defaults to * in the transform
+		if (RegexMatch("Mask", $line)) {
+			RegExSplit(" ", $line, 0, $maskStr);
+			$mask = $maskStr[1];
+			$dirCmd = "$dirCmd -mask $mask";
+		}
+		# Depth=0 means recursive; all other depth values are ignored (depth=one level)
+		if (RegexMatch("Depth", $line)) {
+			RegExSplit(" ", $line, 0, $depthStr);
+			$depth = $depthStr[1];
+			if ($depth == "0") {
+				$dirCmd = "$dirCmd -recursive";
+			}
+		}
+		# Listall=false means just list directories
+		if (RegexMatch("Listall", $line)) {
+			RegExSplit(" ", $line, 0, $listallStr);
+			$listall = $listallStr[1];
+			if ($listall == "false")
+			{
+				$dirCmd = "$dirCmd -dirsonly";
+			}
+		}
+		if (RegexMatch("Direction", $line)) {
+			RegExSplit(" ", $line, 0, $directionStr);
+			$direction = $directionStr[1];
+		}
+		if (RegexMatch("timeType", $line)) {
+			if (!$timeTypeProvided)
+			{
+				RegExSplit(" ", $line, 0, $timeTypeStr);
+				$timeType = $timeTypeStr[1];
+				$dirCmd = "$dirCmd -time $timeType";
+				$timeTypeProvided = true;
+			}
+		}
+		if (RegexMatch("Time ", $line)) {
+			RegExSplit(" ", $line, 0, $timeStr);
+			$time = $timeStr[1];
+			# Remove starting "P" character from duration string
+			string $testStr;
+			_Substring($timeStr[1], 0, 1, $testStr);
+			if ($testStr == "P"){
+				_Substring($timeStr[1], 1, $time);
+			}
+			if ($direction != "") {
+				if ($time != "") {
+					$dirCmd = "$dirCmd -$direction $time";
+				}
+				else {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+
+

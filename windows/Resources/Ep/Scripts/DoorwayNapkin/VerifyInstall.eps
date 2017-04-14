@@ -1,0 +1,81 @@
+#--------------------------------------------------------
+# File: VerifyInstall.eps
+#
+# Wrapper script for verify install of DoorwayNapkin tools
+#
+# Modifications:
+#  04/09/2004	Created.
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+ifnot (_DriverVerifyInstall($driver, 2, 1)) {
+    return false;
+}
+
+#--------------------------------------
+# perform extra checks on registry data
+#--------------------------------------
+bool $rtn = true;
+
+@record on;
+
+echo "Checking for DependOnService";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value DependOnService`) {
+    # got key -- check value
+    bool $valueGood = false;
+    string $value_type = GetCmdData("value_type");
+
+    # REG_MULTI_SZ
+    if ($value_type == "REG_MULTI_SZ") { 
+	string $data = GetCmdData("value_data");
+	if (defined($data[0])) {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$rtn = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $rtn = false;
+}
+
+echo "Checking for msdlc(ports)";
+if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver -value msdlc`) {
+    # got key -- check value
+    bool $valueGood = false;
+    string $value_type = GetCmdData("value_type");
+
+    # REG_BINARY	
+    if ($value_type == "REG_BINARY") {   
+	string $data = GetCmdData("value_data");
+	if (defined($data[0])) {
+	    $valueGood = true;
+	}
+    }
+
+    if ($valueGood) {
+	echo "    PASSED";
+    } else {
+	echo "    FAILED (value is bad)";
+	$rtn = false;
+    }	
+} else {
+    echo "    FAILED (value not found)";
+    $rtn = false;
+}
+
+return $rtn;

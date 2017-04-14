@@ -1,0 +1,106 @@
+#-----------------------------------------------------------------------------
+# File: driverchecks.eps
+#
+#  Lists currently loaded drivers and their checksums
+#
+#-----------------------------------------------------------------------------
+@include "_GetSystemPaths.epm";
+
+
+@echo off;
+@record on;
+ifnot (`log driverlist`) {
+	echo "Couldn't get Driverlist";
+	return false;
+}
+@record off;
+
+string $names = GetCmdData("name");
+string $root;
+string $system32;
+
+
+int $i=0;
+while ($i < sizeof($names) ) {
+
+    @record on;
+    string $path = SplitPath($names[$i]); 
+
+echo "PATH: $path";
+    
+ 
+    if (_GetSystemPaths($root,$system32)) {
+
+	if ($path[0] != "") {
+		string $values= Split("\\",$path[0]);
+echo "values: $values";
+		int $j = sizeof($values);
+
+		if ($values[1] == "SystemRoot") {
+					
+			# not sure how to cat in EP
+			if ($j == 3) {
+				$path[0] = "$root\\$values[2]"; }
+			else if ($j == 4) { 
+				$path[0] = "$root\\$values[2]\\$values[3]"; }
+			else if ($j == 5) {
+				$path[0] = "$root\\$values[2]\\$values[3]\\$values[4]"; }
+		}
+
+		if ($values[1] == "??") {
+			# not sure how to cat in EP
+			if ($j == 5) {
+				$path[0] = "$root\\$values[4]"; }
+			else if ($j == 6) {
+				$path[0] = "$root\\$values[4]\\$values[5]"; }
+			else if ($j == 7) {
+				$path[0] = "$root\\$values[4]\\$values[5]\\$values[6]"; }
+		}
+		
+	}
+
+	# Assuming blank path is ..\drivers directory
+	else {
+		$path[0] = "$root\\$system32\\drivers";
+	}
+
+	ifnot (`log checksum -mask $path[1] -path $path[0]`) {
+		echo "$path[1]:\tCouldn't Get driverinfo\r\n";
+	} else {
+		string $check_sum = GetCmdData("checksum_value");
+		if (sizeof($check_sum) > 0) {
+#			if ($path[1] == "tcpip.sys") {
+#				if(`get $path[1] -path $path[0]`) {
+#				
+#					string $logs;
+#					`local mkdir Get_Files\\NOSEND`;
+#									
+#					if(`getdirectory -logs`) {
+#					  $logs = GetCmdData("dir");
+#
+#					}
+#										
+#					string $from = "$logs[0]\\Get_Files";
+#					string $to = "$logs[0]\\Get_Files\\NOSEND";
+#					string $pattern = "tcp*";
+#					
+#					if(`local dir $pattern -path $from[0]`) {
+#						string $path1 = GetCmdData("path");
+#    						string $name1 = GetCmdData("name");
+#						
+#						`log local move $from[0]/$name1[0] $to[0]/tcpip.sys`;
+#					}
+#				}
+#			}
+			echo "$path[1]:\t$check_sum\r\n\t$path[0]\\$path[1]\r\n";
+		} else {
+			echo "$path[1]:\tCouldn't Get driverinfo\r\n";
+		}
+	}
+    	
+    }	
+    @record off;
+    $i++;
+}
+	
+return true;

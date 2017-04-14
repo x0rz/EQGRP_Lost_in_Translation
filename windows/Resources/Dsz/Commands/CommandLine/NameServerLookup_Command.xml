@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_NameServerLookup_Tasking.pyo' providerType='script'>
+	
+    <Command name="NameServerLookup" id="0">
+
+		<Help>Returns the IP address(es) of a given hostname or the hostname(s) of a given IP address</Help>
+
+		<Input>
+			<Argument name='host' data='addr'>
+				<Help>Hostname or IP address to lookup</Help>
+			</Argument>
+		</Input>
+
+		<Output>
+			<Data name='addr' type='string' />
+		</Output>
+		
+	</Command>
+</Plugin>

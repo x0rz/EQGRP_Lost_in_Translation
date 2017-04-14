@@ -1,0 +1,35 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31312'>
+
+  <Command id='16' name='strings'>
+
+    <Help>Returns a list of strings from a specified file.</Help>
+
+    <Input>
+      <Option name='threshold' optional='true'>
+ 	 <Argument name='number' data='threshold'/>
+	 <Help>Sets the minimum length for a valid string.</Help>
+      </Option>
+
+      <Option name='max' optional='true'>
+	 <Argument name='number' data='maximum'/>
+	 <Help>Sets the maximum number of strings to return.</Help>
+      </Option>
+
+      <Option name='file' optional='false'>
+	<Help>The file to read the strings from.</Help>
+	<Argument name='pathname' data='file'/>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='file' type='string'/>
+      <Data name='threshold' type='int16_t' default='4' />
+      <Data name='maximum' type='int16_t' default='0' />
+    </Output>
+
+  </Command>
+
+</Plugin>

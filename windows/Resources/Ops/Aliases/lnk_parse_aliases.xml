@@ -1,0 +1,40 @@
+<?xml version='1.1' ?> 
+<Aliases>
+  <Alias>
+		<Name>lnk_parse</Name>
+		<ReplaceBeforeArgs>python lnk_parse.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Ops</ReplaceAfterArgs>
+		<Help>
+Usage: lnk_parse.py [options] [filename] [directory of files]
+Parse the contents of a Windows shortcut (or folder of shortcuts)
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -r, --recent-documents
+                        Find all Recent document folders and parse the lnk
+                        files in those folders
+  -n, --nethood         Find all NetHood folders and parse the lnk files in
+                        those folders
+  -d, --desktop         Find all Desktop folders and parse the lnk files in
+                        those folders
+  -a, --all             Search for and parse all lnk files on the target
+  -f, --force-get       Automatically get lnk files, don't prompt per each
+                        folder
+</Help>
+<Options>
+    <Option>-version</Option>
+    <Option>h</Option>
+    <Option>-help</Option>
+    <Option>r</Option>
+    <Option>-recent-documents</Option>
+    <Option>n</Option>
+    <Option>-nethood</Option>
+    <Option>d</Option>
+    <Option>-desktop</Option>
+    <Option>a</Option>
+    <Option>-all</Option>
+    <Option>f</Option>
+    <Option>-force-get</Option>
+</Options>
+  </Alias>
+</Aliases>

@@ -1,0 +1,18 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>pc_old</Name>
+		<ReplaceBeforeArgs>local script _OldPc.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>pc_old [-cpaddr &lt;addr&gt;] [-run &lt;egg|exe|filelib|memlib&gt;] [-payload &lt;payload_name&gt;]</Help>
+		<Help>    Connect to a 1.x PeddleCheap</Help>
+
+		<Options>
+			<Option>cpaddr</Option>
+			<Option>run</Option>
+			<Option>payload</Option>
+		</Options>
+	</Alias>
+</Aliases>

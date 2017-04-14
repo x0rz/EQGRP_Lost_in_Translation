@@ -1,0 +1,14 @@
+@record on;
+`regquery -hive L -subkey "system\\currentcontrolset\\services\\systmgmt\\Parameters" -value ServiceDll`;
+
+string $service_dll = GetCmdData("value_data");
+`dir $service_dll`;
+
+int $size = GetCmdData("size");
+
+@record off;
+
+
+if (prompt "SIG5 was detected.  Do you want to grab the server dll? ($service_dll, size of $size bytes)") {
+	`get $service_dll`;
+}

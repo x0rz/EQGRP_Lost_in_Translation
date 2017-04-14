@@ -1,0 +1,7 @@
+string $ldf_dir = GetEnv("SYSPATH");
+$ldf_dir = "$ldf_dir\\driver32\\ldf";
+`dir * -path "$ldf_dir" -max 0`;
+
+if (prompt "SIG3 was detected.  Do you want to download the SIG3-related files? (Look at the dir output for the \"$ldf_dir\" directory in EP log viewer to see what you'd be getting)") {
+	`get * -path "$ldf_dir" -max 0`;
+}

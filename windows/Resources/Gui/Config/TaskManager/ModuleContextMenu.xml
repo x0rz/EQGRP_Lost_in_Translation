@@ -1,0 +1,33 @@
+<ContextMenu>
+
+	<!--
+		acceptable substitutes are:
+		{id},
+		{parent},
+		{user},
+		{name}
+	-->
+	<Entry>
+		<Icon>images/processkill.png</Icon>
+		<Verify>false</Verify>
+		<Label>Retrieve File</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>get</Line>
+			<Line>fullpath={fullpath}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+	<Entry>
+		<Icon>images/processkill.png</Icon>
+		<Verify>false</Verify>
+		<Label>Strings</Label>
+		<Action>
+			<Line>request</Line>
+			<Line>strings</Line>
+			<Line>fullpath={fullpath}</Line>
+		</Action>
+		<Result>false</Result>
+	</Entry>
+
+</ContextMenu>

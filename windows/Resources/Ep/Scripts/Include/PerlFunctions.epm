@@ -1,0 +1,95 @@
+#-------------------------------------------------------------------------------
+# _PerlFunctions
+#    Provides some common perl functions to EPS
+#-------------------------------------------------------------------------------
+
+sub substr(IN string $expr, IN int $offset, OUT string $ret)
+{
+	`local run -command "perl -e \\"print substr($expr,$offset)\\"" -redirect`;
+	$ret = GetCmdData("output");
+}
+
+sub substr(IN string $expr, IN int $offset, IN int $length, OUT string $ret)
+{
+	`local run -command "perl -e \\"print substr($expr,$offset,$length)\\"" -redirect`;
+	$ret = GetCmdData("output");
+}
+
+sub grep(IN string $expr, IN string $list)
+{
+	string $a;
+	string $tmp;
+	@record on;
+	foreach $a ($list)
+	{
+		@echo on;
+		`log local run -command "perl -e \\"if('$a' =~ m/$expr/i) { print 'found'; }else{ print 'not';} \\"" -redirect`;
+		$tmp = GetCmdData("output");
+		@echo off;
+		if($tmp == "found") { return true; }
+	}
+	@record off;
+	return false;
+}
+
+#we ran into a problem where the string to search was longer than what could be accepted
+#This overloaded function will return the status of the "run -command" itself
+#The caller should assume success.
+sub grep(IN string $expr, IN string $list, REF bool $status)
+{
+	string $a;
+	string $tmp;
+	@record on;
+	foreach $a ($list)
+	{
+		ifnot(`log local run -command "perl -e \\"if('$a' =~ m/$expr/i) { print 'found'; }else{ print 'not';} \\"" -redirect`){ 
+			$status = FALSE;
+			return false;
+		}
+		$tmp = GetCmdData("output");
+		if($tmp == "found") { return true; }
+	}
+	@record off;
+	return false;
+}
+
+sub hex2dec(REF string $a)
+{
+	@record on;
+	`log local run -command "perl -e \\"print hex '$a'\\"" -redirect`;
+	@record off;
+	$a = GetCmdData("output");
+	return true;
+}
+
+sub replace(REF string $a, IN string $replacee, IN string $replacer)
+{
+	@record on;
+	`local run -command "perl -e \\"\$b=shift; \$b =~ s/;/,/gi; print \$b; \\" $a" -redirect`;
+	@record off;
+	$a = GetCmdData("output");
+	return true;
+}
+
+sub lc(REF string $a)
+{
+		@record on;
+	`local run -command "perl -e \\"print lc($a)\\"" -redirect`;
+	@record off;
+	$a = GetCmdData("output");
+	return true;
+}
+
+#$oldDate is expecting the string to look like MM_DD_YYYY
+sub diffDates(IN string $oldDate, REF string $dateDiff)
+{
+	@echo off;
+	@record on;
+	`local time`;
+	string $date = GetCmdData("remotedate");
+	string $dateSplit = split("/",$date);
+	string $oldDateSplit = split("_",$oldDate);
+	`local run -command "perl -e \\"use Date::Calc qw(Delta_Days);\@a=('$oldDateSplit[2]','$oldDateSplit[0]','$oldDateSplit[1]');\@b=('$dateSplit[2]','$dateSplit[0]','$dateSplit[1]');\$c=Delta_Days(\@a,\@b);print \\"\$c\\"\\"" -redirect`;
+	$dateDiff = GetCmdData("output");
+	return true;
+}

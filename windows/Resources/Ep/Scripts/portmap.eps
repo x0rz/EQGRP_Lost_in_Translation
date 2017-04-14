@@ -1,0 +1,9 @@
+if (prompt "Do you want to run portmap?") {
+	#do these checksums first so that we have data if it bounces
+	`checksum -mask win32k.sys`; 
+	`checksum -mask user32.dll`;
+	if (`portmap -maxports 750 -handlememory 2048000`) {
+		
+	}
+		
+}

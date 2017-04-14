@@ -1,0 +1,32 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='21' name='Warn'>
+
+		<Help>Displays a given string in all console windows.</Help>
+
+		<Input>
+			<Argument name='string' data='warningStr'/>
+
+			<Option name='default' optional='true' group='type'>
+				<Set data='type' value='0'/>
+			</Option>
+			<Option name='good' optional='true' group='type'>
+				<Set data='type' value='1'/>
+			</Option>
+			<Option name='warning' optional='true' group='type'>
+				<Set data='type' value='2'/>
+			</Option>
+			<Option name='error' optional='true' group='type'>
+				<Set data='type' value='3'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='warningStr' type='string'/>
+			<Data name='type' type='uint8_t' default='2'/>
+		</Output>
+
+	</Command>
+</Plugin>

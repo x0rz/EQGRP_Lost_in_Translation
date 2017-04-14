@@ -1,0 +1,12 @@
+<Software value="PSP">
+	<Vendor value="ESET" regkey="hklm\Software\eset\eset security\currentversion\info">
+		<Product value="NOD32/Smart Security">
+			<Version value="%regdata%" regkey="hklm\Software\eset\eset security\currentversion\info" regvalue="ProductVersion">
+				<ProductCode value="%regdata%" regkey="hklm\Software\eset\eset security\currentversion\info" regvalue="ProductCode" />
+				<LastUpdate value="%regdata%" regkey="hklm\SOFTWARE\ESET\ESET Security\CurrentVersion\Plugins\01000400\Settings" regvalue="LastUpdate" />
+				<LogDir value="%regdata%\logs" regkey="hklm\Software\eset\eset security\currentversion\info" regvalue="AppDataDir" />
+				<QuarantineDir value="%regdata%\quarantine" regkey="hklm\Software\eset\eset security\currentversion\info" regvalue="AppDataDir" />
+			</Version>
+		</Product>
+	</Vendor>
+</Software>

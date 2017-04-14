@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<t:config id="9b6d2c7a836744e5cd54e4db262f09c67a5cae17"
+          name="Explodingcan"
+          version="2.0.2"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+          
+    <t:touchlist>
+       <t:plugin 
+          name="Iistouch" 
+          displayname="IIS Touch"
+          description="Touch to get IIS Info."
+          postmessage="Explodingcan requires WEBDAV on Windows 2003 IIS 6.0">
+          <t:ivparam name="TargetPort" value="TargetPort"/>
+          <t:ivparam name="TargetIp" value="TargetIp"/>
+          <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+	    <t:ivparam name="EnableSSL" value="EnableSSL"/>
+       </t:plugin>
+	 <t:plugin name="Explodingcantouch"
+                displayname="ExplodingCan Touch"
+                description="Determine the length of the path for IIS"
+                postmessage="ExplodingCan requires the length of the IIS path">
+                <t:ivparam name="TargetPort" value="TargetPort"/>
+                <t:ivparam name="TargetIp" value="TargetIp"/>
+                <t:ivparam name="Protocol" value="Protocol"/>
+                <t:ivparam name="NetworkTimeout" value="NetworkTimeout"/>
+		    <t:ivparam name="maxSizeToCheck" value="maxSizeToCheck"/>
+		    <t:oparam name="IISPathSize" value="IISPathSize"/>
+		    <t:oparam name="hostString" value="hostString"/>
+	</t:plugin>
+    </t:touchlist>
+</t:config>

@@ -1,0 +1,316 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31343'>
+
+  <Command id='16' name='Devmgr'>
+
+    <Help>obtains hardware information</Help>
+
+    <Input>
+      <Option name='guidclass' optional='false' group='guidtype'>
+	<Argument name='type'>
+	    <Value string='1394'>
+		<Set data='g1' value='0x6bdd1fc1'/>
+		<Set data='g2' value='0x810f11d0'/>
+		<Set data='g3' value='0xbec70800'/>
+		<Set data='g4' value='0x2be2092f'/>
+	    </Value>
+	    <Value string='adapter'>
+		<Set data='g1' value='0x4d36e964'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='apmsupport'>
+		<Set data='g1' value='0xd45b1c18'/>
+		<Set data='g2' value='0xc8fa11d1'/>
+		<Set data='g3' value='0x9f770000'/>
+		<Set data='g4' value='0xf805f530'/>
+	    </Value>
+	    <Value string='battery'>
+		<Set data='g1' value='0x72631e54'/>
+		<Set data='g2' value='0x78a411d0'/>
+		<Set data='g3' value='0xbcf700aa'/>
+		<Set data='g4' value='0x00b7b32a'/>
+	    </Value>
+	    <Value string='cdrom'>
+		<Set data='g1' value='0x4d36e965'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='computer'>
+		<Set data='g1' value='0x4d36e966'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='decoder'>
+		<Set data='g1' value='0x6bdd1fc2'/>
+		<Set data='g2' value='0x810f11d0'/>
+		<Set data='g3' value='0xbec70800'/>
+		<Set data='g4' value='0x2be2092f'/>
+	    </Value>
+	    <Value string='diskdrive'>
+		<Set data='g1' value='0x4d36e967'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='display'>
+		<Set data='g1' value='0x4d36e968'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='fdc'>
+		<Set data='g1' value='0x4d36e969'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='floppydisk'>
+		<Set data='g1' value='0x4d36e980'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='gps'>
+		<Set data='g1' value='0x6bdd1fc3'/>
+		<Set data='g2' value='0x810f11d0'/>
+		<Set data='g3' value='0xbec70800'/>
+		<Set data='g4' value='0x2be2092f'/>
+	    </Value>
+	    <Value string='hdc'>
+		<Set data='g1' value='0x4d36e96a'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='hidclass'>
+		<Set data='g1' value='0x745a17a0'/>
+		<Set data='g2' value='0x74d311d0'/>
+		<Set data='g3' value='0xb6fe00a0'/>
+		<Set data='g4' value='0xc90f57da'/>
+	    </Value>
+	    <Value string='image'>
+		<Set data='g1' value='0x6bdd1fc4'/>
+		<Set data='g2' value='0x810f11d0'/>
+		<Set data='g3' value='0xbec70800'/>
+		<Set data='g4' value='0x2be2092f'/>
+	    </Value>
+	    <Value string='infrared'>
+		<Set data='g1' value='0x6bdd1fc5'/>
+		<Set data='g2' value='0x810f11d0'/>
+		<Set data='g3' value='0xbec70800'/>
+		<Set data='g4' value='0x2be2092f'/>
+	    </Value>
+	    <Value string='keyboard'>
+		<Set data='g1' value='0x4d36e96b'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='legacydriver'>
+		<Set data='g1' value='0x8ecc055d'/>
+		<Set data='g2' value='0x047f11d1'/>
+		<Set data='g3' value='0xa5370000'/>
+		<Set data='g4' value='0xf8753ed1'/>
+	    </Value>
+	    <Value string='media'>
+		<Set data='g1' value='0x4d36e96c'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='medium_changer'>
+		<Set data='g1' value='0xce5939ae'/>
+		<Set data='g2' value='0xebde11d0'/>
+		<Set data='g3' value='0xb1810000'/>
+		<Set data='g4' value='0xf8753ec4'/>
+	    </Value>
+	    <Value string='modem'>
+		<Set data='g1' value='0x4d36e96d'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='monitor'>
+		<Set data='g1' value='0x4d36e96e'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='mouse'>
+		<Set data='g1' value='0x4d36e96f'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='mtd'>
+		<Set data='g1' value='0x4d36e970'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='multifunction'>
+		<Set data='g1' value='0x4d36e971'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='multiportserial'>
+		<Set data='g1' value='0x50906cb8'/>
+		<Set data='g2' value='0xba1211d1'/>
+		<Set data='g3' value='0xbf5d0000'/>
+		<Set data='g4' value='0xf805f530'/>
+	    </Value>
+	    <Value string='net'>
+		<Set data='g1' value='0x4d36e972'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='netclient'>
+		<Set data='g1' value='0x4d36e973'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='netservice'>
+		<Set data='g1' value='0x4d36e974'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='nettrans'>
+		<Set data='g1' value='0x4d36e975'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='nodriver'>
+		<Set data='g1' value='0x4d36e976'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='parallel'>
+		<Set data='g1' value='0x811fc6a5'/>
+		<Set data='g2' value='0xf72811d0'/>
+		<Set data='g3' value='0xa5370000'/>
+		<Set data='g4' value='0xf8753ed1'/>
+	    </Value>
+	    <Value string='pcmcia'>
+		<Set data='g1' value='0x4d36e977'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='ports'>
+		<Set data='g1' value='0x4d36e978'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='printer'>
+		<Set data='g1' value='0x4d36e979'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='printerupgrade'>
+		<Set data='g1' value='0x4d36e97a'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='scsiadapter'>
+		<Set data='g1' value='0x4d36e97b'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='smartcardreader'>
+		<Set data='g1' value='0x50dd5230'/>
+		<Set data='g2' value='0xba8a11d1'/>
+		<Set data='g3' value='0xbf5d0000'/>
+		<Set data='g4' value='0xf805f530'/>
+	    </Value>
+	    <Value string='sound'>
+		<Set data='g1' value='0x4d36e97c'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='stillimage'>
+		<Set data='g1' value='0x6bdd1fc6'/>
+		<Set data='g2' value='0x810f11d0'/>
+		<Set data='g3' value='0xbec70800'/>
+		<Set data='g4' value='0x2be2092f'/>
+	    </Value>
+	    <Value string='system'>
+		<Set data='g1' value='0x4d36e97d'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='tapedrive'>
+		<Set data='g1' value='0x6d807884'/>
+		<Set data='g2' value='0x7d2111cf'/>
+		<Set data='g3' value='0x801c0800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='unknown'>
+		<Set data='g1' value='0x4d36e97e'/>
+		<Set data='g2' value='0xe32511ce'/>
+		<Set data='g3' value='0xbfc10800'/>
+		<Set data='g4' value='0x2be10318'/>
+	    </Value>
+	    <Value string='usb'>
+		<Set data='g1' value='0x36fc9e60'/>
+		<Set data='g2' value='0xc46511cf'/>
+		<Set data='g3' value='0x80564445'/>
+		<Set data='g4' value='0x53540000'/>
+	    </Value>
+	    <Value string='volume'>
+		<Set data='g1' value='0x71a27cdd'/>
+		<Set data='g2' value='0x812a11d0'/>
+		<Set data='g3' value='0xbec70800'/>
+		<Set data='g4' value='0x2be2092f'/>
+	    </Value>
+	</Argument>
+      </Option>
+
+      <Option name='guid' optional='false' group='guidtype'>
+	<Argument name='g1' data='g1'/>
+	<Argument name='g2' data='g2'/>
+	<Argument name='g3' data='g3'/>
+	<Argument name='g4' data='g4'/>
+	<Help>The four hex values that make up a GUID</Help>
+      </Option>
+
+      <Option name='offset' optional='true'>
+	<Argument name='number' data='offset'/>
+	<Help>the number of devices in the list to skip over</Help>
+      </Option>
+
+      <Option name='max' optional='true'>
+	<Argument name='number' data='max'/>
+	<Help>the maximum number of devices to return</Help>
+      </Option>
+	
+    </Input>
+
+    <Output>
+      <Data name='g1'     type='uint32_t'/>
+      <Data name='g2'     type='uint32_t'/>
+      <Data name='g3'     type='uint32_t'/>
+      <Data name='g4'     type='uint32_t'/>
+      <Data name='offset' type='uint32_t' default='0'/>
+      <Data name='max'    type='uint32_t' default='8'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

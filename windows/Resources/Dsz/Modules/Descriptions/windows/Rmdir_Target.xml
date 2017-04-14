@@ -1,0 +1,36 @@
+<?xml version='1.0' ?>
+<Module id='205' name='Rmdir_Target'>
+
+	<Interfaces>
+		<Interface id='0x01010031' provider='0x01011005' />
+	</Interfaces>
+
+	<Dependencies>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>Yes</Target>
+
+	<Architecture type='i386'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'>i386-winnt-vc9s/release/Rmdir_Target.dll</File>
+				<File loadtype='memory'>i386-winnt-vc9s/release/Rmdir_Target.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'>x64-winnt-vc9s/release/Rmdir_Target.dll</File>
+				<File loadtype='memory'>x64-winnt-vc9s/release/Rmdir_Target.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

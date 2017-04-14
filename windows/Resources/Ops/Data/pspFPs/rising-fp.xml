@@ -1,0 +1,8 @@
+<Software value="PSP">
+	<Vendor value="Rising" regkey="hklm\SOFTWARE\rising">
+		<Product value="Antivirus" regkey="hklm\SOFTWARE\rising">
+			<Version value="%regdata%" regkey="hklm\SOFTWARE\rising\rav" regvalue="version"/>
+			<Version value="%regdata%" regkey="hklm\SOFTWARE\rising\ris" regvalue="version"/>
+		</Product>
+	</Vendor>
+</Software>

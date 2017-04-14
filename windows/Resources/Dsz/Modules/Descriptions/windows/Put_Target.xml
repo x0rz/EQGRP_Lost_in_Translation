@@ -1,0 +1,37 @@
+<?xml version='1.0' ?>
+<Module id='206' name='Put_Target'>
+
+	<Interfaces>
+		<Interface id='0x01010031' provider='0x01011006' />
+	</Interfaces>
+
+	<Dependencies>
+		<Local>Mcl_NtNativeApi</Local>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>Yes</Target>
+
+	<Architecture type='i386'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'>i386-winnt-vc9s/release/Put_Target.dll</File>
+				<File loadtype='memory'>i386-winnt-vc9s/release/Put_Target.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'>x64-winnt-vc9s/release/Put_Target.dll</File>
+				<File loadtype='memory'>x64-winnt-vc9s/release/Put_Target.dll</File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

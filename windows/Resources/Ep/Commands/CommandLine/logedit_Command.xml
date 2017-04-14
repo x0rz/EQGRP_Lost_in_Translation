@@ -1,0 +1,46 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31366'>
+
+  <Command id='16' name='logedit'>
+
+    <Help>Removes a phrase from a file</Help>
+
+    <Input>
+      <Option name='file' optional='false'>
+	<Argument name='name' data='file'/>
+	<Help>The name/path of the file to be edited</Help>
+      </Option>
+
+      <Option name='replace' optional='false'>
+	<Argument name='phrase' data='phrase'/>
+	<Help>The phrase to be removed/replaced</Help>
+      </Option>
+
+      <Option name='unicode' optional='true' group='type'>
+	<Set data='ascii' value='false'/>
+	<Help>The log to be modified is Unicode (UTF-16)</Help>
+      </Option>
+
+      <Option name='ascii' optional='true' group='type'>
+	<Set data='ascii' value='true'/>
+	<Help>The log to be modified is ASCII</Help>
+      </Option>
+
+      <Option name='dosreturn' optional='true'>
+	<Argument name='truefalse' data='dosreturn'/>
+	<Help>True if the log uses '\r\n'.  False if just '\n'.</Help>
+      </Option>
+      
+    </Input>
+
+    <Output>
+      <Data name='ascii' type='bool' default='true'/>
+      <Data name='dosreturn' type='bool' default='true'/>
+      <Data name='file' type='string'/>
+      <Data name='phrase' type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

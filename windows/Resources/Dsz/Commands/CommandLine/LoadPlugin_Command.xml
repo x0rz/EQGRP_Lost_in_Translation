@@ -1,0 +1,75 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x01018001'>
+
+	<Command id='11' name='LoadPlugin'>
+
+		<Help>Loads a plugin.  By default, any dependecies for the plugin are</Help>
+		<Help>loaded as well</Help>
+
+		<Input>
+			<Option name='id' optional='false' group='module'>
+				<Argument name="value" optional="false" data="id"/>
+				<Set data='type' value='1'/>
+				<Help>The id of the plugin to be loaded</Help> 
+			</Option>
+
+			<Option name='command' optional='false' group='module'>
+				<Argument name="value" optional="false" data="command"/>
+				<Set data='type' value='2'/>
+				<Help>The name of a command within the plugin to be loaded</Help>
+
+				<Require>remoteaddr</Require>
+			</Option>
+
+			<Option name='usememory' optional='true' group='loadtype'>
+				<Set data='loadType' value='1'/>
+				<Help>The associated plugin will be loaded from memory.</Help>
+			</Option>
+			<Option name='usefile' optional='true' group='loadtype'>
+				<Set data='loadType' value='2'/>
+				<Help>The associated plugin will be written to disk.</Help>
+				<Help>Use this option ONLY if loading from memory fails.</Help>
+			</Option>	
+			
+			<Option name='nodepends' optional='true'>
+				<Set data='checkdependencies' value='false'/>
+				<Help>Don't load plugin dependencies.</Help>
+			</Option>
+
+			<Option name='remoteaddr' optional='true'>
+				<Argument name="addr" optional="false" data="remoteaddr"/>
+				<Help>The remote address for this command (used internally)</Help> 
+			</Option>
+
+			<Option name='simulate' optional='true'>
+				<Set data='simulate' value='true'/>
+				<Help>Don't actually load plugin -- just mark it as loaded</Help>
+			</Option>
+
+			<Option name='framework' optional='true'>
+				<Argument name='name'>
+					<Value string='any'>
+						<Set data='framework' value='0'/>
+					</Value>
+					<Value string='dsz'>
+						<Set data='framework' value='1'/>
+					</Value>
+				</Argument>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='type' type='uint8_t'/>
+			<Data name='id' type='uint32_t'/>
+			<Data name='command' type='string'/>
+			<Data name='loadType' type='uint8_t' default='0'/>
+			<Data name='checkdependencies' type='bool' default='true'/>
+			<Data name='remoteaddr' type='cpaddr'/>
+			<Data name='simulate' type='bool' default='false'/>
+			<Data name='framework' type='uint8_t' default='0'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

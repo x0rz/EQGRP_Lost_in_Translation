@@ -1,0 +1,238 @@
+
+@include "_GetSystemVersion.epm";
+
+#-------------------------------------------------------------------------------
+# _IsTarget9xFamily
+#	Determines whether the target version is in the 9x family
+#-------------------------------------------------------------------------------
+Sub _IsTarget9xFamily()
+{
+
+    @record on;
+    int $platformId;
+    ifnot (_GetSystemVersion($platformId)) {
+	return false;
+    }
+
+    return ($platformId == 1);
+
+} /* END _IsTarget9xFamily */
+
+#-------------------------------------------------------------------------------
+# _IsTargetNtFamily
+#	Determines whether the target version is in the NT family
+#-------------------------------------------------------------------------------
+Sub _IsTargetNtFamily()
+{
+
+    @record on;
+    int $platformId;
+    ifnot (_GetSystemVersion($platformId)) {
+	return false;
+    }
+
+    return ($platformId == 2);
+
+} /* END _IsTargetNtFamily */
+
+#-------------------------------------------------------------------------------
+# _IsTargetDomainController
+#	Determines whether the target is a Windows domain controller
+#-------------------------------------------------------------------------------
+Sub _IsTargetDomainController()
+{
+
+    int $major;
+    int $minor;
+    int $build;
+    int $platform;
+    int $spMajor;
+    int $spMinor;
+    int $productType;
+    ifnot (_GetSystemVersion($major, $minor, $build, $platform, $spMajor, $spMinor, $productType)) {
+	return false;
+    }
+
+    return ($productType == 2);
+
+} /* END _IsTargetDomainController */
+
+#-------------------------------------------------------------------------------
+# _IsTargetNt4
+#	Determines whether the target version is an Windows NT 4 machine
+#-------------------------------------------------------------------------------
+Sub _IsTargetNt4()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    return (($platformId == 2) && ($majorVersion == 4));
+
+} /* END _IsTargetNt4 */
+
+#-------------------------------------------------------------------------------
+# _IsTargetNt4OrGreater
+#	Determines whether the target version is an Windows NT 4+ machine
+#-------------------------------------------------------------------------------
+Sub _IsTargetNt4OrGreater()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    return (($platformId == 2) && ($majorVersion >= 4));
+
+} /* END _IsTargetNt4OrGreater */
+
+#-------------------------------------------------------------------------------
+# _IsTarget2000
+#	Determines whether the target version is a Windows 2000 machine
+#-------------------------------------------------------------------------------
+Sub _IsTarget2000()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    return (($platformId == 2) && ($majorVersion == 5) && ($minorVersion == 0));
+
+} /* END _IsTarget2000 */
+
+#-------------------------------------------------------------------------------
+# _IsTarget2000OrGreater
+#	Determines whether the target version is a Windows 2000+ machine
+#-------------------------------------------------------------------------------
+Sub _IsTarget2000OrGreater()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    return (($platformId == 2) && ($majorVersion >= 5));
+
+} /* END _IsTarget2000OrGreater */
+
+#-------------------------------------------------------------------------------
+# _IsTargetXp
+#	Determines whether the target version is a Windows XP machine
+#-------------------------------------------------------------------------------
+Sub _IsTargetXp()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    return (($platformId == 2) && ($majorVersion == 5) && ($minorVersion == 1));
+
+} /* END _IsTargetXp */
+
+#-------------------------------------------------------------------------------
+# _IsTargetXpOrGreater
+#	Determines whether the target version is a Windows XP+ machine
+#-------------------------------------------------------------------------------
+Sub _IsTargetXpOrGreater()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    if ($platformId == 2) {
+	if ($majorVersion == 5) {
+	
+	    return ($minorVersion >= 1);
+		
+	} if ($majorVersion > 5) {
+
+	    # something past 2003
+	    return true;
+
+	}
+    }
+
+    # not Xp+
+    return false;
+
+} /* END _IsTargetXpOrGreater */
+
+#-------------------------------------------------------------------------------
+# _IsTarget2003
+#	Determines whether the target version is a Windows 2003 machine
+#-------------------------------------------------------------------------------
+Sub _IsTarget2003()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    return (($platformId == 2) && ($majorVersion == 5) && ($minorVersion == 2));
+
+} /* END _IsTarget2003 */
+
+#-------------------------------------------------------------------------------
+# _IsTarget2003OrGreater
+#	Determines whether the target version is a Windows 2003+ machine
+#-------------------------------------------------------------------------------
+Sub _IsTarget2003OrGreater()
+{
+
+    @record on;
+    int $platformId;
+    int $majorVersion;
+    int $minorVersion;
+    ifnot (_GetSystemVersion($majorVersion, $minorVersion, $platformId)) {
+	return false;
+    }
+
+    if ($platformId == 2) {
+	if ($majorVersion == 5) {
+	
+	    return ($minorVersion >= 2);
+		
+	} if ($majorVersion > 5) {
+
+	    # something past 2003
+	    return true;
+
+	}
+    }
+
+    # not 2003+
+    return false;
+
+} /* END _IsTarget2003OrGreater */

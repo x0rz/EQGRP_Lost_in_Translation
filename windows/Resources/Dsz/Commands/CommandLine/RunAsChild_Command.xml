@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_RunAsChild_Tasking.pyo' providerType='script'>
+
+    <Command name="RunAsChild" id="0">
+
+		<Help>Run a specified executable as a child of the given process</Help>
+
+		<Input>
+			<Option name='id' optional='false'>
+				<Argument name='Parent Process Id' data='pid'/>
+			</Option>
+
+			<Option name='command' optional='false'>
+				<Argument name='command line' data='command'/>
+				<Help>Command to execute.</Help>
+			</Option>
+
+			<Option name='method' optional='true'>
+				<Help>Specifies memory access and thread method - will use current default if not specified.</Help>
+				<Argument name='memory' data='memory'/>
+				<Argument name='thread' data='thread'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='pid' type='uint32_t' default='0'/>
+			<Data name='command' type='string'/>
+			<Data name='memory'    type='string'/>
+			<Data name='thread'    type='string'/>
+		</Output>
+
+    </Command>
+</Plugin>

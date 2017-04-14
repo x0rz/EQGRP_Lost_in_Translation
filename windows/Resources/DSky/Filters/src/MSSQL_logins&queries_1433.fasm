@@ -1,0 +1,2 @@
+filter:tcp dst port 1433 and (tcp[20] == 0x10 or tcp[20] == 0x01)
+netmask:255.255.255.0

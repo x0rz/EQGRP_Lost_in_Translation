@@ -1,0 +1,136 @@
+@echo off;
+@include "TestIncludes.epm";
+
+@echo off;
+bool $defaultports = true;
+
+string $ip;
+string $sVals;
+string $sValue;
+string $sSend = "\\n\\n";
+
+
+$sVals[0] = "135";
+$sVals[1] = "139";
+$sVals[2] = "21";
+$sVals[3] = "23";
+$sVals[4] = "25";
+$sVals[5] = "80";
+$sVals[6] = "443";
+$sVals[7] = "445";
+
+
+if ($argc < 2) {
+    echo "Usage: $argv[0] ip <port>";
+    return false;
+}
+else {
+   $ip = $argv[1];
+   if ($argc == 3) {
+      $sValue = $argv[2];
+      $defaultports = false;	
+   }
+}
+
+
+int $enterCount = 0;
+int $exitCount	= 0;
+int $index	= 0;
+int $sleep	= 0;
+
+bool $passed 	= true;
+
+
+if ($defaultports == true) {
+	if(prompt "Change port scan delay time (default 0)?") {
+		$sleep = GetInput("Enter the port scan delay time(sec)");
+
+		# convert to mSec
+		if ($sleep != 0) {
+			int $i=0;
+			int $j=$sleep;
+			int $count=0;
+	    		while ($i < $j) {
+				int $k=0;
+				int $l=1000;
+				while ($k < $l) {
+					$count++;
+		
+					$k++;
+				}
+			$i++;
+			}
+			$sleep = $count;		
+		}
+	}
+}
+
+
+echo "---------------------------------------------------------------------------";
+echo "Portscan $ip";
+echo "---------------------------------------------------------------------------";
+echo "PORT\tSTATE";	
+
+@record on;
+# Multi port scan
+if ($defaultports == true) {
+	foreach $sValue ($sVals) {
+
+		sleep $sleep;
+    		$enterCount++;
+    		$index++;
+
+
+		@record on;
+		bool $res = `banner -ip $ip -port $sValue -send $sSend`;
+		@record off;
+		
+		if($res) {
+		
+    			string $a = GetCmdData("text");
+
+			if (defined($a)) {
+				echo "$sValue \topen \t$a";
+			}
+			else {
+				echo "$sValue \topen";
+			}
+			
+    		} else {
+			echo "$sValue \tclosed";
+		}
+    		$exitCount++;
+	}
+
+	if ($enterCount != $exitCount) { $passed = false; }
+	if ($enterCount != sizeof($sVals)) { $passed = false; }
+
+
+	if ($passed == true) {
+		echo "PORTSCAN FINISHED SUCCESSFULLY";
+	} else {
+		echo "PORTSCAN FINISHED WITH ERRORS";
+	}
+}
+
+# Single port scan
+else {
+	@record on;
+	bool $res = `banner -ip $ip -port $sValue -send $sSend`;
+	@record off;
+		
+	if($res) {
+		
+    		string $a = GetCmdData("text");
+
+		if (defined($a)) {
+			echo "$sValue \topen \t$a";
+		}
+		else {
+			echo "$sValue \topen";
+		}
+			
+    	} else {
+		echo "$sValue \tclosed";
+	}
+}	

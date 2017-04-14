@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<Module name="Route_Lp" id="458" script="Tasking/Mcl_Cmd_Route_Tasking.pyo">
+
+	<Interfaces/>
+
+	<Dependencies>
+		<Remote>Route_Target</Remote>
+	</Dependencies>
+
+	<Lp>Yes</Lp>
+	<Target>No</Target>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"></File>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

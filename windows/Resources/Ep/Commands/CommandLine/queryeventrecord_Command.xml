@@ -1,0 +1,53 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31352'>
+
+  <Command id='16' name='queryeventrecord'>
+
+    <Help>Retrieves the information provided in an event log entry on the remote machine.</Help>
+
+    <Input>
+      <Option name='force' optional='true'>
+	<Set data='force' value='true'/>
+      </Option>
+
+      <Option name='log' optional='false'>
+	<Argument name='logname' data='logname'/>
+	<Help>Must be 'Application', 'System', or 'Security' unless the '-force' option is</Help>
+	<Help>used.</Help>
+      </Option>
+
+      <Option name='recnum' optional='true'>
+	<Argument name='record_number' data='recnum'/>
+	<Help>The record numbers must be a valid number in the specified event log.</Help>
+        <Help>Forbids -start and -end</Help>
+      </Option>
+
+      <Option name='start' optional='true'>
+	<Argument name='startnum' data='startnum'/>
+	<Help>The record numbers must be a valid number in the specified event log.</Help>
+        <Help>Requires -end and forbids -recnum</Help>
+      </Option>
+
+      <Option name='end' optional='true'>
+	<Argument name='end_num' data='endnum'/>
+	<Help>The record numbers must be a valid number in the specified event log.</Help>
+        <Help>Requires -start and forbids -recnum</Help>
+      </Option>
+
+      <Option name='verbose' optional='true'>
+        <Help>Ignored.</Help>
+      </Option>	
+    </Input>
+
+    <Output>
+      <Data name='force'   type='bool' default='false'/>
+      <Data name='logname' type='string'/>
+      <Data name='recnum' type='uint32_t' default='0'/>
+      <Data name='startnum' type='uint32_t' default='0'/>
+      <Data name='endnum' type='uint32_t' default='0'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<t:config id="a2b184ef911a684c559fa2e9b9fa30ee868dfc70"
+          name="Eternalchampion"
+          version="2.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+  <t:touchlist>
+    <t:plugin name="Smbtouch"
+              displayname="ETCH Vulnerability Touch"
+              description="Check if Target is vulnerable to ETCH">
+      <t:oparam name="Target" value="Target"/>
+      <t:oparam name="TargetOsArchitecture" value="TargetOsArchitecture"/>
+      <t:oparam name="PipeName" value="PipeName"/>
+      <t:oparam name="ShareName" value="ShareName"/>
+      <t:oparam name="Credentials" value="Credentials"/>
+      <t:oparam name="Username" value="Username"/>
+      <t:oparam name="Password" value="Password"/>
+      <t:oparam name="NtlmHash" value="NtlmHash"/>
+    </t:plugin>
+  </t:touchlist>
+  <package>
+    <arch name="x86-Windows">
+      <base>etch-0.dll</base>
+      <core>etchCore-0.x86.dll</core>
+    </arch>
+    <arch name="x64-Windows">
+      <core>etchCore-0.x64.dll</core>
+    </arch>
+  </package>
+</t:config>

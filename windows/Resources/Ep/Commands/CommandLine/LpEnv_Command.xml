@@ -1,0 +1,52 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31001'>
+
+  <Command id='20' name='LpGetEnv'>
+
+    <Help>Gets the environment options (or just the given one)</Help>
+
+    <Input>
+      <Option name='option' optional='true'>
+	<Argument name='name' data='name'/>
+	<Help>The environment variable to display</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='name' type='string'/>
+    </Output>
+
+  </Command>
+
+  <Command id='21' name='LpSetEnv'>
+
+    <Help>Changes the given environment option.</Help>
+
+    <Input>
+      <Option name='option' optional='false'>
+	<Argument name='name' data='name'/>
+	<Help>The environment variable to change</Help>
+      </Option>
+
+      <Option name='value' optional='false' group='action'>
+	<Argument name='name' data='value'/>
+	<Help>The new value for the environment variable</Help>
+      </Option>
+
+      <Option name='delete' optional='false' group='action'>
+	<Set data='delete' value='true'/>
+	<Help>If specified, delete the environment variable</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='name' type='string'/>
+      <Data name='value' type='string'/>
+      <Data name='delete' type='bool' default='false'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

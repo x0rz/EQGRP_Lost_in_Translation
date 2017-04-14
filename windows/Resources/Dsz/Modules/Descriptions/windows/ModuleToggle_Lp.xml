@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<Module name="ModuleToggle_Lp" id="515" script="ModuleToggle/_ModuleToggle.pyo">
+
+	<Interfaces/>
+
+	<Dependencies/>
+
+	<Lp>Yes</Lp>
+	<Implant>No</Implant>
+
+	<Architecture type="i386">
+	
+		<Platform family="winnt">
+			<Version other="*" minor="*" major="*">
+				<File loadtype="file"/>
+			</Version>
+		</Platform>
+
+	</Architecture>
+	
+</Module>

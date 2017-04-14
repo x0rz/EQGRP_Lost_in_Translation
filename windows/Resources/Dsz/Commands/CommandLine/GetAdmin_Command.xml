@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_GetAdmin_Tasking.pyo' providerType='script'>
+
+	<Command name="GetAdmin" id="0">
+
+        <Input>
+			<Option name='id' optional='true'>
+				<Argument name='#' data='id'/>
+				<Help>The id of the process to modify.</Help>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='id' type='uint32_t'/>
+		</Output>
+	</Command>
+</Plugin>

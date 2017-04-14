@@ -1,0 +1,22 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>peel</Name>
+		<ReplaceBeforeArgs>python Peel/_Peel.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>" -project Dsz</ReplaceAfterArgs>
+
+		<Help>Changes specific PEEL implementation</Help>
+		<Help>peel options</Help>
+		<Help>  Options:</Help>
+		<Help>    [-payload &lt;payload&gt;]</Help>
+		<Help>       Specifies desired payload (limiting options)</Help>
+		<Help>    [-technique &lt;tech&gt;]</Help>
+		<Help>       Specifies desired technique (limiting options)</Help>
+		
+		<Options>
+			<Option>payload</Option>
+			<Option>technique</Option>
+		</Options>
+	</Alias>
+</Aliases>

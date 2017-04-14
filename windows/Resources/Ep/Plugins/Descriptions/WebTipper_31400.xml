@@ -1,0 +1,19 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31400'>
+
+    <Lp>Yes</Lp>
+    <Implant>No</Implant>
+
+    <Windows>
+
+	<!-- NT family -->
+	<Platform id='2'>
+	    <Version major='*' minor='*'>
+		<File>WebTipper_LP.dll</File>
+	    </Version>
+	</Platform>
+
+    </Windows>
+
+</Plugin>

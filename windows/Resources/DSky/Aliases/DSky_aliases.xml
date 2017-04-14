@@ -1,0 +1,182 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>dsky_install</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action INSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_install [-name driverName]</Help>
+		<Help>    Installs DSky (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_uninstall</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action UNINSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_uninstall [-name driverName]</Help>
+		<Help>    Uninstalls DSky (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_load</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action LOAD </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_load [-name driverName]</Help>
+		<Help>    Loads DSky (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_unload</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action UNLOAD </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_unload [-name driverName]</Help>
+		<Help>    Unloads DSky (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_verifyInstall</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action VERIFYINSTALL </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_verifyInstall [-name driverName]</Help>
+		<Help>    Verifies DSky is installed (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_verifyRunning</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action VERIFYRUNNING </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_verifyInstall [-name driverName]</Help>
+		<Help>    Verifies DSky is running (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_status</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action STATUS </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_status [-name driverName]</Help>
+		<Help>    Gets DSky status (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_getfilter</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action GETFILTER </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_getfilter [-name driverName]</Help>
+		<Help>    Gets DSky packet filter (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_setfilter</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action SETFILTER </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_setfilter [-name driverName]</Help>
+		<Help>    Sets DSky packet filter (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_setkey</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action SETKEY </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_setkey [-name driverName]</Help>
+		<Help>    Sets the DSky capture file encryption key (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_setmaxsize</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action SETMAXSIZE </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_setmaxsize [-name driverName]</Help>
+		<Help>    Sets DSky capture file max size (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_start</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action START </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_start [-name driverName]</Help>
+		<Help>    Starts DSky capturing (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_stop</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action STOP </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_stop [-name driverName]</Help>
+		<Help>    Stops DSky capturing (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_getcapture</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action GETCAPTURE </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_getcapture [-name driverName]</Help>
+		<Help>    Gets the DSky capture file (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+	<Alias>
+		<Name>dsky_deletecapture</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "-action DELETECAPTURE </ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>dsky_deletecapture [-name driverName]</Help>
+		<Help>    Deletes the DSky capture file (default name=tdi6)</Help>
+		<Options>
+			<Option>name</Option>
+		</Options>
+	</Alias>
+
+	<Alias>
+		<Name>DarkSkyline</Name>
+		<ReplaceBeforeArgs>python _DarkSkyline.pyo -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>DarkSkyline [-method &lt;DSZ|DEMI&gt;</Help>
+		<Help>    Runs the DSky management script</Help>
+		<Options>
+			<Option>method</Option>
+		</Options>
+	</Alias>
+</Aliases>	
+		

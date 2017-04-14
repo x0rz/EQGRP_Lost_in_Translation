@@ -1,0 +1,689 @@
+#########################################################################
+#
+# File: MailList.epm
+#
+# Modifications:
+#  20 Apr 2004	Created
+#  11 Feb 2005  Added sub-menus to handle date, age, and id filtering and
+#               took filtering out of main menu; Added capability to
+#               retrieve several emails at a time by looping through
+#               each message id that fit criteria and issuing command.
+#
+#  19 May 2005  Added option to select emails to retrieve based on a list
+#               Added subroutine name GetAttSize to retrieve the size of
+#                  attachments so the user can decide whether or not to
+#                  retrieve attachments which are larger than 200000 bytes
+#               Contents of email messages are only displayed to the screen
+#                  for single emails to save time
+#
+#  28 Sep 2005  Changed VerifyDates routine to handle revision to EP where
+#                  numbers starting with 0 are now interpreted as octal
+#
+#  25 Jan 2006  User must now list message ids for each email message to
+#                  to be retrieved rather than the associated list number.
+#               Copies of a database are now placed in the temp directory
+#                  by default
+#               Removed check on attachment sizes to eliminate overhead
+#                  caused by issuing additional lotusnotesparser commands
+#                  to retrieve the sizes
+#               Added log option to each command to allow text printing
+#                  to a log file
+#
+#########################################################################
+
+@include "_FileExists.epm";
+
+sub LotusMailList(IN BOOL $LNPathFound, IN STRING $dataPath, REF STRING $dbfile, IN INT $choice, REF STRING %idHash, REF STRING $destDbName) {
+
+	bool $ok;
+	string $destDirCopy = "";
+	string $srcDirCopy = "";
+	string $testColon = "";
+	int $mailFileCnt = sizeof($destDbName);
+	string $theFile = "";
+	string $thePath = "";
+	string $newFile = "";
+	bool $continue = true;
+	bool $newPathReq = false;
+	bool $notFound = true;
+
+	# Only Lotus Notes client found
+	if ($LNPathFound) {
+		echo "\r\nSince this is a client, it is unlikely that mail databases reside on the\r\nmachine.";
+		ifnot (prompt "\r\nContinue?") {
+			$continue = false;
+			$notFound = false;
+		}
+	}
+
+	if (_FileExists($dbfile, "")) {
+		$notFound = false;
+	}
+
+	string $testExt = "";
+	int $pickedID = 0;
+	string $pickedNumStr = "";
+	string $msgidStr="";
+	string $attach="";
+	string $attachStr = "";
+	string $after = "";
+	string $before = "";
+	string $afterStr = "";
+	string $beforeStr = "";
+	string $dateStr = "";
+	int $age = 0;
+	string $ageStr = "";
+	bool $afterStatus = false;
+	bool $beforeStatus = false;
+	int $msgID = 0;
+	int $numAtt = 0;
+	string $postedDate = "";
+	string $from = "";
+
+	if ($continue) {
+
+		if ($choice == 6) {
+			$attach = "-attach";
+			$attachStr = "Yes";
+		}
+		else {
+			$attach = "";
+			$attachStr = "No";
+		}
+
+		string $type;
+		if ($choice == 4) {
+	      		$type = "Mail Headers";
+		}
+		if ($choice == 5) {
+			$type = "Mail Message(s)/Headers";
+		}
+		if ($choice == 6) {
+			$type = "Mail Message(s)/Attachment(s)/Headers";
+		}
+
+		bool $invalidOption = true;
+		int $option;
+		string $ids = "";
+
+		while ($invalidOption) {
+
+			# Sub Menu for filtering emails
+			string $subCommands;
+			$subCommands[0] = "Quit";
+			$subCommands[1] = "Retrieve All $type";
+			$subCommands[2] = "Retrieve $type Within Date Range";
+			$subCommands[3] = "Retrieve $type Within Specified Age";
+
+			# if retrieving message body/attachment, allow list of ids or one id to be specified to get email(s)
+			if (($choice == 5) || ($choice == 6)) {
+				$subCommands[4] = "Retrieve $type by List of Message IDs";
+				$subCommands[5] = "Retrieve One $type";
+			}
+
+			# print the command list
+			echo "";
+			echo "Mail Filter Options";
+			echo "";
+			int $i=0;
+    			while ($i < sizeof($subCommands)) {
+				echo "($i). $subCommands[$i]";
+				$i++;
+    			}
+
+    			echo "";
+   			$option = GetInput("Enter the desired option");
+
+			# Get additional mail filters, such as msgid, date range, and age  
+
+			$invalidOption = false; 
+			if ($option == 0) {
+				return false;
+			} 
+			# Filter on date range  
+			else if ($option == 2) {
+				echo "You can specify that you only want emails posted after a date,";
+     				echo "before a date, or both.";
+				bool $invalidDate = true;
+				while ($invalidDate) {
+					if (prompt "\r\nDo you want to specify an after date?") {
+						$after = GetInput("\r\nEnter an after date <MM/DD/YYYY> ");
+						if ($after == "quit") {
+							return false;
+						}
+						else ifnot (VerifyDate($after)){
+							$invalidDate = true;
+							echo "\r\nDate entered is incorrect or improperly formatted. Please Try Again.";
+						}
+						else {
+							$invalidDate = false;
+        						$afterStr = "-after $after";
+							$afterStatus = true;
+						}
+					}
+					else {
+						$invalidDate = false;
+					}
+				}
+
+				$invalidDate = true;
+				while ($invalidDate) {
+					if (prompt "\r\nDo you want to specify a before date?") {
+						$before = GetInput("\r\nEnter a before date <MM/DD/YYYY>");
+						if ($before == "quit") {
+							return false;
+						}
+						else ifnot (VerifyDate($before)) {
+							$invalidDate = true;
+							echo "\r\nDate entered is incorrect or improperly formatted. Please Try Again.";
+						}
+						else {
+							$invalidDate = false;
+							$beforeStr = "-before $before";
+							$beforeStatus = true;
+						}
+
+					}
+					else {
+						$invalidDate = false;
+					}
+				}
+				if ($afterStatus) {
+					$dateStr = "after $after";
+				}
+				if ($beforeStatus) {
+					if ($afterStatus) {
+						$dateStr = "$dateStr and before $before";
+					}
+					else {
+						$dateStr = "before $before";
+					}
+				}
+	
+				echo "Only emails which fall within the following date range will be displayed:";
+				echo "$dateStr";
+
+				$afterStatus = false;
+				$beforeStatus = false;
+			}
+
+			# Filter on age
+			else if ($option == 3) {
+				$age = GetInput("\r\nEnter number of days old (0 to quit)");
+				if ($age < 1) {
+					return false;
+				}
+				$ageStr = "-age $age";
+			}
+			# Filter on items chosen from list as specified by user
+			else if ($option == 4) {
+				if (($choice == 5) || ($choice == 6)){
+					if (sizeof(%idHash) > 0)  {
+						echo "\r\n  ID    Att      Posted Date               From\r\n";
+						string $key;
+						foreach $key (keys %idHash) {
+							if ($key != "0") {
+								echo "%idHash{'$key'}";
+							}
+						}
+					}
+
+					$pickedNumStr = GetInput("\r\nWhich emails do you want to retrieve? (0 to quit; multiple ID #'s separated by a space)");					
+					if ($pickedNumStr == "0") {
+						return false;
+					}
+					# Grab ids so we can pull the email message(s) later
+					else {
+						$ids = $pickedNumStr;
+					}					
+				}
+				else {
+					echo "";
+					echo "Invalid Menu Option -- Try Again";
+					$invalidOption = true;
+				}
+			}
+			# Filter on Msg ID
+			else if ($option == 5) {
+				if (($choice == 5) || ($choice == 6)){
+					if (sizeof(%idHash) > 0) {
+						echo "\r\n  ID    Att      Posted Date               From\r\n";
+						string $key;
+						foreach $key (keys %idHash) {
+							if ($key != "0") {
+								echo %idHash{'$key'};
+							}
+						}
+					}
+
+					$pickedID = GetInput("\r\nEnter the message id (0 to quit)");
+					$msgidStr = "-id $pickedID";
+					if ($pickedID < 1) {
+						return false;
+					}				
+
+				}
+				else {
+					echo "";
+					echo "Invalid Menu Option -- Try Again";
+					$invalidOption = true;
+				}	
+			}
+			else if (($option < 0) || ($option > 5)){
+				echo "";
+				echo "Invalid Menu Option -- Try Again";
+				$invalidOption = true;
+			}
+		}
+
+
+		echo "\r\nYou have provided the following values: ";
+		echo "database to open: $dbfile";
+		echo "attachments: $attachStr";
+
+		if ($pickedID == 0) {
+			ifnot ($dateStr == "") {
+				echo "date range: $dateStr";
+			}
+			ifnot ($ageStr == "") {
+				echo "age: $age days";
+			}
+		}
+		else {
+			echo "message ID: $pickedID";
+		}
+		echo "";
+
+
+		$ok = true;	
+		# Retrieve headers and display to screen
+		if ($choice == 4) {
+			ifnot (prompt "Continue?") {
+				return false;
+			}
+			@record on;
+			$ok = `log lotusnotesparser -db "$dbfile" $afterStr $beforeStr $ageStr` ;
+			@record off;
+		}
+
+		# Grab emails just to get ids for listing and don't display to screen unless only 1 message
+		if (($choice == 5) || ($choice == 6)) {
+			
+			if (($option == 1) || ($option == 2) || ($option == 3)){
+				@record on;
+				@echo off;
+				$ok = `log lotusnotesparser -db "$dbfile" $msgidStr $afterStr $beforeStr $ageStr` ;
+				@echo on;
+				@record off;
+			}
+			else if ($option == 5) {
+				$ok = true;
+			}
+		}
+
+		# Keep track of message ids requested so we can list them later
+		if ($ok) {
+			if ($attachStr == "Yes") {
+				$attach = "-attach";
+			}
+			int $msgsProcessed = 0;
+			if (($option == 1) || ($option == 2) || ($option == 3)) {
+				$msgsProcessed = GetCmdData("msgsProcessed");
+			}
+			else if ($option == 4) {
+				string $numStr = split (" ", $pickedNumStr);
+				$msgsProcessed = sizeof($numStr);
+			}
+
+			if (($option == 1) || ($option == 2) || ($option == 3)) {
+				if ($msgsProcessed > 0) {
+					$msgID = GetCmdData("msgID");
+					$postedDate = GetCmdData("postedDate");
+					$from = GetCmdData("from");
+					$numAtt = GetCmdData("numAtt");
+				}
+				else {
+					echo "No messages processed.";
+					return false;
+				}
+			}
+
+			int $k = 0;
+
+			# Update hash of ids if necessary
+			if (($option == 1) || ($option == 2) || ($option == 3)) {
+				while ($k < sizeof($msgID)) {
+					if ($postedDate[$k] == "") {
+						$postedDate[$k] = "                      ";
+					}
+					%idHash{'$msgID[$k]'} = "$msgID[$k]  $numAtt[$k]  $postedDate[$k] $from[$k]";
+					$k++;
+				}
+			}
+
+			int $numMsgs = $msgsProcessed;
+
+			# Retrieve several emails with bodies
+			if ($choice == 5) {
+				if (($option == 1) || ($option == 2) || ($option == 3)) {
+					echo "Number of messages to retrieve: $numMsgs";
+					echo " ";
+					if (prompt "Retrieve These Messages?") {
+						@echo off;
+						$k=0;
+						while ($k < sizeof($msgID)) {
+							$msgidStr = "-id $msgID[$k]";
+							echo "Command issued: log lotusnotesparser -db $dbfile $msgidStr $attach";
+							$ok = `log lotusnotesparser -db "$dbfile" $msgidStr $attach`;
+							if ($ok) {
+								echo "   Message $msgidStr retrieved successfully.";
+							}
+							else {
+								echo "   Message $msgidStr retrieval failed.";	
+							}
+							$k++;
+						}
+						@echo on;
+					}
+					else {
+						return false;
+					}
+				}
+				# Retrieve several emails with bodies based on list generated by user
+				else if (($option == 4) || ($option == 5)) {
+					int $numIDs = 0;
+					string $numStr = "";
+					if ($option == 4) {
+						$numStr = split(" ", $ids);
+					}
+					else {
+						$numStr = "$pickedID";
+					}
+					while ($numIDs < sizeof($numStr)) {
+						int $num = <int>$numStr[$numIDs];
+						$msgidStr = "-id $num";
+						echo "Command issued: log lotusnotesparser -db $dbfile $msgidStr $attach";
+						@echo off;
+						#new
+						@record on;
+						$ok = `log lotusnotesparser -db "$dbfile" $msgidStr $attach` ;
+						@record off;
+						@echo on;
+						if ($ok) {
+							$msgsProcessed = GetCmdData("msgsProcessed");
+							if ($msgsProcessed > 0) {
+								echo "   Message $msgidStr retrieved successfully.";
+								$msgID = GetCmdData("msgID");
+								$postedDate = GetCmdData("postedDate");
+								$from = GetCmdData("from");
+								$numAtt = GetCmdData("numAtt");
+								$k = 0;
+								while ($k < sizeof($msgID)) {
+									if ($postedDate[$k] == "") {
+										$postedDate[$k] = "                      ";
+									}
+									%idHash{'$msgID[$k]'} = "$msgID[$k]  $numAtt[$k]  $postedDate[$k] $from[$k]";
+									$k++;
+								}
+							}
+							else {
+								echo "   Message $msgidStr retrieval failed.";
+							}
+						}
+						else {
+							echo "   Message $msgidStr retrieval failed.";	
+						}
+						$numIDs++;
+					}
+				}
+			}	
+			
+			# Retrieve attachments
+
+			else if ($choice == 6) {
+				# User picked emails from list
+				if (($option == 4) || ($option == 5)) {
+					int $numIDs = 0;
+					string $numStr = "";
+					if ($option == 4) {
+						$numStr = split(" ", $ids);
+					}
+					else {
+						$numStr = "$pickedID";
+					}
+					while ($numIDs < sizeof($numStr)) {
+						int $num = <int>$numStr[$numIDs];
+						$msgidStr = "-id $num";
+
+						echo "Command issued: log lotusnotesparser -db $dbfile $msgidStr $attach";
+						@echo off;
+						@record on;
+						$ok = `log lotusnotesparser -db "$dbfile" $msgidStr $attach`;
+						@record off;
+						@echo on;
+						if ($ok) {
+							$msgsProcessed = GetCmdData("msgsProcessed");
+							if ($msgsProcessed > 0) {
+								echo "   Message $msgidStr retrieved successfully.";
+								$msgID = GetCmdData("msgID");
+								$postedDate = GetCmdData("postedDate");
+								$from = GetCmdData("from");
+								$numAtt = GetCmdData("numAtt");
+								$k = 0;
+								while ($k < sizeof($msgID)) {
+									if ($postedDate[$k] == "") {
+										$postedDate[$k] = "                      ";
+									}
+									%idHash{'$msgID[$k]'} = "$msgID[$k]  $numAtt[$k]  $postedDate[$k] $from[$k]";
+									$k++;
+								}
+							}
+							else {
+								echo "   Message $msgidStr retrieval failed.";
+							}
+						}
+						else {
+							echo "   Message $msgidStr retrieval failed.";
+						}	
+						$numIDs++;
+					}
+				}
+				else {
+					echo "Number of messages to retrieve: $numMsgs";
+					echo " ";
+					if (prompt "Retrieve These Messages?") {
+						@echo off;
+						int $attCtr = 0;
+						$k = 0;
+						while ($k < sizeof($msgID)) {
+
+							$msgidStr = "-id $msgID[$k]";
+							echo "Command issued: log lotusnotesparser -db $dbfile $msgidStr $attach";
+							$ok = `log lotusnotesparser -db "$dbfile" $msgidStr $attach`;
+							if ($ok) {
+								echo "   Message $msgidStr retrieved successfully.";
+							}
+							else {
+								echo "   Message $msgidStr retrieval failed.";
+							}
+							$k++;
+						} 
+						@echo on;
+					}
+				} 
+			} 
+			# Update hash of ids if necessary
+			$k = 0;
+			while ($k < sizeof($msgID)) {
+				if ($postedDate[$k] == "") {
+					$postedDate[$k] = "                      ";
+				}
+				%idHash{'$msgID[$k]'} = "$msgID[$k]  $numAtt[$k]  $postedDate[$k] $from[$k]";
+				$k++;
+			}
+		}
+									
+			
+		# Mail database could not be opened. Try making a copy of the database and opening the copy
+		else {
+			echo "\r\nPLEASE NOTE: The following prompt may be the result of a CTRL-C or some other\r\nunexpected condition. If so, just say NO to the prompt! However, if you were\r\nin the process of opening a database which appears to be locked, consider\r\nmaking a copy.";
+			if(prompt "\r\nThe database required to obtain Lotus Notes users could not be opened or\r\ncontains 0 entries. This problem may be occurring because the database\r\nis already opened. Would you like to make a copy of the database and\r\ntry again?") {
+				# Get the temp directory
+				string $tempDir = "";
+				string $dbNamesCopy = "";
+				string $srcDbName = "$dbfile";
+				string $thePath = "";
+				string $dbname = "";
+				@echo off;
+				@record on;
+				$ok = `getsyspaths`;
+				@record off;
+				@echo on;
+				ifnot ($ok) {
+					echo "retrieving temp directory path failed";
+				}
+				else {
+					$tempDir = GetCmdData("temporaryPath");
+					$thePath = splitPath($dbfile);
+					$theFile = $thePath[1];
+					$dbname = "~$theFile";
+					string $tmp = ".tmp";
+					$dbname = "$dbname$tmp";
+					$dbNamesCopy = "$tempDir$dbname";
+					echo "\r\nDefault file name for storing the temporary copy: $dbNamesCopy";
+					if (prompt "\r\nIs this path/name for the file copy acceptable?") {
+						$destDbName[$mailFileCnt] = $dbNamesCopy;
+					}
+					else {
+						$dbNamesCopy = "";
+					}
+				}
+
+				
+				if ($dbNamesCopy == "") {	
+					$dbNamesCopy = GetInput("Enter a new file name for the copy of the Notes database");
+					if ($dbNamesCopy == "quit") {
+						return false;
+					}
+
+					$thePath = splitPath($dbNamesCopy);
+					$theFile = $thePath[1];
+					$testExt = split(".", $theFile);
+					if (sizeof($testExt) == 1) {
+						$newFile = "$theFile.nsf";
+					}
+					else {
+						$newFile = $theFile;
+					}
+					string $testColon = split(":", $thePath);
+					if (sizeof($testColon) == 2) {
+						$destDbName[$mailFileCnt] = "$thePath\\$newFile";
+					}
+					else {
+						if ($thePath == "") {
+							$thePath = splitPath($srcDbName);
+							$destDbName[$mailFileCnt] = "$thePath\\$newFile";
+						}
+						else {
+							$destDbName[$mailFileCnt] = "$thePath\\$newFile";
+						}
+					}
+				}
+
+
+				if (prompt "\r\nAbout to copy $srcDbName to $destDbName[$mailFileCnt]--Continue?") {
+	
+					@record on;
+					$ok = `copy "$srcDbName" "$destDbName[$mailFileCnt]"`;
+					ifnot ($ok) {
+						echo "copy command failed";
+					}
+					else {
+						$dbfile = $destDbName[$mailFileCnt];
+						echo "Copy successful";
+						int $count = $mailFileCnt;
+						$mailFileCnt++;
+						if (prompt "\r\nAbout to extract mail data from $destDbName[$count]--Continue?") {				
+							$ok = `log lotusnotesparser -db "$dbfile" $attach $msgidStr $afterStr $beforeStr $ageStr` ;
+						}
+					}
+					@record off;
+
+					if ($ok) {
+						@echo off;
+						$msgID = GetCmdData("msgID");
+						$postedDate = GetCmdData("postedDate");
+						$from = GetCmdData("from");
+						$numAtt = GetCmdData("numAtt");
+						@echo on;
+						int $k = 0;
+						while ($k < sizeof($msgID)) {
+							%idHash{'$msgID[$k]'} = "$msgID[$k] $numAtt[$k] $postedDate[$k] $from[$k]";
+							$k++;
+						}
+					}
+				}
+				else {
+					$destDbName[$mailFileCnt] = "";
+				}
+			}
+		}
+	}
+	else {
+		return false;
+	}
+	
+	return true;
+}
+
+######################################################################
+#
+# Verify format of before/after dates as MM/DD/YYYY
+#
+# With the revision of EP to handle octal numbers, I had to change
+# the handling of the day and month since anything starting with 0 was
+# assumed to be octal. So I concatenated a "1" to the beginning of
+# each day and month values (e.g. 09->109), cast each to an int, and
+# then subtracted 100 to get the correct day and month. 
+#
+######################################################################
+
+bool Sub VerifyDate (IN STRING $date) {
+
+	string $values = Split("/", $date);
+
+	# Concatenate "1" to beginning of string to avoid octal interpretation later
+	$values[0] = "1$values[0]";
+	$values[1] = "1$values[1]";
+
+	if (sizeof($values) != 3) {
+		return false;
+	}
+
+	# Subtract 100 from month to get correct month
+	int $month = <int>$values[0];
+	$month-=100;
+
+	if (($month < 1) || ($month > 12)) {
+		return false;
+	}
+
+	# Subtract 100 from day to get correct day
+	int $day = <int>$values[1];
+	$day-=100;
+
+	if (($day < 0) || ($day > 31)) {
+		return false;
+	}
+
+	int $year = <int>$values[2];
+	if (($year < 1000) || ($year > 9999)) {
+		return false;
+	}
+
+	return true;
+}
+
+
+
+

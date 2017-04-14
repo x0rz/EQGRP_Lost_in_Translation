@@ -1,0 +1,57 @@
+# Called from simple.eps
+
+
+if (prompt "Do you want a listing of all .doc files?"){
+	`background dir *.doc -path * -recursive  -max 0 -after $argv[1]`;
+}
+if (prompt "Do you want a listing of all .pdf files?"){
+	`background dir *.pdf -path * -recursive  -max 0 -after $argv[1]`;
+}
+if (prompt "Do you want a listing of all .xls files?"){
+	`background dir *.xls -path * -recursive  -max 0 -after $argv[1]`;
+}
+if (prompt "Do you want a listing of all .rtf files?"){
+	`background dir *.rtf -path * -recursive  -max 0 -after $argv[1]`;
+}
+if (prompt "Do you want a listing of all .mbx files?"){
+	`background dir *.mbx -path * -recursive  -max 0 -after $argv[1]`;
+}
+if (prompt "Do you want a listing of all .wab files?"){
+	`background dir *.wab -path * -recursive  -max 0 -after $argv[1]`;
+}
+if (prompt "Do you want a listing of all .vsd files?"){
+	`background dir *.vsd -path * -recursive  -max 0 -after $argv[1]`;
+}
+if (prompt "Do you want a listing of all .ppt files?"){
+	`background dir *.ppt -path * -recursive  -max 0 -after $argv[1]`;
+}
+
+if (prompt "Do you want to do an expanded survey?") {
+		if (prompt "Do you want a listing of all .tif files?"){
+			`background dir *.tif -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .dbx files?"){
+			`background dir *.dbx -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .ost files?"){
+			`background dir *.ost -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .pst files?"){
+			`background dir *.pst -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .mdb files?"){
+			`background dir *.mdb -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .cfg files?"){
+			`background dir *.cfg -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .pgp files?"){
+			`background dir *.pgp -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .msg files?"){
+			`background dir *.msg -path * -recursive -max 0 -after $argv[1]`;
+		}
+		if (prompt "Do you want a listing of all .net files?"){
+			`background dir *.net -path * -recursive -max 0 -after $argv[1]`;
+		}
+}

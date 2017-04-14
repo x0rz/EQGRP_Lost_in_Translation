@@ -1,0 +1,49 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31347'>
+
+  <Command id='16' name='processcheck'>
+
+    <Help>Checks the process's information against user supplied info</Help>
+
+    <Input>
+      <Option name='id' optional='true' group='identifyHow'>
+	<Argument name='#' data='id'/>
+	<Set data='byId' value='true'/>
+	<Help>The process ID of the process in question</Help>
+      </Option>
+
+      <Option name='name' optional='true' group='identifyHow'>
+	<Argument name='procName' data='name'/>
+	<Set data='byId' value='false'/>
+	<Help>The name of the process in question</Help>
+      </Option>
+
+      <Option name='group' optional='true'>
+	<Argument name='name' data='group'/>
+	<Help>The group to search for within the group list of the process</Help>
+      </Option>
+
+      <Option name='owner' optional='true'>
+	<Argument name='name' data='owner'/>
+	<Help>The owner to match against the owner of the process</Help>
+      </Option>
+
+      <Option name='user' optional='true'>
+	<Argument name='name' data='user'/>
+	<Help>The user to match against the user of the process</Help>
+      </Option>
+    </Input>
+
+    <Output>
+      <Data name='id'     type='uint32_t' default='0'/>
+      <Data name='byId'   type='bool' default='true'/>
+      <Data name='name'   type='string'/>
+      <Data name='group'  type='string'/>
+      <Data name='owner'  type='string'/>
+      <Data name='user'   type='string'/>
+    </Output>
+
+  </Command>
+
+</Plugin>

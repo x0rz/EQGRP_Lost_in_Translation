@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+<Aliases>
+	<Alias>
+		<Name>setreplayuser</Name>		
+		<ReplaceBeforeArgs>lpsetenv -name OPS_REPLAY_USERNAME -value </ReplaceBeforeArgs>
+		<Help>Usage:
+	setreplayuser [userhandle]
+Executes: lpsetenv -name OPS_REPLAY_USERNAME -value [userhandle]
+Sets an environment variable to allow replay-requested gets to execute with a user= prefix to run in the context of another user
+		</Help>
+	</Alias>
+	<Alias>
+		<Name>unsetreplayuser</Name>		
+		<ReplaceBeforeArgs>lpsetenv -name OPS_REPLAY_USERNAME -delete</ReplaceBeforeArgs>		
+		<Help>Usage:
+	unsetreplayuser
+Executes: lpsetenv -name OPS_REPLAY_USERNAME -delete
+Removes an environment variable that allows replay-requested gets to execute with a user= prefix to run in the context of another user.  Gets will then execute in the normal context of DANDERSPRITZ (usually SYSTEM).
+		</Help>
+	</Alias>
+</Aliases>

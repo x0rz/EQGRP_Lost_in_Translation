@@ -1,0 +1,446 @@
+unset key protection enable
+set clock dst-off
+set clock timezone 4
+set vrouter trust-vr sharable
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+unset auto-route-export
+set protocol ospf
+set enable
+set area 0.0.0.1 
+exit
+exit
+set service "NSM_Managed_Client_TCP" protocol tcp src-port 0-65535 dst-port 7800-7800 
+set service "NSM_GUI_Client_TCP" protocol tcp src-port 0-65535 dst-port 7801-7801 
+set service "NSM_HA_TCP" protocol tcp src-port 0-65535 dst-port 7802-7802 
+set service "NSM_Managed_IDP_TCP" protocol tcp src-port 0-65535 dst-port 7803-7803 
+set service "NSM_GUI_Client_7808_TCP" protocol tcp src-port 0-65535 dst-port 7808-7808 
+set service "NSM_SSLVPN_TCP" protocol tcp src-port 0-65535 dst-port 7804-7804 
+set service "NSM_7804" protocol tcp src-port 0-65535 dst-port 7804-7804 
+set service "OpManager" protocol tcp src-port 0-65535 dst-port 8060-8060 
+set service "OpManagerVIP" protocol tcp src-port 0-65535 dst-port 9090-9090 
+set service "IT360_8100_TCP" protocol tcp src-port 0-65535 dst-port 8100-8100 
+set service "IT360_8443_TCP" protocol tcp src-port 0-65535 dst-port 8443-8443 
+set service "IT360_8400_TCP" protocol tcp src-port 0-65535 dst-port 8400-8400 
+set service "IT360_9996_UDP" protocol udp src-port 0-65535 dst-port 9996-9996 
+set service "IT360_9443_TCP" protocol tcp src-port 0-65535 dst-port 9443-9443 
+set alg appleichat enable
+unset alg appleichat re-assembly enable
+set alg sctp enable
+set auth-server "Local" id 0
+set auth-server "Local" server-name "Local"
+set auth-server "RSA Ace/Server" id 1
+set auth-server "RSA Ace/Server" server-name "192.168.206.100"
+set auth-server "RSA Ace/Server" backup1 "192.168.206.101"
+set auth-server "RSA Ace/Server" account-type xauth 
+set auth-server "RSA Ace/Server" type securid
+set auth default auth server "Local"
+set auth radius accounting port 1646
+set admin name "netscreen"
+set admin password "nHr9JSr5KZ9PcKREMsvHkCEtGSDrpn"
+set admin user "msaeed" password "nF3dKrrkHDHCckxALsfARkBtenLoAn" privilege "all"
+set admin user "adesear" password "nIVbOVrXL41KckIARs+ARwJteKFZYn" privilege "all"
+set admin user "juy" password "nGB6DqrpKxQAc4pI/sxHVLIt1aEskn" privilege "all"
+set admin user "kbaluyot" password "nMSQP4rHLyxHcWqBmsqP9pMtnMGPYn" privilege "all"
+set admin ssh port 2194
+set admin http redirect
+set admin auth web timeout 10
+set admin auth dial-in timeout 3
+set admin auth server "Local"
+set admin format dos
+set zone "Trust" vrouter "trust-vr"
+set zone "Untrust" vrouter "trust-vr"
+set zone "DMZ" vrouter "trust-vr"
+set zone "VLAN" vrouter "trust-vr"
+set zone "Untrust-Tun" vrouter "trust-vr"
+set zone "Trust" tcp-rst 
+set zone "Untrust" block 
+unset zone "Untrust" tcp-rst 
+set zone "MGT" block 
+unset zone "V1-Trust" tcp-rst 
+unset zone "V1-Untrust" tcp-rst 
+set zone "DMZ" tcp-rst 
+unset zone "V1-DMZ" tcp-rst 
+set zone "VLAN" block 
+unset zone "VLAN" tcp-rst 
+set zone "Untrust" screen tear-drop
+set zone "Untrust" screen syn-flood
+set zone "Untrust" screen ping-death
+set zone "Untrust" screen ip-filter-src
+set zone "Untrust" screen land
+set zone "V1-Untrust" screen tear-drop
+set zone "V1-Untrust" screen syn-flood
+set zone "V1-Untrust" screen ping-death
+set zone "V1-Untrust" screen ip-filter-src
+set zone "V1-Untrust" screen land
+set interface "bri0/0" zone "Untrust"
+set interface "ethernet0/0" zone "Untrust"
+set interface "ethernet0/1" zone "DMZ"
+set interface "ethernet0/6" zone "HA"
+set interface "bgroup0" zone "Trust"
+set interface "tunnel.4" zone "Untrust"
+set interface "tunnel.7" zone "Untrust"
+set interface bgroup0 port ethernet0/2
+set interface bgroup0 port ethernet0/3
+set interface bgroup0 port ethernet0/4
+set interface bgroup0 port ethernet0/5
+unset interface vlan1 ip
+set interface ethernet0/0 ip 80.227.254.242/27
+set interface ethernet0/0 route
+set interface bgroup0 ip 192.168.196.5/24
+set interface bgroup0 nat
+set interface tunnel.4 ip 10.40.0.20/16
+set interface tunnel.7 ip 10.70.0.20/16
+set interface tunnel.4 mtu 1500
+set interface tunnel.7 mtu 1500
+unset interface vlan1 bypass-others-ipsec
+unset interface vlan1 bypass-non-ip
+set interface bgroup0 manage-ip 192.168.196.6
+set interface ethernet0/0 ip manageable
+unset interface bgroup0 ip manageable
+set interface ethernet0/0 manage ping
+set interface ethernet0/0 manage ssh
+set interface ethernet0/0 manage snmp
+set interface ethernet0/0 manage ssl
+set interface ethernet0/0 vip interface-ip 9090 "OpManager" 192.168.196.35 manual
+set interface ethernet0/0 vip interface-ip 8100 "IT360_8100_TCP" 192.168.196.35 manual
+set interface ethernet0/0 vip interface-ip 8400 "IT360_8400_TCP" 192.168.196.35 manual
+set interface ethernet0/0 vip interface-ip 9443 "IT360_9443_TCP" 192.168.196.35 manual
+set interface "ethernet0/0" mip 80.227.254.241 host 192.168.196.25 netmask 255.255.255.255 vr "trust-vr"
+set flow tcp-mss
+unset flow no-tcp-seq-check
+set flow tcp-syn-check
+unset flow tcp-syn-bit-check
+set flow reverse-route clear-text prefer
+set flow reverse-route tunnel always
+set hostname ENSBNVPN1
+set pki authority default scep mode "auto"
+set pki x509 default cert-path partial
+set nsrp cluster id 7
+set nsrp vsd-group id 0 priority 50
+set nsrp vsd-group id 0 preempt
+set nsrp interface bgroup0
+set nsrp monitor interface ethernet0/0
+set nsrp monitor interface bgroup0
+set dns host dns1 0.0.0.0
+set dns host dns2 0.0.0.0
+set dns host dns3 0.0.0.0
+set address "Trust" "ENSB-NOC-NW" 192.168.196.0 255.255.255.0 "NOC Network"
+set address "Trust" "ENSBNNSM1" 192.168.196.25 255.255.255.0 "NSM SERVER"
+set address "Trust" "NOC-SRV01" 192.168.196.35 255.255.255.255
+set address "Untrust" "CPMSP-NW" 192.168.150.0 255.255.255.0
+set address "Untrust" "EN SMTP" 80.227.254.251 255.255.255.255
+set address "Untrust" "ENSB-AE-NW" 192.168.206.0 255.255.254.0 "UAE DC Network"
+set address "Untrust" "ENSB-AE2-NW" 192.168.211.0 255.255.255.0 "AE DC2 Network"
+set address "Untrust" "ENSB-BH-HW" 192.168.236.0 255.255.255.0 "Bahrain DC Network"
+set address "Untrust" "ENSB-JO-NW" 192.168.216.0 255.255.255.0
+set address "Untrust" "ENSB-PK-NW" 192.168.246.0 255.255.255.0 "Pakistan DC Network"
+set address "Untrust" "ENSB-TR-NW" 192.168.216.0 255.255.254.0 "Turkey DC NW"
+set address "Untrust" "ENSB-US-DR-NW" 192.168.112.0 255.255.255.0 "US DC DR Network"
+set address "Untrust" "ENSB-US-PR-NW" 192.168.111.0 255.255.255.0 "US DC Primary Network"
+set address "Untrust" "QI-AE-NW" 192.168.160.0 255.255.255.0
+set address "Untrust" "QI-BH-NW" 192.168.60.0 255.255.255.0
+set group address "Untrust" "ENSB NW" comment "ALL ENSB NW"
+set group address "Untrust" "ENSB NW" add "ENSB-AE-NW"
+set group address "Untrust" "ENSB NW" add "ENSB-AE2-NW"
+set group address "Untrust" "ENSB NW" add "ENSB-BH-HW"
+set group address "Untrust" "ENSB NW" add "ENSB-PK-NW"
+set group address "Untrust" "ENSB NW" add "ENSB-TR-NW"
+set group address "Untrust" "ENSB NW" add "ENSB-US-PR-NW"
+set group service "IT360"
+set group service "IT360" add "IT360_8100_TCP"
+set group service "IT360" add "IT360_8400_TCP"
+set group service "IT360" add "IT360_8443_TCP"
+set group service "IT360" add "IT360_9996_UDP"
+set group service "NSM_IN" comment "NSM Incoming ports"
+set group service "NSM_IN" add "NSM_7804"
+set group service "NSM_IN" add "NSM_GUI_Client_7808_TCP"
+set group service "NSM_IN" add "NSM_GUI_Client_TCP"
+set group service "NSM_IN" add "NSM_HA_TCP"
+set group service "NSM_IN" add "NSM_Managed_Client_TCP"
+set group service "NSM_IN" add "NSM_Managed_IDP_TCP"
+set group service "NSM_IN" add "NSM_SSLVPN_TCP"
+set group service "NSM_IN" add "SSH"
+set group service "NSM_IN" add "TELNET"
+set group service "NSM_OUT" comment "NSM OUtbound ports"
+set group service "NSM_OUT" add "DNS"
+set group service "NSM_OUT" add "FTP"
+set group service "NSM_OUT" add "HTTP"
+set group service "NSM_OUT" add "HTTPS"
+set group service "NSM_OUT" add "NSM_7804"
+set group service "NSM_OUT" add "NSM_SSLVPN_TCP"
+set group service "NSM_OUT" add "NTP"
+set group service "NSM_OUT" add "SSH"
+set group service "NSM_OUT" add "TELNET"
+set ippool "ENSB-NOC-NW" 10.149.121.1 10.149.121.254
+set ippool "ENSB-NOC-FA" 10.149.122.1 10.149.122.20
+set ippool "ENSB-NOC-IS" 10.149.123.1 10.149.123.20
+set ippool "ENSB-NOC-PG" 10.149.124.1 10.149.124.20
+set ippool "ENSB-NOC-FINMEX" 10.149.125.1 10.149.125.20
+set ippool "ENSB-NOC-UNIRISX" 10.149.126.1 10.149.126.20
+set ippool "ENSB-NOC-PK" 10.149.127.1 10.149.127.20
+set ippool "ENSB-NOC-JO" 10.149.129.1 10.149.129.20
+set ippool "ENSB-NOC-US" 10.149.128.1 10.149.128.20
+set user "adesear" uid 1
+set user "adesear" ike-id u-fqdn "adesear@eastnets.com" share-limit 1
+set user "adesear" type ike xauth
+set user "adesear" remote ippool "ENSB-NOC-NW"
+set user "adesear" password "0TjLvUu6NJOBFMscuOCnptfiZunhWoleCw=="
+unset user "adesear" type auth
+set user "adesear" "enable"
+set user "juy" uid 2
+set user "juy" ike-id u-fqdn "juy@eastnets.com" share-limit 1
+set user "juy" type ike xauth
+set user "juy" remote ippool "ENSB-NOC-NW"
+set user "juy" password "dT36Q1nRN3lwBVsZl7ChVzTZeKn4gG9ILQ=="
+unset user "juy" type auth
+set user "juy" "enable"
+set user "kbaluyot" uid 3
+set user "kbaluyot" ike-id u-fqdn "kbaluyot@eastnets.com" share-limit 1
+set user "kbaluyot" type ike xauth
+set user "kbaluyot" remote ippool "ENSB-NOC-NW"
+set user "kbaluyot" password "9b9kpb/wNk+WRis5FpCBSHbKiKnb9KBWbA=="
+unset user "kbaluyot" type auth
+set user "kbaluyot" "enable"
+set user "msaeed" uid 4
+set user "msaeed" ike-id u-fqdn "msaeed@eastnets.com" share-limit 1
+set user "msaeed" type ike xauth
+set user "msaeed" remote ippool "ENSB-NOC-NW"
+set user "msaeed" password "fqtlGLWGNmiGA5s6JNChAlywkEnncJxQqw=="
+unset user "msaeed" type auth
+set user "msaeed" "enable"
+set user-group "NW Group" id 1
+set user-group "NW Group" user "adesear"
+set user-group "NW Group" user "juy"
+set user-group "NW Group" user "kbaluyot"
+set user-group "NW Group" user "msaeed"
+set crypto-policy
+exit
+set ike gateway "DC-AE-SWIFT" address 80.227.254.201 Main outgoing-interface "ethernet0/0" preshare "vfrvuNKbNcnK5fsgHdCgOu/+/UnyByPUGsKh3QIx9bY5aKxXi8SSRj0=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-AE-SWIFT" nat-traversal
+set ike gateway "DC-AE-SWIFT" nat-traversal udp-checksum
+set ike gateway "DC-AE-SWIFT" nat-traversal keepalive-frequency 0
+set ike gateway "DC-TR-LL" address 193.23.156.220 Main outgoing-interface "ethernet0/0" preshare "4315J1cuNwFhTSsmHzCDr1jPlInuTQyMLXzBBCtoVKzcPGxgaStKIWo=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-BH-LL" address 81.22.17.35 Main outgoing-interface "ethernet0/0" preshare "i5zERIcXNU+UCFsHJjCbqjRxQ0nDm5gMmT56nOLRfW+B4an+3f3OTBo=" proposal "pre-g2-3des-sha"
+set ike gateway "ENSB NW Dialup Group" dialup "NW Group" Aggr outgoing-interface "ethernet0/0" preshare "Jes1xtBgNkX60MsJH3C5nRUVWXn2x4b+xHsehqVUTTOK6+hqZY7ZSgo=" proposal "pre-g2-3des-sha"
+set ike gateway "ENSB NW Dialup Group" nat-traversal udp-checksum
+set ike gateway "ENSB NW Dialup Group" nat-traversal keepalive-frequency 0
+set ike gateway "ENSB NW Dialup Group" xauth
+unset ike gateway "ENSB NW Dialup Group" xauth do-edipi-auth
+set ike gateway "DC-JO-LL" address 77.245.10.172 Main outgoing-interface "ethernet0/0" preshare "3XTJ38KPNkf7YEsKTECeXuQndSngJbege91bsmpEFsJ66MoY+h/B9+I=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-CPMS-EHDF-LL" address 80.227.254.228 Main outgoing-interface "ethernet0/0" preshare "ua9iMfeVNPDvvps6/UC7x5WGLFn2UfaApemIcX9NK3X1OYdfZ951I3Q=" proposal "pre-g2-3des-sha"
+set ike gateway "QI-AE-LL" address 80.227.254.219 Main outgoing-interface "ethernet0/0" preshare "Nv5infAQNdMPBoscgLC/UiQIAOnbrqYWfL9Oi9nJ2gGhM2NGfQdWOCQ=" proposal "pre-g2-3des-sha"
+set ike gateway "QI-BH-LL" address 81.22.17.38 Main outgoing-interface "ethernet0/0" preshare "0mH2B2wON9Vgpws+hHCmLdeeZvnWqJEL0RevcxgMoLz7b948MRA8Tig=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-US-LL-PR" address 209.123.80.7 Main outgoing-interface "ethernet0/0" preshare "lMnqKp8WNS3yhMsk5WCK4a3xkjnuL/uzSCNas+LowZPsDzrl3o81Cwk=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-US-LL-PR" nat-traversal
+set ike gateway "DC-US-LL-PR" nat-traversal udp-checksum
+set ike gateway "DC-US-LL-PR" nat-traversal keepalive-frequency 5
+set ike gateway "DC-US-LL-DR" address 69.167.70.242 Main outgoing-interface "ethernet0/0" preshare "YqGIDy8pNXfKQ8sBVvC/7ed/BDnFt6wh/lUjGGu9hnHnse3nmp87DyY=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-US-LL-DR" nat-traversal
+set ike gateway "DC-US-LL-DR" nat-traversal udp-checksum
+set ike gateway "DC-US-LL-DR" nat-traversal keepalive-frequency 5
+set ike gateway "DC-PK-LL" address 202.63.216.20 Main outgoing-interface "ethernet0/0" preshare "xSmBxsRmN0khN8sXPQCrkG9AkUnfX03Bs3JmXSN0grNpN/YO9YsU8Jc=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-CPMS-ETISALAT" address 213.42.22.136 Main outgoing-interface "ethernet0/0" preshare "gv2S3jdqNjwhp2sUf1CLNPKqwpndYkbbisyL5dX8TcAMUgHhekq6zjI=" proposal "pre-g2-3des-sha"
+set ike gateway "DC-AE-HOST" address 80.227.254.205 Main outgoing-interface "ethernet0/0" preshare "DyiejXENNvmC7Ps7bJCy9TBzKZn3x9f+b2dMA7uam+YkPNVOsTjRfJM=" proposal "pre-g2-3des-sha"
+set ike respond-bad-spi 1
+set ike ikev2 ike-sa-soft-lifetime 60
+unset ike ikeid-enumeration
+unset ike dos-protection
+unset ipsec access-session enable
+set ipsec access-session maximum 5000
+set ipsec access-session upper-threshold 0
+set ipsec access-session lower-threshold 0
+set ipsec access-session dead-p2-sa-timeout 0
+unset ipsec access-session log-error
+unset ipsec access-session info-exch-connected
+unset ipsec access-session use-error-log
+set vpn "DC-AE-SWIFT" gateway "DC-AE-SWIFT" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-AE-SWIFT" monitor optimized rekey
+set vpn "DC-AE-SWIFT" id 0xb bind interface tunnel.4
+set vpn "DC-AE-SWIFT" dscp-mark 0
+set vpn "DC-TR-LL" gateway "DC-TR-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-TR-LL" monitor optimized rekey
+set vpn "DC-TR-LL" id 0xa bind interface tunnel.4
+set vpn "DC-BH-LL" gateway "DC-BH-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-BH-LL" monitor optimized rekey
+set vpn "DC-BH-LL" id 0x9 bind interface tunnel.4
+set vpn "ENSB NW Dialup Group" gateway "ENSB NW Dialup Group" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-JO-LL" gateway "DC-JO-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-JO-LL" monitor optimized rekey
+set vpn "DC-JO-LL" id 0xc bind interface tunnel.4
+set vpn "DC-CPMS-PRI-LL" gateway "DC-CPMS-EHDF-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-CPMS-PRI-LL" monitor optimized rekey
+set vpn "DC-CPMS-PRI-LL" id 0xd bind interface tunnel.4
+set vpn "DC-CPMS-PRI-LL" dscp-mark 0
+set vpn "QI-AE-LL" gateway "QI-AE-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "QI-AE-LL" monitor optimized rekey
+set vpn "QI-AE-LL" id 0x18 bind interface tunnel.4
+set vpn "QI-BH-LL" gateway "QI-BH-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "QI-BH-LL" monitor optimized rekey
+set vpn "QI-BH-LL" id 0x10 bind interface tunnel.4
+set vpn "DC-US-LL-PR" gateway "DC-US-LL-PR" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-US-LL-PR" monitor optimized rekey
+set vpn "DC-US-LL-PR" id 0x12 bind interface tunnel.7
+set vpn "DC-US-LL-DR" gateway "DC-US-LL-DR" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-US-LL-DR" monitor optimized rekey
+set vpn "DC-US-LL-DR" id 0x13 bind interface tunnel.7
+set vpn "DC-PK-LL" gateway "DC-PK-LL" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-PK-LL" monitor optimized rekey
+set vpn "DC-PK-LL" id 0x14 bind interface tunnel.4
+set vpn "DC-CPMS-ETISALAT-LL" gateway "DC-CPMS-ETISALAT" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-CPMS-ETISALAT-LL" monitor optimized rekey
+set vpn "DC-CPMS-ETISALAT-LL" id 0x15 bind interface tunnel.4
+set vpn "DC-AE-HOST" gateway "DC-AE-HOST" replay tunnel idletime 0 proposal "g2-esp-3des-sha" 
+set vpn "DC-AE-HOST" monitor optimized rekey
+set vpn "DC-AE-HOST" id 0x17 bind interface tunnel.7
+set vrouter "untrust-vr"
+set protocol nhrp
+set protocol nhrp retry-interval 30
+set protocol nhrp max-query 12
+exit
+set vrouter "trust-vr"
+set protocol nhrp
+set protocol nhrp retry-interval 30
+set protocol nhrp max-query 12
+exit
+set url protocol websense
+exit
+set policy id 21 name "Monitoring System" from "Untrust" to "Trust"  "Any" "VIP(ethernet0/0)" "IT360_8100_TCP" permit log 
+set policy id 21
+set service "IT360_8400_TCP"
+set service "IT360_9443_TCP"
+set service "IT360_9996_UDP"
+set service "OpManagerVIP"
+set log session-init
+exit
+set policy id 16 from "Trust" to "Untrust"  "NOC-SRV01" "EN SMTP" "SMTP" permit log 
+set policy id 16
+set log session-init
+exit
+set policy id 12 from "Trust" to "Untrust"  "ENSB-NOC-NW" "QI-AE-NW" "ANY" permit log 
+set policy id 12
+set log session-init
+exit
+set policy id 14 from "Trust" to "Untrust"  "ENSB-NOC-NW" "QI-BH-NW" "ANY" permit log 
+set policy id 14
+set log session-init
+exit
+set policy id 4 from "Untrust" to "Trust"  "Any" "MIP(80.227.254.241)" "HTTPS" permit log 
+set policy id 4
+set service "ICMP-ANY"
+set service "TELNET"
+set service "NSM_IN"
+set log session-init
+exit
+set policy id 2 from "Untrust" to "Trust"  "ENSB-AE-NW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 2
+exit
+set policy id 8 from "Untrust" to "Trust"  "ENSB-BH-HW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 8
+exit
+set policy id 9 from "Untrust" to "Trust"  "ENSB-JO-NW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 9
+exit
+set policy id 3 from "Trust" to "Untrust"  "ENSBNNSM1" "Any" "ICMP-ANY" permit log 
+set policy id 3
+set service "NSM_OUT"
+exit
+set policy id 1 from "Trust" to "Untrust"  "ENSB-NOC-NW" "ENSB NW" "ANY" permit log 
+set policy id 1
+exit
+set policy id 6 from "Untrust" to "Trust"  "Dial-Up VPN" "ENSB-NOC-NW" "ANY" tunnel vpn "ENSB NW Dialup Group" id 0xe pair-policy 7 log 
+set policy id 6
+exit
+set policy id 7 from "Trust" to "Untrust"  "ENSB-NOC-NW" "Dial-Up VPN" "ANY" tunnel vpn "ENSB NW Dialup Group" id 0xe pair-policy 6 log 
+set policy id 7
+exit
+set policy id 10 from "Trust" to "Untrust"  "ENSB-NOC-NW" "CPMSP-NW" "ANY" permit log 
+set policy id 10
+exit
+set policy id 11 from "Untrust" to "Trust"  "CPMSP-NW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 11
+exit
+set policy id 13 from "Untrust" to "Trust"  "QI-AE-NW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 13
+set log session-init
+exit
+set policy id 15 from "Untrust" to "Trust"  "QI-BH-NW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 15
+set log session-init
+exit
+set policy id 17 from "Trust" to "Untrust"  "ENSB-NOC-NW" "ENSB-US-PR-NW" "ANY" permit log 
+set policy id 17
+set log session-init
+exit
+set policy id 18 from "Trust" to "Untrust"  "ENSB-NOC-NW" "ENSB-US-DR-NW" "ANY" permit log 
+set policy id 18
+set log session-init
+exit
+set policy id 19 from "Untrust" to "Trust"  "ENSB-US-PR-NW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 19
+set log session-init
+exit
+set policy id 20 from "Untrust" to "Trust"  "ENSB-US-DR-NW" "ENSB-NOC-NW" "ANY" permit log 
+set policy id 20
+set log session-init
+exit
+set syslog config "192.168.206.111"
+set syslog config "192.168.206.111" facilities local0 local0
+set syslog config "192.168.206.111" port 1514
+set syslog config "192.168.206.111" log traffic
+set syslog enable
+set nsmgmt report proto-dist enable
+set nsmgmt report statistics ethernet enable
+set nsmgmt report statistics attack enable
+set nsmgmt report statistics flow enable
+set nsmgmt report statistics policy enable
+set nsmgmt report alarm traffic enable
+set nsmgmt report alarm attack enable
+set nsmgmt report alarm other enable
+set nsmgmt report alarm di enable
+set nsmgmt report log config enable
+set nsmgmt report log info enable
+set nsmgmt report log self enable
+set nsmgmt report log traffic enable
+set nsmgmt init id C2DD45C0C360D0EBB64B767EDB4516983964644200
+set nsmgmt server primary 192.168.196.25 port 7800
+set nsmgmt bulkcli reboot-timeout 60
+set nsmgmt hb-interval 20
+set nsmgmt hb-threshold 5
+set nsmgmt enable
+set ssh version v2
+set ssh enable
+set config lock timeout 5
+unset license-key auto-update
+set ssl port 2443
+set snmp community "EastNets-SNMP" Read-Write Trap-on traffic version v2c  
+set snmp host "EastNets-SNMP" 192.168.206.111 255.255.255.255 trap v2
+set snmp port listen 161
+set snmp port trap 162
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+unset add-default-route
+set route 192.168.150.0/24 interface tunnel.4 gateway 10.40.0.25 description "CPMS-PRI-LL"
+set route 192.168.160.0/24 interface tunnel.4 gateway 10.40.0.35 metric 10 description "QI-AE-LL"
+set route 192.168.60.0/24 interface tunnel.4 gateway 10.40.0.40 metric 10 description "QI-BH-LL"
+set route 192.168.206.0/23 interface tunnel.4 gateway 10.40.0.1 description "ENSB-AE"
+set route 0.0.0.0/0 interface ethernet0/0 gateway 80.227.254.225 description "Defualt Route"
+set route 192.168.236.0/24 interface tunnel.4 gateway 10.40.0.10 permanent description "ENSB BH"
+set route 192.168.111.0/24 interface tunnel.7 gateway 10.70.0.65 description "DC-US-LL-PR"
+set route 192.168.112.0/24 interface tunnel.7 gateway 10.70.0.70 description "DC-US-LL-DR"
+set route 192.168.216.0/23 interface tunnel.4 gateway 10.40.0.15 description "ENSB JO"
+set route 192.168.246.0/24 interface tunnel.4 gateway 10.40.0.50 description "DC PK"
+set route 192.168.50.0/24 interface tunnel.4 gateway 10.40.0.30 description "CPMS ETISALAT VPN3 "
+set route 192.168.211.0/24 interface tunnel.7 gateway 10.70.0.55 description "DC AE HOST"
+exit
+set interface tunnel.4 protocol ospf area 0.0.0.0
+set interface tunnel.4 protocol ospf demand-circuit
+set interface tunnel.4 protocol ospf link-type p2mp
+set interface tunnel.4 protocol ospf enable
+set interface tunnel.4 protocol ospf cost 10
+set vrouter "untrust-vr"
+exit
+set vrouter "trust-vr"
+exit

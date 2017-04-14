@@ -1,0 +1,100 @@
+echo off;
+`rotatelog -prefix touch$argv[1]`;
+`loadplugin networkplugin`;
+
+ifnot (`ping -ip $argv[1]`)
+{
+	pause;
+}
+#if(prompt"Do you wan to perform a traceroute?")
+#{
+	`traceroute -ip $argv[1]`;
+#}
+
+
+#if(prompt"Do you want to run a ****WINDOWS**** touch?")
+if(`banner -ip $argv[1] -port 135 -wait 0`)
+{
+	echo"*****CRYSTAL CRYSTAL CRYSTAL CRYSTAL*****";
+	ifnot(`machineinfo \\$argv[1]`)
+	{
+		pause;
+	}
+	ifnot (`netbios -remote $argv[1]`)
+	{
+		pause;
+	}
+#	if(prompt"Do you wan to enumerate shares on this machine?(audited as a logon attempt)")
+#	{
+		if(`loadplugin processplugin`)
+		{
+			`run -command "net view $argv[1]" -redirect netview_$argv[1]`;
+		}
+#	}
+#rpcss touch
+#	`redirect -tcp -lplisten 1350 -target $argv[1] 135`;
+#	echo"Now, use the command prompt to run: regprobe.exe 127.0.0.1 ncacn_ip_tcp 1350";
+#	echo"Continue once you are done.";
+#	pause;
+#dd touch
+#	`redirect -tcp -lplisten 8080 -target $argv[1] 80`;
+#	echo"Now, use the command prompt to run: dd.exe -i 127.0.0.1 -p 8080 -u <URL> -f 1";
+#	echo"Continue once you are done.";
+#	pause;
+#	`banner -port 80 -target $argv[1] -send "GET\x20/NULL\x2eida?AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=B\x20HTTP/1.1\r\n\x48Host:\x20$argv[2]"`;
+}
+#else if(prompt"Do you want to run a ****UNIX**** touch?")
+else
+{
+#telnet touch
+	if(`banner -ip $argv[1] -port 23 -send "\\x00\\x01\\x00\\x01"`) 
+	{
+		echo"telnet";
+	}
+#	`redirect -tcp -lplisten 23 -target $argv[1] 23`;
+#	echo"Now, use the command prompt to run: telnet 127.0.0.1.";
+#	echo"Continue once you are done.";
+#	pause;
+#rpcinfo	
+	`redirect -tcp -lplisten 111 -target $argv[1] 111`;
+	echo"Now, use the command prompt to run: rpcinfo 127.0.0.1.";
+	echo"Continue once you are done.";
+	pause;
+#ys touch
+	if(`banner -udp -ip $argv[1] -port 177 -send "\\x00\\x01\\x00\\x01\\x00\\x01\\x00\\x00"`)
+	{
+		echo"******YELLOW YELLOW YELLOW YELLOW YELLOW*********";
+	}
+}
+
+#if(prompt"Do you want to perform an ****Internet Servicess**** touch?") 
+#{
+#ftp banner
+	if(`banner -ip $argv[1] -port 21`)
+	{
+		echo"ftp";
+	}
+
+#smtp touch
+	if(`banner -ip $argv[1] -port 25`)
+	{
+		echo"smtp";
+	}
+#http banner
+	if(`banner -ip $argv[1] -port 80 -send "\\r\\n\\r\\n"`)
+	{
+		echo"http";
+	}
+#pop
+	if(`banner -ip $argv[1] -port 110`)
+	{
+		echo"pop";
+	}
+
+#}
+
+#if(prompt"Should all redirectors with ip address $argv[1] be shutdown?")
+#{
+#	`stop redirect -contains $argv[1]`;
+#}
+`rotatelog`;

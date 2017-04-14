@@ -1,0 +1,42 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31382'>
+
+  <Command id='16' name='environment'>
+
+    <Help>Gets, sets or deletes environment variables for the current process</Help>
+
+    <Input>
+      <Option name='var' optional='false'>
+        <Argument name='envVar' data='envVar'/>
+        <Help>Name of the environment variable to get, set, or delete</Help>
+      </Option>
+
+      <Option name='get' optional='false' group='type'>
+	<Set data='opt' value='1'/>
+	<Help>Retrieve value for environment variable</Help>
+      </Option>
+
+      <Option name='set' optional='false' group='type'>
+	<Argument name='setValue' data='setValue'/>
+	<Set data='opt' value='2' />
+	<Help>Set a specified environment variable with a value</Help>
+      </Option>
+
+      <Option name='delete' optional='false' group='type'>
+	<Set data='opt' value='3' />
+	<Help>Delete a specified environment variable</Help>
+      </Option>
+
+    </Input>
+
+    <Output>
+      <Data name='envVar' type='string'/>
+      <Data name='setValue' type='string'/>
+      <Data name='opt' type='uint8_t'/>
+    </Output>
+
+  </Command>
+
+</Plugin>
+

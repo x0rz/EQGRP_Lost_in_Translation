@@ -1,0 +1,113 @@
+#---------------------------------------------------------------------------------
+# File: FreshStep.eps
+#
+# Finds and puts "processinfo" files in upload dir.
+#
+# Modifications:
+# 	07/08/2009	Created.
+#	08/10/2009	Updates "find IP Addr" to account for exceptions
+#
+#---------------------------------------------------------------------------------
+
+@echo off;
+
+@include "_GetDirectory.epm";
+@include "_GenericFunctions.epm";
+@include "GenericFunctions.epm";
+
+#---------------------------------------------------------------------------------
+int $counter = 1;
+string $files;
+string $logsDir;
+string $projname;
+string $xmllogsDir;
+
+
+ifnot (_GetLpLogsDirectory($logsDir)){
+	echo "ERROR - could not location logs directory";
+	return false;
+}
+
+$xmllogsDir = "$logsDir\\Xml";
+
+echo "$logsDir";
+
+# Get IP Address of Target
+string $pathParts = Split("\\",$logsDir);
+string $ipAddrParts;
+string $ipAddr;
+int $ipTest = 0;
+int $in = 0;
+
+while ($ipTest<sizeof($pathParts)){
+	$ipAddrParts = Split("\.", $pathParts[$ipTest]);
+	if((sizeof($ipAddrParts) == 4) && ($in == 0)){
+		$ipAddr = "$ipAddrParts[0]\_$ipAddrParts[1]\_$ipAddrParts[2]\_$ipAddrParts[3]";
+		echo "ipTest = $ipTest ; $ipAddr";
+		$in = 1;
+	}
+	$ipTest++;
+}
+
+string $driveletter = $pathParts[0];
+
+# Get project name from new function
+ifnot(getProjName($projname)){
+	echo "failed to get projname";
+}	
+
+string $dirtomake = "$driveletter\\to_pp\\freshstep_$projname\_$ipAddr";
+
+# Create the directory to move files
+ifnot( `local mkdir "$dirtomake"` ){
+	echo "ERROR - could not make dir $dirtomake";
+	return false;
+}
+
+# Generate list of processinfo files in XML directory
+@record on;
+	bool $ok;
+	$ok = `local dir "*processinfo*" -path "$xmllogsDir"`;
+@record off;
+
+ifnot($ok){ 
+	echo "ERROR - no processinfo files in $xmllogsDir";
+	return false; 
+}
+
+$files = GetCmdData("name");
+
+# Copy files into transfer directory
+while ($counter < sizeof($files)){
+	# create destination location
+	string $dst = "$dirtomake\\$files[$counter]";
+		
+	ifnot (`local copy "$xmllogsDir\\$files[$counter]" "$dst"`){
+		echo "ERROR - could not copy";
+	}
+	
+	echo "Copying $files[$counter] ...";
+	$counter++;
+}
+
+#############################
+# Call CopyFast to move files
+#############################
+string $ScriptsDir;
+_GetEPScriptsPath($ScriptsDir);
+
+##################################################################
+#$ScriptsDir = set the local copy of fast monkey location here...
+##################################################################
+$ScriptsDir = "$ScriptsDir.\\freshstepCopyFast.bat";
+
+ifnot (`local run -command "attrib -r $driveletter/to_pp/freshstep_$projname\_$ipAddr/*" -redirect`){
+	echo "ERROR - could not change attribs to RW at $driveletter/to_pp/freshstep_$projname\_$ipAddr/*";
+}
+
+ifnot (`local run -command "$ScriptsDir"`){
+	echo "ERROR - could not fastmonkey files to high";
+}
+
+return true;
+

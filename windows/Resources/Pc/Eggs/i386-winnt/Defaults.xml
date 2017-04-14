@@ -1,0 +1,8 @@
+<?xml version='1.1' ?>
+
+<EggDefaults>
+
+	<Egg>Load from memory</Egg>
+	<Egg>Load from file</Egg>
+
+</EggDefaults>

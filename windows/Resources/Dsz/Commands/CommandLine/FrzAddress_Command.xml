@@ -1,0 +1,35 @@
+<?xml version='1.0' ?>
+
+<Plugin interface='0x01c10032' provider='0x0101200b'>
+
+	<Command id='0' name='FrzAddress'>
+
+		<Help>Manipulates FRZ addresses</Help>
+
+		<Input>
+			<Option name='list' optional='false' group='action'>
+				<Help>Display addresses</Help>
+				<Set data='action' value='0'/>
+			</Option>
+
+			<Option name='add' optional='false' group='action'>
+				<Help>Adds an address</Help>
+				<Set data='action' value='1'/>
+				<Argument name='address' data='address'/>
+			</Option>
+
+			<Option name='delete' optional='false' group='action'>
+				<Help>Deletes an address</Help>
+				<Set data='action' value='2'/>
+				<Argument name='address' data='address'/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name='action' type='uint8_t' default='0'/>
+			<Data name='address' type='cpaddr'/>
+		</Output>
+
+	</Command>
+
+</Plugin>

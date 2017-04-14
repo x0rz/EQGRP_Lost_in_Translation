@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<Plugin providerName='Tasking/Mcl_Cmd_Sql_Tasking.pyo' providerType='script'>
+
+	<Command id="0" name="Sql">
+	
+		<Help>Provides actions available to interact with databases</Help>
+	
+		<Input>
+			
+			<Option name="action" optional="false">
+				<Help>The action to perform.</Help>
+				<Argument name="actionCmd">
+					<Value string="drivers">
+						<Set data="actionCmd" value="1"/>
+					</Value>
+					<Value string="sources">
+						<Set data="actionCmd" value="2"/>
+					</Value>
+					<Value string="connect">
+						<Set data="actionCmd" value="3"/>
+					</Value>
+					<Value string="servers">
+						<Set data="actionCmd" value="4"/>
+					</Value>
+					<Value string="databases">
+						<Set data="actionCmd" value="5"/>
+					</Value>
+					<Value string="tables">
+						<Set data="actionCmd" value="6"/>
+					</Value>
+					<Value string="columns">
+						<Set data="actionCmd" value="7"/>
+					</Value>
+					<Value string="query">
+						<Set data="actionCmd" value="8"/>
+					</Value>
+					<Value string="handles">
+						<Set data="actionCmd" value="9"/>
+					</Value>
+					<Value string="disconnect">
+						<Set data="actionCmd" value="10"/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='connectString' optional='true' group='connectInfo'>
+				<Help>The connection string used to connect to a database.</Help>
+				<Argument name='connectString' data='connectString'/>
+			</Option>
+			
+			<Option name='handle' optional='true' group='connectInfo'>
+				<Help>Specifies the database connection to execute an action on.</Help>
+				<Help>Use the action connect to get a handle.</Help>
+				<Argument name='handleId' data='handleId'/>
+			</Option>
+
+			<Option name='consoleOutput' optional='true'>
+				<Help>Toggles writing output to the screen. (Deprecated - always on)</Help>
+				<Argument name="consoleOutput">
+					<Value string="on">
+						<Set data="consoleOutput" value="true" />
+					</Value>
+					<Value string="off">
+						<Set data="consoleOutput" value="false" />
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='tableName' optional='true'>
+				<Help>Specifies that table to retrieve column information for.</Help>
+				<Help>Only used with the columns action</Help>
+				<Argument name='tableName' data='tableName'/>
+			</Option>
+			
+			<Option name='queryString' optional='true' group='querySource'>
+				<Help>The query to be executed.</Help>
+				<Argument name='queryString' data='queryString'/>
+			</Option>
+
+			<Option name='queryFile' optional='true' group='querySource'>
+				<Help>File to load query from.</Help>
+				<Argument name='file' data='queryFile'/>
+			</Option>
+			
+			<Option name='maxColumnSize' optional='true'>
+				<Help>Maximum size to display for each column. (Default: 64000)</Help>
+				<Help>Columns larger than maxColumnSize are truncated.</Help>
+				<Argument name='number' data='maxColumnSize'/>
+			</Option>
+
+			<Option name='chunkSize' optional='true'>
+				<Help>The maximum size of data to be returned in each chunk (Default: 66560)</Help>
+				<Argument name='bytes' data='chunkSize'/>
+			</Option>
+
+			<Option name='access' optional='true'>
+				<Help>Sets the access level on the database (Default: read)</Help>
+				<Help>NOTE: Implementation of this is driver dependant.</Help>
+				<Help>For instance, some read connections will still permit UPDATE SQL statements</Help>
+				<Argument name='accessType'>
+					<Value string="read">
+						<Set data="accessType" value="0"/>
+					</Value>
+					<Value string="read/write">
+						<Set data="accessType" value="1"/>
+					</Value>
+				</Argument>
+			</Option>
+			
+			<Option name='autoCommit' optional='true'>
+				<Help>Toggles the database autocommit setting. (Default: on)</Help>
+				<Argument name="autoCommit">
+					<Value string="on">
+						<Set data="autoCommit" value="true"/>
+					</Value>
+					<Value string="off">
+						<Set data="autoCommit" value="false"/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='timeout' optional='true'>
+				<Help>The maximum idle time before a connection is automatically closed (Default: 30m)</Help>
+				<Argument name='idleTime' data='timeout'/>
+			</Option>
+
+			<Option name='useExisting' optional='true'>
+				<Help>Require the use of an existing connection</Help>
+				<Set data='allowConnect' value='false'/>
+			</Option>
+		</Input>
+		<Output>
+			<Data name="actionCmd" 		type="uint8_t" 		default="0"/>
+			<Data name="connectString"  type="string"/>
+			<Data name="tableName" 		type="string"/>
+			<Data name="queryString" 	type="string"/>
+			<Data name="queryFile"		type="string"/>
+			<Data name='consoleOutput' 	type='bool' 		default='true'/>
+			<Data name='maxColumnSize' 	type='uint32_t' 	default='64000'/>
+			<Data name="handleId" 		type="uint32_t"/>
+			<Data name='accessType' 	type='uint8_t' 		default='0'/>
+			<Data name='autoCommit' 	type='bool' 		default='true'/>
+			<Data name='chunkSize'		type='uint32_t'		default='66560'/>
+			<Data name='timeout'		type='time'			default='30m'/>
+			<Data name='allowConnect'	type='bool'			default='true'/>
+		</Output>
+
+	</Command>
+</Plugin>

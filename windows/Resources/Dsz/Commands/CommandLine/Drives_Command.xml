@@ -1,0 +1,14 @@
+<?xml version='1.0' ?>
+<Plugin providerName="Tasking/Mcl_Cmd_Drives_Tasking.pyo" providerType='script'>
+
+  <Command id='0' name='drives'>
+  
+    <Help>Returns information about the computer's drives</Help>
+    
+    <Input/>
+    
+    <Output/>
+    
+  </Command>
+
+</Plugin>

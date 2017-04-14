@@ -1,0 +1,21 @@
+<?xml version='1.0' ?>
+
+<Plugin id='31351'>
+
+ <Command id='16' name='services'>
+  <Help>Returns the list of registered services on the given machine.</Help>
+
+  <Input>
+   <Option name='local' optional='false' group='location'>
+    <Help>Local services</Help>
+   </Option>
+   <Option name='remote' optional='false' group='location'>
+    <Argument name='server' data='server'/>
+    <Help>Services at server 'x'.  Must start with '\\'</Help>
+   </Option>
+  </Input>
+  <Output>
+   <Data name='server' type='string'/>
+  </Output>
+ </Command>
+</Plugin>

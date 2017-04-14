@@ -1,0 +1,41 @@
+#-------------------------------------------------------------------------------
+# File: dirtoget.eps
+# Description: Does a dir; the only thing different is the name
+#
+#-------------------------------------------------------------------------------
+
+bool $badParams = false;
+
+string $args="";
+string $arg;
+
+int $i=1;
+while ($i < sizeof($argv)) {
+#	$arg=split(" ", $argv[$i]);
+	$arg=$argv[$i];
+#	ifnot ($arg == $argv[$i]) {
+#		$arg="\"$argv[$i]\"";
+#	}
+# TODO: when split works again, go back to being smart with quotes
+	if ($args == "") {
+		$args="\"$arg\"";
+	} else {
+		$args="$args \"$arg\"";
+	}
+	$i++;
+}
+
+@record on;
+bool $success=`getfileattribs -file $args`;
+@record off;
+if ($success) {
+	bool $isdir=GetCmdData("FILE_ATTRIBUTE_DIRECTORY");
+	SetCmdData(bool,"FILE_ATTRIBUTE_DIRECTORY",$isdir);
+	int $size=GetCmdData("size");
+	SetCmdData(int,"size",$size);
+} else {
+	SetCmdData(bool,"FILE_ATTRIBUTE_DIRECTORY",false);
+	SetCmdData(int,"size",0);
+}
+
+return $success;

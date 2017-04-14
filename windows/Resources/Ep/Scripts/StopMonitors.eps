@@ -1,0 +1,56 @@
+#--------------------------------------------------------
+# File: StopMonitors.eps
+#
+#  Start State:	Assumes nothing
+#  End State:	All system monitors are stopped
+#  Errors:	
+#  Comments:	
+#
+# Modifications:
+#  05/11/01	Created.
+#--------------------------------------------------------
+
+@echo off;
+
+ifnot (prompt "Do you want to stop the monitors?") {
+    echo "Aborting script...";
+    return false;
+}
+
+echo "Stopping CheckMouse";
+if (`stop checkmouse`) { 
+   echo "    STOPPED";
+} else {
+   echo "    FAILED";
+}
+
+echo "Stopping CheckKeyboard";
+if (`stop checkkeyboard`) { 
+   echo "    STOPPED";
+} else {
+   echo "    FAILED";
+}
+
+echo "Stopping NetstatMon";
+if (`stop netstatmon`) { 
+   echo "    STOPPED";
+} else {
+   echo "    FAILED";
+}
+
+echo "Stopping ProcessMonitor";
+if (`stop processmonitor`) { 
+   echo "    STOPPED";
+} else {
+   echo "    FAILED";
+}
+
+@echo on;
+echo "";
+echo "---------------------------------------------------------------";
+`channels`;
+echo "---------------------------------------------------------------";
+echo "";
+
+echo "The monitors have been stopped";
+return true;

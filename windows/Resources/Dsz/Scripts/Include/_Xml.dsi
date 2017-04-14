@@ -1,0 +1,68 @@
+
+
+struct _XmlElement {
+	string $name;
+	string %attributes;
+	string $text;
+}
+
+#------------------------------------------------------------------------------------------
+# _XmlReadFile
+#	VERY simple XML reader.  It reads a single XML element given the following constraints
+#	- Each element to be read must be started and finished on a single line
+#	- Sub-elements are not handled
+#	- Elements within XML comments could be seen as valid elements
+#	- The validity of the XML is not checked
+#------------------------------------------------------------------------------------------
+Sub _XmlReadFile(IN string $file, IN string $elementName, OUT _XmlElement @element)
+{
+	return _XmlReadFile($file, $elementName, 0, @element);
+}
+Sub _XmlReadFile(IN string $file, IN string $elementName, IN int $elementIndex, OUT _XmlElement @element)
+{
+	string $lines;
+	if (!ReadFile($file, $lines))
+	{
+		return false;
+	}
+	
+	int $numFound=0;
+	for (int $i=0; $i < sizeof($lines); $i++)
+	{
+		string $matches, $attributes;
+		if (RegExMatch("<(.*)>(.*)</(.*)>", $lines[$i], $matches) &&
+			(sizeof($matches) == 3) &&
+			RegExMatch("^$matches[2](.*)\$", $matches[0], $attributes) &&
+			($matches[2] == $elementName))
+		{
+			if ($numFound == $elementIndex)
+			{
+				# found the one we want				
+				@element.$text = $matches[1];
+				@element.$name = $matches[2];
+				
+				while (StrLen($attributes) > 0)
+				{
+					string $attr;
+					if ((RegExMatch("^\\s([A-Za-z0-9_]*)='([^']*)'(.*)\$", $attributes, $matches) ||
+						 RegExMatch('^\\s([A-Za-z0-9_]*)="([^"]*)"(.*)\$', $attributes, $matches)) &&
+						 (sizeof($matches) == 3))
+					{
+						$attributes = $matches[2];
+						@element.%attributes{$matches[0]} = $matches[1];
+					}
+					else
+					{
+						break;
+					}
+				}
+				
+				return true;
+			}
+			
+			$numFound++;
+		}
+	}
+	
+	return false;
+}

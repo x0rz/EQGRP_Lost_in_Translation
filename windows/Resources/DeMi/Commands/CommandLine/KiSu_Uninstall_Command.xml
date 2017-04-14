@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Plugin providerName="Tasking/Mcl_Cmd_DiBa_Tasking.pyo" providerType="script">
+	<Command name="kisu_uninstall" id="1">
+		<Help>Uninstalls KiSu from the target</Help>
+
+		<Input>
+			<Option name="type" optional="false" group="instance">
+				<Help>Specifies the KiSu id by type.</Help>
+				<Argument name="name" data="type" optional="false"/>
+			</Option>
+
+			<Option name="instance" optional="false" group="instance">
+				<Help>Specifies the KiSu id</Help>
+				<Argument name="id" optional="false" data="instance"/>
+			</Option>
+
+			<Option name="quiet" optional="true">
+				<Help>Run without displaying anything</Help>
+				<Set data="quiet" value="true"/>
+			</Option>
+		</Input>
+
+		<Output>
+			<Data name="instance" type="uint32_t"/>
+			<Data name="type" type="string"/>
+			<Data name="quiet" type="bool" default="false"/>
+		</Output>
+	</Command>
+</Plugin>

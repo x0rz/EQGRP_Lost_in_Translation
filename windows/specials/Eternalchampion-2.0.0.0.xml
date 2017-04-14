@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='utf-8'?>
+<config xmlns='urn:trch' name='Eternalchampion' version='2.0.0' schemaversion='2.1.0' configversion='2.0.0.0' id='a2b184ef911a684c559fa2e9b9fa30ee868dfc70'>
+  <inputparameters>
+    <parameter type='S16' name='NetworkTimeout' description='Timeout for blocking network calls (in seconds).  Use -1 for no timeout.'>
+      <default>60</default>
+    </parameter>
+    <parameter type='IPv4' name='TargetIp' description='The actual (non-redirected) Target IP Address'/>
+    <parameter type='TcpPort' name='TargetPort' description='The actual (non-redirected) Target TCP port'>
+      <default>445</default>
+    </parameter>
+    <parameter hidden='true' required='false' type='IPv4' name='RedirectedTargetIp' description='The physical (redirected) target IP address'/>
+    <parameter hidden='true' required='false' type='TcpPort' name='RedirectedTargetPort' description='The physical (redirected) target TCP port'/>
+    <parameter hidden='true' type='TcpPort' name='DaveProxyPort' description='DAVE Core/Proxy Hookup connection port'>
+      <default>0</default>
+    </parameter>
+    <parameter hidden='true' type='U32' name='MaxExploitAttempts' description='Number of tries to exploit. Default 42'>
+      <default>42</default>
+    </parameter>
+    <parameter type='String' name='PipeName' description='The named pipe to use (Win7+ only, need Pipe or Share)'>
+      <default/>
+    </parameter>
+    <parameter type='Buffer' name='ShareName' description='The name of the share to use in Unicode (Win7+ only, need Pipe or Share)'>
+      <default/>
+    </parameter>
+    <parameter xdevmap='EXPLOIT_SHELLCODE' type='Buffer' name='ShellcodeBuffer' description='DOPU Shellcode buffer'/>
+    <paramchoice name='Credentials' description='Type of credentials to use'>
+      <default>Anonymous</default>
+      <paramgroup name='Anonymous' description='Anonymous (NULL session)'/>
+      <paramgroup name='Guest' description='Guest account'/>
+      <paramgroup name='Blank' description='User account with no password set'>
+        <parameter type='Buffer' name='Username' description='Username entered as hex bytes (in unicode)'/>
+      </paramgroup>
+      <paramgroup name='Password' description='User name and password'>
+        <parameter type='Buffer' name='Username' description='Username entered as hex bytes (in unicode)'/>
+        <parameter type='Buffer' name='Password' description='Password entered as hex bytes (in unicode)'/>
+      </paramgroup>
+      <paramgroup name='NTLM' description='User name and NTLM hash'>
+        <parameter type='Buffer' name='Username' description='Username entered as hex bytes (in unicode)'/>
+        <parameter type='Buffer' name='NtlmHash' description='NTLM password hash (in hex)'/>
+      </paramgroup>
+    </paramchoice>
+    <paramchoice name='Protocol' description='SMB (default port 445) or NBT (default port 139)'>
+      <default>SMB</default>
+      <paramgroup name='SMB' description='SMB protocol'/>
+      <paramgroup name='NBT' description='Netbios protocol'/>
+    </paramchoice>
+    <paramchoice name='Target' description='Operating System, Service Pack, of target OS'>
+      <paramgroup name='XP_SP0SP1_X86' description='Windows XP Sp0 and Sp1, 32-bit'/>
+      <paramgroup name='XP_SP2SP3_X86' description='Windows XP Sp2 and Sp3, 32-bit'/>
+      <paramgroup name='XP_SP1_X64' description='Windows XP Sp1, 64-bit'/>
+      <paramgroup name='XP_SP2_X64' description='Windows XP Sp2, 64-bit'/>
+      <paramgroup name='SERVER_2003_SP0' description='Windows Sever 2003 Sp0, 32-bit'/>
+      <paramgroup name='SERVER_2003_SP1' description='Windows Sever 2003 Sp1, 32-bit/64-bit'/>
+      <paramgroup name='SERVER_2003_SP2' description='Windows Sever 2003 Sp2, 32-bit/64-bit'/>
+      <paramgroup name='VISTA_SP0' description='Windows Vista Sp0, 32-bit/64-bit'/>
+      <paramgroup name='VISTA_SP1' description='Windows Vista Sp1, 32-bit/64-bit'/>
+      <paramgroup name='VISTA_SP2' description='Windows Vista Sp2, 32-bit/64-bit'/>
+      <paramgroup name='SERVER_2008_SP0' description='Windows Server 2008 Sp0, 32-bit/64-bit'/>
+      <paramgroup name='SERVER_2008_SP1' description='Windows Server 2008 Sp1, 32-bit/64-bit'/>
+      <paramgroup name='SERVER_2008_SP2' description='Windows Server 2008 Sp2, 32-bit/64-bit'/>
+      <paramgroup name='WIN7_SP0' description='Windows 7 Sp0, 32-bit/64-bit'/>
+      <paramgroup name='WIN7_SP1' description='Windows 7 Sp1, 32-bit/64-bit'/>
+      <paramgroup name='SERVER_2008R2_SP0' description='Windows Server 2008 R2 Sp0, 32-bit/64-bit'/>
+      <paramgroup name='SERVER_2008R2_SP1' description='Windows Server 2008 R2 Sp1, 32-bit/64-bit'/>
+      <paramgroup name='WIN8_SP0' description='Windows 8 Sp0, 32-bit/64-bit'/>
+    </paramchoice>
+    <paramchoice name='TargetOsArchitecture' description='The architecture of the target operating system'>
+      <default>Unknown</default>
+      <paramgroup name='Unknown' description='The architecture is not known (exploit will figure it out)'/>
+      <paramgroup name='x86' description='The target is 32-bit'/>
+      <paramgroup name='x64' description='The target is 64-bit'/>
+    </paramchoice>
+  </inputparameters>
+  <constants>
+    <parameter type='U32' name='XP_SP0SP1_X86' description=''>
+      <value>0x05010000</value>
+    </parameter>
+    <parameter type='U32' name='XP_SP2SP3_X86' description=''>
+      <value>0x05010200</value>
+    </parameter>
+    <parameter type='U32' name='XP_SP1_X64' description=''>
+      <value>0x05020101</value>
+    </parameter>
+    <parameter type='U32' name='XP_SP2_X64' description=''>
+      <value>0x05020201</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2003_SP0' description=''>
+      <value>0x85020002</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2003_SP1' description=''>
+      <value>0x85020102</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2003_SP2' description=''>
+      <value>0x85020202</value>
+    </parameter>
+    <parameter type='U32' name='VISTA_SP0' description=''>
+      <value>0x06000002</value>
+    </parameter>
+    <parameter type='U32' name='VISTA_SP1' description=''>
+      <value>0x06000102</value>
+    </parameter>
+    <parameter type='U32' name='VISTA_SP2' description=''>
+      <value>0x06000202</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2008_SP0' description=''>
+      <value>0x86000002</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2008_SP1' description=''>
+      <value>0x86000102</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2008_SP2' description=''>
+      <value>0x86000202</value>
+    </parameter>
+    <parameter type='U32' name='WIN7_SP0' description=''>
+      <value>0x06010002</value>
+    </parameter>
+    <parameter type='U32' name='WIN7_SP1' description=''>
+      <value>0x06010102</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2008R2_SP0' description=''>
+      <value>0x86010002</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2008R2_SP1' description=''>
+      <value>0x86010102</value>
+    </parameter>
+    <parameter type='U32' name='WIN8_SP0' description=''>
+      <value>0x06020002</value>
+    </parameter>
+    <parameter type='U32' name='SERVER_2K12_SP0' description=''>
+      <value>0x86020002</value>
+    </parameter>
+    <parameter type='U8' name='x86' description='32-bit Architecture'>
+      <value>0</value>
+    </parameter>
+    <parameter type='U8' name='x64' description='64-bit Architecture'>
+      <value>1</value>
+    </parameter>
+    <parameter type='U8' name='Unknown' description='Unknown Architecture'>
+      <value>2</value>
+    </parameter>
+    <parameter type='U8' name='Anonymous' description=''>
+      <value>0</value>
+    </parameter>
+    <parameter type='U8' name='Guest' description=''>
+      <value>1</value>
+    </parameter>
+    <parameter type='U8' name='Blank' description=''>
+      <value>2</value>
+    </parameter>
+    <parameter type='U8' name='Password' description=''>
+      <value>3</value>
+    </parameter>
+    <parameter type='U8' name='NTLM' description=''>
+      <value>4</value>
+    </parameter>
+  </constants>
+  <errors>
+    <errorcode name='ETCH_RESULT_NETWORK_ERROR' value='65' description='A network error occured'/>
+    <errorcode name='ETCH_RESULT_NOTSUPPORTED' value='66' description='Feature is not yet supported'/>
+    <errorcode name='ETCH_RESULT_UNKNOWN_ARCHITECTURE' value='67' description='Architecture was not discovered'/>
+    <errorcode name='ETCH_RESULT_TRANS_NOT_FOUND' value='69' description='Transaction not leaked'/>
+    <errorcode name='ETCH_RESULT_UNSUCCESSFUL' value='71' description='Attempts were unsuccessful'/>
+    <errorcode name='ETCH_RESULT_PARAM_ERROR' value='73' description='A parameter is invalid'/>
+    <errorcode name='ETCH_RESULT_NOT_VULNERABLE' value='74' description='Target is not vulnerable with these parameters'/>
+  </errors>
+  <redirection>
+    <local protocol='TCP' listenaddr='RedirectedTargetIp' listenport='RedirectedTargetPort' closeoncompletion='true' destaddr='TargetIp' destport='TargetPort'/>
+  </redirection>
+  <logic>
+    <and>
+      <service name='smb'>
+        <bindtovalue name='Protocol' value='SMB'/>
+        <bindtopath path="//service[name='smb']/port" name='TargetPort'/>
+      </service>
+      <or>
+        <os name='Windows XP' family='windows'>
+          <bindtovalue name='Target' value='XP'/>
+        </os>
+        <os servicepack='0' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP0'/>
+        </os>
+        <os servicepack='1' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP1'/>
+        </os>
+        <os servicepack='2' name='Windows 2003' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='W2K3SP2'/>
+        </os>
+        <os servicepack='1' name='Windows XP' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='W2K3XPX64SP1'/>
+        </os>
+        <os servicepack='2' name='Windows XP' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='W2K3XPX64SP2'/>
+        </os>
+        <os servicepack='1' name='Windows 2003' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='W2K3XPX64SP1'/>
+        </os>
+        <os servicepack='2' name='Windows 2003' family='windows' architecture='x64 64-bit'>
+          <bindtovalue name='Target' value='W2K3XPX64SP2'/>
+        </os>
+        <os servicepack='0' name='Windows Vista' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+        <os servicepack='1' name='Windows Vista' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+        <os servicepack='2' name='Windows Vista' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+        <os servicepack='0' name='Windows 2008' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+        <os servicepack='1' name='Windows 2008' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+        <os servicepack='2' name='Windows 2008' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+        <os servicepack='0' name='Windows 2008 R2' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+        <os servicepack='0' name='Windows 7' family='windows' architecture='x86 32-bit'>
+          <bindtovalue name='Target' value='WVISTA_2008_7'/>
+        </os>
+      </or>
+    </and>
+  </logic>
+</config>

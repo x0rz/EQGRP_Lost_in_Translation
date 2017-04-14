@@ -1,0 +1,35 @@
+<?xml version='1.0' ?>
+
+<Module id='105' name='Dsz_ConMgr'>
+
+    <Interfaces>
+		<Interface id='0x01c16f96' provider='0x01010003'/>
+    </Interfaces>
+
+    <Dependencies>
+    </Dependencies>
+
+    <Lp>Yes</Lp>
+	<Target>Yes</Target>
+
+	<Architecture type='i386'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+	
+	<Architecture type='x64'>
+	
+		<Platform family='winnt'>
+			<Version major='*' minor='*' other='*'>
+				<File loadtype='file'></File>
+			</Version>
+		</Platform>
+			
+	</Architecture>
+		
+</Module>

@@ -1,0 +1,13 @@
+<?xml version='1.0' ?>
+
+<Aliases>
+	<Alias>
+		<Name>runassystem</Name>
+		<ReplaceBeforeArgs>script HelperScripts/windows/_RunAsSystem.dss -args "</ReplaceBeforeArgs>
+		<ReplaceAfterArgs>"</ReplaceAfterArgs>
+
+		<Help>runassystem &lt;command&gt;</Help>
+		<Help>    Runs the given process as the child of a SYSTEM process</Help>
+	</Alias>
+</Aliases>	
+		

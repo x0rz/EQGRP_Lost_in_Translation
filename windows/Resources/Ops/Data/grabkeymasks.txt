@@ -1,0 +1,9 @@
+*.p12
+*.pfx
+*.cer
+secring.pgp
+pubring.pgp
+cert8.db
+key3.db
+*.pvk
+*.spc

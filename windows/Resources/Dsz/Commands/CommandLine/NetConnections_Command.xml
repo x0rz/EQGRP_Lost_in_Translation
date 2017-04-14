@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+
+<Plugin providerName="Tasking/Mcl_Cmd_NetConnections_Tasking.pyo" providerType="script">
+
+	<Command id="0" name="NetConnections">
+		<Input>
+			<Option name="list" optional="true" group="type">
+				<Help>Lists current network connections</Help>
+				<Set data="monitor" value="false" />
+			</Option>
+			
+			<Option name="monitor" optional="true" group="type">
+				<Help>Monitors for new network connections</Help>
+				<Set data="monitor" value="true" />
+				<Argument name="delay" data="delay" optional="true"/>
+			</Option>
+
+			<Option name="complexity" optional="true">
+				<Help>Sets the complexity of the network connections queried.</Help>
+				<Help>Default value is IpOnly.</Help>
+				<Argument name="type">
+					<Value string='All'>
+						<Set data='dataset' value='1'/>
+					</Value>
+					<Value string='IpOnly'>
+						<Set data='dataset' value='2'/>
+					</Value>
+					<Value string='TcpOnly'>
+						<Set data='dataset' value='3'/>
+					</Value>
+					<Value string='UdpOnly'>
+						<Set data='dataset' value='4'/>
+					</Value>
+					<Value string='PipesOnly'>
+						<Set data='dataset' value='5'/>
+					</Value>
+				</Argument>
+			</Option>
+
+			<Option name='maximum' optional='true'>
+				<Help>Sets the maximum amount of connections to consider.</Help>
+				<Argument name='count' data='maximum'/>
+			</Option>
+		</Input>
+		
+		<Output>
+			<Data name='monitor'	type='bool'		default='false'/>
+			<Data name='delay'		type='time'		default='5s'/>
+			<Data name='dataset'	type='uint8_t'	default='2'/>
+			<Data name='maximum'	type='uint32_t'	default='1000'/>
+		</Output>
+	</Command>
+</Plugin>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Module name="DiBa_Target_BH" id="3051">
+    <Interfaces>
+        <Interface provider="0x01011069" id="0x01010031"/>
+    </Interfaces>
+    
+    <Dependencies>
+		<Local>Mcl_NtElevation</Local>
+    </Dependencies>
+    
+    <Lp>No</Lp>
+    <Target>Yes</Target>
+
+    <Architecture type="i386">
+        <Platform family="winnt">
+			<Version major="5" minor="0" other="*">
+				<File loadtype="file">i386-winnt-vc9s/release/DiBa_Target_BH_2000.dll</File>
+				<File loadtype="memory">i386-winnt-vc9s/release/DiBa_Target_BH_2000.dll</File>
+			</Version>
+			<Version major="5" minor="1+" other="*">
+				<File loadtype="file">i386-winnt-vc9s/release/DiBa_Target_BH.dll</File>
+				<File loadtype="memory">i386-winnt-vc9s/release/DiBa_Target_BH.dll</File>
+			</Version>
+			<Version major="6" minor="*" other="*">
+				<File loadtype="file">i386-winnt-vc9s/release/DiBa_Target_BH.dll</File>
+				<File loadtype="memory">i386-winnt-vc9s/release/DiBa_Target_BH.dll</File>
+			</Version>
+		</Platform>
+    </Architecture>
+    <Architecture type="x64">
+        <Platform family="winnt">
+            <Version other="*" minor="*" major="*">
+                <File loadtype="file">x64-winnt-vc9s/release/DiBa_Target_BH.dll</File>
+                <File loadtype="memory">x64-winnt-vc9s/release/DiBa_Target_BH.dll</File>
+            </Version>
+        </Platform>
+    </Architecture>
+</Module>

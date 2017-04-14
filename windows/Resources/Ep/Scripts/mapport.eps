@@ -1,0 +1,286 @@
+#--------------------------------------------------------
+# File: mapport.eps
+#
+# portmap using available data from ps and netstat
+# does not work on Win2k. Only checks TCP connections
+# 
+#   Version 1 - 2008, 20 Oct
+#--------------------------------------------------------
+
+@include "_GenericFunctions.epm";
+@include "_GetSystemPaths.epm";
+@include "_GetDirectory.epm";
+@case-sensitive off;
+@echo off;
+#-----------------------------------------------------
+# Variable Init
+#-----------------------------------------------------
+
+
+
+bool $do_query = false;
+
+
+
+if ($argc > 2) {
+
+		showusage();
+}
+
+else {
+	
+	if  ($argc == 2) {
+
+		if ($argv[1] == "-detail")  {
+			$do_query = true;
+		}
+		else {
+			showusage();
+			return true;
+		}
+	}
+
+
+	#-------- Check to see if it is XP or 2003 ------------
+	@echo off;
+	@record on;
+	ifnot (`machineinfo`) {
+		echo "machineinfo command failed.";
+		return false;
+	}
+
+	else {
+		string $os_version = GetCmdData("os_version");
+		@record off;
+
+		if ($os_version != "5.1" && $os_version != "5.2") {
+			echo "This only runs on WinXP or Win2k3";
+			echo "This is Windows $os_version";
+			return false;
+		}	
+
+	string $scriptsDir;
+	_GetEPScriptsPath($scriptsDir);
+
+	string $rootDir;
+	string $systemDir;
+	_GetSystemPaths($rootDir, $systemDir);
+	
+	# -------- Define where the text file is for the queries ---------------
+	string $dir = GetCmdData("dir");
+	string $macFile = "tcp_ports.txt";
+	string $fileDir = "$dir\\$macFile";
+	int $numLines;
+	string $line_broken;
+	string $port_query;
+
+	bool $retVal;
+	int $todo = 0;
+	int $i= 0;
+	int $sizeofi = 0;
+	int $n = 0;				
+	int $portline = $i;
+	int $portoffset = 1;
+	int $pidline = $i;
+	int $pidoffset = 4;
+	string $listenportarray;
+	string $pidarray = "pid";
+	string $portarray = "port";
+	string $temp = "";
+
+
+	# -------------- run netstat amd record it ------------
+
+	@echo off;
+	@record on;
+	$retVal = `run -command "netstat -anop tcp" -redirect`;
+	@record off;
+	if ($retVal == false ) {
+		echo "ERROR:  netstat -anop tcp failed to run";
+		echo "Exiting...";
+		return false;
+	}
+	
+	# ------ "output" is magic word to get raw output from this command.
+	# This is because there is no XML description for how to read the data
+	string $netstatoutput = GetCmdData("output");
+	
+	# ----------- Break apart netstat into pieces -----------
+	# The entire output is broken by spaces, which mean more processing later.
+
+	string $linebroken = Split(" ", $netstatoutput);
+	string $lines;
+	string $cleanbreak;
+	$i= 0;
+	$sizeofi = 0;
+	
+	#----------- Sort thru the pieces, cutting out the blank ones ----
+	foreach $lines ($linebroken) {	 
+   	   if ($lines != "") {
+		# echo "$i : $lines";
+   		$cleanbreak[$i] = $lines;
+		$i++;
+		}
+
+		$sizeofi = $i;
+ 	}	
+
+
+	echo " ";
+	echo "PROCESS    |     PORT       |   PID"; 
+	echo "----------------------------------------";
+	
+	# After the output is read in from the netstat command, we need to convert it
+	# to useful info, this next loop cuts the listen port out of the netstat output
+
+	# This is where the real data starts, element 9, so start the index there
+	$i = 9;
+	while ($i < $sizeofi) {
+
+		# -------- EP makes me do each math operation seperatly... ------
+		$portline = $i;
+		$portline += $portoffset;   
+		$pidline = $i;
+		$pidline += $pidoffset;
+	
+		$listenportarray = Split(":", $cleanbreak[$portline]);
+		
+		# ------- Create the arrays with a common index, n
+		$pidarray[$n] = $cleanbreak[$pidline];
+		$portarray[$n] = $listenportarray[1];
+
+		$n++;
+
+		# ------- netstat gives us 5 columns each prog, so jump to the next set
+		$i += 5;
+	}
+	
+
+	# ---- Next, we grab the process list ----------- 
+	@record on;
+	$retVal = `processlist`;
+	@record off;
+	@echo on;
+
+	# ---- processlist has real XML already, so no need to do hacky breakout of raw data
+	string $processnames = GetCmdData("name");
+	int $processpids = GetCmdData("id");
+
+	int $pidlines;
+	string $tempint;
+	string $tempstring;
+	$sizeofi = sizeof($processpids);
+	$i = 0;
+	int $search_num = 0;
+	bool $querystatus;
+	while ($i < $sizeofi) {
+
+		$search_num = 0;
+		while ($search_num < $n) {
+				# ----- each pid has a newline at the end, so I have to split it and take the first part ---
+				$tempstring = Split("\n", $pidarray[$search_num]);
+				$tempint = $tempstring[0];
+				if ($processpids[$i] == <int>$tempint) {
+					echo "$processnames[$i] \tTCP:$portarray[$search_num] \t (PID $processpids[$i])";
+					
+					if ($do_query == true) {
+						$querystatus = showportquery( <string>$portarray[$search_num] );
+						if ($querystatus == false) {
+							$do_query = false;
+						}
+
+						echo "";
+					}
+					
+
+				}
+			$search_num++;
+		}
+
+		$i++;
+	}
+
+
+	return true;
+}
+
+}
+
+
+
+sub showusage ()
+{
+
+		echo "Map Port:";
+		echo "------------------------------------------------------- ";
+		echo " Attempts to associate a Process - Port - PID, like the program portmap  ";
+		echo " Works on Windows XP or 2003.";
+		echo "   -detail provides information about the nature of why a port may be open";
+		echo "";
+		echo "Usage:      mapport [no file arguments]";
+		echo "       or   mapport -detail";  
+		echo " ";
+		return true;
+}
+
+
+
+
+sub showportquery (IN string $port_query)
+{
+
+string $scriptsDir;
+_GetEPScriptsPath($scriptsDir);
+
+string $rootDir;
+string $systemDir;
+_GetSystemPaths($rootDir, $systemDir);
+
+string $dir = GetCmdData("dir");
+string $macFile = "tcp_ports.txt";
+string $fileDir = "$dir\\$macFile";
+int $numLines;
+string $line_broken;
+
+	int $portquery_loop = 0;
+
+	string $lines;
+	if(ReadFile($fileDir, $lines)){
+		int $foundsomething = 0;
+		string $line;
+		foreach $line ($lines) {
+			
+			$line_broken = Split("\t", $line);
+			# ------ Line broken columns -------------------
+			#  line_broken[0] = port						
+			#  line_broken[1] = protocol
+			#  line_broken[2] = known program
+			#  line_broken[3] = description
+			#  line_broken[4] = confidence
+
+			if ($line_broken[0] == $port_query) {
+				echo "   $port_query:$line_broken[3]";
+				$foundsomething++;
+			}
+
+		
+		}
+		if($foundsomething == 0) {
+			#---------This is to display a error instead of no results ----------
+			echo "   $port_query: Nothing matched";
+			return true;
+		}
+	}
+
+
+
+	else {
+		# -----If the file doesn't open, give a useful error -------
+		echo "ERROR: Port list file not found";
+		echo "File: $macFile";
+		echo "File Directory is: $fileDir";
+		echo "File expected to be at D:\\OPSDisk\\Resources\\EP\\Scripts\\tcp_ports.txt";
+		return false;
+	}
+	return true;
+}

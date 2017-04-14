@@ -1,0 +1,16 @@
+<Plugin id="22">
+	<Name>Plugin Container</Name>
+	<Class>ds.plugin.uber.UberPlugin</Class>
+	<Description></Description>
+	<Logo>images/ksirtet.png</Logo>
+	<Live>true</Live>
+	<Replay>true</Replay>
+	<UserStartable>true</UserStartable>
+	<Hide>true</Hide>
+	<Unhide>true</Unhide>
+	<Detach>true</Detach>
+	<UserClose>true</UserClose>
+	<CanClose>true</CanClose>
+	<VerifyClose>false</VerifyClose>
+	<SpawnDetached>false</SpawnDetached>
+</Plugin>

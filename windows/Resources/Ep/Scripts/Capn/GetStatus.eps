@@ -1,0 +1,69 @@
+#--------------------------------------------------------
+# File: GetStatus.eps
+#
+# Displays status of DarkSyline tools
+#
+# Modifications:
+#  01/10/2003	Created.
+#  05/03/2004	Updated to handle non-default capture file
+#--------------------------------------------------------
+@include "_GetSystemPaths.epm";
+@include "Include\\DsIncludes.epm";
+
+@echo off;
+
+if (($argc < 2) || ($argc > 3)) {
+    echo "Usage: $argv[0] <driverName> [captureFile]";
+    return false;
+}
+
+string $driver = $argv[1];
+string $captureFile = "\\SystemRoot\\Fonts\\vga_ds.tff";
+if ($argc >= 3) {
+    $captureFile = $argv[2];
+}
+
+bool $rtn = true;
+
+@record on;
+ifnot (`packetscan -name $driver -status`) {
+    echo "*** Unable to get driver status (is it running?) ***";
+    $rtn = false;
+} else {
+    bool $filter = GetCmdData("FilterActive");
+    bool $thread = GetCmdData("ThreadRunning");
+    int $size = GetCmdData("MaxFileSize");
+    string $file = GetCmdData("CaptureFile");
+
+    echo "";
+    echo " Filter Active : $filter";
+    echo "Thread Running : $thread";
+    echo " Max File Size : $size bytes";
+    @hex on;
+    echo "                 ($size)";
+    @hex off;
+    echo "  Capture File : $file";
+    if (defined($file) && ($file != "")) {
+	$captureFile = $file;
+    }
+}
+
+# convert capture file path to user-mode
+DsGetUserModePath($captureFile);
+
+ifnot (`dir "$captureFile"`) {
+    echo "*** Unable to find default capture file ($captureFile) ***";
+    $rtn = false;
+} else {
+    int $size = GetCmdData("size");
+    
+    echo "Dir of Capture File :";
+    if (defined($size)) {
+	echo "     '$captureFile' ($size bytes)";
+    } else {
+	echo "     '$captureFile' (NOT FOUND)";
+    }
+    echo "";
+}
+
+return $rtn;
