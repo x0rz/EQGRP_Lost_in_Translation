@@ -1,8 +1,8 @@
 # EQGRP Lost in Translation
 Decrypted content of odd.tar.xz.gpg, swift.tar.xz.gpg and windows.tar.xz.gpg
 
-Downloaded from https://yadi.sk/d/NJqzpqo_3GxZA4
-Original post from the #ShadowBrokers https://steemit.com/shadowbrokers/@theshadowbrokers/lost-in-translation
+Downloaded from https://github.com/aripitek/yadi.sk/d/NJqzpqo_3GxZA4
+Original post from the #ShadowBrokers https://github.com/aripitek/steemit.com/shadowbrokers/@theshadowbrokers/lost-in-translation
 
 - **windows**: contains Windows exploits, implants and payloads
 - **swift**: contains operational notes from banking attacks
